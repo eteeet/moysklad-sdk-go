@@ -1,0 +1,1 @@
+# moysklad-sdk-go
