@@ -1,0 +1,40 @@
+# Исправления дефектов генератора поверх спеки (ADR-0015). Типы из x-go-type пишем руками в types.go.
+overlay: 1.0.0
+info:
+  title: moysklad-sdk-go
+  version: 1.0.0
+actions:
+  # Даты в спеке — обычные строки, реальный формат "yyyy-MM-dd HH:mm:ss.SSS" по МСК.
+  - target: $.components.schemas.product.properties.updated
+    update:
+      x-go-type: Timestamp
+  - target: $.components.schemas.productFolder.properties.updated
+    update:
+      x-go-type: Timestamp
+  # Сгенерированный AttributeAbstract теряет value: у него есть только id, meta, name и type.
+  - target: $.components.schemas.AttributeAbstract
+    update:
+      x-go-type: Attribute
+  # Имя Error занято типизированной ошибкой клиента (error.go).
+  - target: $.components.schemas.error
+    update:
+      x-go-name: ErrorItem
+  # Генерируем только модели: типы параметров операций (Filter, Limit, GetProductsParams…)
+  # не нужны и занимают имена рукописного клиента.
+  - target: $.paths['/entity/product'].get.parameters
+    remove: true
+  - target: $.paths['/entity/productfolder'].get.parameters
+    remove: true
+  - target: $.paths['/entity/product/{id}'].get.parameters
+    remove: true
+  - target: $.paths['/entity/productfolder/{id}'].get.parameters
+    remove: true
+  # Без объявленного path-параметра {id} генератор падает.
+  - target: $.paths['/entity/product/{id}'].get
+    update:
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+  - target: $.paths['/entity/productfolder/{id}'].get
+    update:
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
