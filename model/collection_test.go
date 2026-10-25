@@ -56,9 +56,9 @@ func TestMetaPermitted(t *testing.T) {
 		t.Fatal(err)
 	}
 	if absent.Permitted != nil {
-		t.Fatalf("permitted без поля = %v, ожидался nil", *absent.Permitted)
+		t.Fatalf("permitted = %v, want nil when field is absent", *absent.Permitted)
 	}
 	if present.Permitted == nil || *present.Permitted {
-		t.Fatalf("permitted = %v, ожидалось false", present.Permitted)
+		t.Fatalf("permitted = %v, want false", present.Permitted)
 	}
 }

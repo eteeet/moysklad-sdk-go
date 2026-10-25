@@ -27,7 +27,7 @@ func TestResponseContextUnmarshalJSON(t *testing.T) {
 			err := json.Unmarshal([]byte(tt.body), &got)
 			if tt.wantError {
 				if err == nil {
-					t.Fatal("ожидалась ошибка декодирования")
+					t.Fatal("expected decode error")
 				}
 				return
 			}
@@ -35,16 +35,16 @@ func TestResponseContextUnmarshalJSON(t *testing.T) {
 				t.Fatal(err)
 			}
 			if (got.Employee != nil) != tt.wantEmployee {
-				t.Fatalf("Employee = %v, ожидалось наличие: %v", got.Employee, tt.wantEmployee)
+				t.Fatalf("Employee = %v, want present: %v", got.Employee, tt.wantEmployee)
 			}
 			if got.Employee == nil {
 				return
 			}
 			if got.Employee.Meta.Href != "https://example.com/employee" {
-				t.Fatalf("неверный href: %q", got.Employee.Meta.Href)
+				t.Fatalf("href = %q, want https://example.com/employee", got.Employee.Meta.Href)
 			}
 			if got.Employee.Meta.Type != "employee" {
-				t.Fatalf("неверный type: %q", got.Employee.Meta.Type)
+				t.Fatalf("type = %q, want employee", got.Employee.Meta.Type)
 			}
 		})
 	}
