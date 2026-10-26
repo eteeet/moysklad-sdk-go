@@ -28,13 +28,13 @@ func (s *Service) Get(ctx context.Context, id string) (*Product, error) {
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, "entity/product/"+id, nil, nil)
 	if err != nil {
-		return nil, fmt.Errorf("moysklad: get product: %w", err)
+		return nil, fmt.Errorf("get product %s: %w", id, err)
 	}
 
 	var result Product
 	resp, err := s.client.Do(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("moysklad: get product: %w", err)
+		return nil, fmt.Errorf("get product %s: %w", id, err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("moysklad: get product: unexpected HTTP status %d", resp.StatusCode)
