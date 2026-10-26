@@ -1,8 +1,6 @@
 package model_test
 
 import (
-	jsonv1 "encoding/json"
-	jsonv2 "encoding/json/v2"
 	"os"
 	"testing"
 	"time"
@@ -11,20 +9,8 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/model"
 )
 
-var dateTimeCodecs = []struct {
-	name      string
-	marshal   func(any) ([]byte, error)
-	unmarshal func([]byte, any) error
-}{
-	{"json/v1", jsonv1.Marshal, jsonv1.Unmarshal},
-	{"json/v2",
-		func(v any) ([]byte, error) { return jsonv2.Marshal(v) },
-		func(data []byte, v any) error { return jsonv2.Unmarshal(data, v) },
-	},
-}
-
 func TestDateTimeUnmarshalJSON(t *testing.T) {
-	for _, codec := range dateTimeCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name   string
@@ -70,7 +56,7 @@ func TestDateTimeMarshalJSON(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, codec := range dateTimeCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name  string
@@ -100,7 +86,7 @@ func TestDateTimeMarshalJSON(t *testing.T) {
 }
 
 func TestDateTimeEmptyJSON(t *testing.T) {
-	for _, codec := range dateTimeCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, input := range []string{"null", " \nnull\t", `""`} {
 				t.Run(input, func(t *testing.T) {
@@ -129,7 +115,7 @@ func TestDateTimeOmitZero(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, codec := range dateTimeCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name   string
@@ -162,7 +148,7 @@ func TestDateTimeOmitZero(t *testing.T) {
 }
 
 func TestDateTimeUnmarshalErrors(t *testing.T) {
-	for _, codec := range dateTimeCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, input := range []string{
 				`"invalid"`, `" "`, `"2024-01-15"`, `"2024-01-15 10:30"`,
@@ -186,7 +172,7 @@ func TestDateTimeUnmarshalErrors(t *testing.T) {
 }
 
 func TestDateTimeMarshalInvalidYear(t *testing.T) {
-	for _, codec := range dateTimeCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, value := range []time.Time{
 				time.Date(-1, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -206,7 +192,7 @@ func TestDateTimeProductFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, codec := range dateTimeCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			var got struct {
 				Updated model.DateTime `json:"updated"`

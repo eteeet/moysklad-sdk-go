@@ -1,26 +1,12 @@
 package model_test
 
 import (
-	jsonv1 "encoding/json"
-	jsonv2 "encoding/json/v2"
 	"reflect"
 	"testing"
 	"time"
 
 	"github.com/eteeet/moysklad-sdk-go/model"
 )
-
-var fieldCodecs = []struct {
-	name      string
-	marshal   func(any) ([]byte, error)
-	unmarshal func([]byte, any) error
-}{
-	{"json/v1", jsonv1.Marshal, jsonv1.Unmarshal},
-	{"json/v2",
-		func(v any) ([]byte, error) { return jsonv2.Marshal(v) },
-		func(data []byte, v any) error { return jsonv2.Unmarshal(data, v) },
-	},
-}
 
 type fieldEnvelope[T any] struct {
 	Value model.Field[T] `json:"value,omitzero"`
@@ -58,7 +44,7 @@ func TestFieldMarshalJSON(t *testing.T) {
 	type nested struct {
 		Name string `json:"name"`
 	}
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name  string
@@ -95,7 +81,7 @@ func TestFieldMarshalJSON(t *testing.T) {
 }
 
 func TestFieldMarshalUnsetError(t *testing.T) {
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, value := range []any{
 				model.Field[int]{},
@@ -112,7 +98,7 @@ func TestFieldMarshalUnsetError(t *testing.T) {
 }
 
 func TestFieldUnmarshalJSON(t *testing.T) {
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name     string
@@ -183,7 +169,7 @@ func TestFieldUnmarshalValues(t *testing.T) {
 
 func checkFieldUnmarshalValue[T any](t *testing.T, input string, want T) {
 	t.Helper()
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			var got model.Field[T]
 			if err := codec.unmarshal([]byte(input), &got); err != nil {
@@ -208,7 +194,7 @@ func checkFieldUnmarshalValue[T any](t *testing.T, input string, want T) {
 }
 
 func TestFieldUnmarshalErrors(t *testing.T) {
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, initial := range []model.Field[int]{
 				{}, model.Null[int](), model.Value(7),
@@ -230,7 +216,7 @@ func TestFieldUnmarshalErrors(t *testing.T) {
 }
 
 func TestFieldUnmarshalInvalidJSON(t *testing.T) {
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, input := range []string{`nullx`, `7 8`, `"unterminated`, `{"broken":`} {
 				got := model.Value(7)
@@ -247,7 +233,7 @@ func TestFieldUnmarshalNestedError(t *testing.T) {
 		Labels map[string]string `json:"labels"`
 		Count  int               `json:"count"`
 	}
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			got := model.Value(nested{Labels: map[string]string{"name": "before"}, Count: 7})
 			input := `{"labels":{"name":"after"},"count":"wrong"}`
@@ -263,7 +249,7 @@ func TestFieldUnmarshalNestedError(t *testing.T) {
 }
 
 func TestFieldDateTimeRoundTrip(t *testing.T) {
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name     string
@@ -306,7 +292,7 @@ func TestFieldDateTimeRoundTrip(t *testing.T) {
 }
 
 func TestFieldMarshalUnsupportedValue(t *testing.T) {
-	for _, codec := range fieldCodecs {
+	for _, codec := range codecs {
 		t.Run(codec.name, func(t *testing.T) {
 			if _, err := codec.marshal(fieldEnvelope[chan int]{model.Value[chan int](nil)}); err == nil {
 				t.Fatal("expected error for unsupported value")
