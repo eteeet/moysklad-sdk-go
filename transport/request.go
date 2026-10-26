@@ -56,7 +56,7 @@ func (c *Client) NewRequest(ctx context.Context, method, endpoint string, query 
 		return nil, fmt.Errorf("moysklad: create request: %w", err)
 	}
 
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept", "application/json;charset=utf-8")
 	req.Header.Set("Accept-Encoding", "gzip")
 	req.Header.Set("User-Agent", "moysklad-sdk-go")
 	if body != nil {

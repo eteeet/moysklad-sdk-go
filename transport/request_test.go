@@ -59,7 +59,7 @@ func TestNewRequest(t *testing.T) {
 	}
 
 	for name, want := range map[string]string{
-		"Accept":          "application/json",
+		"Accept":          "application/json;charset=utf-8",
 		"Accept-Encoding": "gzip",
 		"Content-Type":    "application/json",
 		"User-Agent":      "moysklad-sdk-go",
