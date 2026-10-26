@@ -4,7 +4,6 @@ import "github.com/eteeet/moysklad-sdk-go/model"
 
 // Частичная модель чтения без expand; для записи будут отдельные типы.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product
-// TODO: даты, цены, штрихкоды, изображения, файлы, упаковки, доп. поля и остальные атрибуты.
 type Product struct {
 	Meta         model.Meta `json:"meta"`
 	ID           string     `json:"id"`

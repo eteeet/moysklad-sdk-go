@@ -3,10 +3,10 @@ FIXTURES_REF ?= HEAD
 .PHONY: fixtures fixtures-commit example
 
 fixtures:
-	go run ./testdata/syncfixtures -ref "$(FIXTURES_REF)"
+	go run ./testdata -ref "$(FIXTURES_REF)"
 
 fixtures-commit:
-	go run ./testdata/syncfixtures -ref "$(FIXTURES_REF)" -commit
+	go run ./testdata -ref "$(FIXTURES_REF)" -commit
 
 example:
 	@set -ea; \

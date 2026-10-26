@@ -36,6 +36,6 @@ func TestRedirectToOtherOriginDropsAuthorization(t *testing.T) {
 	resp.Body.Close()
 
 	if got != "" {
-		t.Fatalf("Authorization ушёл на другой origin: %q", got)
+		t.Fatalf("Authorization leaked to another origin: %q", got)
 	}
 }
