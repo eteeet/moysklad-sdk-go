@@ -2,20 +2,26 @@ package product
 
 import "github.com/eteeet/moysklad-sdk-go/model"
 
-// Частичная модель чтения без expand; для записи будут отдельные типы.
+// Частичная модель чтения без expand; для записи используются CreateRequest и UpdateRequest.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product
 type Product struct {
-	Meta         model.Meta `json:"meta"`
-	ID           string     `json:"id"`
-	AccountID    string     `json:"accountId"`
-	Name         string     `json:"name"`
-	Description  string     `json:"description"`
-	Code         string     `json:"code"`
-	ExternalCode string     `json:"externalCode"`
-	Article      string     `json:"article"`
-	Archived     bool       `json:"archived"`
-	Shared       bool       `json:"shared"`
-	PathName     string     `json:"pathName"`
+	Meta         model.Meta     `json:"meta"`
+	ID           string         `json:"id"`
+	AccountID    string         `json:"accountId"`
+	Name         string         `json:"name"`
+	Description  string         `json:"description"`
+	Code         string         `json:"code"`
+	ExternalCode string         `json:"externalCode"`
+	Article      string         `json:"article"`
+	Archived     bool           `json:"archived"`
+	Shared       bool           `json:"shared"`
+	PathName     string         `json:"pathName"`
+	Updated      model.DateTime `json:"updated,omitzero"`
+
+	BuyPrice   *model.Price      `json:"buyPrice,omitzero"`
+	MinPrice   *model.Price      `json:"minPrice,omitzero"`
+	SalePrices []model.SalePrice `json:"salePrices"`
+	Attributes []model.Attribute `json:"attributes"`
 
 	Weight float64 `json:"weight"`
 	Volume float64 `json:"volume"`

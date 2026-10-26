@@ -14,7 +14,7 @@ const (
 	fieldValue
 )
 
-// Field используется в моделях запросов с тегом json:",omitzero"; нулевое значение означает «не передано».
+// Нулевое значение означает «не передано»; в моделях запросов поле требует тега json:",omitzero".
 type Field[T any] struct {
 	value T
 	state uint8

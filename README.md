@@ -3,6 +3,55 @@
 SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 Поддерживаемые возможности и план работ: [docs/coverage.md](docs/coverage.md).
 
+## Product
+
+`product.NewService(client)` предоставляет `Get(ctx, id)`, `Create(ctx, CreateRequest)` и `Update(ctx, id, UpdateRequest)`.
+Все три метода возвращают `(*Product, error)`; ошибки API доступны через `errors.As` как `*errors.APIError`
+из пакета `github.com/eteeet/moysklad-sdk-go/errors` (импортируй с алиасом `sdkerrors`).
+
+Create требует непустой Name. Update требует UUID и хотя бы одно заданное поле.
+SDK не повторяет запросы автоматически. После ошибки создания с неизвестным результатом проверь аккаунт перед повторной отправкой.
+
+Поддерживаемые поля записи:
+
+- `name`, `code`, `externalCode`, `description`, `article`, `archived`, `shared`.
+- `weight`, `volume`, `vat`, `vatEnabled`, `useParentVat`, `discountProhibited`.
+- `owner`, `group`, `productFolder`, `uom`, `supplier`, `country` — ссылки без expand.
+- `buyPrice`, `minPrice`, `salePrices`, `attributes`.
+
+В модели чтения дополнительно есть `meta`, `id`, `accountId`, `updated`, `pathName`,
+`effectiveVat`, `effectiveVatEnabled`, `isSerialTrackable`.
+Запросы используют отдельные модели: эти дополнительные поля в них не включены.
+
+## Примеры
+
+`.env` не загружается библиотекой. Makefile загружает его только для запуска примеров.
+Храни в нём `MOYSKLAD_TOKEN`, а для GET — `MOYSKLAD_PRODUCT_ID`. Не коммить `.env`.
+
+```sh
+make example
+```
+
+Следующая команда действительно создаёт товар. Используй тестовый аккаунт; не сохраняй разрешение записи в `.env`:
+
+```sh
+MOYSKLAD_ALLOW_WRITE=1 make example-create
+```
+
+Пример печатает `MOYSKLAD_EXAMPLE_PRODUCT_ID` и `MOYSKLAD_EXAMPLE_EXTERNAL_CODE`.
+Сохрани обе строки в `.env`, затем запусти:
+
+```sh
+MOYSKLAD_ALLOW_WRITE=1 make example-update
+```
+
+Перед PUT пример делает GET и проверяет, что ID, имя и externalCode соответствуют переданному маркеру `sdk-example-…`.
+Это проверка соглашения об именовании, не доказательство происхождения товара.
+Затем изменяет описание и устанавливает `archived: true`. Рабочий `MOYSKLAD_PRODUCT_ID` не используется.
+Архивация не удаляет товар. После неоднозначного сбоя создания маркер из stderr поможет найти товар вручную.
+
+Код примеров: [Get](examples/product_get/main.go), [Create](examples/product_create/main.go), [Update](examples/product_update/main.go).
+
 ## DateTime
 
 `model.DateTime` — именованный тип поверх `time.Time`; преобразование в обе стороны выполняется явно.
@@ -32,7 +81,7 @@ import _ "time/tzdata"
 
 ## Необязательные поля запросов
 
-`model.Field[T]` используется только в моделях запросов:
+`model.Field[T]` используется в моделях запросов:
 
 - Нулевое значение — поле не отправляется благодаря тегу `json:"name,omitzero"`.
 - `model.Null[T]()` — отправляется явный `null`.
@@ -66,5 +115,50 @@ nil-слайс становится `[]`, nil-map — `{}`; `[]byte` имеет 
 - Незаполненные `Currency` и `PriceType` пропускаются через `omitzero`.
 - Точная десятичная арифметика не предоставляется; `float64` имеет ограничения двоичного представления дробей.
 
-Подключение цен к Product запланировано на этап 6, правила обновления `salePrices` — на этап 8.
 [Документация цен](https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-ceny-prodazhi).
+
+## Дополнительные поля
+
+`model.Attribute` — общая модель чтения и элемента запроса. Здесь Value и File также используют Field,
+чтобы различать отсутствие, null и значение. Value хранит `jsontext.Value`, не промежуточный float64.
+Неизвестные типы и исходное значение сохраняются; тип проверяется только при вызове геттера.
+
+- `AsString()`, `AsBool()`, `AsLong()`, `AsDouble()`, `AsTime()`, `AsReference()` возвращают значение и ошибку.
+- AsLong читает int64 напрямую: значения за пределами ±2⁵³ не теряют точность.
+- AsReference возвращает `AttributeReference{Meta, Name}`; справочники распознаются по объекту со ссылкой, без закрытого списка типов.
+- `AttrValue(meta, value)` возвращает `(Attribute, error)`; Type определяет сервер по метаданным.
+- `AttrNull(meta)` сбрасывает value, `AttrFileNull(meta)` — file.
+- `AttrFile(meta, filename, content)` принимает байты; content кодируется в Base64.
+- Для даты передавай `model.DateTime`. SDK не меняет точность исходного значения; по контракту API сервер сохраняет дату доп. поля с точностью до минуты.
+
+Для записи используй конструкторы, а не повторную отправку прочитанного Attribute вместе с read-only полями.
+[Работа с дополнительными полями](https://dev.moysklad.ru/doc/api/remap/1.2/#/general#3-rabota-s-dopolnitelnymi-polyami).
+
+## Семантика Update
+
+Неуказанные поля не отправляются. `Value(false)`, `Value(0)` и `Value("")` — явные значения.
+`Null[Reference]()` очищает ссылку только там, где сервер разрешает null, например productFolder.
+
+Сервер сливает `salePrices` по типу цены (`priceType`), `attributes` — по метаданным поля (`meta`).
+Переданные элементы создаются или перезаписываются, непереданные не меняются.
+Пустые массивы, включая `Value([]SalePrice{})`, не очищают ранее заданные значения.
+Для очистки конкретного доп. поля передавай элемент с value/file: null.
+SDK не выполняет локальное слияние: возвращает ответ сервера.
+[Изменить Товар](https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-izmenit-tovar).
+
+## Тесты и ограничения
+
+```sh
+go test -race -count=1 ./...
+go vet ./... ./testdata
+```
+
+Официальные ответы лежат в `testdata/upstream`; версия и хеши — в [docs/upstream.md](docs/upstream.md).
+`make fixtures` обновляет снимок, `make fixtures-commit` обновляет и коммитит только снимок и его описание.
+Golden-тела запросов лежат в `testdata/custom/product`; они заданы независимо от сериализации SDK.
+Сравнение канонизирует JSON без округления целых чисел за пределами ±2⁵³.
+
+Срез проверен локальными HTTP-тестами, не реальной записью в аккаунт.
+Пока нет List, пагинации, expand, Delete, retry/429, rate limiting, полного фасада и специальных операций товара.
+Штрихкоды, алкоголь, упаковки, отслеживание, syncId и остальные неподдерживаемые поля остаются в TODO.
+API допускает syncId при создании, но текущий CreateRequest его пока не поддерживает.
