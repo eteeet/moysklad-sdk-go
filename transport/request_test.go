@@ -96,6 +96,35 @@ func TestNewRequest(t *testing.T) {
 	}
 }
 
+func TestNewRequestAccept(t *testing.T) {
+	client, err := transport.NewClient(transport.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, tc := range []struct {
+		method string
+		body   any
+	}{
+		{http.MethodGet, nil},
+		{http.MethodPost, map[string]string{"name": "Товар"}},
+		{http.MethodPut, map[string]string{"name": "Товар"}},
+	} {
+		t.Run(tc.method, func(t *testing.T) {
+			req, err := client.NewRequest(t.Context(), tc.method, "entity/product", nil, tc.body)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if req.Body != nil {
+				defer req.Body.Close()
+			}
+			if got := req.Header.Get("Accept"); got != "application/json;charset=utf-8" {
+				t.Fatalf("Accept = %q, want application/json;charset=utf-8", got)
+			}
+		})
+	}
+}
+
 func TestNewRequestURL(t *testing.T) {
 	base := transport.DefaultBaseURL
 	tests := []struct {

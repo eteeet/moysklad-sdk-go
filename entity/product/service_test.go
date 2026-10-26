@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -111,6 +112,12 @@ func TestServiceGetErrors(t *testing.T) {
 			if err == nil || got != nil {
 				t.Fatalf("product = %+v, error = %v", got, err)
 			}
+			if count := strings.Count(err.Error(), "moysklad:"); count != 1 {
+				t.Errorf("moysklad prefix count = %d, want 1: %v", count, err)
+			}
+			if tc.wantAPI && !strings.HasPrefix(err.Error(), "get product "+fixtureProductID+": ") {
+				t.Errorf("product context lost: %v", err)
+			}
 			var apiErr *sdkerrors.APIError
 			if errors.As(err, &apiErr) != tc.wantAPI {
 				t.Fatalf("unexpected error type: %v", err)
@@ -119,6 +126,31 @@ func TestServiceGetErrors(t *testing.T) {
 				t.Fatalf("status = %d, want %d", apiErr.StatusCode, tc.status)
 			}
 		})
+	}
+}
+
+func TestServiceGetRequestErrorWrapping(t *testing.T) {
+	wantErr := errors.New("auth failed")
+	client, err := transport.NewClient(transport.Config{
+		Auth: func(*http.Request) error { return wantErr },
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := product.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := service.Get(t.Context(), fixtureProductID)
+	if got != nil || !errors.Is(err, wantErr) {
+		t.Fatalf("product = %+v, error = %v, want wrapped auth error", got, err)
+	}
+	if count := strings.Count(err.Error(), "moysklad:"); count != 1 {
+		t.Errorf("moysklad prefix count = %d, want 1: %v", count, err)
+	}
+	if !strings.HasPrefix(err.Error(), "get product "+fixtureProductID+": ") {
+		t.Errorf("product context lost: %v", err)
 	}
 }
 

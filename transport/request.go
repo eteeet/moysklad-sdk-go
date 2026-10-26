@@ -56,7 +56,7 @@ func (c *Client) NewRequest(ctx context.Context, method, endpoint string, query 
 		return nil, fmt.Errorf("moysklad: create request: %w", err)
 	}
 	// ошибка 1062 требует application/json;charset=utf-8.
-	// https://github.com/moysklad/api-remap-1.2-doc/blob/master/md/_errors.md#L62
+	// https://github.com/moysklad/api-remap-1.2-doc/blob/3bf292f64c4ab12f7125742956fb9badd9875375/md/_errors.md#L63
 	req.Header.Set("Accept", "application/json;charset=utf-8")
 	req.Header.Set("Accept-Encoding", "gzip")
 	req.Header.Set("User-Agent", "moysklad-sdk-go")
