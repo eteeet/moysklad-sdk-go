@@ -8,3 +8,18 @@ vendor: `https://dev.moysklad.ru/doc/api/vendor/1.0/#bystryj-start`
 Что замечено:
 - `openspec` и другая документация может отставать;
 - sdk java (новый), python, ts - контролировать изменения.
+
+
+## Agent skills
+
+### Issue tracker
+
+Локальные Markdown-файлы в `.scratch/`. См. `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Стандартные пять статусов. См. `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Общий glossary экосистемы и локальные ADR SDK. См. `docs/agents/domain.md`.
