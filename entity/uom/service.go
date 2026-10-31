@@ -28,6 +28,15 @@ func (s *Service) Get(ctx context.Context, id string) (*UOM, error) {
 	return s.do(ctx, "get uom "+id, http.MethodGet, "entity/uom/"+id, nil)
 }
 
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-sozdat-edinicu-izmereniya
+// Не повторять POST автоматически после неоднозначного сбоя: возможен дубль UOM.
+func (s *Service) Create(ctx context.Context, input CreateRequest) (*UOM, error) {
+	if input.Name == "" {
+		return nil, fmt.Errorf("moysklad: create uom: name must not be empty")
+	}
+	return s.do(ctx, "create uom", http.MethodPost, "entity/uom", input)
+}
+
 func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*UOM, error) {
 	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
 	if err != nil {

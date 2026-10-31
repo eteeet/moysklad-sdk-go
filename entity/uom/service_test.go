@@ -155,47 +155,61 @@ func TestServiceGetErrors(t *testing.T) {
 	}
 }
 
-func TestServiceGetErrorWrapping(t *testing.T) {
-	for _, authError := range []bool{true, false} {
-		name := "transport"
-		if authError {
-			name = "authorization"
-		}
-		t.Run(name, func(t *testing.T) {
-			wantErr := errors.New("boundary failed")
-			var calls atomic.Int32
-			cfg := transport.Config{
-				HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
-					calls.Add(1)
-					return nil, wantErr
-				})},
-			}
-			if authError {
-				cfg.Auth = func(*http.Request) error { return wantErr }
-			}
-			client, err := transport.NewClient(cfg)
-			if err != nil {
-				t.Fatal(err)
-			}
-			service, err := uom.NewService(client)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			got, err := service.Get(t.Context(), fixtureUOMID)
-			if got != nil || !errors.Is(err, wantErr) {
-				t.Fatalf("uom = %+v, error = %v, want wrapped error", got, err)
-			}
-			if strings.Count(err.Error(), "moysklad:") != 1 ||
-				!strings.HasPrefix(err.Error(), "get uom "+fixtureUOMID+": ") {
-				t.Errorf("error context = %v", err)
-			}
-			wantCalls := int32(1)
-			if authError {
-				wantCalls = 0
-			}
-			if calls.Load() != wantCalls {
-				t.Errorf("calls = %d, want %d", calls.Load(), wantCalls)
+func TestServiceErrorWrapping(t *testing.T) {
+	for _, operation := range []struct {
+		name    string
+		context string
+		call    func(*uom.Service, context.Context) (*uom.UOM, error)
+	}{
+		{"get", "get uom " + fixtureUOMID, func(s *uom.Service, ctx context.Context) (*uom.UOM, error) {
+			return s.Get(ctx, fixtureUOMID)
+		}},
+		{"create", "create uom", func(s *uom.Service, ctx context.Context) (*uom.UOM, error) {
+			return s.Create(ctx, uom.CreateRequest{Name: "SDK UOM"})
+		}},
+	} {
+		t.Run(operation.name, func(t *testing.T) {
+			for _, authError := range []bool{true, false} {
+				name := "transport"
+				if authError {
+					name = "authorization"
+				}
+				t.Run(name, func(t *testing.T) {
+					wantErr := errors.New("boundary failed")
+					var calls atomic.Int32
+					cfg := transport.Config{
+						HTTPClient: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+							calls.Add(1)
+							return nil, wantErr
+						})},
+					}
+					if authError {
+						cfg.Auth = func(*http.Request) error { return wantErr }
+					}
+					client, err := transport.NewClient(cfg)
+					if err != nil {
+						t.Fatal(err)
+					}
+					service, err := uom.NewService(client)
+					if err != nil {
+						t.Fatal(err)
+					}
+					got, err := operation.call(service, t.Context())
+					if got != nil || !errors.Is(err, wantErr) {
+						t.Fatalf("uom = %+v, error = %v, want wrapped error", got, err)
+					}
+					if strings.Count(err.Error(), "moysklad:") != 1 ||
+						!strings.HasPrefix(err.Error(), operation.context+": ") {
+						t.Errorf("error context = %v", err)
+					}
+					wantCalls := int32(1)
+					if authError {
+						wantCalls = 0
+					}
+					if calls.Load() != wantCalls {
+						t.Errorf("calls = %d, want %d", calls.Load(), wantCalls)
+					}
+				})
 			}
 		})
 	}
@@ -242,6 +256,151 @@ func TestServiceGetUUIDVersion(t *testing.T) {
 	got, err := service.Get(t.Context(), id)
 	if err != nil || got == nil || got.ID != id {
 		t.Fatalf("uom = %+v, error = %v", got, err)
+	}
+}
+
+func TestServiceCreate(t *testing.T) {
+	fixture, err := os.ReadFile("../../testdata/upstream/uom.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name  string
+		input uom.CreateRequest
+		want  []byte
+		gzip  bool
+	}{
+		{"full/plain", fullCreateRequest(), uomGolden(t, "create"), false},
+		{"full/gzip", fullCreateRequest(), uomGolden(t, "create"), true},
+		{"minimal", uom.CreateRequest{Name: "SDK UOM"}, []byte(`{"name":"SDK UOM"}`), false},
+		{"whitespace name", uom.CreateRequest{Name: " \t "}, []byte(`{"name":" \t "}`), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var calls atomic.Int32
+			service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls.Add(1)
+				if r.Method != http.MethodPost || r.URL.Path != "/api/remap/1.2/entity/uom" || r.URL.RawQuery != "" {
+					t.Errorf("unexpected request: %s %s", r.Method, r.URL)
+				}
+				if r.Header.Get("Content-Type") != "application/json" ||
+					r.Header.Get("Authorization") != "Bearer test-token" ||
+					r.Header.Get("Accept") != "application/json;charset=utf-8" ||
+					r.Header.Get("Accept-Encoding") != "gzip" ||
+					r.Header.Get("User-Agent") != "moysklad-sdk-go" {
+					t.Error("required request headers missing")
+				}
+				body, err := io.ReadAll(r.Body)
+				if err != nil {
+					t.Error(err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				assertJSONEqual(t, body, tc.want)
+				w.Header().Set("Content-Type", "application/json")
+				if tc.gzip {
+					w.Header().Set("Content-Encoding", "gzip")
+					writer := gzip.NewWriter(w)
+					if _, err := writer.Write(fixture); err != nil {
+						t.Error(err)
+					}
+					if err := writer.Close(); err != nil {
+						t.Error(err)
+					}
+					return
+				}
+				if _, err := w.Write(fixture); err != nil {
+					t.Error(err)
+				}
+			}))
+
+			got, err := service.Create(t.Context(), tc.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got.ID != fixtureUOMID || got.Meta.Type != "uom" ||
+				got.Name != "шт" || got.Code != "796" || got.Description != "Штука" ||
+				got.ExternalCode != "PCE" || got.Shared || got.Updated.IsZero() ||
+				got.Owner == nil || got.Group == nil {
+				t.Fatalf("uom = %+v", got)
+			}
+			if calls.Load() != 1 {
+				t.Fatalf("calls = %d, want one POST without a preliminary GET", calls.Load())
+			}
+		})
+	}
+}
+
+func TestServiceCreateErrors(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		status  int
+		body    string
+		wantAPI bool
+	}{
+		{"bad request", 400, `{"errors":[{"error":"invalid name","code":3000}]}`, true},
+		{"rate limit", 429, `{"errors":[{"error":"slow down","code":1073}]}`, true},
+		{"HTML error", 502, "<html>bad gateway</html>", true},
+		{"unexpected status", 201, `{"id":"unexpected"}`, false},
+		{"no content", 204, "", false},
+		{"missing id", 200, `{"name":"invalid"}`, false},
+		{"empty id", 200, `{"id":""}`, false},
+		{"null response", 200, "null", false},
+		{"invalid JSON", 200, `{"id":`, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var calls atomic.Int32
+			service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls.Add(1)
+				w.WriteHeader(tc.status)
+				if _, err := io.WriteString(w, tc.body); err != nil {
+					t.Error(err)
+				}
+			}))
+			got, err := service.Create(t.Context(), uom.CreateRequest{Name: "SDK UOM"})
+			if err == nil || got != nil {
+				t.Fatalf("uom = %+v, error = %v", got, err)
+			}
+			if strings.Count(err.Error(), "moysklad:") != 1 ||
+				!strings.Contains(err.Error(), "create uom") {
+				t.Errorf("error context = %v", err)
+			}
+			var apiErr *sdkerrors.APIError
+			if errors.As(err, &apiErr) != tc.wantAPI {
+				t.Fatalf("unexpected error type: %v", err)
+			}
+			if tc.wantAPI && apiErr.StatusCode != tc.status {
+				t.Errorf("status = %d, want %d", apiErr.StatusCode, tc.status)
+			}
+			if tc.status == 400 && (len(apiErr.Errors) != 1 ||
+				apiErr.Errors[0].Code != 3000 || apiErr.Errors[0].Message != "invalid name") {
+				t.Errorf("API details = %+v", apiErr.Errors)
+			}
+			if calls.Load() != 1 {
+				t.Fatalf("POST retried: calls = %d", calls.Load())
+			}
+		})
+	}
+}
+
+func TestServiceCreateValidation(t *testing.T) {
+	var calls atomic.Int32
+	service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	if got, err := service.Create(t.Context(), uom.CreateRequest{}); err == nil || got != nil {
+		t.Fatal("empty name accepted")
+	}
+	if got, err := service.Create(nil, uom.CreateRequest{Name: "SDK UOM"}); err == nil || got != nil {
+		t.Fatal("nil context accepted")
+	}
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	if got, err := service.Create(ctx, uom.CreateRequest{Name: "SDK UOM"}); got != nil || !errors.Is(err, context.Canceled) {
+		t.Fatalf("uom = %+v, error = %v, want cancellation", got, err)
+	}
+	if calls.Load() != 0 {
+		t.Fatalf("unexpected HTTP calls: %d", calls.Load())
 	}
 }
 
