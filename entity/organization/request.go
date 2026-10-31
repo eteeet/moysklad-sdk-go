@@ -78,6 +78,7 @@ type UpdateRequest struct {
 	Owner             model.Field[model.Reference]      `json:"owner,omitzero"`
 	Group             model.Field[model.Reference]      `json:"group,omitzero"`
 	BonusProgram      model.Field[model.Reference]      `json:"bonusProgram,omitzero"`
+	SyncID            model.Field[string]               `json:"syncId,omitzero"`
 
 	PayerVAT               model.Field[bool]           `json:"payerVat,omitzero"`
 	Director               model.Field[string]         `json:"director,omitzero"`

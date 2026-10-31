@@ -107,6 +107,7 @@ func fullUpdateRequest(t *testing.T) counterparty.UpdateRequest {
 		Attributes: model.Value(requestAttributes()), Tags: model.Value([]string{"покупатель", "поставщик"}), DiscountCardNumber: model.Value("00042"),
 		Owner: model.Value(requestRef("employee")), Group: model.Value(requestRef("group")), BonusProgram: model.Value(requestRef("bonusprogram")), State: model.Value(requestRef("state")),
 		PriceType: model.Value(model.PriceType{Meta: model.Meta{Href: "https://example.com/pricetype"}, ID: "price-id", Name: "Оптовая", ExternalCode: "price-code"}),
+		SyncID:    model.Value("11111111-1111-1111-1111-111111111111"),
 	}
 }
 
@@ -117,9 +118,6 @@ func TestRequestExcludedFields(t *testing.T) {
 				t.Errorf("%s contains excluded %s", typ.Name(), name)
 			}
 		}
-	}
-	if _, exists := reflect.TypeFor[counterparty.UpdateRequest]().FieldByName("SyncID"); exists {
-		t.Error("UpdateRequest contains immutable SyncID")
 	}
 }
 
@@ -133,6 +131,9 @@ func TestRequestFieldStates(t *testing.T) {
 			}{
 				{"zero create", counterparty.CreateRequest{}, `{"name":""}`},
 				{"zero update", counterparty.UpdateRequest{}, `{}`},
+				{"update sync ID", counterparty.UpdateRequest{SyncID: model.Value("11111111-1111-1111-1111-111111111111")}, `{"syncId":"11111111-1111-1111-1111-111111111111"}`},
+				{"update empty sync ID", counterparty.UpdateRequest{SyncID: model.Value("")}, `{"syncId":""}`},
+				{"update null sync ID", counterparty.UpdateRequest{SyncID: model.Null[string]()}, `{"syncId":null}`},
 				{"partial update", counterparty.UpdateRequest{Phone: model.Value("changed")}, `{"phone":"changed"}`},
 				{"create zero attribute", counterparty.CreateRequest{Name: "cp", Attributes: model.Value([]model.Attribute{{Meta: model.Meta{Href: "https://example.com/zero"}, Value: model.Value(jsontext.Value(`0`))}})}, `{"name":"cp","attributes":[{"meta":{"href":"https://example.com/zero"},"value":0}]}`},
 				{"update zero attribute", counterparty.UpdateRequest{Attributes: model.Value([]model.Attribute{{Meta: model.Meta{Href: "https://example.com/zero"}, Value: model.Value(jsontext.Value(`0`))}})}, `{"attributes":[{"meta":{"href":"https://example.com/zero"},"value":0}]}`},

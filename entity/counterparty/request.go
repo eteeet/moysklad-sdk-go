@@ -79,4 +79,5 @@ type UpdateRequest struct {
 	BonusProgram       model.Field[model.Reference]      `json:"bonusProgram,omitzero"`
 	State              model.Field[model.Reference]      `json:"state,omitzero"`
 	PriceType          model.Field[model.PriceType]      `json:"priceType,omitzero"`
+	SyncID             model.Field[string]               `json:"syncId,omitzero"`
 }

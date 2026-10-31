@@ -57,6 +57,9 @@ func TestRequestExplicitValues(t *testing.T) {
 			}{
 				{"zero create", organization.CreateRequest{}, `{"name":""}`},
 				{"zero update", organization.UpdateRequest{}, `{}`},
+				{"update sync ID", organization.UpdateRequest{SyncID: model.Value("11111111-1111-1111-1111-111111111111")}, `{"syncId":"11111111-1111-1111-1111-111111111111"}`},
+				{"update empty sync ID", organization.UpdateRequest{SyncID: model.Value("")}, `{"syncId":""}`},
+				{"update null sync ID", organization.UpdateRequest{SyncID: model.Null[string]()}, `{"syncId":null}`},
 				{"one field", organization.UpdateRequest{DirectorPosition: model.Value("Руководитель")}, `{"directorPosition":"Руководитель"}`},
 				{"create empty and false", organization.CreateRequest{Name: "SDK", Description: model.Value(""), CompanyType: model.Value(model.CompanyType("")), Archived: model.Value(false), Shared: model.Value(false), PayerVAT: model.Value(false), SyncID: model.Value("")}, `{"name":"SDK","description":"","companyType":"","archived":false,"shared":false,"payerVat":false,"syncId":""}`},
 				{"update empty and false", organization.UpdateRequest{Name: model.Value(""), Email: model.Value(""), INN: model.Value(""), TrackingContractNumber: model.Value(""), CompanyType: model.Value(model.CompanyType("")), Archived: model.Value(false), Shared: model.Value(false), PayerVAT: model.Value(false)}, `{"name":"","email":"","inn":"","trackingContractNumber":"","companyType":"","archived":false,"shared":false,"payerVat":false}`},
@@ -163,9 +166,6 @@ func TestRequestReadOnlyAndDeferredFields(t *testing.T) {
 					t.Errorf("%s contains %s", typ.Name(), forbidden)
 				}
 			}
-			if typ == reflect.TypeFor[organization.UpdateRequest]() && tag == "syncId" {
-				t.Error("UpdateRequest contains Create-only syncId")
-			}
 		}
 	}
 }
@@ -185,6 +185,7 @@ func fullUpdateRequest(t *testing.T) organization.UpdateRequest {
 		Owner:        model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/employee/owner"}}),
 		Group:        model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/group/group"}}),
 		BonusProgram: model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/bonusprogram/bonus"}}),
+		SyncID:       model.Value("11111111-1111-1111-1111-111111111111"),
 		PayerVAT:     model.Value(true), Director: model.Value("Иван Петров"), DirectorPosition: model.Value("Директор"), ChiefAccountant: model.Value("Мария Петрова"),
 		TrackingContractNumber: model.Value("00042"), TrackingContractDate: model.Value(date(t, "2025-01-02T03:04:05+03:00")),
 	}

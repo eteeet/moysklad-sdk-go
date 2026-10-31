@@ -40,6 +40,7 @@
   "owner": {"meta": {"href": "https://example.test/employee/owner"}},
   "group": {"meta": {"href": "https://example.test/group/group"}},
   "bonusProgram": {"meta": {"href": "https://example.test/bonusprogram/bonus"}},
+  "syncId": "11111111-1111-1111-1111-111111111111",
   "payerVat": true,
   "director": "Иван Петров",
   "directorPosition": "Директор",

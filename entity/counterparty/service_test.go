@@ -42,6 +42,10 @@ func serviceOperations(t *testing.T) []serviceOperation {
 			func(s *counterparty.Service, ctx context.Context) (*counterparty.Counterparty, error) {
 				return s.Update(ctx, fixtureCounterpartyID, fullUpdateRequest(t))
 			}},
+		{"update sync ID", http.MethodPut, "/api/remap/1.2/entity/counterparty/" + fixtureCounterpartyID, "update counterparty " + fixtureCounterpartyID, []byte(`{"syncId":"11111111-1111-1111-1111-111111111111"}`),
+			func(s *counterparty.Service, ctx context.Context) (*counterparty.Counterparty, error) {
+				return s.Update(ctx, fixtureCounterpartyID, counterparty.UpdateRequest{SyncID: model.Value("11111111-1111-1111-1111-111111111111")})
+			}},
 	}
 }
 
@@ -311,6 +315,9 @@ func TestServiceSparseWrites(t *testing.T) {
 		{"create unknown type and syncId", counterparty.CreateRequest{Name: "cp", CompanyType: model.Value(model.CompanyType("future")), SyncID: model.Value("server-validates-sync-id")}, `{"name":"cp","companyType":"future","syncId":"server-validates-sync-id"}`},
 		{"create empty address", counterparty.CreateRequest{Name: "cp", ActualAddressFull: model.Value(model.AddressRequest{})}, `{"name":"cp","actualAddressFull":{}}`},
 		{"empty name", counterparty.UpdateRequest{Name: model.Value("")}, `{"name":""}`},
+		{"sync ID", counterparty.UpdateRequest{SyncID: model.Value("11111111-1111-1111-1111-111111111111")}, `{"syncId":"11111111-1111-1111-1111-111111111111"}`},
+		{"empty sync ID", counterparty.UpdateRequest{SyncID: model.Value("")}, `{"syncId":""}`},
+		{"null sync ID", counterparty.UpdateRequest{SyncID: model.Null[string]()}, `{"syncId":null}`},
 		{"false", counterparty.UpdateRequest{Shared: model.Value(false)}, `{"shared":false}`},
 		{"empty tags", counterparty.UpdateRequest{Tags: model.Value([]string{})}, `{"tags":[]}`},
 		{"empty attributes", counterparty.UpdateRequest{Attributes: model.Value([]model.Attribute{})}, `{"attributes":[]}`},

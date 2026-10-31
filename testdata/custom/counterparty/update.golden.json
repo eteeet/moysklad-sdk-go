@@ -41,5 +41,6 @@
   "group": {"meta": {"href": "https://example.com/group"}},
   "bonusProgram": {"meta": {"href": "https://example.com/bonusprogram"}},
   "state": {"meta": {"href": "https://example.com/state"}},
-  "priceType": {"meta": {"href": "https://example.com/pricetype"}, "id": "price-id", "name": "Оптовая", "externalCode": "price-code"}
+  "priceType": {"meta": {"href": "https://example.com/pricetype"}, "id": "price-id", "name": "Оптовая", "externalCode": "price-code"},
+  "syncId": "11111111-1111-1111-1111-111111111111"
 }

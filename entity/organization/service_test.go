@@ -100,6 +100,9 @@ func TestServiceUpdate(t *testing.T) {
 		{"full/plain", fullUpdateRequest(t), organizationGolden(t, "update"), false},
 		{"full/gzip", fullUpdateRequest(t), organizationGolden(t, "update"), true},
 		{"one field", organization.UpdateRequest{Name: model.Value("renamed")}, []byte(`{"name":"renamed"}`), false},
+		{"sync ID", organization.UpdateRequest{SyncID: model.Value("11111111-1111-1111-1111-111111111111")}, []byte(`{"syncId":"11111111-1111-1111-1111-111111111111"}`), false},
+		{"empty sync ID", organization.UpdateRequest{SyncID: model.Value("")}, []byte(`{"syncId":""}`), false},
+		{"null sync ID", organization.UpdateRequest{SyncID: model.Null[string]()}, []byte(`{"syncId":null}`), false},
 		{"empty name", organization.UpdateRequest{Name: model.Value("")}, []byte(`{"name":""}`), false},
 		{"payerVat false", organization.UpdateRequest{PayerVAT: model.Value(false)}, []byte(`{"payerVat":false}`), false},
 		{"empty attributes", organization.UpdateRequest{Attributes: model.Value([]model.Attribute{})}, []byte(`{"attributes":[]}`), false},
@@ -324,6 +327,9 @@ func serviceOperations() []struct {
 		}},
 		{"update", "update organization " + fixtureOrganizationID, func(s *organization.Service, ctx context.Context) (*organization.Organization, error) {
 			return s.Update(ctx, fixtureOrganizationID, organization.UpdateRequest{PayerVAT: model.Value(false)})
+		}},
+		{"update sync ID", "update organization " + fixtureOrganizationID, func(s *organization.Service, ctx context.Context) (*organization.Organization, error) {
+			return s.Update(ctx, fixtureOrganizationID, organization.UpdateRequest{SyncID: model.Value("11111111-1111-1111-1111-111111111111")})
 		}},
 	}
 }
