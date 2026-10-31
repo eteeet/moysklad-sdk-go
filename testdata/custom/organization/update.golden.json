@@ -1,0 +1,49 @@
+{
+  "name": "SDK Organization updated",
+  "description": "",
+  "code": "0007",
+  "externalCode": "sdk-org",
+  "archived": false,
+  "shared": true,
+  "companyType": "entrepreneur",
+  "email": "org@example.test",
+  "phone": "+7 123",
+  "fax": "456",
+  "legalTitle": "ИП Петров",
+  "legalFirstName": "Иван",
+  "legalLastName": "Петров",
+  "legalMiddleName": "Иванович",
+  "inn": "001234567890",
+  "kpp": "001234567",
+  "ogrn": "0001",
+  "ogrnip": "0002",
+  "okpo": "0003",
+  "certificateNumber": "007",
+  "certificateDate": "2020-02-03 00:00:00.000",
+  "actualAddress": "Строка фактического адреса",
+  "legalAddress": "Строка юридического адреса",
+  "actualAddressFull": {
+    "addInfo": "Корпус", "apartment": "007", "city": "Москва", "comment": "Комментарий", "fiasCode__ru": "000001",
+    "country": {"meta": {"href": "https://example.test/country/ru"}},
+    "house": "01", "postalCode": "001234", "region": {"meta": {"href": "https://example.test/region/77"}}, "street": "Тверская"
+  },
+  "legalAddressFull": {
+    "addInfo": "Корпус", "apartment": "007", "city": "Тула", "comment": "Комментарий", "fiasCode__ru": "000001",
+    "country": {"meta": {"href": "https://example.test/country/ru"}},
+    "house": "01", "postalCode": "001234", "region": {"meta": {"href": "https://example.test/region/77"}}, "street": "Тверская"
+  },
+  "attributes": [
+    {"meta": {"href": "https://example.test/attributes/long"}, "value": 9007199254740993},
+    {"meta": {"href": "https://example.test/attributes/reset"}, "value": null},
+    {"meta": {"href": "https://example.test/attributes/file"}, "file": null}
+  ],
+  "owner": {"meta": {"href": "https://example.test/employee/owner"}},
+  "group": {"meta": {"href": "https://example.test/group/group"}},
+  "bonusProgram": {"meta": {"href": "https://example.test/bonusprogram/bonus"}},
+  "payerVat": true,
+  "director": "Иван Петров",
+  "directorPosition": "Директор",
+  "chiefAccountant": "Мария Петрова",
+  "trackingContractNumber": "00042",
+  "trackingContractDate": "2025-01-02 03:04:05.000"
+}
