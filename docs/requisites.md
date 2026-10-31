@@ -1,7 +1,7 @@
 # Общие типы реквизитов
 
 Пакет `model` предоставляет самостоятельные `Address`, `AddressRequest` и `CompanyType`.
-Наличие этих типов не означает поддержку HTTP-операций Counterparty или Organization.
+HTTP-операции описаны отдельно: [Counterparty](counterparty.md) и [Organization](organization.md).
 
 `CompanyType` — именованный тип поверх `string` с открытым набором значений:
 

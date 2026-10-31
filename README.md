@@ -3,6 +3,21 @@
 SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 Поддерживаемые возможности и план работ: [docs/coverage.md](docs/coverage.md).
 
+## Справочники
+
+Помимо Product и UOM, поддержаны следующие согласованные срезы:
+
+| Пакет | Методы | Документация и границы |
+| --- | --- | --- |
+| `entity/country` | `Get`, `Create`, `Update` | [Country](docs/country.md) |
+| `entity/expenseitem` | `Get`, `Create`, `Update` | [ExpenseItem](docs/expenseitem.md) |
+| `entity/counterparty` | `Get`, `Create`, `Update` | [Counterparty](docs/counterparty.md) |
+| `entity/organization` | `Get`, `Create`, `Update` | [Organization](docs/organization.md) |
+
+Общие `model.Address`, `AddressRequest` и открытый `CompanyType` описаны в
+[документации реквизитов](docs/requisites.md). Счета и другие отложенные подресурсы,
+List, Delete, expand и массовые операции в эти срезы не входят.
+
 ## Product
 
 `product.NewService(client)` предоставляет `Get(ctx, id)`, `Create(ctx, CreateRequest)` и `Update(ctx, id, UpdateRequest)`.

@@ -358,3 +358,29 @@ Update-пример архивирует тестовый товар, не уд�
 ### Этап 18. Vendor API
 
 - [ ] Реализовать отдельный контур, если Vendor API включаем в объём SDK.
+
+## Core dictionaries — согласованные срезы
+
+- [x] [Country](country.md): все 11 полей чтения и 7 полей записи,
+  отдельные CreateRequest/UpdateRequest, Get/Create/Update.
+- [x] [ExpenseItem](expenseitem.md): все 13 полей чтения и 9 полей записи,
+  включая archived и operatingExpenses, Get/Create/Update.
+- [x] [Общие реквизиты](requisites.md): Address, AddressRequest и открытый
+  CompanyType с девятью типизированными константами.
+- [x] [Counterparty](counterparty.md): Get/Create/Update, основные поля,
+  контакты, реквизиты РФ, адреса, attributes, tags и согласованные ссылки.
+- [x] [Organization](organization.md): Get/Create/Update, основные поля,
+  контакты, реквизиты РФ, адреса, attributes, payerVat, сведения о руководителе
+  и бухгалтере, дата и номер договора отслеживания.
+
+Точные поля чтения и записи, особенности серверного поведения и TODO перечислены
+в документации каждого пакета. Чтение syncId Counterparty/Organization поддержано;
+запись разрешена только при создании. bonusPoints, salesAmount и isEgaisEnable — только для чтения.
+
+В срезы не входят счета, контактные лица, события, файлы и discounts Counterparty,
+региональные объекты реквизитов, остальные настройки НДС, подписи/печать,
+fsrarId и utmUrl Organization. List, поиск, фильтрация, сортировка, пагинация,
+Delete, expand и массовые операции также отложены.
+
+Публичные JSON-контракты проверены обоими кодеками; методы — локальным HTTP-сервером
+с настоящим transport. Живой аккаунт не использовался.
