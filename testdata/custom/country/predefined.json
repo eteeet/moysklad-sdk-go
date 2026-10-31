@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/country/000d77a9-3000-4f81-a995-6b9cffdee1d2",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/country/metadata",
+    "type": "country",
+    "mediaType": "application/json",
+    "uuidHref": "https://online.moysklad.ru/app/#country/edit?id=000d77a9-3000-4f81-a995-6b9cffdee1d2"
+  },
+  "id": "000d77a9-3000-4f81-a995-6b9cffdee1d2",
+  "updated": "2012-11-02 11:04:13",
+  "name": "Марокко",
+  "description": "Королевство Марокко",
+  "code": "504",
+  "externalCode": "504"
+}
