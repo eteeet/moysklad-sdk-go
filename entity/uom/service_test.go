@@ -15,6 +15,7 @@ import (
 
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -61,21 +62,7 @@ func TestServiceGet(t *testing.T) {
 					t.Errorf("GET body = %q, error = %v", body, err)
 				}
 
-				w.Header().Set("Content-Type", "application/json")
-				if tc.gzip {
-					w.Header().Set("Content-Encoding", "gzip")
-					writer := gzip.NewWriter(w)
-					if _, err := writer.Write(fixture); err != nil {
-						t.Error(err)
-					}
-					if err := writer.Close(); err != nil {
-						t.Error(err)
-					}
-					return
-				}
-				if _, err := w.Write(fixture); err != nil {
-					t.Error(err)
-				}
+				writeUOMResponse(t, w, fixture, tc.gzip)
 			}))
 
 			got, err := service.Get(t.Context(), tc.id)
@@ -167,6 +154,9 @@ func TestServiceErrorWrapping(t *testing.T) {
 		{"create", "create uom", func(s *uom.Service, ctx context.Context) (*uom.UOM, error) {
 			return s.Create(ctx, uom.CreateRequest{Name: "SDK UOM"})
 		}},
+		{"update", "update uom " + fixtureUOMID, func(s *uom.Service, ctx context.Context) (*uom.UOM, error) {
+			return s.Update(ctx, fixtureUOMID, uom.UpdateRequest{Shared: model.Value(false)})
+		}},
 	} {
 		t.Run(operation.name, func(t *testing.T) {
 			for _, authError := range []bool{true, false} {
@@ -245,7 +235,7 @@ func TestServiceGetValidation(t *testing.T) {
 	}
 }
 
-func TestServiceGetUUIDVersion(t *testing.T) {
+func TestServiceUUIDVersion(t *testing.T) {
 	const id = "00000000-0000-f000-0000-000000000000"
 	service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/api/remap/1.2/entity/uom/"+id {
@@ -253,9 +243,21 @@ func TestServiceGetUUIDVersion(t *testing.T) {
 		}
 		_, _ = io.WriteString(w, `{"id":"`+id+`"}`)
 	}))
-	got, err := service.Get(t.Context(), id)
-	if err != nil || got == nil || got.ID != id {
-		t.Fatalf("uom = %+v, error = %v", got, err)
+	for _, tc := range []struct {
+		name string
+		call func(context.Context) (*uom.UOM, error)
+	}{
+		{"get", func(ctx context.Context) (*uom.UOM, error) { return service.Get(ctx, id) }},
+		{"update", func(ctx context.Context) (*uom.UOM, error) {
+			return service.Update(ctx, id, uom.UpdateRequest{Shared: model.Value(false)})
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := tc.call(t.Context())
+			if err != nil || got == nil || got.ID != id {
+				t.Fatalf("uom = %+v, error = %v", got, err)
+			}
+		})
 	}
 }
 
@@ -296,21 +298,7 @@ func TestServiceCreate(t *testing.T) {
 					return
 				}
 				assertJSONEqual(t, body, tc.want)
-				w.Header().Set("Content-Type", "application/json")
-				if tc.gzip {
-					w.Header().Set("Content-Encoding", "gzip")
-					writer := gzip.NewWriter(w)
-					if _, err := writer.Write(fixture); err != nil {
-						t.Error(err)
-					}
-					if err := writer.Close(); err != nil {
-						t.Error(err)
-					}
-					return
-				}
-				if _, err := w.Write(fixture); err != nil {
-					t.Error(err)
-				}
+				writeUOMResponse(t, w, fixture, tc.gzip)
 			}))
 
 			got, err := service.Create(t.Context(), tc.input)
@@ -401,6 +389,179 @@ func TestServiceCreateValidation(t *testing.T) {
 	}
 	if calls.Load() != 0 {
 		t.Fatalf("unexpected HTTP calls: %d", calls.Load())
+	}
+}
+
+func TestServiceUpdate(t *testing.T) {
+	fixture, err := os.ReadFile("../../testdata/upstream/uom.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name  string
+		input uom.UpdateRequest
+		want  []byte
+		gzip  bool
+	}{
+		{"full/plain", fullUpdateRequest(), uomGolden(t, "update"), false},
+		{"full/gzip", fullUpdateRequest(), uomGolden(t, "update"), true},
+		{"name", uom.UpdateRequest{Name: model.Value("renamed")}, []byte(`{"name":"renamed"}`), false},
+		{"empty name", uom.UpdateRequest{Name: model.Value("")}, []byte(`{"name":""}`), false},
+		{"code", uom.UpdateRequest{Code: model.Value("039")}, []byte(`{"code":"039"}`), false},
+		{"external code", uom.UpdateRequest{ExternalCode: model.Value("updated")}, []byte(`{"externalCode":"updated"}`), false},
+		{"empty description", uom.UpdateRequest{Description: model.Value("")}, []byte(`{"description":""}`), false},
+		{"shared false", uom.UpdateRequest{Shared: model.Value(false)}, []byte(`{"shared":false}`), false},
+		{"owner", uom.UpdateRequest{Owner: model.Value(model.Reference{Meta: model.Meta{
+			Href: "https://api.moysklad.ru/api/remap/1.2/entity/employee/11111111-1111-1111-1111-111111111111",
+		}})}, []byte(`{"owner":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/employee/11111111-1111-1111-1111-111111111111"}}}`), false},
+		{"explicit null", uom.UpdateRequest{Group: model.Null[model.Reference]()}, []byte(`{"group":null}`), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var calls atomic.Int32
+			service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls.Add(1)
+				if r.Method != http.MethodPut || r.URL.Path != "/api/remap/1.2/entity/uom/"+fixtureUOMID || r.URL.RawQuery != "" {
+					t.Errorf("unexpected request: %s %s", r.Method, r.URL)
+				}
+				if r.Header.Get("Content-Type") != "application/json" ||
+					r.Header.Get("Authorization") != "Bearer test-token" ||
+					r.Header.Get("Accept") != "application/json;charset=utf-8" ||
+					r.Header.Get("Accept-Encoding") != "gzip" ||
+					r.Header.Get("User-Agent") != "moysklad-sdk-go" {
+					t.Error("required request headers missing")
+				}
+				body, err := io.ReadAll(r.Body)
+				if err != nil {
+					t.Error(err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				assertJSONEqual(t, body, tc.want)
+				writeUOMResponse(t, w, fixture, tc.gzip)
+			}))
+
+			got, err := service.Update(t.Context(), fixtureUOMID, tc.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got.ID != fixtureUOMID || got.Meta.Type != "uom" ||
+				got.Name != "шт" || got.Code != "796" || got.Description != "Штука" ||
+				got.ExternalCode != "PCE" || got.Shared || got.Updated.IsZero() ||
+				got.Owner == nil || got.Group == nil {
+				t.Fatalf("uom = %+v", got)
+			}
+			if calls.Load() != 1 {
+				t.Fatalf("calls = %d, want one PUT without a preliminary GET", calls.Load())
+			}
+		})
+	}
+}
+
+// Отказ для предустановленной UOM моделируется локально; статус и текст не взяты из живого API.
+func TestServiceUpdateErrors(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		id      string
+		status  int
+		body    string
+		wantAPI bool
+	}{
+		{"predefined uom", "061721df-9197-49a5-b637-7f5b4d3be969", 403, `{"errors":[{"error":"predefined uom cannot be changed"}]}`, true},
+		{"not found", fixtureUOMID, 404, `{"errors":[{"error":"not found","code":1001}]}`, true},
+		{"rate limit", fixtureUOMID, 429, `{"errors":[{"error":"slow down","code":1073}]}`, true},
+		{"HTML error", fixtureUOMID, 502, "<html>bad gateway</html>", true},
+		{"unexpected status", fixtureUOMID, 201, `{"id":"unexpected"}`, false},
+		{"no content", fixtureUOMID, 204, "", false},
+		{"missing id", fixtureUOMID, 200, `{"name":"invalid"}`, false},
+		{"empty id", fixtureUOMID, 200, `{"id":""}`, false},
+		{"null response", fixtureUOMID, 200, "null", false},
+		{"invalid JSON", fixtureUOMID, 200, `{"id":`, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var calls atomic.Int32
+			service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls.Add(1)
+				if r.Method != http.MethodPut || r.URL.Path != "/api/remap/1.2/entity/uom/"+tc.id {
+					t.Errorf("unexpected request: %s %s", r.Method, r.URL)
+				}
+				w.WriteHeader(tc.status)
+				if _, err := io.WriteString(w, tc.body); err != nil {
+					t.Error(err)
+				}
+			}))
+			got, err := service.Update(t.Context(), tc.id, uom.UpdateRequest{Shared: model.Value(false)})
+			if err == nil || got != nil {
+				t.Fatalf("uom = %+v, error = %v", got, err)
+			}
+			if strings.Count(err.Error(), "moysklad:") != 1 ||
+				!strings.Contains(err.Error(), "update uom "+tc.id) {
+				t.Errorf("error context = %v", err)
+			}
+			var apiErr *sdkerrors.APIError
+			if errors.As(err, &apiErr) != tc.wantAPI {
+				t.Fatalf("unexpected error type: %v", err)
+			}
+			if tc.wantAPI && apiErr.StatusCode != tc.status {
+				t.Errorf("status = %d, want %d", apiErr.StatusCode, tc.status)
+			}
+			if tc.name == "predefined uom" && (len(apiErr.Errors) != 1 ||
+				apiErr.Errors[0].Message != "predefined uom cannot be changed") {
+				t.Errorf("API details = %+v", apiErr.Errors)
+			}
+			if calls.Load() != 1 {
+				t.Fatalf("request retried: calls = %d", calls.Load())
+			}
+		})
+	}
+}
+
+func TestServiceUpdateValidation(t *testing.T) {
+	var calls atomic.Int32
+	service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	input := uom.UpdateRequest{Shared: model.Value(false)}
+	for _, id := range []string{
+		"", "metadata", ".", "..", "../metadata", "x/y", fixtureUOMID + "/metadata",
+		"77777777-7777-7777-7777-77777777777g", "777777777777777777777777777777777777",
+	} {
+		if got, err := service.Update(t.Context(), id, input); err == nil || got != nil {
+			t.Fatalf("invalid id %q accepted", id)
+		}
+	}
+	if got, err := service.Update(t.Context(), fixtureUOMID, uom.UpdateRequest{}); err == nil || got != nil {
+		t.Fatal("empty update accepted")
+	}
+	if got, err := service.Update(nil, fixtureUOMID, input); err == nil || got != nil {
+		t.Fatal("nil context accepted")
+	}
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	if got, err := service.Update(ctx, fixtureUOMID, input); got != nil || !errors.Is(err, context.Canceled) {
+		t.Fatalf("uom = %+v, error = %v, want cancellation", got, err)
+	}
+	if calls.Load() != 0 {
+		t.Fatalf("unexpected HTTP calls: %d", calls.Load())
+	}
+}
+
+func writeUOMResponse(t *testing.T, w http.ResponseWriter, fixture []byte, compressed bool) {
+	t.Helper()
+	w.Header().Set("Content-Type", "application/json")
+	if compressed {
+		w.Header().Set("Content-Encoding", "gzip")
+		writer := gzip.NewWriter(w)
+		if _, err := writer.Write(fixture); err != nil {
+			t.Error(err)
+		}
+		if err := writer.Close(); err != nil {
+			t.Error(err)
+		}
+		return
+	}
+	if _, err := w.Write(fixture); err != nil {
+		t.Error(err)
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -35,6 +36,18 @@ func (s *Service) Create(ctx context.Context, input CreateRequest) (*UOM, error)
 		return nil, fmt.Errorf("moysklad: create uom: name must not be empty")
 	}
 	return s.do(ctx, "create uom", http.MethodPost, "entity/uom", input)
+}
+
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-izmenit-edinicu-izmereniya
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*UOM, error) {
+	if !validID(id) {
+		return nil, fmt.Errorf("moysklad: update uom: id must be a UUID")
+	}
+	// Нулевые Field — «не передано»; Value(false), Value("") и Null не нулевые.
+	if reflect.ValueOf(input).IsZero() {
+		return nil, fmt.Errorf("moysklad: update uom: no fields specified")
+	}
+	return s.do(ctx, "update uom "+id, http.MethodPut, "entity/uom/"+id, input)
 }
 
 func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*UOM, error) {
