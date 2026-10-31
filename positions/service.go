@@ -39,7 +39,7 @@ func NewService[T any](client *transport.Client, documentType string) (*Service[
 // https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L2468-L2525
 func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOptions) (*model.Collection[T], error) {
 	operation := "get " + s.documentType + " " + documentID + " positions"
-	if !readerValidID(documentID) {
+	if !validID(documentID) {
 		return nil, fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
 	}
 	if page.Limit < 0 || page.Limit > 1000 {
@@ -79,7 +79,7 @@ func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOp
 }
 
 // Проверяем форму UUID, не ограничивая его версию.
-func readerValidID(id string) bool {
+func validID(id string) bool {
 	if len(id) != 36 || id[8] != '-' || id[13] != '-' || id[18] != '-' || id[23] != '-' {
 		return false
 	}
