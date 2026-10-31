@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: claimed
 Stage: APPROVED
 Blocked by: None
 
@@ -88,3 +88,29 @@ JSON и HTTP seams этого ticket согласованы. Локальная 
 независимые Standards/Spec review координирует исполнитель интеграции относительно planning BASE.
 Не менять coverage.md/README и общие карты: документацию интегратор сведёт отдельным коммитом.
 Файлы и трёхпоточный запуск закреплены в [handoff](../../document-workstream/wave-1.md).
+
+## Answer
+
+Реализованы `positions.Service[T any]`, `NewService[T]`, `GetPage` и `PageOptions`.
+Reader использует существующие `transport.Client` и `model.Collection[T]`, выполняет
+один GET с явными limit/offset, проверяет UUID/страницу и минимальный envelope ответа.
+Серверные Context/Meta/Rows сохраняются без пересчёта; ID и общие позиции в T не требуются.
+GoDoc описывает отдельную страницу, ручное управление offset/limit, metadata заголовка
+документа и границы generic/typed поддержки. P01 и P03 не изменялись.
+
+TDD через публичный GetPage и локальный HTTP-сервер:
+
+- Первый red до production: `go test -count=1 ./positions -run '^TestServiceGetPage$'`
+  завершился с `positions: no non-test Go files`; после минимального reader — green.
+- Следующие red→green: nil client возвращал service; invalid documentType принимался;
+  validation выполняла 13 HTTP calls вместо 0; 201/204 и неверные envelopes принимались.
+- Финальные тесты проверяют plain/gzip, заголовки и отсутствие GET body/Content-Type,
+  безопасные открытые коды, custom T без Core/ID, неизвестные поля и неполные строки,
+  default/границы страницы, UUID без ограничения версии, пустую страницу, две явные
+  независимые страницы, invalid envelopes и частичный decode, APIError/errors.Is,
+  nil/canceled/expired context и отмену во время HTTP. Retry/followups отсутствуют.
+
+Проверки пройдены: gofmt; `go test -count=1 ./positions`;
+`go test -race -count=1 ./...`; `go vet ./... ./testdata`; `git diff --check`.
+Только локальные ответы: live API не проверялся. Independent Standards/Spec review
+не запускались; Status остаётся claimed до интеграции и review относительно planning BASE.
