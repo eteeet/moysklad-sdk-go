@@ -1,11 +1,14 @@
-Status: ready-for-agent
-Stage: APPROVED
+Status: resolved
+Stage: IMPLEMENTED
 
 # Общие типы документов: валюта и накладные расходы
 
 Утверждено 2026-11-01 для первой волны C01/C02. Имена и JSON-контракты ниже согласованы;
 разрешены реализация через TDD, независимые review и локальные коммиты. Документацию
 coverage/README сводит интегратор после слияния, не параллельные исполнители.
+
+C01/C02 реализованы и включены в dev, оба review без замечаний.
+[Публичная документация](../../docs/document-common.md), [итоги review](../document-workstream/review-wave-1.md).
 
 ## Problem Statement
 

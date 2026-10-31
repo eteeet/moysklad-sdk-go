@@ -1,5 +1,5 @@
-Status: claimed
-Stage: APPROVED
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: None
 
 # 01: Публичные DocumentRate и DocumentRateRequest
@@ -21,9 +21,9 @@ model.DocumentRate/DocumentRateRequest. Срез включает публичн
 - [x] Модели не вычисляют валюту и не требуют готовой сущности Currency или HTTP-операций.
 - [x] Документация различает wire-контракт и серверный пересчёт при rate:null.
 - [x] Существующие Price/Field/Reference/DateTime не меняются; expand отсутствует.
-- [ ] Пройдены gofmt, полный race/vet/diff-check и независимые Standards/Spec review
+- [x] Пройдены gofmt, полный race/vet/diff-check и независимые Standards/Spec review
   относительно BASE, зафиксированного до правок.
-- [ ] После разрешённой реализации — локальный commit, Status: resolved и ## Answer;
+- [x] После разрешённой реализации — локальный commit, Status: resolved и ## Answer;
   исходное планирование и чужие изменения сохраняются отдельно.
 
 ## Blocked by
@@ -59,4 +59,13 @@ TDD red: `go test ./model -run '^TestDocumentRateJSON$' -count=1` упал до 
 Проверки 2026-11-01: targeted `go test ./model -run '^TestDocumentRate' -count=1`,
 `go test -race -count=1 ./...`, `go vet ./... ./testdata`, gofmt и `git diff --check` прошли.
 Независимые Standards/Spec review координирует интегратор относительно BASE
-`a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`; до них Status остаётся claimed.
+`a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`; на этапе implementer Status сохранялся claimed до review.
+
+### Итог интеграции
+
+Включено в dev, commit реализации: 86117897dc7a5beeaa73e29f46ccca738eec2f2d.
+Независимые Standards: 0 замечаний; Spec: 0 замечаний. Проверен полный срез
+от planning BASE a2804283e7aafe3c6ee41c17a4c2c79f7e01f999 до HEAD 1b28603,
+включая централизованные docs. [Отчёты](../../document-workstream/review-wave-1.md).
+Общий go test -race -count=1 ./..., go vet ./... ./testdata, gofmt и diff-check пройдены.
+Публичная документация сведена интегратором после слияния; live API и push не выполнялись.

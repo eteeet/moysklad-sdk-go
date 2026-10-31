@@ -1,5 +1,5 @@
-Status: ready-for-agent
-Stage: APPROVED WAVE 1
+Status: resolved
+Stage: COMPLETED WAVE 1
 
 # Утверждённая первая волна общих контрактов документов
 
@@ -86,3 +86,8 @@ C01/C02/F01 отдельными коммитами; P01 и P02 выполняю
 Имена файлов P01/P02 заранее разведены в handoff. Независимые Standards/Spec review
 координирует интегратор относительно planning BASE. После этой волны остановка.
 Никаких push/live API/.env. Service (услуга) и P03 в этот запуск не входят.
+
+## Завершение
+
+Первая волна реализована, пять tickets resolved. [Коммиты, проверки и независимые review](review-wave-1.md).
+Standards 0, Spec 0; остальные 12 tickets не запускались. Следующая группа требует команды.

@@ -3,6 +3,8 @@ Stage: DRAFT
 
 F01 (самостоятельные FinanceOperation/FinanceOperationRequest) утверждён отдельно
 в первой волне 2026-11-01. Ниже DRAFT entity-контрактов F02–F05; их реализация не разрешена.
+F01 завершён в dev (02026e0), оба независимых review без замечаний.
+[Документация](../../docs/document-common.md#связь-платежа-с-операцией).
 
 # DRAFT — PaymentIn, PaymentOut, CashIn, CashOut: Get, Create, Update
 

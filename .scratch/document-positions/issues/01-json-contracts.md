@@ -1,5 +1,5 @@
-Status: claimed
-Stage: APPROVED
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: None
 
 # 01: Общий JSON-контракт позиций и embedded массива
@@ -11,7 +11,7 @@ Blocked by: None
 и сериализует позиции внутри request документа с различием omission и пустого массива.
 Это проверяемый JSON-срез общей библиотеки, а не набор деклараций для будущего supply.
 
-Контракт P01 утверждён пользователем: [spec](../spec.md). Ticket ready-for-agent;
+Контракт P01 утверждён пользователем: [spec](../spec.md). Ticket завершён;
 Movement P03 и entity endpoints в эту волну не входят.
 
 ## Acceptance criteria
@@ -48,7 +48,7 @@ Movement P03 и entity endpoints в эту волну не входят.
   общего AddressRequest; private fields и helpers не являются тестовыми seams.
 - [x] Существующие Field, Reference, Collection и transport не перерабатываются;
   новые HTTP-операции или типы всех будущих документов не объявлены реализованными.
-- [ ] После реализации пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] После реализации пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check и отдельные Standards/Spec review относительно зафиксированного BASE.
 
 ## Blocked by
@@ -124,3 +124,12 @@ FAIL github.com/eteeet/moysklad-sdk-go/positions [build failed]
 Status оставлен claimed до независимых Standards/Spec review интегратором от planning
 BASE `a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`. Review ещё не проводились. Movement,
 HTTP reader/writer, entity, expand и business validation этим изменением не реализованы.
+
+### Итог интеграции
+
+Включено в dev, commit реализации: 20e00ad.
+Независимые Standards: 0 замечаний; Spec: 0 замечаний. Проверен полный срез
+от planning BASE a2804283e7aafe3c6ee41c17a4c2c79f7e01f999 до HEAD 1b28603,
+включая централизованные docs. [Отчёты](../../document-workstream/review-wave-1.md).
+Общий go test -race -count=1 ./..., go vet ./... ./testdata, gofmt и diff-check пройдены.
+Публичная документация сведена интегратором после слияния; live API и push не выполнялись.

@@ -1,5 +1,5 @@
-Status: claimed
-Stage: APPROVED
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: None
 
 # 02: Публичные DocumentOverhead и DocumentOverheadRequest
@@ -24,8 +24,8 @@ Blocked by: None
 - [x] Read-only overhead отдельной позиции не подменяется этим объектом.
 - [x] Документация объясняет серверную ответственность за распределение и допустимость null.
 - [x] Нет HTTP, expand, изменения существующих общих типов или новой test infrastructure.
-- [ ] Пройдены gofmt, полный race/vet/diff-check и независимые Standards/Spec review.
-- [ ] После разрешённой реализации — локальный commit, Status: resolved и ## Answer;
+- [x] Пройдены gofmt, полный race/vet/diff-check и независимые Standards/Spec review.
+- [x] После разрешённой реализации — локальный commit, Status: resolved и ## Answer;
   предшествующие изменения планирования не включены в commit реализации.
 
 ## Blocked by
@@ -61,3 +61,12 @@ TDD red: `go test ./model -run '^TestDocumentOverheadJSON$' -count=1` упал �
 `go test -race -count=1 ./...`, `go vet ./... ./testdata`, gofmt и `git diff --check` прошли.
 Независимые Standards/Spec review ожидаются у интегратора относительно BASE
 `a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`; Status остаётся claimed.
+
+### Итог интеграции
+
+Включено в dev, commit реализации: 7e6b812a4a1ba4c5a55362e05b7dc3542fb884ef.
+Независимые Standards: 0 замечаний; Spec: 0 замечаний. Проверен полный срез
+от planning BASE a2804283e7aafe3c6ee41c17a4c2c79f7e01f999 до HEAD 1b28603,
+включая централизованные docs. [Отчёты](../../document-workstream/review-wave-1.md).
+Общий go test -race -count=1 ./..., go vet ./... ./testdata, gofmt и diff-check пройдены.
+Публичная документация сведена интегратором после слияния; live API и push не выполнялись.

@@ -1,5 +1,5 @@
-Status: claimed
-Stage: APPROVED
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: None
 
 # 02: Generic reader одной страницы позиций
@@ -12,45 +12,45 @@ API endpoint через общий positions.Service[T any].GetPage и наст�
 Срез закончен от public API до локального HTTP-теста и обработки ошибок.
 
 Interface и HTTP seam P02 утверждены пользователем: [spec](../spec.md).
-Ticket ready-for-agent; entity endpoints в эту волну не входят.
+Ticket завершён; entity endpoints в эту волну не входят.
 
 ## Acceptance criteria
 
-- [ ] `NewService[T](client *transport.Client, documentType string)` возвращает
+- [x] `NewService[T](client *transport.Client, documentType string)` возвращает
   (*Service[T], error), nil client отклоняется; T any не требует Core, assortment или ID.
-- [ ] documentType — открытая строка одного безопасного API route segment; согласованный
+- [x] documentType — открытая строка одного безопасного API route segment; согласованный
   syntax `[a-z][a-z0-9]*`, без allowlist первых документов и скрытой нормализации.
   Invalid type отклоняется локально; несуществующий, но синтаксически корректный код
   проходит к серверу и возвращает обычную APIError при его отказе.
-- [ ] GetPage(ctx, documentID, PageOptions) выполняет один GET
+- [x] GetPage(ctx, documentID, PageOptions) выполняет один GET
   entity/{documentType}/{documentID}/positions без тела; query содержит только limit/offset.
   Limit=0 означает 1000; 1…1000 допустимы, остальные ошибочны; Offset>=0.
   Default отправляет limit=1000&offset=0.
-- [ ] documentID проверяется как UUID по образцу UOM, без ограничения версии.
+- [x] documentID проверяется как UUID по образцу UOM, без ограничения версии.
   Invalid type/ID/page, nil client/context и отмена context проверены без лишних HTTP calls.
-- [ ] HTTP 200 возвращает *model.Collection[T]: Context, CollectionMeta, Rows и href
+- [x] HTTP 200 возвращает *model.Collection[T]: Context, CollectionMeta, Rows и href
   сохранены из ответа. Rows=[] — успешная пустая страница; top-level id и ID в T не нужны.
-- [ ] Минимальная проверка envelope требует collection object, meta.href!=empty
+- [x] Минимальная проверка envelope требует collection object, meta.href!=empty
   и non-null rows-array. Missing meta.href/rows, rows:null, {}, null, malformed JSON и
   пустое тело дают error+nil; 201/204 — неожиданный status. Size/offset/len(rows) не
   подвергаются бизнес-проверке; nextHref не обязателен.
-- [ ] Plain/gzip, exact path/query, отсутствие тела, стандартные Accept/Accept-Encoding/
+- [x] Plain/gzip, exact path/query, отсутствие тела, стандартные Accept/Accept-Encoding/
   Authorization/User-Agent и отсутствие Content-Type у GET проверены локальным HTTP-сервером.
-- [ ] Отдельные public tests GetPage/GetPageErrors/GetPageValidation/ErrorWrapping
+- [x] Отдельные public tests GetPage/GetPageErrors/GetPageValidation/ErrorWrapping
   используют структуру табличных UOM TestServiceGet и настоящий transport.Client,
   без моков private do или нового транспортного framework.
-- [ ] Проверены default, Limit=1/1000, invalid -1/1001, Offset=0/>0/<0, допустимый
+- [x] Проверены default, Limit=1/1000, invalid -1/1001, Offset=0/>0/<0, допустимый
   UUID нестандартной версии, несколько явных независимых страниц и ответ вне первой
   группы документов. Пользовательский T без Core/assortment/id доказывает generic контракт.
-- [ ] 4xx/5xx доступны как APIError через errors.As; исходные auth/transport errors и
+- [x] 4xx/5xx доступны как APIError через errors.As; исходные auth/transport errors и
   context.Canceled через errors.Is; operation context включает type/ID, moysklad:
   не повторяется. Любая ошибка возвращает nil вместо частичного результата.
-- [ ] Счётчик HTTP calls остаётся 1 при nextHref/metadata links/неполных строках/ошибках;
+- [x] Счётчик HTTP calls остаётся 1 при nextHref/metadata links/неполных строках/ошибках;
   неизвестные поля не ломают чтение. Автоматических повторов или followups нет.
-- [ ] Документация описывает отдельную страницу, ручное управление limit/offset,
+- [x] Документация описывает отдельную страницу, ручное управление limit/offset,
   существующие metadata header positions и границы typed поддержки. Наличие generic
   reader не означает полную реализацию полей всех документов.
-- [ ] После реализации пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] После реализации пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check и отдельные Standards/Spec review относительно зафиксированного BASE.
 
 ## Blocked by
@@ -113,4 +113,13 @@ TDD через публичный GetPage и локальный HTTP-серве�
 Проверки пройдены: gofmt; `go test -count=1 ./positions`;
 `go test -race -count=1 ./...`; `go vet ./... ./testdata`; `git diff --check`.
 Только локальные ответы: live API не проверялся. Independent Standards/Spec review
-не запускались; Status остаётся claimed до интеграции и review относительно planning BASE.
+на этапе implementer не запускались; итог интеграции и независимых review приведён ниже.
+
+### Итог интеграции
+
+Включено в dev, commit реализации: 1b2860389302361a81228d8704be10cfa7f0df99.
+Независимые Standards: 0 замечаний; Spec: 0 замечаний. Проверен полный срез
+от planning BASE a2804283e7aafe3c6ee41c17a4c2c79f7e01f999 до HEAD 1b28603,
+включая централизованные docs. [Отчёты](../../document-workstream/review-wave-1.md).
+Общий go test -race -count=1 ./..., go vet ./... ./testdata, gofmt и diff-check пройдены.
+Публичная документация сведена интегратором после слияния; live API и push не выполнялись.

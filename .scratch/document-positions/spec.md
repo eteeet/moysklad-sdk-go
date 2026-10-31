@@ -1,5 +1,5 @@
 Status: needs-triage
-Stage: DRAFT
+Stage: PARTIALLY IMPLEMENTED
 
 # Общий модуль positions
 
@@ -7,6 +7,10 @@ Stage: DRAFT
 и generic GetPage с правилами validation/ответа ниже. Реализация и локальные коммиты
 разрешены только этим двум tickets. Movement P03 и entity tickets остаются DRAFT.
 Общие денежные поля — float64, включая overhead/cost независимо от API Int/Float.
+
+P01/P02 завершены и включены в dev: JSON-контракты и reader одной страницы.
+[Публичная документация](../../docs/positions.md), [итоги review](../document-workstream/review-wave-1.md).
+P03 Movement и entity tickets остаются needs-triage и этим этапом не запускаются.
 
 ## Problem Statement
 

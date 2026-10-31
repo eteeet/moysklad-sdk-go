@@ -1,5 +1,5 @@
-Status: claimed
-Stage: APPROVED
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: None
 
 # 01: FinanceOperation — самостоятельный read/write JSON-контракт
@@ -36,7 +36,7 @@ meta с явно заданной суммой. Результат провер�
 
 ## Acceptance criteria
 
-- [x] Имена, read/write shape, float64 и null-policy утверждены пользователем; ticket переведён в ready-for-agent.
+- [x] Имена, read/write shape, float64 и null-policy утверждены пользователем; ticket утверждён и реализован.
 - [x] Публичные типы позволяют прочитать/записать описанный JSON без entity Service и transport.
 - [x] Отдельные JSON-тесты выполняются encoding/json и encoding/json/v2 по имеющемуся
   образцу codec tables. Проверены Meta.Href/MetadataHref/Type/MediaType/UUIDHref и linkedSum.
@@ -51,7 +51,7 @@ meta с явно заданной суммой. Результат провер�
 - [x] Документация общего типа объясняет linkedSum optional write, точность float64,
   отсутствие арифметики, запрет трактовать [] как доказанную очистку и границы expand.
 - [x] Существующие Reference/Meta/Field/Attribute/DateTime и их поведение не изменены.
-- [ ] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check; независимые Standards/Spec reviews с фиксированным BASE.
 
 ## Out of Scope
@@ -94,3 +94,12 @@ TDD red: `go test ./model -run '^TestFinanceOperationJSON$' -count=1` упал �
 `go test -race -count=1 ./...`, `go vet ./... ./testdata`, gofmt и `git diff --check` прошли.
 Независимые Standards/Spec review ожидаются у интегратора относительно BASE
 `a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`; Status остаётся claimed.
+
+### Итог интеграции
+
+Включено в dev, commit реализации: 02026e089de2518a2e3bc4747b41d752b5e9c7d3.
+Независимые Standards: 0 замечаний; Spec: 0 замечаний. Проверен полный срез
+от planning BASE a2804283e7aafe3c6ee41c17a4c2c79f7e01f999 до HEAD 1b28603,
+включая централизованные docs. [Отчёты](../../document-workstream/review-wave-1.md).
+Общий go test -race -count=1 ./..., go vet ./... ./testdata, gofmt и diff-check пройдены.
+Публичная документация сведена интегратором после слияния; live API и push не выполнялись.

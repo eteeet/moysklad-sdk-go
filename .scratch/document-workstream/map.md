@@ -1,14 +1,15 @@
 Status: needs-triage
-Stage: DRAFT
+Stage: PARTIALLY IMPLEMENTED
 
 # Документы SDK: карта spec и tickets
 
-Подготовлено 2026-11-01: 7 spec, 17 tickets. Первая волна C01/C02/F01/P01/P02 утверждена
-и разрешена к реализации после коммита накопленных изменений. Остальные 12 tickets
-остаются DRAFT/needs-triage. Полные entity-контракты и P03 не разрешены этим запуском.
+Подготовлено 2026-11-01: 7 spec, 17 tickets. Первая волна C01/C02/F01/P01/P02 завершена
+и включена в dev, все пять tickets resolved. Остальные 12 tickets остаются DRAFT/needs-triage.
+Полные entity-контракты и P03 не разрешены этим запуском.
 В колонке зависимостей указаны технические blockers; готовность не заменяет triage.
 
-Следующий шаг — [краткий пакет рекомендованных контрактов](approval.md).
+Актуальные [коммиты, проверки и независимые review первой волны](review-wave-1.md).
+[Утверждённый scope первой волны](approval.md) сохраняет основания решений.
 Повторная сверка спорных полей — [исследование triage](triage-research.md).
 
 ## Spec и состав захваток
@@ -28,25 +29,25 @@ Stage: DRAFT
 Префиксы C/P/F/I/S/M/R — только короткие обозначения этой карты, не новые номера tracker.
 В самом ticket Blocked by содержит относительные пути к файлам зависимостей.
 
-| ID | Ticket | Blocked by |
-| --- | --- | --- |
-| C01 | [DocumentRate / DocumentRateRequest](../document-common/issues/01-rate.md) | нет |
-| C02 | [DocumentOverhead / DocumentOverheadRequest](../document-common/issues/02-overhead.md) | нет |
-| P01 | [Core/Item/Commercial и embedded JSON](../document-positions/issues/01-json-contracts.md) | нет |
-| P02 | [Generic reader одной страницы GetPage](../document-positions/issues/02-get-page.md) | нет |
-| P03 | [Movement / MovementRequest](../document-positions/issues/03-movement-contracts.md) | P01 |
-| F01 | [FinanceOperation / FinanceOperationRequest](../financial-documents/issues/01-finance-operation.md) | нет |
-| F02 | [PaymentIn Get/Create/Update](../financial-documents/issues/02-paymentin.md) | C01, F01 |
-| F03 | [PaymentOut Get/Create/Update](../financial-documents/issues/03-paymentout.md) | C01, F01 |
-| F04 | [CashIn Get/Create/Update](../financial-documents/issues/04-cashin.md) | C01, F01 |
-| F05 | [CashOut Get/Create/Update](../financial-documents/issues/05-cashout.md) | C01, F01 |
-| I01 | [InvoiceIn Get/Create/Update + GetPositions](../invoice-documents/issues/01-invoicein.md) | C01, P01, P02 |
-| I02 | [InvoiceOut Get/Create/Update + GetPositions](../invoice-documents/issues/02-invoiceout.md) | C01, P01, P02 |
-| S01 | [Supply Get/Create/Update + GetPositions](../stock-documents/issues/01-supply.md) | C01, C02, P01, P02 |
-| S02 | [Demand Get/Create/Update + GetPositions](../stock-documents/issues/02-demand.md) | C01, C02, P01, P02 |
-| S03 | [PurchaseOrder Get/Create/Update + GetPositions](../stock-documents/issues/03-purchaseorder.md) | C01, P01, P02 |
-| M01 | [Move Get/Create/Update + GetPositions](../stock-move/issues/01-move.md) | C01, C02, P01, P02, P03 |
-| R01 | [PurchaseReturn Get/Create/Update + GetPositions](../purchase-return/issues/01-purchasereturn.md) | C01, P01, P02 |
+| ID | Ticket | Blocked by | Status |
+| --- | --- | --- | --- |
+| C01 | [DocumentRate / DocumentRateRequest](../document-common/issues/01-rate.md) | нет | resolved |
+| C02 | [DocumentOverhead / DocumentOverheadRequest](../document-common/issues/02-overhead.md) | нет | resolved |
+| P01 | [Core/Item/Commercial и embedded JSON](../document-positions/issues/01-json-contracts.md) | нет | resolved |
+| P02 | [Generic reader одной страницы GetPage](../document-positions/issues/02-get-page.md) | нет | resolved |
+| P03 | [Movement / MovementRequest](../document-positions/issues/03-movement-contracts.md) | P01 | needs-triage |
+| F01 | [FinanceOperation / FinanceOperationRequest](../financial-documents/issues/01-finance-operation.md) | нет | resolved |
+| F02 | [PaymentIn Get/Create/Update](../financial-documents/issues/02-paymentin.md) | C01, F01 | needs-triage |
+| F03 | [PaymentOut Get/Create/Update](../financial-documents/issues/03-paymentout.md) | C01, F01 | needs-triage |
+| F04 | [CashIn Get/Create/Update](../financial-documents/issues/04-cashin.md) | C01, F01 | needs-triage |
+| F05 | [CashOut Get/Create/Update](../financial-documents/issues/05-cashout.md) | C01, F01 | needs-triage |
+| I01 | [InvoiceIn Get/Create/Update + GetPositions](../invoice-documents/issues/01-invoicein.md) | C01, P01, P02 | needs-triage |
+| I02 | [InvoiceOut Get/Create/Update + GetPositions](../invoice-documents/issues/02-invoiceout.md) | C01, P01, P02 | needs-triage |
+| S01 | [Supply Get/Create/Update + GetPositions](../stock-documents/issues/01-supply.md) | C01, C02, P01, P02 | needs-triage |
+| S02 | [Demand Get/Create/Update + GetPositions](../stock-documents/issues/02-demand.md) | C01, C02, P01, P02 | needs-triage |
+| S03 | [PurchaseOrder Get/Create/Update + GetPositions](../stock-documents/issues/03-purchaseorder.md) | C01, P01, P02 | needs-triage |
+| M01 | [Move Get/Create/Update + GetPositions](../stock-move/issues/01-move.md) | C01, C02, P01, P02, P03 | needs-triage |
+| R01 | [PurchaseReturn Get/Create/Update + GetPositions](../purchase-return/issues/01-purchasereturn.md) | C01, P01, P02 | needs-triage |
 
 ### Параллельность после утверждения
 
@@ -70,16 +71,16 @@ Reference не требует готовых services связанных сущ�
 сводит исполнитель интеграции, чтобы параллельные изменения не перетирали друг друга.
 Общие JSON-типы и HTTP reader — самостоятельные проверяемые срезы, не этапы-заглушки.
 
-## Решения для triage
+## Утверждённые контракты и оставшееся triage
 
 Это список предметных решений, а не предложение снова обсуждать состав групп.
 Нормативные детали и предложения находятся в соответствующих spec.
 
-1. Общий positions: утвердить exports Core/Item/Commercial/Movement, отдельные requests,
-   `NewService[T any](client, documentType)`, GetPage, PageOptions с 0→1000,
-   синтаксис documentType и минимальную проверку response envelope.
-2. Общие типы: утвердить DocumentRate/Request с *Reference и *float64 при чтении,
-   без default курса; DocumentOverhead/Request с sum float64 и открытым distribution.
+1. Core/Item/Commercial, отдельные requests, NewService/GetPage/PageOptions,
+   синтаксис documentType и response envelope утверждены и реализованы P01/P02.
+   Movement P03 остаётся отдельным needs-triage ticket.
+2. DocumentRate/Request и DocumentOverhead/Request реализованы. Value=nil в присутствующем
+   rate означает курс 1 без подстановки в JSON; распределение открытое.
    Все денежные поля, включая cost/overhead строки, читаются float64 в копейках независимо от API Int/Float; строковый overhead не является объектом расходов.
 3. Общая proposed validation: required Create refs только по непустому Meta.Href,
    UUID маршрута, непустой Update и максимум 1000 embedded positions. Сочетания счетов,
@@ -90,7 +91,7 @@ Reference не требует готовых services связанных сущ�
    только чтение; pack/serial/tracking/stock и отдельные HTTP mutations позиций — TODO.
    Сужения SDK не объявляются запретами API. Financial files исключены полностью;
    складские/возврат читают только files metadata; счета files пока не включают.
-5. Финансы: утвердить FinanceOperation с meta/linkedSum, float64 без арифметики;
+5. FinanceOperation с meta/linkedSum реализован F01; entity-контракты F02–F05 ещё не утверждены;
    не обещать full replacement/очистку operations по одной лишь записи [].
    CashIn/CashOut: текст Update упоминает account-поля, отсутствующие в таблицах;
    proposed не добавлять их без подтверждения. Agent PaymentOut polymorphic,
@@ -142,3 +143,11 @@ Reference не требует готовых services связанных сущ�
   9a811cef3dc4a3f3a46f070e60452361a06bf7cd, master повторно подтверждён 2026-11-01.
   Исследования: [positions](../document-positions/research.md),
   [финансы](../financial-documents/research.md), [складские документы](../stock-documents/research.md).
+
+### Завершение первой волны
+
+Planning commit a280428 сохранён до начала Go-изменений. Реализация: C01 8611789,
+C02 7e6b812, F01 02026e0, P01 20e00ad (GoDoc fix fc8e040), P02 1b28603.
+Полный интеграционный race/vet/gofmt/diff-check пройден; Standards 0, Spec 0.
+Документацию README/coverage и отдельные guides свёл интегратор после слияния.
+Следующая группа не запущена; для P03 или entity tickets нужна отдельная команда/triage.

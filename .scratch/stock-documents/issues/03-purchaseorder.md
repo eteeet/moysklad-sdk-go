@@ -81,7 +81,7 @@ Position расширяет positions.Commercial полями Shipped/InTransit 
 - [ ] Документация сущности и coverage перечисляют реально поддержанные поля, TODO, minimum Create, account coupling, full replacement/1000 и разделение Get/GetPage; пример чтения документа не обещает rows.
 - [ ] Пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata, git diff --check и предусмотренное репозиторием review; исходные чужие/плановые изменения сохранены отдельно.
 
-## Blocked by и integration gate
+## Blocked by
 
 - [01-rate.md](../../document-common/issues/01-rate.md)
 - [01-json-contracts.md](../../document-positions/issues/01-json-contracts.md)

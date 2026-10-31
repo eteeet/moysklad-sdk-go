@@ -18,6 +18,24 @@ SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 [документации реквизитов](docs/requisites.md). Счета и другие отложенные подресурсы,
 List, Delete, expand и массовые операции в эти срезы не входят.
 
+## Общие контракты документов и positions
+
+Пакет `model` предоставляет `DocumentRate`/`DocumentRateRequest`,
+`DocumentOverhead`/`DocumentOverheadRequest`, `FinanceOperation`/`FinanceOperationRequest`.
+Это самостоятельные JSON-типы без HTTP и финансовых вычислений.
+В присутствующем rate отсутствие Value означает курс 1; SDK не подставляет 1 в JSON.
+[Документация общих типов](docs/document-common.md).
+
+Общий пакет `positions` содержит Core/Item/Commercial и отдельные request-формы.
+`positions.NewService[T](client, documentType)` предоставляет `GetPage(ctx, id, PageOptions)`:
+одна страница `/positions` через существующий transport, с явными limit/offset,
+без expand, автообхода и скрытого Get. Используется существующий `model.Collection[T]`.
+[Контракт позиций и пагинации](docs/positions.md).
+
+Это ещё не Get/Create/Update документов и не typed entity.GetPositions. Movement,
+специфические поля документов, отдельные HTTP mutations строк и остальные возможности
+остаются отдельными tickets. Все деньги — float64 в копейках с ограничениями точности.
+
 ## Product
 
 `product.NewService(client)` предоставляет `Get(ctx, id)`, `Create(ctx, CreateRequest)` и `Update(ctx, id, UpdateRequest)`.
@@ -207,6 +225,6 @@ Golden-тела запросов лежат в `testdata/custom/product`; они
 Сравнение канонизирует JSON без округления целых чисел за пределами ±2⁵³.
 
 Срез проверен локальными HTTP-тестами, не реальной записью в аккаунт.
-Пока нет List, пагинации, expand, Delete, retry/429, rate limiting, полного фасада и специальных операций товара.
+Для Product пока нет List, пагинации, expand, Delete, retry/429, rate limiting, полного фасада и специальных операций товара.
 Штрихкоды, алкоголь, упаковки, отслеживание, syncId и остальные неподдерживаемые поля остаются в TODO.
 API допускает syncId при создании, но текущий CreateRequest его пока не поддерживает.
