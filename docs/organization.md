@@ -35,7 +35,7 @@
 | `actualAddressFull`, `legalAddressFull` | `*model.Address` | Create, Update через `model.AddressRequest` |
 | `attributes` | `[]model.Attribute` | Create, Update |
 | `owner`, `group`, `bonusProgram` | `*model.Reference` | Create, Update |
-| `syncId` | `string` | только Create |
+| `syncId` | `string` | Create, Update |
 | `bonusPoints` | `int` | нет |
 | `payerVat` | `bool` (`PayerVAT`) | Create, Update |
 | `director`, `directorPosition`, `chiefAccountant`, `trackingContractNumber` | `string` | Create, Update |
@@ -79,8 +79,10 @@ updated, err := service.Update(ctx, id, organization.UpdateRequest{
 
 Незаданные поля отсутствуют в JSON. `Value(false)`, `Value("")`, `Value([]T{})`
 и `Null[T]()` сохраняются; заданный `nil`-слайс кодируется как `[]`.
-`syncId` доступен только при создании, поскольку после заполнения его нельзя
-менять. Readonly-поля и отложенные поля отсутствуют в обоих request-типах.
+`SyncID` доступен в CreateRequest и UpdateRequest через Field[string]. После заполнения
+менять его нельзя; это проверяет сервер, без предварительного Get. Пустая строка и null
+кодируются явно, но допустимость очистки или перезаписи не обещается.
+Readonly-поля и отложенные поля отсутствуют в обоих request-типах.
 
 Структурированные адреса используют `Field[model.AddressRequest]`.
 Их части также используют `Field`, включая ссылки `country` и `region`.

@@ -8,7 +8,7 @@
 Golden покрывают весь согласованный набор записи, обе формы адресов одновременно,
 все десять вложенных адресных полей, false/true, строковые коды, даты,
 references, `attributes` с целым числом больше 2^53 и явными `value:null`/`file:null`.
-Create содержит `syncId`, Update его не содержит.
+Create и Update содержат `syncId`; неизменяемость после заполнения проверяет сервер.
 
 Модель чтения проверяется на неизменённом `testdata/upstream/organization.json`;
 происхождение и revision upstream описаны в [docs/upstream.md](../../../docs/upstream.md).

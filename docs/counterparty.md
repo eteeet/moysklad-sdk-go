@@ -35,7 +35,7 @@ ID ответа дополнительно не сравнивается с ID �
 | `tags` | `[]string` | Create, Update |
 | `owner`, `group`, `bonusProgram`, `state` | `*model.Reference` | Create, Update |
 | `priceType` | `*model.PriceType` | Create, Update |
-| `syncId` | `string` | только Create |
+| `syncId` | `string` | Create, Update |
 | `bonusPoints` | `int` | нет |
 | `salesAmount` | `float64` | нет |
 
@@ -55,8 +55,9 @@ ID ответа дополнительно не сравнивается с ID �
 В `CreateRequest` обязателен `Name string`: локально отклоняется только `Name == ""`,
 без trim или нормализации. Остальные записываемые поля — `model.Field[T]`.
 В `UpdateRequest` все поля имеют тип `model.Field[T]`; полностью незаданный request
-отклоняется. `SyncID` отсутствует в UpdateRequest: после заполнения его нельзя менять.
-Предварительного Get для проверки `syncId` нет.
+отклоняется. `SyncID` доступен в CreateRequest и UpdateRequest через Field[string].
+После заполнения менять его нельзя; это проверяет сервер, без предварительного Get.
+Пустая строка и null кодируются явно, но допустимость очистки или перезаписи не обещается.
 
 `Field` с `omitzero` различает отсутствие, `model.Value(value)` и `model.Null[T]()`.
 Явные `false`, `""`, `[]`, `null` и `model.Value(model.AddressRequest{})` отправляются

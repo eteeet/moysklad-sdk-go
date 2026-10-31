@@ -9,7 +9,6 @@
 - UOM: List, поиск, пагинация, Delete, expand и массовые операции.
 - Общие исправления приватных do и validID переносить во все применимые копии пакетов сущностей и проверять тестами; обоснованные различия сущностей сохранять. Общая абстракция отложена.
 - Organization: fsrarId и utmUrl встречаются в официальных примерах, но не описаны в таблицах атрибутов; чтение и запись намеренно TODO текущего согласованного среза.
-- Counterparty/Organization: добавить SyncID Field[string] в UpdateRequest отдельной правкой с JSON/HTTP-тестами. Единое правило SDK — Create+Update; запрет изменения после заполнения проверяет сервер без скрытого Get. Пока реализован только Create.
 
 ## Общие правила денежных полей
 
@@ -31,6 +30,7 @@ integer за пределами 2^53. Это не относится к ID, сч
   плоский JSON, matching ID embedded Update, Field с unset/null/value и пустыми/nil slice как [].
 - [x] `positions.Movement`/`MovementRequest`: отдельная форма без скидок/НДС,
   Price/Overhead float64 в копейках, optional SourceSlot/TargetSlot; Overhead только чтение.
+  Nil-ссылки ячеек пропускаются при кодировании модели чтения через omitzero.
   Read/request/consumer container проверены обоими JSON codecs, включая 0/0.0/дроби и omission/null/[].
 - [x] `positions.Service[T any].GetPage`: открытый безопасный documentType, UUID,
   Limit=0→1000/1…1000, Offset>=0, один GET без body/expand/follow-up/auto-pagination.
@@ -409,8 +409,12 @@ Update-пример архивирует тестовый товар, не уд�
   и бухгалтере, дата и номер договора отслеживания.
 
 Точные поля чтения и записи, особенности серверного поведения и TODO перечислены
-в документации каждого пакета. Чтение syncId Counterparty/Organization поддержано;
-запись разрешена только при создании. bonusPoints, salesAmount и isEgaisEnable — только для чтения.
+в документации каждого пакета. SyncID Counterparty/Organization читается и доступен
+в CreateRequest/UpdateRequest через Field[string]. Unset пропускается, значение/пустая
+строка/null сохраняются; запрет изменения после заполнения проверяет сервер без скрытого Get.
+JSON-контракт проверен обоими codecs, SyncID-only Update — локальным HTTP-сервером,
+включая APIError и отсутствие повторов. Очистка/перезапись SyncID не обещаются.
+bonusPoints, salesAmount и isEgaisEnable — только для чтения.
 
 В срезы не входят счета, контактные лица, события, файлы и discounts Counterparty,
 региональные объекты реквизитов, остальные настройки НДС, подписи/печать,

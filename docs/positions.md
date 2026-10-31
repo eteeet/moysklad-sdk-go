@@ -26,7 +26,8 @@ embedded Update, не как назначение ID новой позиции. 
 `Movement` — отдельная форма без discount/vat/vatEnabled. Price и read-only Overhead —
 float64 в копейках, в том числе при API Int: принимаются 0, 0.0 и дробные суммы.
 Точность денежных integer за пределами 2^53 не гарантируется. SourceSlot/TargetSlot —
-ссылки без expand; отсутствие или null в ответе дают nil.
+ссылки без expand; отсутствие или null в ответе дают nil. При кодировании модели
+чтения nil-ссылки пропускаются через omitzero, непустые ссылки сохраняются.
 `MovementRequest` встраивает ItemRequest и добавляет только Price, SourceSlot и TargetSlot
 через Field. В нём нет Overhead и коммерческих полей; кодирование Null не обещает
 допустимость очистки ячеек сервером. Этот JSON-контракт не реализует entity Move.
