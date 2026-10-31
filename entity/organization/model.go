@@ -2,7 +2,6 @@ package organization
 
 import "github.com/eteeet/moysklad-sdk-go/model"
 
-// Частичная модель чтения без expand; для записи используются CreateRequest и UpdateRequest.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/organization#3-yurlica
 type Organization struct {
 	Meta         model.Meta        `json:"meta"`
