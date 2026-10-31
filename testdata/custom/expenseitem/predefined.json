@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/expenseitem/1be2395a-0479-11e5-baee-448a5b426e7e",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/expenseitem/metadata",
+    "type": "expenseitem",
+    "mediaType": "application/json"
+  },
+  "id": "1be2395a-0479-11e5-baee-448a5b426e7e",
+  "updated": "2015-05-27 17:03:10",
+  "name": "Возврат",
+  "description": "Расходы по возвратам не учитываются в отчете «Прибыли и убытки»",
+  "archived": false,
+  "operatingExpenses": false,
+  "code": "3",
+  "externalCode": "3"
+}
