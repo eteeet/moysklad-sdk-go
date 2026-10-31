@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: claimed
 Stage: APPROVED
 Blocked by: None
 
@@ -13,17 +13,17 @@ Blocked by: None
 
 ## Acceptance criteria
 
-- [ ] DocumentOverhead содержит Sum float64 и Distribution OverheadDistribution.
-- [ ] OverheadDistribution — открытый именованный string с точными константами weight/volume/price;
+- [x] DocumentOverhead содержит Sum float64 и Distribution OverheadDistribution.
+- [x] OverheadDistribution — открытый именованный string с точными константами weight/volume/price;
   неизвестная строка сохраняется, default и локальная enum-валидация не добавляются.
-- [ ] Request содержит Sum Field[float64] и Distribution Field[OverheadDistribution] с omitzero.
-- [ ] Внешний Field[DocumentOverheadRequest] и вложенные Field сохраняют unset/null/{}/частичный
+- [x] Request содержит Sum Field[float64] и Distribution Field[OverheadDistribution] с omitzero.
+- [x] Внешний Field[DocumentOverheadRequest] и вложенные Field сохраняют unset/null/{}/частичный
   объект, явный 0, дробное число, пустую/неизвестную строку.
-- [ ] Оба JSON-кодека проверяют все поля и константы через независимые ожидания;
+- [x] Оба JSON-кодека проверяют все поля и константы через независимые ожидания;
   суммы остаются в API-единицах, без округления и распределения на клиенте.
-- [ ] Read-only overhead отдельной позиции не подменяется этим объектом.
-- [ ] Документация объясняет серверную ответственность за распределение и допустимость null.
-- [ ] Нет HTTP, expand, изменения существующих общих типов или новой test infrastructure.
+- [x] Read-only overhead отдельной позиции не подменяется этим объектом.
+- [x] Документация объясняет серверную ответственность за распределение и допустимость null.
+- [x] Нет HTTP, expand, изменения существующих общих типов или новой test infrastructure.
 - [ ] Пройдены gofmt, полный race/vet/diff-check и независимые Standards/Spec review.
 - [ ] После разрешённой реализации — локальный commit, Status: resolved и ## Answer;
   предшествующие изменения планирования не включены в commit реализации.
@@ -44,3 +44,20 @@ JSON и HTTP seams этого ticket согласованы. Локальная 
 независимые Standards/Spec review координирует исполнитель интеграции относительно planning BASE.
 Не менять coverage.md/README и общие карты: документацию интегратор сведёт отдельным коммитом.
 Файлы и трёхпоточный запуск закреплены в [handoff](../../document-workstream/wave-1.md).
+
+## Answer
+
+Добавлены DocumentOverhead/DocumentOverheadRequest и открытый OverheadDistribution
+с константами weight/volume/price. Оба JSON-кодека проверяют 0/0.0, дробные суммы,
+все константы, пустую/неизвестную строку, пропуск/null и внешний Field с {} и частичным
+объектом. Независимые JSON literals проверяют передачу сумм без расчётов и округления.
+GoDoc описывает копейки, ограничения float64 и ответственность сервера за null/распределение.
+
+TDD red: `go test ./model -run '^TestDocumentOverheadJSON$' -count=1` упал до реализации
+с `undefined: model.DocumentOverhead` и константами; отдельный request-срез упал с
+`undefined: model.DocumentOverheadRequest`. После минимальной реализации срезы green.
+
+Проверки 2026-11-01: targeted `go test ./model -run '^TestDocumentOverhead' -count=1`,
+`go test -race -count=1 ./...`, `go vet ./... ./testdata`, gofmt и `git diff --check` прошли.
+Независимые Standards/Spec review ожидаются у интегратора относительно BASE
+`a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`; Status остаётся claimed.
