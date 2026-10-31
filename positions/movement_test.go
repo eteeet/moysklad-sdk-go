@@ -93,3 +93,47 @@ func TestMovementOptionalFieldsJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestMovementOptionalFieldsEncoding(t *testing.T) {
+	for _, codec := range jsonCodecs {
+		t.Run(codec.name, func(t *testing.T) {
+			for _, tc := range []struct {
+				name  string
+				value positions.Movement
+				want  string
+			}{
+				{
+					"nil slots",
+					positions.Movement{},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0}`,
+				},
+				{
+					"source slot only",
+					positions.Movement{SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}}},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}}}`,
+				},
+				{
+					"target slot only",
+					positions.Movement{TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}}},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+				},
+				{
+					"both slots",
+					positions.Movement{
+						SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}},
+						TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}},
+					},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+				},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					data, err := codec.marshal(tc.value)
+					if err != nil {
+						t.Fatal(err)
+					}
+					jsonAssertEqual(t, data, tc.want)
+				})
+			}
+		})
+	}
+}

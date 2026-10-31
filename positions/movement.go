@@ -8,6 +8,6 @@ type Movement struct {
 	Item
 	Price      float64          `json:"price"`
 	Overhead   float64          `json:"overhead"`
-	SourceSlot *model.Reference `json:"sourceSlot"`
-	TargetSlot *model.Reference `json:"targetSlot"`
+	SourceSlot *model.Reference `json:"sourceSlot,omitzero"`
+	TargetSlot *model.Reference `json:"targetSlot,omitzero"`
 }
