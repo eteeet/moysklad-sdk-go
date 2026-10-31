@@ -11,20 +11,30 @@ JSON-формы позиций и generic reader одной страницы; н
 | `Core` | Meta, ID, AccountID |
 | `Item`, встраивает Core | Assortment model.Reference, Quantity float64 |
 | `Commercial`, встраивает Item | Price/Discount float64, VAT int, VATEnabled bool |
+| `Movement`, встраивает Item | Price/Overhead float64, SourceSlot/TargetSlot *model.Reference |
 
 Встраивание даёт плоский JSON. Неизвестные поля игнорируются, отсутствующие значения
 читаются как нулевые; ID и обязательность полей не проверяются самой JSON-моделью.
 Quantity/Price могут быть дробными, Discount — отрицательным. VAT=0 с VATEnabled=false
 означает «без НДС», с true — ставку 0%. Деньги остаются в копейках, без арифметики SDK.
 
-Отдельные `CoreRequest`, `ItemRequest`, `CommercialRequest` используют Field с omitzero.
+Отдельные `CoreRequest`, `ItemRequest`, `CommercialRequest`, `MovementRequest` используют Field с omitzero.
 В request нет Meta/AccountID. ID разрешён только как selector существующей строки
 embedded Update, не как назначение ID новой позиции. Sparse request не достраивается
 из старого документа.
 
+`Movement` — отдельная форма без discount/vat/vatEnabled. Price и read-only Overhead —
+float64 в копейках, в том числе при API Int: принимаются 0, 0.0 и дробные суммы.
+Точность денежных integer за пределами 2^53 не гарантируется. SourceSlot/TargetSlot —
+ссылки без expand; отсутствие или null в ответе дают nil.
+`MovementRequest` встраивает ItemRequest и добавляет только Price, SourceSlot и TargetSlot
+через Field. В нём нет Overhead и коммерческих полей; кодирование Null не обещает
+допустимость очистки ячеек сервером. Этот JSON-контракт не реализует entity Move.
+
 Overhead/cost, shipped/inTransit, ячейки, pack/serial/tracking/GTD и другие специфичные
-поля не добавлены в Commercial автоматически. Movement и типы отдельных документов
-разрабатываются своими tickets; общий reader может использовать собственный T.
+поля не добавлены в Commercial автоматически. Pack/Things и остальные поля Movement
+тоже не считаются покрытыми. Типы отдельных документов разрабатываются своими tickets;
+общий reader принимает T any, включая Movement и собственные формы строки.
 
 ## Одна страница
 
@@ -87,4 +97,5 @@ Embedded write имеет предел API 1000 строк. SDK не долже�
 
 Первичные источники на revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`:
 [общие правила](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1022-L1063),
-[страница позиций](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L2468-L2525).
+[страница позиций](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L2468-L2525),
+[позиции Movement](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_move.md#L62-L89).

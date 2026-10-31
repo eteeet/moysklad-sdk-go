@@ -26,13 +26,13 @@ List, Delete, expand и массовые операции в эти срезы �
 В присутствующем rate отсутствие Value означает курс 1; SDK не подставляет 1 в JSON.
 [Документация общих типов](docs/document-common.md).
 
-Общий пакет `positions` содержит Core/Item/Commercial и отдельные request-формы.
+Общий пакет `positions` содержит Core/Item/Commercial/Movement и отдельные request-формы.
 `positions.NewService[T](client, documentType)` предоставляет `GetPage(ctx, id, PageOptions)`:
 одна страница `/positions` через существующий transport, с явными limit/offset,
 без expand, автообхода и скрытого Get. Используется существующий `model.Collection[T]`.
 [Контракт позиций и пагинации](docs/positions.md).
 
-Это ещё не Get/Create/Update документов и не typed entity.GetPositions. Movement,
+Это ещё не Get/Create/Update документов и не typed entity.GetPositions. Остальные
 специфические поля документов, отдельные HTTP mutations строк и остальные возможности
 остаются отдельными tickets. Все деньги — float64 в копейках с ограничениями точности.
 

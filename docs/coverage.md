@@ -19,7 +19,7 @@
 integer за пределами 2^53. Это не относится к ID, счётчикам, ставке vat и сырым Attribute long.
 Валютный курс — не денежная сумма; его отсутствие имеет отдельный контракт DocumentRate.
 
-## Общие документы и positions — первая волна
+## Общие документы и positions
 
 - [x] `DocumentRate`/`DocumentRateRequest`: Currency как ссылка, Value как *float64;
   nil внутри присутствующего rate означает курс 1 без подстановки в JSON. Запись через Field.
@@ -29,6 +29,9 @@ integer за пределами 2^53. Это не относится к ID, сч
   optional LinkedSum в запросе. Очистка/полное замещение operations по [] не обещаются.
 - [x] Общие `positions.Core`, `Item`, `Commercial` и отдельные request-формы:
   плоский JSON, matching ID embedded Update, Field с unset/null/value и пустыми/nil slice как [].
+- [x] `positions.Movement`/`MovementRequest`: отдельная форма без скидок/НДС,
+  Price/Overhead float64 в копейках, optional SourceSlot/TargetSlot; Overhead только чтение.
+  Read/request/consumer container проверены обоими JSON codecs, включая 0/0.0/дроби и omission/null/[].
 - [x] `positions.Service[T any].GetPage`: открытый безопасный documentType, UUID,
   Limit=0→1000/1…1000, Offset>=0, один GET без body/expand/follow-up/auto-pagination.
   HTTP 200, непустой meta.href и non-null rows-array; пустая страница успешна, ID в T не нужен.
@@ -37,7 +40,7 @@ integer за пределами 2^53. Это не относится к ID, сч
 
 Подробности: [общие типы документов](document-common.md), [позиции](positions.md).
 Самостоятельные JSON-типы и reader не означают реализации HTTP Get/Create/Update
-документов. Типизированные entity.GetPositions, Movement и расширения полей документов
+документов. Типизированные entity.GetPositions и расширения полей документов
 пока не реализованы. Отдельные mutations строк, List документов, walker и expand отложены.
 
 ## UOM — модель чтения и Get/Create/Update
