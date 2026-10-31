@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: claimed
 Stage: APPROVED
 Blocked by: None
 
@@ -16,37 +16,37 @@ Movement P03 и entity endpoints в эту волну не входят.
 
 ## Acceptance criteria
 
-- [ ] Самостоятельный package positions не принадлежит supply или другой сущности.
+- [x] Самостоятельный package positions не принадлежит supply или другой сущности.
   Core содержит Meta model.Meta, ID/AccountID string. Item встраивает Core и содержит
   Assortment model.Reference и Quantity float64. Commercial встраивает Item и содержит
   Price/Discount float64, VAT int, VATEnabled bool; JSON плоский.
-- [ ] CoreRequest содержит только ID model.Field[string] с omitzero; ItemRequest
+- [x] CoreRequest содержит только ID model.Field[string] с omitzero; ItemRequest
   встраивает CoreRequest и добавляет Assortment Field[model.Reference], Quantity Field[float64].
   CommercialRequest встраивает ItemRequest и добавляет Price/Discount Field[float64],
   VAT Field[int], VATEnabled Field[bool], все с omitzero.
-- [ ] Meta и AccountID отсутствуют в request types. ID — matching selector существующей
+- [x] Meta и AccountID отсутствуют в request types. ID — matching selector существующей
   строки embedded Update, а не client-generated ID новой строки. Sparse existing-row
   request кодируется без предварительного чтения или достраивания полей.
-- [ ] Quantity и money сохраняют float64, деньги — в копейках; отрицательный discount,
+- [x] Quantity и money сохраняют float64, деньги — в копейках; отрицательный discount,
   VAT=0 и VATEnabled=false не теряются. Nullable Field сохраняет сериализацию null;
   его допустимость для конкретного поля не обещается.
-- [ ] Общие формы не добавляют overhead, cost, shipped, inTransit, reserve, slots,
+- [x] Общие формы не добавляют overhead, cost, shipped, inTransit, reserve, slots,
   pack/serial/tracking/GTD или return business rules. Новые document-owned типы могут
   расширять согласованный base; CommercialRequest не объявляется write-формой возврата.
-- [ ] Оба codecs проверяют значения каждого read поля, ссылки, zero values и неизвестное
+- [x] Оба codecs проверяют значения каждого read поля, ссылки, zero values и неизвестное
   поле; pure JSON чтение не вводит валидацию обязательности или непустого ID.
-- [ ] Независимые golden JSON проверяют все writable поля, минимальную новую строку,
+- [x] Независимые golden JSON проверяют все writable поля, минимальную новую строку,
   sparse quantity-only Update с ID, omission, явные 0/false и null. Read-модель не
   сериализуется вместо request, не добавляет readonly поля.
-- [ ] Публичный container с Positions model.Field[[]CommercialRequest] и omitzero
+- [x] Публичный container с Positions model.Field[[]CommercialRequest] и omitzero
   обоими codecs различает unset (нет поля), Value(empty slice) ([]), Value(nil slice) ([]),
   непустой массив и Null (null). Response positions-object не смешан с write-array.
-- [ ] Документация общей библиотеки объясняет full replacement, matching id, удаление
+- [x] Документация общей библиотеки объясняет full replacement, matching id, удаление
   отсутствующих старых строк и embedded limit 1000; HTTP document tickets проверяют
   1000/1001 и запрет скрытого merge. JSON-модель не создаёт новый validation/transport API.
-- [ ] Тесты проверяют только публичный JSON-контракт, по образцу таблицы codecs UOM и
+- [x] Тесты проверяют только публичный JSON-контракт, по образцу таблицы codecs UOM и
   общего AddressRequest; private fields и helpers не являются тестовыми seams.
-- [ ] Существующие Field, Reference, Collection и transport не перерабатываются;
+- [x] Существующие Field, Reference, Collection и transport не перерабатываются;
   новые HTTP-операции или типы всех будущих документов не объявлены реализованными.
 - [ ] После реализации пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check и отдельные Standards/Spec review относительно зафиксированного BASE.
@@ -84,3 +84,43 @@ JSON и HTTP seams этого ticket согласованы. Локальная 
 независимые Standards/Spec review координирует исполнитель интеграции относительно planning BASE.
 Не менять coverage.md/README и общие карты: документацию интегратор сведёт отдельным коммитом.
 Файлы и трёхпоточный запуск закреплены в [handoff](../../document-workstream/wave-1.md).
+
+## Answer
+
+Реализованы самостоятельные `positions.Core`, `Item`, `Commercial` и отдельные
+request-формы. Встраивание даёт плоский JSON; request содержит только writable поля
+и matching ID существующей строки. GoDoc фиксирует full replacement, отсутствие
+GET/merge, удаление пропущенных старых строк и embedded limit 1000.
+
+Тесты через `encoding/json` и `encoding/json/v2` проверяют все read-поля, ссылки,
+дробные числа, отрицательный discount, price 0/0.0, VAT=0 с true/false, отсутствие
+обязательного ID и неизвестные поля. Независимые literal golden проверяют request
+omission, новую строку, ID-only/quantity-only Update, все поля, 0/false и null.
+Consumer container с `Positions model.Field[[]CommercialRequest]` различает
+unset/null/nil slice/empty slice/array. Его тест сразу прошёл на существующем Field;
+реализация Field не менялась.
+
+TDD evidence 2026-11-01: первый запуск до реализации Core:
+
+```text
+$ go test -count=1 ./positions -run '^TestCoreJSON$'
+positions/model_test.go:32:20: undefined: positions.Core
+positions/model_test.go:40:22: undefined: positions.Core
+FAIL github.com/eteeet/moysklad-sdk-go/positions [build failed]
+```
+
+После минимальной реализации тот же тест прошёл (exit 0). Отдельные red → green
+циклы затем выполнены для Item, Commercial и трёх request-форм: каждый red был
+ошибкой отсутствующего соответствующего public type до добавления реализации.
+
+Проверки прошли (exit 0):
+
+- `gofmt -w positions/doc.go positions/model.go positions/request.go positions/model_test.go positions/request_test.go`;
+- `go test -race -count=1 ./positions`;
+- `go test -race -count=1 ./...`;
+- `go vet ./... ./testdata`;
+- `git diff --check`.
+
+Status оставлен claimed до независимых Standards/Spec review интегратором от planning
+BASE `a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`. Review ещё не проводились. Movement,
+HTTP reader/writer, entity, expand и business validation этим изменением не реализованы.
