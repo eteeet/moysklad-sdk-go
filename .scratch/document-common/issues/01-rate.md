@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: claimed
 Stage: APPROVED
 Blocked by: None
 
@@ -13,14 +13,14 @@ model.DocumentRate/DocumentRateRequest. Срез включает публичн
 
 ## Acceptance criteria
 
-- [ ] DocumentRate.Currency — *Reference, Value — *float64; nil Value внутри присутствующего rate означает курс 1, но SDK не подставляет 1 в JSON; над полем краткий комментарий об этом.
-- [ ] DocumentRateRequest содержит Currency Field[Reference] и Value Field[float64] с omitzero.
-- [ ] Внешний Field[DocumentRateRequest] различает unset/null/{}/значение; внутренние поля
+- [x] DocumentRate.Currency — *Reference, Value — *float64; nil Value внутри присутствующего rate означает курс 1, но SDK не подставляет 1 в JSON; над полем краткий комментарий об этом.
+- [x] DocumentRateRequest содержит Currency Field[Reference] и Value Field[float64] с omitzero.
+- [x] Внешний Field[DocumentRateRequest] различает unset/null/{}/значение; внутренние поля
   сохраняют null, 0, 1, дробный курс и пропуски.
-- [ ] Оба кодека проверяют значения вложенной Meta, optional/null/unknown поля и независимый JSON.
-- [ ] Модели не вычисляют валюту и не требуют готовой сущности Currency или HTTP-операций.
-- [ ] Документация различает wire-контракт и серверный пересчёт при rate:null.
-- [ ] Существующие Price/Field/Reference/DateTime не меняются; expand отсутствует.
+- [x] Оба кодека проверяют значения вложенной Meta, optional/null/unknown поля и независимый JSON.
+- [x] Модели не вычисляют валюту и не требуют готовой сущности Currency или HTTP-операций.
+- [x] Документация различает wire-контракт и серверный пересчёт при rate:null.
+- [x] Существующие Price/Field/Reference/DateTime не меняются; expand отсутствует.
 - [ ] Пройдены gofmt, полный race/vet/diff-check и независимые Standards/Spec review
   относительно BASE, зафиксированного до правок.
 - [ ] После разрешённой реализации — локальный commit, Status: resolved и ## Answer;
@@ -43,3 +43,20 @@ JSON и HTTP seams этого ticket согласованы. Локальная 
 независимые Standards/Spec review координирует исполнитель интеграции относительно planning BASE.
 Не менять coverage.md/README и общие карты: документацию интегратор сведёт отдельным коммитом.
 Файлы и трёхпоточный запуск закреплены в [handoff](../../document-workstream/wave-1.md).
+
+## Answer
+
+Реализованы DocumentRate/DocumentRateRequest в model/document_rate.go и публичные
+JSON-тесты в model/document_rate_test.go. Оба кодека проверяют полную Meta валюты,
+0/1/целый/дробный курс, пропущенные/null/unknown поля, внешний rate и вложенные Field.
+Независимые JSON literals подтверждают отсутствие подстановки курса и точные request-состояния.
+GoDoc описывает nil value и серверный пересчёт при внешнем rate:null.
+
+TDD red: `go test ./model -run '^TestDocumentRateJSON$' -count=1` упал до реализации
+с `undefined: model.DocumentRate`; отдельный request-срез упал с
+`undefined: model.DocumentRateRequest`. После минимальной реализации оба среза green.
+
+Проверки 2026-11-01: targeted `go test ./model -run '^TestDocumentRate' -count=1`,
+`go test -race -count=1 ./...`, `go vet ./... ./testdata`, gofmt и `git diff --check` прошли.
+Независимые Standards/Spec review координирует интегратор относительно BASE
+`a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`; до них Status остаётся claimed.
