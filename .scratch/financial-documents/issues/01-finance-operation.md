@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: claimed
 Stage: APPROVED
 Blocked by: None
 
@@ -37,20 +37,20 @@ meta с явно заданной суммой. Результат провер�
 ## Acceptance criteria
 
 - [x] Имена, read/write shape, float64 и null-policy утверждены пользователем; ticket переведён в ready-for-agent.
-- [ ] Публичные типы позволяют прочитать/записать описанный JSON без entity Service и transport.
-- [ ] Отдельные JSON-тесты выполняются encoding/json и encoding/json/v2 по имеющемуся
+- [x] Публичные типы позволяют прочитать/записать описанный JSON без entity Service и transport.
+- [x] Отдельные JSON-тесты выполняются encoding/json и encoding/json/v2 по имеющемуся
   образцу codec tables. Проверены Meta.Href/MetadataHref/Type/MediaType/UUIDHref и linkedSum.
-- [ ] Независимые golden cases: meta-only, linkedSum=0, дробное значение, unset Field,
+- [x] Независимые golden cases: meta-only, linkedSum=0, дробное значение, unset Field,
   Null Field. Для read — отсутствующий linkedSum, 0/0.0, дробь, неизвестный meta.type,
   лишние expanded-поля без превращения их в поддержанный scope.
-- [ ] Внешний Field[[]FinanceOperationRequest] проверен через публичную сериализацию:
+- [x] Внешний Field[[]FinanceOperationRequest] проверен через публичную сериализацию:
   unset, null, [], nil slice как [], несколько операций и элементы с разными meta.type.
   Это JSON-проверка, не утверждение server clear/merge поведения.
-- [ ] Пустой/нулевой Meta не вызывает новых бизнес-проверок модели; запрет неверных
+- [x] Пустой/нулевой Meta не вызывает новых бизнес-проверок модели; запрет неверных
   ссылок не вводится без отдельного утверждения.
-- [ ] Документация общего типа объясняет linkedSum optional write, точность float64,
+- [x] Документация общего типа объясняет linkedSum optional write, точность float64,
   отсутствие арифметики, запрет трактовать [] как доказанную очистку и границы expand.
-- [ ] Существующие Reference/Meta/Field/Attribute/DateTime и их поведение не изменены.
+- [x] Существующие Reference/Meta/Field/Attribute/DateTime и их поведение не изменены.
 - [ ] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check; независимые Standards/Spec reviews с фиксированным BASE.
 
@@ -75,3 +75,22 @@ JSON и HTTP seams этого ticket согласованы. Локальная 
 независимые Standards/Spec review координирует исполнитель интеграции относительно planning BASE.
 Не менять coverage.md/README и общие карты: документацию интегратор сведёт отдельным коммитом.
 Файлы и трёхпоточный запуск закреплены в [handoff](../../document-workstream/wave-1.md).
+
+## Answer
+
+Добавлены FinanceOperation и FinanceOperationRequest с непосредственными Meta и LinkedSum:
+read float64 в копейках, write Field[float64] с omitzero. Оба кодека проверяют значения пяти
+полей Meta, неизвестный type, meta-only, 0/0.0/дробь, Null и пропущенный linkedSum.
+Expanded id/name/positions/payments игнорируются. Внешний Field массива проверен для
+unset/null/[]/nil slice как [] и нескольких операций с разными типами.
+Независимые JSON literals фиксируют плоскую форму и точные состояния без расчётов/валидации.
+GoDoc описывает ограничения float64, optional write, null и отсутствие обещания очистки/merge по [].
+
+TDD red: `go test ./model -run '^TestFinanceOperationJSON$' -count=1` упал до реализации
+с `undefined: model.FinanceOperation`; отдельный request-срез упал с
+`undefined: model.FinanceOperationRequest`. После минимальной реализации оба среза green.
+
+Проверки 2026-11-01: targeted `go test ./model -run '^TestFinanceOperation' -count=1`,
+`go test -race -count=1 ./...`, `go vet ./... ./testdata`, gofmt и `git diff --check` прошли.
+Независимые Standards/Spec review ожидаются у интегратора относительно BASE
+`a2804283e7aafe3c6ee41c17a4c2c79f7e01f999`; Status остаётся claimed.
