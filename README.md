@@ -52,6 +52,27 @@ MOYSKLAD_ALLOW_WRITE=1 make example-update
 
 Код примеров: [Get](examples/product_get/main.go), [Create](examples/product_create/main.go), [Update](examples/product_update/main.go).
 
+## UOM
+
+`uom.NewService(client)` создаёт обёртку с методом `Get(ctx, id)`,
+который возвращает `(*UOM, error)`.
+ID проверяется по форме UUID, без ограничения версии. Ошибки доступны через
+`errors.As`/`errors.Is` по тому же контракту, что и у Product; автоматических повторов нет.
+
+Модель чтения содержит `meta`, `id`, `accountId`, `updated`, `name`, `description`,
+`code`, `externalCode`, `owner`, `group`, `shared`. Ссылки представлены без expand,
+`code` остаётся строкой, включая ведущие нули и буквенные значения.
+
+Get читает предустановленные и пользовательские UOM. У предустановленных UOM
+могут отсутствовать `accountId`, `owner`, `group`, `shared`: тогда поля имеют
+нулевые значения Go. `Shared == false` не определяет происхождение UOM.
+
+Пока нет Create, Update, List, поиска, пагинации, Delete, expand и массовых операций UOM.
+API разрешает изменение только пользовательских UOM; методы записи ещё не реализованы.
+Проверки Get используют локальный HTTP-сервер, без обращения к живому аккаунту.
+
+[Документация UOM](https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom).
+
 ## DateTime
 
 `model.DateTime` — именованный тип поверх `time.Time`; преобразование в обе стороны выполняется явно.
