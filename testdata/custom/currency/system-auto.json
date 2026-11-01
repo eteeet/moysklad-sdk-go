@@ -1,0 +1,33 @@
+{
+  "meta" : {
+    "href" : "https://api.moysklad.ru/api/remap/1.2/entity/currency/03f1855b-43d7-11ec-ac13-000400000050",
+    "metadataHref" : "https://api.moysklad.ru/api/remap/1.2/entity/currency/metadata",
+    "type" : "currency",
+    "mediaType" : "application/json",
+    "uuidHref" : "https://online.moysklad.ru/app/#currency/edit?id=03f1855b-43d7-11ec-ac13-000400000050"
+  },
+  "id" : "03f1855b-43d7-11ec-ac13-000400000050",
+  "system" : true,
+  "name" : "евро",
+  "fullName" : "Евро",
+  "rate" : 1.0,
+  "multiplicity" : 1,
+  "indirect" : false,
+  "rateUpdateType" : "auto",
+  "code" : "978",
+  "isoCode" : "EUR",
+  "majorUnit" : {
+    "gender" : "masculine",
+    "s1" : "евро",
+    "s2" : "евро",
+    "s5" : "евро"
+  },
+  "minorUnit" : {
+    "gender" : "masculine",
+    "s1" : "цент",
+    "s2" : "цента",
+    "s5" : "центов"
+  },
+  "archived" : false,
+  "default" : false
+}
