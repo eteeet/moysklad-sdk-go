@@ -16,7 +16,8 @@ Services теряли headers и status ответа, а per-call headers (ре�
 - `transport.WithResponseInfo(&info)` заполняет `StatusCode` и копию всех headers
   последнего полученного ответа, в том числе при `APIError` и ошибке decode.
   Если ответа нет, `info` обнуляется. Указатель принадлежит вызову; общего
-  `LastResponse` нет.
+  `LastResponse` нет. Обнуление происходит уже в `WithResponseInfo`, чтобы и ошибка
+  валидации до запроса не оставляла метаданных прошлого вызова; опцию создают на вызов.
 - Client defaults — `transport.Config.Header`. Приоритет: значения transport
   < `Config.Header` < опции вызова; key из опций заменяет key клиента целиком.
 - `Authorization`, `Accept`, `Accept-Encoding`, `Content-Type`, `Content-Length`, `Host`

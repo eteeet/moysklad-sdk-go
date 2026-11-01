@@ -31,6 +31,7 @@ import (
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
+	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -226,5 +227,49 @@ func testServiceOptions(t *testing.T, tc optionsCase, unauthorized bool) {
 	}
 	if calls.Load() != 1 || info.StatusCode != want || info.Header.Get("X-Lognex-Content-Region") != "kz" {
 		t.Fatalf("calls = %d, info = %+v", calls.Load(), info)
+	}
+}
+
+// Регрессия ревью 46e9d06: локальная ошибка (валидация до запроса) не оставляет в ResponseInfo
+// метаданных предыдущего успешного вызова.
+func TestLocalErrorResetsResponseInfo(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Lognex-Content-Region", "kz")
+		w.Write([]byte(`{"id":"` + testID + `"}`))
+	}))
+	defer server.Close()
+	client, err := transport.NewClient(transport.Config{BaseURL: server.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+	units, err := uom.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	demands, err := demand.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var info transport.ResponseInfo
+	for name, call := range map[string]func() error{
+		"get invalid id": func() error {
+			_, err := units.Get(t.Context(), "bad", transport.WithResponseInfo(&info))
+			return err
+		},
+		"list limit": func() error {
+			_, err := units.List(t.Context(), query.ListOptions{Limit: 1001}, transport.WithResponseInfo(&info))
+			return err
+		},
+		"positions invalid id": func() error {
+			_, err := demands.GetPositions(t.Context(), "bad", positions.PageOptions{}, transport.WithResponseInfo(&info))
+			return err
+		},
+	} {
+		if _, err := units.Get(t.Context(), testID, transport.WithResponseInfo(&info)); err != nil || info.StatusCode != 200 {
+			t.Fatalf("%s: setup: err = %v, info = %+v", name, err, info)
+		}
+		if err := call(); err == nil || info.StatusCode != 0 || info.Attempts != 0 || info.Header != nil {
+			t.Errorf("%s: err = %v, stale info = %+v", name, err, info)
+		}
 	}
 }

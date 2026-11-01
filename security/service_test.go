@@ -201,3 +201,18 @@ func TestCreateTokenNoRetryWithPolicy(t *testing.T) {
 		t.Fatalf("err = %v, calls = %d", err, calls.Load())
 	}
 }
+
+// Регрессия ревью 46e9d06: ошибка проверки логина не оставляет метаданных прошлого вызова.
+func TestCreateTokenLocalErrorResetsInfo(t *testing.T) {
+	service, _ := newService(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"access_token":"` + secret + `"}`))
+	})
+	var info transport.ResponseInfo
+	if _, err := service.CreateToken(t.Context(), "admin@shop", "password", transport.WithResponseInfo(&info)); err != nil || info.StatusCode != 200 {
+		t.Fatalf("err = %v, info = %+v", err, info)
+	}
+	if _, err := service.CreateToken(t.Context(), "", "password", transport.WithResponseInfo(&info)); err == nil ||
+		info.StatusCode != 0 || info.Attempts != 0 || info.Header != nil {
+		t.Fatalf("err = %v, stale info = %+v", err, info)
+	}
+}
