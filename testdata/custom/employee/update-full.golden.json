@@ -1,0 +1,17 @@
+{
+  "lastName": "Мойскладкин",
+  "firstName": "",
+  "middleName": "Петрович",
+  "description": "Новое описание",
+  "externalCode": "EXT-2",
+  "archived": true,
+  "shared": false,
+  "email": "",
+  "phone": "+7(999)000-0000",
+  "inn": "",
+  "position": "Менеджер",
+  "salary": {"value": 0},
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/00f76fbb-cd3b-11e8-ac12-00080000002d", "type": "employee", "mediaType": "application/json"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/ffbc0889-cd3a-11e8-ac12-000700000002", "type": "group", "mediaType": "application/json"}},
+  "attributes": []
+}

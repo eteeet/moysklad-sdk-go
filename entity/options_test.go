@@ -16,6 +16,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/entity/country"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
+	"github.com/eteeet/moysklad-sdk-go/entity/employee"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoicein"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoiceout"
@@ -94,14 +95,14 @@ func updateCase[S, I, T any](name string, newService func(*transport.Client) (*S
 		}}
 }
 
-// fillRequest заполняет обязательные для локальной проверки поля: Name, ссылки и Description.
+// fillRequest заполняет обязательные для локальной проверки поля: Name/LastName, ссылки и Description.
 func fillRequest[I any]() I {
 	var input I
 	v := reflect.ValueOf(&input).Elem()
 	for i := range v.NumField() {
 		field := v.Field(i)
 		switch {
-		case v.Type().Field(i).Name == "Name" && field.Kind() == reflect.String:
+		case (v.Type().Field(i).Name == "Name" || v.Type().Field(i).Name == "LastName") && field.Kind() == reflect.String:
 			field.SetString("x")
 		case field.Type() == reflect.TypeFor[model.Reference]():
 			field.Set(reflect.ValueOf(model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
@@ -119,6 +120,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("counterparty", counterparty.NewService, (*counterparty.Service).Get),
 		getCase("country", country.NewService, (*country.Service).Get),
 		getCase("demand", demand.NewService, (*demand.Service).Get),
+		getCase("employee", employee.NewService, (*employee.Service).Get),
 		getCase("expenseitem", expenseitem.NewService, (*expenseitem.Service).Get),
 		getCase("invoicein", invoicein.NewService, (*invoicein.Service).Get),
 		getCase("invoiceout", invoiceout.NewService, (*invoiceout.Service).Get),
@@ -141,6 +143,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("country", country.NewService, (*country.Service).Update),
 		createCase("demand", demand.NewService, (*demand.Service).Create),
 		updateCase("demand", demand.NewService, (*demand.Service).Update),
+		createCase("employee", employee.NewService, (*employee.Service).Create),
+		updateCase("employee", employee.NewService, (*employee.Service).Update),
 		createCase("expenseitem", expenseitem.NewService, (*expenseitem.Service).Create),
 		updateCase("expenseitem", expenseitem.NewService, (*expenseitem.Service).Update),
 		createCase("invoicein", invoicein.NewService, (*invoicein.Service).Create),
@@ -310,6 +314,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("counterparty", counterparty.NewService, (*counterparty.Service).Get, (*counterparty.Service).Create, (*counterparty.Service).Update, (*counterparty.Service).List)...)
 	cases = append(cases, localCases("country", country.NewService, (*country.Service).Get, (*country.Service).Create, (*country.Service).Update, (*country.Service).List)...)
 	cases = append(cases, localCases("demand", demand.NewService, (*demand.Service).Get, (*demand.Service).Create, (*demand.Service).Update, (*demand.Service).List)...)
+	cases = append(cases, localCases("employee", employee.NewService, (*employee.Service).Get, (*employee.Service).Create, (*employee.Service).Update, (*employee.Service).List)...)
 	cases = append(cases, localCases("expenseitem", expenseitem.NewService, (*expenseitem.Service).Get, (*expenseitem.Service).Create, (*expenseitem.Service).Update, (*expenseitem.Service).List)...)
 	cases = append(cases, localCases("invoicein", invoicein.NewService, (*invoicein.Service).Get, (*invoicein.Service).Create, (*invoicein.Service).Update, (*invoicein.Service).List)...)
 	cases = append(cases, localCases("invoiceout", invoiceout.NewService, (*invoiceout.Service).Get, (*invoiceout.Service).Create, (*invoiceout.Service).Update, (*invoiceout.Service).List)...)
@@ -346,7 +351,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 17*4+7 {
+	if len(cases) != 18*4+7 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

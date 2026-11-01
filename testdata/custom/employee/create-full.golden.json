@@ -1,0 +1,17 @@
+{
+  "lastName": "Мойскладкин",
+  "firstName": "Петр",
+  "middleName": "Иванович",
+  "description": "Описание",
+  "externalCode": "EXT-1",
+  "archived": false,
+  "shared": true,
+  "email": "petr@example.test",
+  "phone": "+7(999)888-7766",
+  "inn": "222490425273",
+  "position": "Директор",
+  "salary": {"value": 12500050},
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/00f76fbb-cd3b-11e8-ac12-00080000002d", "type": "employee", "mediaType": "application/json"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/ffbc0889-cd3a-11e8-ac12-000700000002", "type": "group", "mediaType": "application/json"}},
+  "attributes": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata/attributes/ed14b498-cae3-11e8-9dd2-f3a300000044", "type": "attributemetadata", "mediaType": "application/json"}, "value": "Строковое доп поле"}]
+}
