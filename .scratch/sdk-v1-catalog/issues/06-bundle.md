@@ -85,3 +85,5 @@ BASE `1d90849`, code commit `efabaa8`.
   зависят от пакета positions; null отмечен как неподтверждённый.
 - Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
 - Регистрация в общих тестах опций и сброса ResponseInfo (`entity/options_test.go`) — `cc61f6a` (найдено в review C07).
+- Review 2b91a89: запись quantity — исключение из правила readonly, утверждено пользователем;
+  записано в contracts.md, spec.md и docs/catalog.md.

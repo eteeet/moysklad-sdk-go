@@ -21,11 +21,16 @@
   при Create (исключение из readonly-маркера источника). rate 0 и пустые name/code/isoCode отклоняются.
 - PriceType: `ReplaceAll` заменяет весь список (1–100 типов); существующие передаются через
   `pricetype.Existing(p)` с meta, иначе сервер создаст новый тип.
-- Service, Bundle, Variant: штрихкоды `model.Barcode` (объект с одним форматом) заменяются целиком;
-  доп. поля и цены продажи сервер сливает по метаданным и типу цены. `mod__tasnif__uz` и
-  `mod__marking__uz` — только с `transport.WithAcceptRegion(transport.RegionUZ)`.
+- Service, Bundle, Variant: штрихкод — `model.Barcode` (объект с одним форматом); доп. поля и цены
+  продажи сервер сливает по метаданным и типу цены. `mod__tasnif__uz` и `mod__marking__uz` — только
+  с `transport.WithAcceptRegion(transport.RegionUZ)`.
+- Штрихкоды при Update: у Bundle и Variant список заменяется целиком, пустой удаляет все (правила
+  создания у Variant скопированы источником из раздела комплекта и не подтверждены). У Service
+  источник замену не описывает: что делает пустой или неполный список, неизвестно.
 - Bundle: Create требует name и непустые components; `ComponentRequest{ID, Assortment, Quantity}` —
-  с ID изменяет существующий компонент. Компоненты — свой тип, не Position; отдельные мутации
+  с ID изменяет существующий компонент. Quantity пишется, хотя таблица источника помечает его
+  readonly: исключение из правила «readonly сильнее примеров» утверждено пользователем — без
+  количества компонент не имеет смысла, его передают примеры Create и добавления компонента. Компоненты — свой тип, не Position; отдельные мутации
   компонентов не входят. `GetComponents` читает одну страницу (`query.PageOptions`).
 - Variant: Create требует product и непустые characteristics. Значение характеристики
   (`CharacteristicValue`) сервер связывает с описанием по id, иначе по name; Update заменяет набор

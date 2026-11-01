@@ -321,6 +321,10 @@ Ticket: C04. [Источник](https://github.com/moysklad/api-remap-1.2-doc/bl
 Ticket: C06. [Источник](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/dictionaries/_bundle.md).
 Минимальный Create / особенность: **name; components — по методу**.
 
+Исключение, утверждённое пользователем 2026-11-02 (review 2b91a89): `quantity` компонента
+пишется в Create/Update вопреки marker readonly — C06 требует write с ID/quantity/assortment,
+примеры Create и POST components передают quantity.
+
 ### Атрибуты сущности
 
 [Таблица источника](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/dictionaries/_bundle.md#L8).

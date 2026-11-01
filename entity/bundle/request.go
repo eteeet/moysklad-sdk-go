@@ -5,7 +5,7 @@ import "github.com/eteeet/moysklad-sdk-go/model"
 // ComponentRequest — компонент при записи комплекта. ID указывает существующий компонент для
 // Update, без ID элемент — новый. Таблица источника помечает quantity «только для чтения», но
 // примеры Create и добавления компонента его передают: без количества компонент не имеет
-// смысла, поэтому SDK его пишет.
+// смысла, поэтому SDK его пишет (исключение утверждено, см. docs/catalog.md).
 type ComponentRequest struct {
 	ID         string          `json:"id,omitempty"`
 	Assortment model.Reference `json:"assortment,omitzero"`

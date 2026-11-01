@@ -87,7 +87,8 @@ Employee security и metadata states — явно описанные специ�
 - Одна Position/PositionRequest для совместимых строк; новое поле добавляется по
   источнику. Смена типа/смысла JSON-поля — основание отдельной формы, не отсутствие
   части полей. Bundle components и report rows не подгоняются под Position.
-- Readonly marker таблицы сильнее противоречащего write example. Отсутствие marker
+- Readonly marker таблицы сильнее противоречащего write example; исключения утверждает
+  пользователь и записывает contracts.md (bundle components quantity). Отсутствие marker
   само по себе не доказывает writable. Полная Write matrix C/U/null/required/immutable
   перед code обязательна; каталог полей не заменяет эту работу.
 - Деньги — float64 в копейках; баллы, quantity, процент и курс отдельно.
