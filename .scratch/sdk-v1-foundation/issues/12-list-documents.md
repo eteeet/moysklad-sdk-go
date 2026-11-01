@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,21 @@ Get/Create/Update tests сохранены.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `9acae45`, code commit `71b3390`.
+
+- `List` у PaymentIn/Out, CashIn/Out, InvoiceIn/Out, Supply, Demand, PurchaseOrder, Move,
+  PurchaseReturn через `internal/list.Entity`; позиции — только фактический ответ, без expand и
+  GetPositions. isDeleted=true;isDeleted=false отбирает и документы из корзины.
+- Решение: fields=stock в List документов не принимается. По _general.md остатки лежат в positions и
+  в списке приходят только с expand=positions (и limit ≤ 100); expand вне v1. Строки с остатками —
+  GetPositions (fields=stock там — D01). search у PurchaseReturn не подтверждён таблицей параметров,
+  но общий раздел контекстного поиска применим ко всем спискам — передаётся как есть.
+- Тесты (`internal/listtest`, 17 пакетов): точные method/path/query/headers, plain/gzip, пустой массив,
+  null/malformed/голый массив/204, APIError с ResponseInfo, ровно один запрос; неверные опции и
+  неподдержанный fields — ноль запросов; локальные ошибки (nil/отменённый ctx, Auth, транспорт) через
+  documenttest.LocalErrors. Строка — upstream-фикстура сущности.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS; старые
+  Get/Create/Update тесты и golden не менялись.

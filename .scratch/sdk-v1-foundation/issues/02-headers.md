@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/01-public-interface.md
 
@@ -49,3 +49,24 @@ malformed/unknown/negative/overflow значения, cancellation и race. Date
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `ba5d2bc`, code commit `8559a8f`.
+
+- `transport/headers.go`: константы всего инвентаря research; typed опции WithAcceptRegion,
+  WithAcceptLanguage, WithAcceptTimezone (RFC1123Z, числовая зона), WithBetaFeature (одно значение),
+  WithWebHookDisableByPrefix (повторные значения, не CSV), WithDownloadExpiration (целые секунды).
+  Pretty-print, Format-Millisecond, Cache-Control — через WithHeader. X-Lognex-WebHook-Disable
+  не поддерживается (отключён API 2026-10-01).
+- ResponseInfo: RateLimitLimit/Remaining, RetryTimeInterval/ResetAfter/LognexRetryAfter (мс),
+  RetryAfter (секунды или HTTP-date), ContentTimezone; malformed/negative/overflow → ok=false,
+  сырое значение в Header. DateTime по заголовку не перенастраивается.
+- 17 services и positions.GetPage принимают opts и ходят через Client.Send.
+- Тесты: entity/options_test.go — Get/Create/Update всех 17 и GetPositions 7 документов через HTTP,
+  точные method/path/query, успех и 401 с X-Lognex-Auth* в ResponseInfo и APIError; mutation-проверка
+  (opts→nil) падает. Отмена до и во время запроса, race.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: добавлены 401/auth headers, отмена in-flight, runtime Create/Update; Reset→ResetAfter.
+  Review Standards: method/query в тестах, Duration для download TTL, порядок комментария в headers.go.
+  Оставлено: WithHeader поверх WithBetaFeature может дать два значения — явный выбор caller.

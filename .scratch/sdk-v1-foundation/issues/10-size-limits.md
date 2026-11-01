@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/01-public-interface.md; ../../sdk-v1-foundation/issues/03-error-codes.md
 
@@ -47,3 +47,24 @@ cancellation. API limits batch1000/5min и async queue4 остаются gates X
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `3ada0c1`, code commit `7b2b9a9`.
+
+- Preflight в NewRequest/Send (каждая попытка): закодированное тело ≤ `MaxBodySize` (default 20 000 000),
+  метаданные ≤ `MaxHeaderSize` (default 8 000: request line, Host, Content-Length — и у записи без тела —
+  и каждое значение каждого заголовка, включая Authorization), вложенность ≤ `MaxDepth` (default 10).
+  0 — default, отрицательное — без проверки. Ответы не ограничиваются.
+- Client caps при неуточнённых единицах (перечислить в docs): MB/KB — десятичные (строже); глубина — только
+  объекты, корень = 1 (мягче, чтобы не отвергать принимаемое сервером; иначе ответит 2006); оценка
+  метаданных — HTTP/1.1, без cookies Jar, своего RoundTripper и HPACK. Do с собственным запросом не проверяет.
+- Base64/UTF-8 считаются по байтам json.Marshal; границы max/max+1 для тела (custom и default),
+  метаданных (custom и default 8000), глубины. Исходящих потоков нет — streaming/unknown length неприменимы;
+  отказ preflight не доходит до Limiter и сети.
+- Массивы: общего лимита 1000 нет; остаются проверки операций (positions ≤1000 в 7 документах).
+  batch1000/5 мин и очередь async 4 — gates X02/X03, не реализованы.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: глубина по объектам вместо объектов+массивов, Content-Length без тела, default 8000, допущения
+  в godoc. Review Standards: лимиты вычисляются в NewClient, checkHeaderSize — свободная функция, без
+  затенения max.

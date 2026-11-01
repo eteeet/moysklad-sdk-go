@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/01-public-interface.md
 
@@ -47,3 +47,20 @@ Reference href, UUID, Attribute href, null/empty, LIKE, archived/isDeleted. Orde
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `53ffa95`, code commit `a220c7c`.
+
+- Пакет `query`: Eq/NotEq/Less/LessOrEq/Greater/GreaterOrEq, Contains/StartsWith/EndsWith (~, ~=, =~),
+  IsEmpty/NotEmpty, RawCondition; `Filter(...)` и `Order(Asc/Desc...)`. Поля открытые: имя, href доп.
+  поля; значения — строка, UUID, href. Скрытых lookup нет.
+- По _general.md: повтор = → OR, != → AND, разные поля → AND; отклоняются = с неравенством того же поля
+  (пример sum=100;sum>99) и повтор <, <=, >, >= (будущая ошибка API). Повтор ~ разрешён — источник
+  его не ограничивает. ';' в значении → `\;`; значение с `\` в конце отклоняется. Raw допускает `\;`.
+- URL-кодирование один раз через url.Values: точный RawQuery в httptest (Unicode, %, &, +, ;, \, #, href).
+- Пустые заглушки transport/{filter,order,query,pagination}.go удалены: место query — пакет query.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: исправлены правило комбинаций, хвостовой backslash, escape в raw, лишний запрет
+  повторов ~ и полей order; добавлены isDeleted/одно поле order. Review Standards: префиксы в тестах,
+  точный RawQuery, сообщения ошибок.

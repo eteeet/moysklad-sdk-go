@@ -189,3 +189,12 @@
 - SHA-256: 34a1c0d903385209736565a7d8d166db33fb6194d4040c23e2060c6433cfd071
 
 </details>
+
+## Каталог кодов ошибок
+
+`errors/codes.go` сгенерирован `errors/gen_codes.go` из
+https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_errors.md,
+SHA-256 `709ead9554e75cfaf6430dcfdb0786ddb95bf0b17a1fe48c6c4a10ae7aff9199`, 545 кодов.
+Обновление: скачать файл нужной revision и выполнить
+`go run errors/gen_codes.go -rev <commit> <path>/_errors.md > errors/codes.go`, затем обновить
+ожидаемые значения в `errors/errors_test.go`.

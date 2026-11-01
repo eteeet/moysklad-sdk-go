@@ -3,6 +3,10 @@
 SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 Поддерживаемые возможности и план работ: [docs/coverage.md](docs/coverage.md).
 
+Опции вызова и метаданные ответа, коды ошибок, выпуск токена, List с filter/order и обход
+страниц, rate limiter, повторы и ограничения размера запроса: [docs/transport.md](docs/transport.md).
+У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
+
 ## Справочники
 
 Помимо Product и UOM, поддержаны следующие согласованные срезы:
@@ -16,7 +20,7 @@ SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 
 Общие `model.Address`, `AddressRequest` и открытый `CompanyType` описаны в
 [документации реквизитов](docs/requisites.md). Счета и другие отложенные подресурсы,
-List, Delete, expand и массовые операции в эти срезы не входят.
+Delete, expand и массовые операции в эти срезы не входят.
 
 ## Общие контракты документов и positions
 
@@ -55,7 +59,7 @@ Get/Create/Update документов и типизированные entity.Ge
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,
 строки — отдельным GetPositions. Embedded positions ограничены 1000 и полностью
-заменяют набор при Update. Expand, List/Delete/batch и отдельные mutations строк отложены.
+заменяют набор при Update. Expand, Delete/batch и отдельные mutations строк отложены.
 
 ## Product
 
@@ -64,7 +68,9 @@ Get/Create/Update документов и типизированные entity.Ge
 из пакета `github.com/eteeet/moysklad-sdk-go/errors` (импортируй с алиасом `sdkerrors`).
 
 Create требует непустой Name. Update требует UUID и хотя бы одно заданное поле.
-SDK не повторяет запросы автоматически. После ошибки создания с неизвестным результатом проверь аккаунт перед повторной отправкой.
+SDK не повторяет запись автоматически. После ошибки создания с неизвестным результатом проверь аккаунт
+перед повторной отправкой; `CreateRequest.SyncID` (UUID клиента) защищает повторный Create от дубля.
+`syncId` в API у товара только для чтения и задаётся при создании, поэтому в UpdateRequest его нет.
 
 Поддерживаемые поля записи:
 
@@ -73,7 +79,7 @@ SDK не повторяет запросы автоматически. Посл�
 - `owner`, `group`, `productFolder`, `uom`, `supplier`, `country` — ссылки без expand.
 - `buyPrice`, `minPrice`, `salePrices`, `attributes`.
 
-В модели чтения дополнительно есть `meta`, `id`, `accountId`, `updated`, `pathName`,
+В модели чтения дополнительно есть `meta`, `id`, `accountId`, `updated`, `syncId`, `pathName`,
 `effectiveVat`, `effectiveVatEnabled`, `isSerialTrackable`.
 Запросы используют отдельные модели: эти дополнительные поля в них не включены.
 
@@ -134,7 +140,7 @@ Update требует хотя бы одно заданное поле и отп
 Предварительного Get и локального слияния нет. Изменять разрешено только пользовательские UOM;
 при отказе сервера, в том числе для предустановленной UOM, доступен `*sdkerrors.APIError`.
 
-Пока нет List, поиска, пагинации, Delete, expand и массовых операций UOM.
+Пока нет Delete, expand и массовых операций UOM.
 Проверки Get/Create/Update используют локальный HTTP-сервер, без обращения к живому аккаунту.
 
 [Документация UOM](https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom).

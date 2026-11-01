@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: None
 
@@ -48,3 +48,19 @@ method-value types при variadic options. Параллельные запро�
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `7442803`, code commit `ba5d2bc`. Решение пользователя: per-call `opts ...RequestOption`
++ `WithResponseInfo(&info)`, без `Result[T]`. ADR: [0001](../../../docs/adr/0001-request-options.md).
+
+- transport: `RequestOption`, `RequestOptions`, `ResponseInfo`, `WithHeader`, `WithResponseInfo`,
+  `Config.Header` (client defaults), `Client.Send` — seam для limiter/retry.
+  Защищённые headers и дубли key по регистру отклоняются до отправки.
+- Прототип — UOM Get/Create/Update; остальные 16 services и positions переводит T02.
+  List/GetPositions/Report/Download зафиксированы формой в ADR, компилируются в своих tickets.
+- Consumer examples: `entity/uom/example_test.go`, включая слом method value.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Standards: стандарты не нарушены; по замечаниям unexported `newRequestOptions`,
+  `NewRequest` снова без opts. Review Spec: исправлены ADR (Download не через Send,
+  shared policy в Client, attempts в T09), добавлены тесты shared Client и дублей header.

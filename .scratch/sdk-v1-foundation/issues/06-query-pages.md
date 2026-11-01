@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/01-public-interface.md; ../../sdk-v1-foundation/issues/05-filter-order.md
 
@@ -48,3 +48,24 @@ Limit=0→1000 сохраняется. fields restrictions scoped, namedfilter h
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `a220c7c`, code commit `974f8c3`.
+
+- `query.ListOptions` (limit/offset/filter/order/search/namedfilter/fields + Extra) и
+  `query.ReportOptions` (momentFrom/momentTo в московском времени, groupBy, interval, filter + Extra).
+  Нулевые поля не передаются; max limit задаёт endpoint (`Values(maxLimit)`: 1000, у audit 100);
+  fields — одно значение; namedfilter — абсолютный href; expand/async и повтор typed-имён в Extra
+  отклоняются; Extra копируется. Константы `Param*` — инвентарь имён из research.
+- `model.DateTime.QueryValue`: «2006-01-02 15:04:05», миллисекунды только ненулевые
+  (риск: принимают ли отчёты миллисекунды, не подтверждено — проверить в F03).
+- `internal/list.Page[T]`: один GET коллекции {context, meta, rows}; голый массив, null rows,
+  нет meta.href, не-200 — ошибка. Не общий CRUD: только коллекции. positions.GetPage использует его;
+  его Limit=0→1000 сохранён (`query.MaxLimit`).
+- Для T11/T12: публичные List подключают ListOptions и ограничивают fields/search по endpoint.
+  Для A07: audit — maxLimit 100, default сервера 25.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: ReportOptions больше не блокирует search/order/fields в Extra, убраны лишние
+  limit/offset и проверка периода, проверка namedfilter, тест отмены. Review Standards: единый
+  список typed-имён (build), nonZero, query.MaxLimit в positions, тест без ветвления по имени.

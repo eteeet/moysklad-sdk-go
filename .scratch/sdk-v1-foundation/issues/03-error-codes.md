@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: None
 
@@ -47,3 +47,20 @@ APIError/детали, не делает autosplit или retry. HTML/empty/gzip
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `8559a8f`, code commit `2bf89ca`.
+
+- `errors/codes.go` сгенерирован `errors/gen_codes.go` из `_errors.md` revision 9a811cef
+  (SHA-256 источника в заголовке): 545 нетипизированных констант `CodeNNNN` с сообщением
+  источника в комментарии. Совместимы с `Detail.Code int`; неизвестные коды декодируются.
+  Семантических алиасов нет; дубль сообщения у 1004 и 1083 описан в тесте.
+- `APIError.HasCode`, `HasCode(err, code)` — все APIError цепочки, включая ветки errors.Join;
+  `StatusCode(err)`. Код 0 не совпадает. Ничего не классифицируется по тексту.
+- 413 — APIError с деталями и headers через ResponseInfo, один запрос без retry/autosplit.
+- Исправлен двойной префикс `moysklad:` у склеенных ошибок transport (gzip/encoding/read/limit).
+- Inventory test: provenance, 545 кодов, SHA-256 отсортированного списка id источника.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Standards/Spec: исправлены `&nbsp;`, хрупкий Comments[1], HasCode по всем веткам Join,
+  префикс. Осталось для docs-коммита волны: запись `_errors.md` в docs/upstream.md.

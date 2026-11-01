@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,22 @@ query encoding, server error/metadata и один запрос. Не добав�
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `7b2b9a9`, code commit `9acae45`.
+
+- `List(ctx, query.ListOptions, opts...) (*model.Collection[T], error)` у Product, UOM, Country,
+  ExpenseItem, Counterparty, Organization; общий `internal/list.Entity` (одна страница, без expand).
+- Матрица по источнику: limit/offset/filter/order/search/namedfilter — общие для списков сущностей
+  (_general.md), поля filter/order определяет API; fields — только Product `minimumStock`, у остальных
+  отклоняется до запроса; archived (true;false — всё) — у Product, ExpenseItem, Counterparty,
+  Organization, у UOM/Country поля нет.
+- Тесты (`internal/listtest`, 17 пакетов): точные method/path/query/headers, plain/gzip, пустой массив,
+  null/malformed/голый массив/204, APIError с ResponseInfo, ровно один запрос; неверные опции и
+  неподдержанный fields — ноль запросов; локальные ошибки (nil/отменённый ctx, Auth, транспорт) через
+  documenttest.LocalErrors. Строка — upstream-фикстура сущности.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS; старые
+  Get/Create/Update тесты и golden не менялись.
+- Review: обе оси одним прогоном на T11+T12 (раздельные агенты Standards и Spec); добавлены локальные
+  ошибки и фильтры только по поддержанным полям.

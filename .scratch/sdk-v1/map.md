@@ -45,19 +45,19 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| T01 | [Утвердить общий interface options/response metadata](../sdk-v1-foundation/issues/01-public-interface.md) | нет | needs-triage |
-| T02 | [Все request/response headers и интеграция options](../sdk-v1-foundation/issues/02-headers.md) | T01 | needs-triage |
-| T03 | [Каталог кодов ошибок и status-aware helpers](../sdk-v1-foundation/issues/03-error-codes.md) | нет | needs-triage |
-| T04 | [POST security/token](../sdk-v1-foundation/issues/04-security-token.md) | T01, T03 | needs-triage |
-| T05 | [Filter grammar и order](../sdk-v1-foundation/issues/05-filter-order.md) | T01 | needs-triage |
-| T06 | [Query options и получение одной страницы](../sdk-v1-foundation/issues/06-query-pages.md) | T01, T05 | needs-triage |
-| T07 | [Явный walker/iterator страниц](../sdk-v1-foundation/issues/07-iterator.md) | T06 | needs-triage |
-| T08 | [Weighted rate limiter и concurrency](../sdk-v1-foundation/issues/08-rate-concurrency.md) | T02 | needs-triage |
-| T09 | [Ограниченные retries/backoff](../sdk-v1-foundation/issues/09-safe-retry.md) | T03, T08 | needs-triage |
-| T10 | [Размеры запросов и endpoint limits](../sdk-v1-foundation/issues/10-size-limits.md) | T01, T03 | needs-triage |
-| T11 | [List шести существующих справочников](../sdk-v1-foundation/issues/11-list-dictionaries.md) | T02, T06 | needs-triage |
-| T12 | [List одиннадцати существующих документов](../sdk-v1-foundation/issues/12-list-documents.md) | T02, T06 | needs-triage |
-| T13 | [SyncID Product и единый контракт syncId](../sdk-v1-foundation/issues/13-product-syncid.md) | нет | needs-triage |
+| T01 | [Утвердить общий interface options/response metadata](../sdk-v1-foundation/issues/01-public-interface.md) | нет | resolved |
+| T02 | [Все request/response headers и интеграция options](../sdk-v1-foundation/issues/02-headers.md) | T01 | resolved |
+| T03 | [Каталог кодов ошибок и status-aware helpers](../sdk-v1-foundation/issues/03-error-codes.md) | нет | resolved |
+| T04 | [POST security/token](../sdk-v1-foundation/issues/04-security-token.md) | T01, T03 | resolved |
+| T05 | [Filter grammar и order](../sdk-v1-foundation/issues/05-filter-order.md) | T01 | resolved |
+| T06 | [Query options и получение одной страницы](../sdk-v1-foundation/issues/06-query-pages.md) | T01, T05 | resolved |
+| T07 | [Явный walker/iterator страниц](../sdk-v1-foundation/issues/07-iterator.md) | T06 | resolved |
+| T08 | [Weighted rate limiter и concurrency](../sdk-v1-foundation/issues/08-rate-concurrency.md) | T02 | resolved |
+| T09 | [Ограниченные retries/backoff](../sdk-v1-foundation/issues/09-safe-retry.md) | T03, T08 | resolved |
+| T10 | [Размеры запросов и endpoint limits](../sdk-v1-foundation/issues/10-size-limits.md) | T01, T03 | resolved |
+| T11 | [List шести существующих справочников](../sdk-v1-foundation/issues/11-list-dictionaries.md) | T02, T06 | resolved |
+| T12 | [List одиннадцати существующих документов](../sdk-v1-foundation/issues/12-list-documents.md) | T02, T06 | resolved |
+| T13 | [SyncID Product и единый контракт syncId](../sdk-v1-foundation/issues/13-product-syncid.md) | нет | resolved |
 
 ### Сотрудники, права, metadata и Audit
 
@@ -134,6 +134,12 @@ Type: wayfinder:map
 | X03 | [Async submit/status/result/cancel](../sdk-v1-optional/issues/03-async.md) | T02, T03, T08, T09, F01 | needs-info |
 
 ## Decisions so far
+
+- 2026-11-01, пользователь: T01 — per-call `opts ...RequestOption` + `WithResponseInfo(&info)`, не
+  Result[T] ([ADR 0001](../../docs/adr/0001-request-options.md)); X01–X03 не входят в v1; работа
+  захватками с остановкой после каждой; dirty worktree core-* — stash -u и удалить.
+- Захватка 1 (T01–T13) resolved: итоги и BASE в Answer каждого ticket. Отклонение T13: SyncID
+  Product без Update — по read-only маркеру источника.
 
 - Пользователь запросил план/spec/tickets для перечисленного профиля v1.
   Это авторизация planning, не запуска реализации или commit planning.

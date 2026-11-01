@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,20 @@ exactly-once при меняющемся наборе. Array-only PriceType не
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `974f8c3`, code commit `de7248f`.
+
+- `pages.All(ctx, client, first, opts...) iter.Seq2[*model.Collection[T], error]`: явный обход
+  от уже прочитанной первой страницы List/GetPositions/отчёта; обычные методы по-прежнему один запрос.
+- Следующая страница — только meta.nextHref: абсолютный, тот же scheme/host/path, что first.Meta.Href
+  (transport дополнительно проверяет origin и `..`); offset обязан расти — повтор, откат и невалидный
+  offset — ошибка. Память O(1): только текущая страница и offset. Query nextHref передаётся как есть.
+- ctx проверяется перед каждой страницей и запросом; ранний break не делает запросов.
+- Пустая страница с nextHref допустима (строки могли удалить); снимка и exactly-once нет — в godoc.
+- Array-only ресурсы (PriceType) не обходятся: All принимает только Collection.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: вместо `seen` (рост памяти) — прогресс offset, проверка ctx до первой страницы, пути
+  positions. Review Standards: GET и опции на каждой странице, единый префикс, конкретные ошибки,
+  ResponseInfo последней страницы.

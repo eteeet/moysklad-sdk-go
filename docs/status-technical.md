@@ -8,13 +8,13 @@
 
 - [x] Config: BaseURL, HTTPClient, Timeout
 - [x] Auth: Bearer token, Basic
-- [ ] Получение токена: POST security/token
+- [x] Получение токена: POST security/token (без повторов, Basic per call)
 - [x] Заголовки Accept, Content-Type, User-Agent
 - [x] gzip: Accept-Encoding и распаковка ответа
 - [x] Сброс Authorization при redirect на чужой origin
 - [x] APIError: status, errors[], code; errors.Is/As; префикс `moysklad:` один раз
-- [ ] Коды ошибок `_errors.md` как константы
-- [ ] Ответ 413 (превышен размер массива): отдельная обработка
+- [x] Коды ошибок `_errors.md` как константы (545), HasCode/StatusCode
+- [x] Ответ 413: APIError с деталями, без разбиения и повтора
 
 ## Общие типы и JSON
 
@@ -27,28 +27,28 @@
 - [x] DocumentRate, DocumentOverhead, FinanceOperation
 - [x] positions: Position/PositionRequest для всех товарных документов
 - [x] syncId: Create и Update (Counterparty, Organization, документы)
-- [ ] syncId в Product
+- [x] syncId в Product: чтение и Create (в Update read-only по API)
 - [ ] Раскрытые объекты вместо Reference (после expand)
 
 ## Заголовки
 
-- [ ] X-RateLimit-Limit, X-RateLimit-Remaining
-- [ ] X-Lognex-Retry-TimeInterval, X-Lognex-Reset, X-Lognex-Retry-After
-- [ ] X-Lognex-Accept-Timezone, X-Lognex-Content-Timezone
-- [ ] X-Lognex-Accept-Region, X-Lognex-Content-Region
-- [ ] Accept-Language
-- [ ] X-Lognex-WebHook-DisableByPrefix (старый X-Lognex-WebHook-Disable устарел)
-- [ ] X-Lognex-Remap-Beta-Feature
-- [ ] X-Lognex-API-Version-Deprecated
-- [ ] X-Lognex-Download-Expiration-Seconds
-- [ ] X-Lognex-Auth, X-Lognex-Auth-Message
+- [x] X-RateLimit-Limit, X-RateLimit-Remaining (разбор; единицы не уточнены)
+- [x] X-Lognex-Retry-TimeInterval, X-Lognex-Reset, X-Lognex-Retry-After (мс)
+- [x] X-Lognex-Accept-Timezone, X-Lognex-Content-Timezone
+- [x] X-Lognex-Accept-Region, X-Lognex-Content-Region
+- [x] Accept-Language
+- [x] X-Lognex-WebHook-DisableByPrefix (старый X-Lognex-WebHook-Disable отключён API)
+- [x] X-Lognex-Remap-Beta-Feature
+- [x] X-Lognex-API-Version-Deprecated (сырое значение в ResponseInfo.Header)
+- [x] X-Lognex-Download-Expiration-Seconds
+- [x] X-Lognex-Auth, X-Lognex-Auth-Message (в ResponseInfo, в том числе при APIError)
 
 ## Лимиты
 
-- [ ] 429: retry с backoff только для идемпотентных запросов, отмена через context
-- [ ] Rate limiter: 45 единиц за 3 с; вес 2→3→4 для логина/токена пользователя; 4 для решения-черновика; 5 для stock/all и stock/bystore
-- [ ] Параллельность: ≤5 от пользователя/решения, ≤20 от аккаунта
-- [ ] Размер: ≤8 КБ заголовки, ≤20 МБ тело
+- [x] 429/5xx: RetryPolicy только для GET/HEAD, подсказки сервера, отмена через context
+- [x] Rate limiter: 45 единиц за 3 с; вес 2→3→4 для логина/токена пользователя; 4 для решения-черновика; 5 для stock/all и stock/bystore
+- [x] Параллельность: ≤5 от пользователя/решения, ≤20 от аккаунта (в пределах процесса)
+- [x] Размер: ≤8 КБ заголовки, ≤20 МБ тело, вложенность 10 — preflight с выбором единиц SDK
 - [x] ≤1000 позиций в embedded positions: проверка до HTTP
 - [ ] Массовые операции: ≤1000 объектов, таймаут 5 мин
 - [ ] Async: ≤4 задачи в очереди на аккаунт
@@ -56,14 +56,14 @@
 ## Query-параметры
 
 - [x] limit/offset в GetPositions: 0→1000, 1…1000, offset≥0
-- [ ] limit/offset в List (`transport/pagination.go` — заглушка)
-- [ ] filter: операторы, ссылки, ID, доп. поля, «подобие» (`transport/filter.go` — заглушка)
-- [ ] order (`transport/order.go` — заглушка)
-- [ ] search: контекстный поиск
-- [ ] namedfilter: применение сохранённого фильтра
-- [ ] fields: одно значение, limit≤100 (stock и др.)
-- [ ] Параметры отчётов: momentFrom/momentTo, interval и др.
-- [ ] Обход страниц: walker/iterator
+- [x] limit/offset в List
+- [x] filter: операторы, ссылки, ID, доп. поля, «подобие»
+- [x] order
+- [x] search: контекстный поиск
+- [x] namedfilter: применение сохранённого фильтра
+- [x] fields: одно значение, только где документирован (Product: minimumStock); fields=stock у positions — D01
+- [x] Параметры отчётов: momentFrom/momentTo, groupBy, interval (query.ReportOptions)
+- [x] Обход страниц: pages.All по nextHref
 - [x] Нет скрытых запросов по href/nextHref
 - [ ] expand: limit≤100, глубина ≤3, в Create/Update — **последним, только по команде**
 
@@ -71,7 +71,7 @@
 
 - [x] Get/Create/Update: 6 справочников, 11 документов
 - [x] GetPositions: generic GetPage и typed в 7 документах
-- [ ] List
+- [x] List: 6 справочников, 11 документов
 - [ ] Delete и массовое удаление (POST …/delete)
 - [ ] Удаление в корзину
 - [ ] Массовое создание/обновление (POST массивом)
@@ -100,9 +100,9 @@
 
 ## Открытые замечания последнего ревью
 
-- [ ] Закоммитить 11 документов по тикетам
+- [x] Закоммитить 11 документов по тикетам
 - [ ] Дубли codecs_test.go → internal/documenttest
 - [ ] PositionRequest: Cost/InTransit после VATEnabled, комментарий Cost в model.go
 - [ ] Docs: условие валюты paymentin/paymentout, лишние write-формы, TODO purchaseorder
 - [ ] Docs: правило «пометка read-only важнее примеров»
-- [ ] Удалить устаревшие worktree core-*
+- [x] Удалить устаревшие worktree core-* (stash -u, branches сохранены)

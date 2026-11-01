@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/03-error-codes.md; ../../sdk-v1-foundation/issues/08-rate-concurrency.md
 
@@ -48,3 +48,24 @@ context не повторяются.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `7fb0c21`, code commit `cd465f9`.
+
+- `Config.Retry *RetryPolicy`; nil — без повторов. Повтор только GET/HEAD, не async (ни в query,
+  ни в строке endpoint), не при `WithoutRetry` (его ставит security.CreateToken). Поводы: 429, 500,
+  502, 503, 504 с чистой APIError и временные сбои соединения (EOF, reset, refused, pipe, timeout);
+  TLS/неверный URL, отмена ctx, decode после 2xx, неизвестная кодировка — нет. 1073 — как 429, бюджет
+  Limiter не меняется.
+- Пауза = max(подсказка, full-jitter экспоненты): X-Lognex-Retry-After/Reset в мс, Retry-After в секундах
+  или HTTP-date; MaxDelay ограничивает только экспоненту, подсказку не обрезает. Пауза больше MaxWait или
+  дедлайна ctx — повтора нет. Defaults 3 попытки, 500 мс, 30 с, 1 мин — выбор SDK.
+- Каждая попытка заново собирает запрос и проходит Limiter; слоты свободны во время паузы; body закрывает Do.
+- ResponseInfo — последней отправленной попытки (без ответа — StatusCode 0, Header nil), Attempts — число
+  отправленных. Отмена в паузе или в ожидании Limiter возвращает последнюю APIError вместе с ctx.Err().
+- Тесты на часах без sleep: решения, паузы и подсказки, обрыв (с Connection: close — иначе net/http сам
+  повторяет GET на переиспользованном соединении), отмены, слоты в паузе, параллельные вызовы под -race.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec/Standards: исправлены info после финального обрыва, async в endpoint, узкий список временных
+  ошибок, кодировка на 5xx, потеря APIError при отмене, имя sendOnce, единый список статусов.

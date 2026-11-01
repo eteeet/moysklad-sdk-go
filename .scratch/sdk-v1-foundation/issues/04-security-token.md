@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/01-public-interface.md; ../../sdk-v1-foundation/issues/03-error-codes.md
 
@@ -46,3 +46,20 @@ Exact method/path/headers/empty body; malformed/empty token, auth/API/context er
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `2bf89ca`, code commit `53ffa95`.
+
+- `security.Service.CreateToken(ctx, username, password, opts...)` — сознательно явные Basic
+  credentials per call вместо `CreateToken(ctx, options)` (research). POST security/token без тела,
+  только 200 + непустой access_token; Basic ставится последним `transport.WithAuth`, поэтому
+  работает на клиенте с Bearer и не подменяется caller. Auth клиента не меняется, NewClient не вызывает.
+- `Token` скрывает секрет в fmt (`%v/%+v/%#v`) и slog (LogValuer); json.Marshal раскрывает — описано.
+- transport: `WithAuth` (ADR 0001); 307/308 для не-GET/HEAD не повторяются (ErrUseLastResponse);
+  `Idempotency-Key`/`X-Idempotency-Key` защищены — иначе net/http повторил бы запись.
+- Тесты: plain/gzip, точные method/path/headers/пустое тело, 401/429/5xx/201/empty/missing/malformed/null
+  — по одной отправке, потерянный ответ (hijack) и отмена во время запроса без повтора, redirect.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Для T08/T09: WithAuth меняет principal вызова — limiter не должен списывать его с бюджета
+  Bearer клиента; security/token нужен явный признак «никогда не повторять», а не только «POST».

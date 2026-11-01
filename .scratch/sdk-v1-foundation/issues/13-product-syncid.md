@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: None
 
@@ -45,3 +45,21 @@ auto retry. Не добавлять syncId к ресурсам без этого
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+Code commit `3ada0c1`.
+
+- Product: `SyncID string` в модели чтения и `SyncID model.Field[string]` в CreateRequest.
+- Отклонение от текста ticket, по источнику: `_product.md` помечает syncId «Только для чтения» +
+  «Заполнение при создании», а `_general.md` — read-only поля игнорируются при обновлении. По правилу
+  spec «Readonly marker таблицы сильнее» SyncID в UpdateRequest нет, проверка «SyncID-only Update» для
+  Product неприменима; тест запрещает поле в UpdateRequest. У Counterparty/Organization/документов
+  маркер другой («после заполнения недоступно для изменения») — там SyncID в Update остаётся.
+- Единообразие: Counterparty, Organization и 11 документов — SyncID в чтении, Create, Update;
+  Country/ExpenseItem/UOM — поля нет ни в API, ни в SDK.
+- Тесты: оба codecs unset/value/empty/null, fixture null и значение, точное тело Create по HTTP,
+  APIError 1074, одна отправка без pre-GET и повтора.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review: обе оси одним агентом с раздельными заключениями (малый ticket); замечаний к коду нет,
+  убран дублированный комментарий.

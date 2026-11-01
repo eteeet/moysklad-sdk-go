@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md
 
@@ -48,3 +48,24 @@ Fake clock, rolling-window границы, fairness/queue cancellation; acquire 
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `de7248f`, code commit `7fb0c21`.
+
+- `transport.Limiter` (`NewLimiter(LimiterConfig)`) подключается явно через `Config.Limiter`; nil —
+  без ограничений SDK. Профиль обязателен (App/DraftApp/Employee/Unknown=4 ед.), часы `Clock` и
+  `Weight` подменяются. `DefaultWeight` — расписание _restrictions.md; часовой пояс дат источник не
+  задаёт — SDK берёт полночь по Москве; вес 5 только у GET report/stock/all и /bystore (путь относительно
+  BaseURL, включая /api/remap/1.2).
+- Скользящее окно 45 ед./3 с на principal, очередь ожидания бюджета по каналу; ≤5 principal и
+  `Account` ≤20 (делится между Limiter одного процесса; между процессами нужна внешняя координация —
+  в godoc). Порядок: слот principal → бюджет → слот аккаунта, ожидание бюджета не держит слот аккаунта.
+  Вес вне [1, Budget] прижимается. X-RateLimit-* не используются.
+- Send берёт слоты на каждый вызов и отпускает после чтения body. Вызов с WithAuth не расходует бюджет
+  клиента; `WithLimiter` учитывает его в бюджете своего principal.
+- Решение: без равномерного pacing и запаса окна — ровно правило источника; 429 обрабатывает T09.
+- Тесты на фейковых часах без sleep: веса и границы дат, окно ±1 нс, отмена в очереди, слоты аккаунта,
+  clamp веса, путь с префиксом, WithAuth/WithLimiter.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Для docs-коммита: термины principal/Profile в meta/GLOSSARY.md. Для F01: stream держит слоты до Close.
