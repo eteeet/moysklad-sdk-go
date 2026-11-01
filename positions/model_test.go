@@ -146,7 +146,7 @@ func TestPositionJSON(t *testing.T) {
 						t.Fatal(err)
 					}
 					if !reflect.DeepEqual(got, tc.want) {
-						t.Fatalf("commercial = %+v, want %+v", got, tc.want)
+						t.Fatalf("position = %+v, want %+v", got, tc.want)
 					}
 				})
 			}
