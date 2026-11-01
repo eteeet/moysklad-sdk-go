@@ -110,11 +110,11 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| F01 | [Transport для binary download](../sdk-v1-files-reports/issues/01-download-transport.md) | T02, T08, T10 | needs-triage |
-| F02 | [Files List/Upload/Download](../sdk-v1-files-reports/issues/02-files.md) | T02, T06, T10, F01 | needs-triage |
-| F03 | [Turnover.All](../sdk-v1-files-reports/issues/03-turnover-all.md) | T02, T06 | needs-triage |
-| F04 | [Turnover.ByStore](../sdk-v1-files-reports/issues/04-turnover-bystore.md) | F03 | needs-triage |
-| F05 | [Turnover.ByOperations](../sdk-v1-files-reports/issues/05-turnover-byoperations.md) | F03 | needs-triage |
+| F01 | [Transport для binary download](../sdk-v1-files-reports/issues/01-download-transport.md) | T02, T08, T10 | resolved |
+| F02 | [Files List/Upload/Download](../sdk-v1-files-reports/issues/02-files.md) | T02, T06, T10, F01 | resolved |
+| F03 | [Turnover.All](../sdk-v1-files-reports/issues/03-turnover-all.md) | T02, T06 | resolved |
+| F04 | [Turnover.ByStore](../sdk-v1-files-reports/issues/04-turnover-bystore.md) | F03 | resolved |
+| F05 | [Turnover.ByOperations](../sdk-v1-files-reports/issues/05-turnover-byoperations.md) | F03 | resolved |
 
 ### Фасад, примеры и готовность v1
 

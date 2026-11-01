@@ -16,7 +16,7 @@
 | `WithAcceptTimezone(now)` | `X-Lognex-Accept-Timezone`, дата с числовой зоной; DateTime моделей не меняет |
 | `WithBetaFeature(tag)` | `X-Lognex-Remap-Beta-Feature`, одно значение |
 | `WithWebHookDisableByPrefix(p...)` | `X-Lognex-WebHook-DisableByPrefix`, по значению на префикс |
-| `WithDownloadExpiration(ttl)` | `X-Lognex-Download-Expiration-Seconds`, целые секунды |
+| `WithDownloadExpiration(ttl)` | `X-Lognex-Download-Expiration-Seconds`, целые секунды (`Client.Download`, [файлы](files-reports.md)) |
 | `WithAuth(auth)`, `WithLimiter(l)` | авторизация и бюджет другого principal для одного вызова |
 | `WithoutRetry()` | запрет повтора вызова |
 | `WithResponseInfo(&info)` | статус, копия заголовков и число попыток последней отправки |

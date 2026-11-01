@@ -5,7 +5,7 @@
 иной набор методов указан в строке.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 
-Итого: справочники 22/59, документы 18/37, отчёты 0/9, прочее 2/8.
+Итого: справочники 23/59, документы 18/37, отчёты 1/9, прочее 3/8.
 
 ## Справочники
 
@@ -32,7 +32,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [x] context/employee — контекст сотрудника
 - [ ] eventfeed — лента событий (notes)
 - [x] expenseitem — статья расходов
-- [ ] files — файлы
+- [x] files — файлы: List/Upload/Download
 - [ ] group — отдел
 - [ ] gtd — ГТД (объект без endpoint)
 - [ ] images — изображения
@@ -119,7 +119,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] orders — plotseries
 - [ ] sales — plotseries
 - [ ] stock — all, all/current, bystore, bystore/current, byoperation, byslot/current (пакет-заглушка)
-- [ ] turnover — all/bystore/byoperations
+- [x] turnover — all/bystore/byoperations
 
 ## Прочие ресурсы
 
@@ -128,6 +128,6 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] notification/settings — настройки уведомлений
 - [ ] async — асинхронные задачи
 - [ ] security/token — получение токена
-- [ ] download — скачивание файлов
+- [x] download — скачивание файлов (transport.Client.Download)
 - [x] entity/metadata — общие метаданные, метаданные типа, описания доп. полей
 - [ ] wizard — автозаполнение (demand, salesreturn)

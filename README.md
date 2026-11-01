@@ -16,6 +16,9 @@ SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 Точки продаж, розничные смены, продажи и возвраты, бонусные программы и операции
 (`entity/retailstore`, `retailshift`, `retaildemand`, `retailsalesreturn`, `bonusprogram`,
 `bonustransaction`): [docs/retail.md](docs/retail.md).
+
+Скачивание файлов (`transport.Client.Download`), файлы объектов (`files`) и отчёт «Обороты»
+(`report/turnover`): [docs/files-reports.md](docs/files-reports.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
 
 ## Справочники

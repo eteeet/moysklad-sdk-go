@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-files-reports/issues/03-turnover-all.md
 
@@ -47,3 +47,20 @@ unknown operation type, не триGET/all с агрегацией; один ser
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `252bb73`, code commit `779882b`; общий тест опций — `b6e8188`.
+
+- `turnover.Service.ByOperations(ctx, DetailOptions, opts...)` → `*model.Collection[OperationRow]`, GET
+  report/turnover/byoperations, один запрос без сборки из All. Обязательный фильтр product или variant —
+  из `DetailOptions.Assortment` (как у ByStore); повтор в Filter отклоняется; limit/offset не переносятся.
+- `OperationRow{Assortment, Store, Operation, Quantity, Cost, Sum}`: Quantity — количество, Cost — себестоимость
+  единицы, Sum — сумма себестоимостей (копейки). `Operation{Meta, Name, Description, Moment, Agent}`: тип
+  документа открыт, пакеты документов SDK не нужны.
+- Противоречия: таблица метода называет momentFrom/momentTo обязательными, текст и пример дают умолчания —
+  SDK их не требует, пример `ExampleService_ByOperations` задаёт явный период; moment операции в таблице —
+  Object, в ответах — дата (SDK: DateTime). Каждый фильтр — одно непустое значение (сервер).
+- Фикстуры: upstream строка и полная страница (`testdata/custom/turnover/byoperations.json`, SHA-256).
+- Review Standards: t.Run по codecs. Review Spec: фикстура страницы и пример с явным периодом.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

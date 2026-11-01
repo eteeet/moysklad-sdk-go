@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,22 @@ entity ID requirement, default groupBy product.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `bf97b07`, code commit `f7e1507`.
+
+- `turnover.Service.All(ctx, AllOptions, opts...)` → `*model.Collection[Row]`, GET report/turnover/all.
+- `AllOptions`: Limit/Offset (через `query.PageOptions`, 0 → 1000), MomentFrom/MomentTo, GroupBy
+  (product по умолчанию сервера, variant), Filter (результат query.Filter), Extra без повтора typed-полей.
+- `Row`: assortment (`Assortment{Meta, Name, Code, Article, Image (JSON как есть), ProductFolder, UOM}`) и
+  четыре `Metrics{Sum, Quantity}`: Sum — себестоимость в копейках, Quantity — количество. Все показатели
+  источник помечает «обязательное при ответе» — обычные float64, не nullable.
+- Период по умолчанию (последний месяц; только momentTo — с начала года; только momentFrom — по сегодня)
+  решает сервер — в godoc. Зона расчёта — `transport.WithAcceptTimezone`, ответ — `ResponseInfo.ContentTimezone`;
+  DateTime моделей от неё не зависит.
+- Фикстуры: upstream строка и полная страница из источника (`testdata/custom/turnover/all.json`, SHA-256).
+- Review Standards: `Extra`, общая проверка страницы через PageOptions, точные значения метрик в тесте,
+  полный префикс в ошибках; package doc описывает только реализованное. Review Spec: полный пример
+  страницы; оговорка про московское время ReportOptions и сдвиг в зону клиента — в docs волны.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

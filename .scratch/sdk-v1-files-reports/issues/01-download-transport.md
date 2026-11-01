@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/08-rate-concurrency.md; ../../sdk-v1-foundation/issues/10-size-limits.md
 
@@ -47,3 +47,28 @@ Large responses без 20-MB upload cap, cancellation/short read/redirect chain/
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `5a703f2`, code commit `423de8d`; общий тест опций — `b6e8188`.
+
+Интерфейс: `transport.Client.Download(ctx, href string, w io.Writer, opts ...RequestOption) (int64, error)`.
+Выбран writer, а не ReadCloser: тело закрывается внутри на всех путях, слоты limiter держатся до конца
+копирования, у вызывающего кода нет обязанности закрыть. Решение записано в ADR 0001.
+
+- href — относительный endpoint или абсолютный URL того же origin, что BaseURL; чужой origin отклоняется
+  до отправки (нет SSRF). Redirect на подписанный URL другого origin разрешён, Authorization удаляется
+  (общий CheckRedirect); query подписанного URL в текст ошибки не попадает.
+- Без ограничения размера ответа; Config.Timeout к телу не применяется (иначе большие файлы обрывались
+  бы через 6 минут) — срок задаёт ctx. gzip распаковывается явно, независимо от DisableCompression.
+- Повторы по Config.Retry — только пока в w ничего не записано; после частичной записи — ошибка и число
+  байт, решение за вызывающим кодом. WithoutRetry отключает. Ответ не 2xx — APIError (тело ≤ 1 МБ).
+- ResponseInfo — последний ответ цепочки redirect (заголовки хранилища), Attempts — число попыток.
+- Тесты: 21 МБ без лимита, same-origin абсолютный href, цепочка redirect (auth внутри API, без auth на
+  хранилище), ошибка хранилища, чужой href, утечка подписи, повтор 503 и отказ от повтора после
+  частичной записи, обрыв тела, отмена, ошибка writer, gzip и gzip-ошибка при DisableCompression,
+  освобождение слотов после успеха, ошибки и отмены.
+- Review Standards: общий `acquire` для Send и Download, повторы как обещал ADR, Attempts при сетевой
+  ошибке, тест gzip, строгая проверка префикса. Review Spec: ADR, таймаут, явный gzip, цепочка redirect,
+  ResponseInfo после redirect, ошибки writer. Docs/status — в завершающем коммите волны.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

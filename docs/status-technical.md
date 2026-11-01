@@ -84,7 +84,7 @@
 - [ ] Шаблон документа: PUT entity/{type}/new
 - [ ] Автозаполнение: wizard/demand, wizard/salesreturn
 - [ ] Печать (export), публикации, шаблоны печатных форм
-- [ ] Файлы и изображения: загрузка base64, скачивание
+- [x] Файлы: список, загрузка base64, скачивание по downloadHref (изображения — нет)
 - [x] Metadata: entity/{type}/metadata, states (customtemplate/embeddedtemplate — нет)
 - [ ] Доп. поля: CRUD описаний, типы файл/справочник
 - [ ] Async: async=true, статус, результат, отмена
