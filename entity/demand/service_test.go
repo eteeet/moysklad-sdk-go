@@ -1,0 +1,440 @@
+package demand_test
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"sync/atomic"
+	"testing"
+
+	"github.com/eteeet/moysklad-sdk-go/entity/demand"
+	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/positions"
+	"github.com/eteeet/moysklad-sdk-go/transport"
+)
+
+const testID = "11111111-1111-1111-1111-111111111111"
+
+func TestServiceGet(t *testing.T) {
+	invoke := func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+		s, err := demand.NewService(client)
+		if err != nil {
+			return nil, err
+		}
+		return s.Get(ctx, testID)
+	}
+	for _, tc := range documenttest.ResponseCases(`{"id":"server-id","name":"server-name","positions":{"meta":{"href":"https://example.test/positions","size":2}}}`) {
+		t.Run(tc.Name, func(t *testing.T) {
+			documenttest.HTTP(t, tc, "GET", "entity/demand/"+testID+"", nil, invoke, func(got *demand.Demand) {
+				if got.ID != "server-id" || got.Name != "server-name" {
+					t.Fatalf("response = %+v", got)
+				}
+				if got.Positions == nil || got.Positions.Rows != nil || got.Positions.Meta.Size != 2 {
+					t.Fatalf("metadata/rows = %+v", got.Positions)
+				}
+			})
+		})
+	}
+	documenttest.LocalErrors(t, invoke)
+}
+func TestServiceCreate(t *testing.T) {
+	invoke := func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+		s, err := demand.NewService(client)
+		if err != nil {
+			return nil, err
+		}
+		return s.Create(ctx, fullCreateRequest())
+	}
+	for _, tc := range documenttest.ResponseCases(`{"id":"server-id","name":"server-name","positions":{"meta":{"href":"https://example.test/positions","size":2}}}`) {
+		t.Run(tc.Name, func(t *testing.T) {
+			body, err := os.ReadFile("../../testdata/custom/demand/create-full.golden.json")
+			if err != nil {
+				t.Fatal(err)
+			}
+			documenttest.HTTP(t, tc, "POST", "entity/demand", body, invoke, func(got *demand.Demand) {
+				if got.ID != "server-id" || got.Name != "server-name" {
+					t.Fatalf("response = %+v", got)
+				}
+				if got.Positions == nil || got.Positions.Rows != nil || got.Positions.Meta.Size != 2 {
+					t.Fatalf("metadata/rows = %+v", got.Positions)
+				}
+			})
+		})
+	}
+	documenttest.LocalErrors(t, invoke)
+}
+func TestServiceUpdate(t *testing.T) {
+	invoke := func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+		s, err := demand.NewService(client)
+		if err != nil {
+			return nil, err
+		}
+		return s.Update(ctx, testID, fullUpdateRequest())
+	}
+	for _, tc := range documenttest.ResponseCases(`{"id":"server-id","name":"server-name","positions":{"meta":{"href":"https://example.test/positions","size":2}}}`) {
+		t.Run(tc.Name, func(t *testing.T) {
+			body, err := os.ReadFile("../../testdata/custom/demand/update-full.golden.json")
+			if err != nil {
+				t.Fatal(err)
+			}
+			documenttest.HTTP(t, tc, "PUT", "entity/demand/"+testID+"", body, invoke, func(got *demand.Demand) {
+				if got.ID != "server-id" || got.Name != "server-name" {
+					t.Fatalf("response = %+v", got)
+				}
+				if got.Positions == nil || got.Positions.Rows != nil || got.Positions.Meta.Size != 2 {
+					t.Fatalf("metadata/rows = %+v", got.Positions)
+				}
+			})
+		})
+	}
+	documenttest.LocalErrors(t, invoke)
+}
+func TestServiceMinimalBodies(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		method string
+		body   string
+		invoke func(context.Context, *transport.Client) (*demand.Demand, error)
+	}{
+		{"minimal Create", "POST", "{\"organization\":{\"meta\":{\"href\":\"https://example.test/organization\",\"type\":\"organization\"}},\"agent\":{\"meta\":{\"href\":\"https://example.test/agent\",\"type\":\"agent\"}}}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Create(ctx, demand.CreateRequest{
+				Organization: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/organization",
+						Type: model.MetaType("organization"),
+					},
+				},
+				Agent: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/agent",
+						Type: model.MetaType("agent"),
+					},
+				},
+			})
+		}},
+		{"minimal Update", "PUT", "{\"applicable\":false}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Update(ctx, testID, demand.UpdateRequest{
+				Applicable: model.Value(false),
+			})
+		}},
+		{"SyncID Update", "PUT", "{\"syncId\":\"first-sync\"}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Update(ctx, testID, demand.UpdateRequest{
+				SyncID: model.Value("first-sync"),
+			})
+		}},
+		{"unapplied without store", "POST", "{\"organization\":{\"meta\":{\"href\":\"https://example.test/organization\",\"type\":\"organization\"}},\"agent\":{\"meta\":{\"href\":\"https://example.test/agent\",\"type\":\"agent\"}},\"applicable\":false}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Create(ctx, demand.CreateRequest{
+				Organization: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/organization",
+						Type: model.MetaType("organization"),
+					},
+				},
+				Agent: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/agent",
+						Type: model.MetaType("agent"),
+					},
+				},
+				Applicable: model.Value(false),
+			})
+		}},
+		{"safe with store", "POST", "{\"organization\":{\"meta\":{\"href\":\"https://example.test/organization\",\"type\":\"organization\"}},\"agent\":{\"meta\":{\"href\":\"https://example.test/agent\",\"type\":\"agent\"}},\"store\":{\"meta\":{\"href\":\"https://example.test/store\",\"type\":\"store\"}}}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Create(ctx, demand.CreateRequest{
+				Organization: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/organization",
+						Type: model.MetaType("organization"),
+					},
+				},
+				Agent: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/agent",
+						Type: model.MetaType("agent"),
+					},
+				},
+				Store: model.Value(model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/store",
+						Type: model.MetaType("store"),
+					},
+				}),
+			})
+		}},
+		{"positions omitted", "PUT", "{\"description\":\"\"}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Update(ctx, testID, demand.UpdateRequest{
+				Description: model.Value(""),
+			})
+		}},
+		{"positions empty", "PUT", "{\"positions\":[]}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Update(ctx, testID, demand.UpdateRequest{
+				Positions: model.Value([]PositionRequest{}),
+			})
+		}},
+		{"positions null", "PUT", "{\"positions\":null}", func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.Update(ctx, testID, demand.UpdateRequest{
+				Positions: model.Null[[]PositionRequest](),
+			})
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			path := "entity/demand"
+			if tc.method == "PUT" {
+				path += "/" + testID
+			}
+			documenttest.HTTP(t, documenttest.ResponseCase{Name: "plain", Success: true, Status: 200, Body: `{"id":"response"}`}, tc.method, path, []byte(tc.body), tc.invoke, func(got *demand.Demand) {
+				if got.ID != "response" {
+					t.Fatal(got)
+				}
+			})
+		})
+	}
+}
+func TestServiceValidation(t *testing.T) {
+	if s, err := demand.NewService(nil); err == nil || s != nil {
+		t.Fatal("nil client accepted")
+	}
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		_, _ = w.Write([]byte(`{"id":"response"}`))
+	}))
+	defer server.Close()
+	client, err := transport.NewClient(transport.Config{BaseURL: server.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := demand.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name   string
+		invoke func() (*demand.Demand, error)
+	}{
+		{"bad Get id", func() (*demand.Demand, error) { return service.Get(t.Context(), "../invalid") }},
+		{"bad Update id", func() (*demand.Demand, error) {
+			return service.Update(t.Context(), "invalid", demand.UpdateRequest{
+				Applicable: model.Value(false),
+			})
+		}},
+		{"empty Update", func() (*demand.Demand, error) { return service.Update(t.Context(), testID, demand.UpdateRequest{}) }},
+		{"missing organization", func() (*demand.Demand, error) {
+			return service.Create(t.Context(), demand.CreateRequest{
+				Organization: model.Reference{
+					Meta: model.Meta{},
+				},
+				Agent: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/agent",
+						Type: model.MetaType("agent"),
+					},
+				},
+			})
+		}},
+		{"missing agent", func() (*demand.Demand, error) {
+			return service.Create(t.Context(), demand.CreateRequest{
+				Organization: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/organization",
+						Type: model.MetaType("organization"),
+					},
+				},
+				Agent: model.Reference{
+					Meta: model.Meta{},
+				},
+			})
+		}},
+		{"too many Create positions", func() (*demand.Demand, error) {
+			return service.Create(t.Context(), demand.CreateRequest{
+				Organization: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/organization",
+						Type: model.MetaType("organization"),
+					},
+				},
+				Agent: model.Reference{
+					Meta: model.Meta{
+						Href: "https://example.test/agent",
+						Type: model.MetaType("agent"),
+					},
+				},
+				Positions: model.Value(make([]demand.PositionRequest, 1001))})
+		}},
+		{"too many Update positions", func() (*demand.Demand, error) {
+			return service.Update(t.Context(), testID, demand.UpdateRequest{Positions: model.Value(make([]demand.PositionRequest, 1001))})
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := tc.invoke()
+			if err == nil || got != nil {
+				t.Fatalf("result=%+v error=%v", got, err)
+			}
+		})
+	}
+	if calls.Load() != 0 {
+		t.Fatalf("validation sent %d requests", calls.Load())
+	}
+	for _, size := range []int{0, 1000} {
+		input := demand.CreateRequest{
+			Organization: model.Reference{
+				Meta: model.Meta{
+					Href: "https://example.test/organization",
+					Type: model.MetaType("organization"),
+				},
+			},
+			Agent: model.Reference{
+				Meta: model.Meta{
+					Href: "https://example.test/agent",
+					Type: model.MetaType("agent"),
+				},
+			},
+		}
+		input.Positions = model.Value(make([]demand.PositionRequest, size))
+		if got, err := service.Create(t.Context(), input); err != nil || got == nil {
+			t.Fatalf("Create size=%d err=%v", size, err)
+		}
+		if got, err := service.Update(t.Context(), testID, demand.UpdateRequest{Positions: model.Value(make([]demand.PositionRequest, size))}); err != nil || got == nil {
+			t.Fatalf("Update size=%d err=%v", size, err)
+		}
+	}
+}
+func TestServiceGetPositions(t *testing.T) {
+	for _, page := range []positions.PageOptions{{}, {Limit: 1, Offset: 7}} {
+		limit := page.Limit
+		if limit == 0 {
+			limit = 1000
+		}
+		query := fmt.Sprintf("?limit=%d&offset=%d", limit, page.Offset)
+		invoke := func(ctx context.Context, client *transport.Client) (*model.Collection[demand.Position], error) {
+			s, err := demand.NewService(client)
+			if err != nil {
+				return nil, err
+			}
+			return s.GetPositions(ctx, testID, page)
+		}
+		for _, tc := range documenttest.ResponseCases(`{"meta":{"href":"https://example.test/positions"},"rows":[{"id":"row","quantity":1.25,"price":12.75,"overhead":0.0,"cost":7.25,"shipped":0.5,"inTransit":0.75,"sourceSlot":{"meta":{"href":"https://example.test/source"}},"targetSlot":{"meta":{"href":"https://example.test/target"}}}]}`) {
+			t.Run(tc.Name+query, func(t *testing.T) {
+				documenttest.HTTP(t, tc, "GET", "entity/demand/"+testID+"/positions"+query, nil, invoke, func(got *model.Collection[demand.Position]) {
+					if len(got.Rows) != 1 || got.Rows[0].ID != "row" || got.Rows[0].Quantity != 1.25 || got.Rows[0].Price != 12.75 || got.Rows[0].Cost != 7.25 || got.Rows[0].Shipped != 0.5 || got.Rows[0].InTransit != 0.75 || got.Rows[0].SourceSlot == nil || got.Rows[0].TargetSlot == nil {
+						t.Fatalf("rows = %+v", got.Rows)
+					}
+				})
+			})
+		}
+		for _, tc := range []documenttest.ResponseCase{{Name: "empty page", Success: true, Status: 200, Body: `{"meta":{"href":"https://example.test/positions"},"rows":[]}`}, {Name: "missing meta", Status: 200, Body: `{"rows":[]}`}, {Name: "missing rows", Status: 200, Body: `{"meta":{"href":"https://example.test/positions"}}`}, {Name: "null rows", Status: 200, Body: `{"meta":{"href":"https://example.test/positions"},"rows":null}`}} {
+			t.Run(tc.Name+query, func(t *testing.T) {
+				documenttest.HTTP(t, tc, "GET", "entity/demand/"+testID+"/positions"+query, nil, invoke, func(got *model.Collection[demand.Position]) {
+					if got.Rows == nil || len(got.Rows) != 0 {
+						t.Fatal(got)
+					}
+				})
+			})
+		}
+		documenttest.LocalErrors(t, invoke)
+	}
+	client, err := transport.NewClient(transport.Config{HTTPClient: &http.Client{Transport: rejectTransport{t}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s, err := demand.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		id   string
+		page positions.PageOptions
+	}{{"invalid", positions.PageOptions{}}, {testID, positions.PageOptions{Limit: -1}}, {testID, positions.PageOptions{Limit: 1001}}, {testID, positions.PageOptions{Offset: -1}}} {
+		got, err := s.GetPositions(t.Context(), tc.id, tc.page)
+		if err == nil || got != nil {
+			t.Fatalf("result=%+v err=%v", got, err)
+		}
+	}
+}
+
+type rejectTransport struct{ t *testing.T }
+
+func (r rejectTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	r.t.Error("validation sent HTTP")
+	return nil, fmt.Errorf("unexpected request")
+}
+
+func TestServiceCostForServicePositions(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		cost model.Field[float64]
+		wire string
+	}{
+		{"omitted", model.Field[float64]{}, ""},
+		{"zero", model.Value(0.0), `,"cost":0`},
+		{"fraction", model.Value(123.25), `,"cost":123.25`},
+		{"null", model.Null[float64](), `,"cost":null`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rows := model.Value([]demand.PositionRequest{{ItemRequest: positions.ItemRequest{Assortment: model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/service", Type: "service"}}), Quantity: model.Value(1.0)}, Cost: tc.cost}})
+			rowJSON := `"positions":[{"assortment":{"meta":{"href":"https://example.test/service","type":"service"}},"quantity":1` + tc.wire + `}]`
+			createInput := demand.CreateRequest{Organization: model.Reference{Meta: model.Meta{Href: "https://example.test/organization"}}, Agent: model.Reference{Meta: model.Meta{Href: "https://example.test/agent"}}, Positions: rows}
+			updateInput := demand.UpdateRequest{Positions: rows}
+			for _, op := range []string{"Create", "Update"} {
+				t.Run(op, func(t *testing.T) {
+					path, method, body := "entity/demand", http.MethodPost, `{"organization":{"meta":{"href":"https://example.test/organization"}},"agent":{"meta":{"href":"https://example.test/agent"}},`+rowJSON+`}`
+					if op == "Update" {
+						path += "/" + testID
+						method = http.MethodPut
+						body = `{` + rowJSON + `}`
+					}
+					invoke := func(ctx context.Context, client *transport.Client) (*demand.Demand, error) {
+						service, err := demand.NewService(client)
+						if err != nil {
+							return nil, err
+						}
+						if op == "Create" {
+							return service.Create(ctx, createInput)
+						}
+						return service.Update(ctx, testID, updateInput)
+					}
+					documenttest.HTTP(t, documenttest.ResponseCase{Name: "cost service", Status: 200, Success: true, Body: `{"id":"server-id"}`}, method, path, []byte(body), invoke, func(got *demand.Demand) {
+						if got.ID != "server-id" {
+							t.Fatal(got)
+						}
+					})
+				})
+			}
+		})
+	}
+}
