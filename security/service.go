@@ -36,6 +36,7 @@ func (t Token) LogValue() slog.Value { return slog.StringValue(t.String()) }
 // Auth клиента не меняется.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/general#4-poluchenie-novogo-tokena
 func (s *Service) CreateToken(ctx context.Context, username, password string, opts ...transport.RequestOption) (*Token, error) {
+	transport.ResetResponseInfo(opts)
 	auth, err := transport.BasicAuth(username, password)
 	if err != nil {
 		return nil, fmt.Errorf("create token: %w", err)

@@ -215,4 +215,10 @@ func TestCreateTokenLocalErrorResetsInfo(t *testing.T) {
 		info.StatusCode != 0 || info.Attempts != 0 || info.Header != nil {
 		t.Fatalf("err = %v, stale info = %+v", err, info)
 	}
+	// Ревью 35078b4: составная опция тоже обнуляется до проверки логина.
+	info = transport.ResponseInfo{StatusCode: 200, Attempts: 1}
+	wrapped := func(o *transport.RequestOptions) { transport.WithResponseInfo(&info)(o) }
+	if _, err := service.CreateToken(t.Context(), "", "password", wrapped); err == nil || info.StatusCode != 0 || info.Attempts != 0 {
+		t.Fatalf("composed option: err = %v, stale info = %+v", err, info)
+	}
 }

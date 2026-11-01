@@ -26,6 +26,7 @@ func NewService(client *transport.Client) (*Service, error) {
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-poluchit-tovar
 func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*Product, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: product id must be a UUID")
 	}
@@ -36,6 +37,7 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-sozdat-tovar
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль товара.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Product, error) {
+	transport.ResetResponseInfo(opts)
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create product: name must not be empty")
 	}
@@ -44,6 +46,7 @@ func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...trans
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-izmenit-tovar
 func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*Product, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update product: id must be a UUID")
 	}

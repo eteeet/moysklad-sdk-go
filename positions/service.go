@@ -39,6 +39,7 @@ func NewService[T any](client *transport.Client, documentType string) (*Service[
 // Metadata positions в заголовке документа не означает, что строки уже прочитаны.
 // https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L2468-L2525
 func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOptions, opts ...transport.RequestOption) (*model.Collection[T], error) {
+	transport.ResetResponseInfo(opts)
 	operation := "get " + s.documentType + " " + documentID + " positions"
 	if !validID(documentID) {
 		return nil, fmt.Errorf("moysklad: %s: document id must be a UUID", operation)

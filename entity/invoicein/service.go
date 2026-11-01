@@ -27,6 +27,7 @@ func NewService(client *transport.Client) (*Service, error) {
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
 func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*InvoiceIn, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: invoicein id must be a UUID")
 	}
@@ -36,6 +37,7 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль InvoiceIn.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*InvoiceIn, error) {
+	transport.ResetResponseInfo(opts)
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create invoicein: name must not be empty")
 	}
@@ -53,6 +55,7 @@ func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...trans
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
 func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*InvoiceIn, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update invoicein: id must be a UUID")
 	}
@@ -93,6 +96,7 @@ func validID(id string) bool {
 // GetPositions читает одну страницу без expand, скрытого Get и автоматического обхода.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
 func (s *Service) GetPositions(ctx context.Context, id string, page positions.PageOptions, opts ...transport.RequestOption) (*model.Collection[Position], error) {
+	transport.ResetResponseInfo(opts)
 	reader, err := positions.NewService[Position](s.client, "invoicein")
 	if err != nil {
 		return nil, err

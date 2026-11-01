@@ -26,6 +26,7 @@ func NewService(client *transport.Client) (*Service, error) {
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/expenseitem#3-poluchit-statyu-rashodov
 func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*ExpenseItem, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: expenseitem id must be a UUID")
 	}
@@ -35,6 +36,7 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/expenseitem#3-sozdat-statyu-rashodov
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль ExpenseItem.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*ExpenseItem, error) {
+	transport.ResetResponseInfo(opts)
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create expenseitem: name must not be empty")
 	}
@@ -43,6 +45,7 @@ func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...trans
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/expenseitem#3-izmenit-statyu-rashodov
 func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*ExpenseItem, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update expenseitem: id must be a UUID")
 	}

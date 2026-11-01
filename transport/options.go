@@ -59,16 +59,19 @@ func WithHeader(key, value string) RequestOption {
 }
 
 // WithResponseInfo заполняет info при получении ответа, в том числе при APIError.
-// info обнуляется уже при создании опции: локальная ошибка вызова (валидация до запроса)
-// не оставляет в нём данных прошлого вызова. Если ответа нет, info остаётся нулевым.
-// Опцию создают на каждый вызов: при переиспользовании одного значения опции обнуление
-// при создании не повторится.
+// Публичная операция обнуляет info на входе (ResetResponseInfo), до локальной валидации:
+// если ответа нет, info остаётся нулевым.
 func WithResponseInfo(info *ResponseInfo) RequestOption {
-	if info != nil {
-		*info = ResponseInfo{}
-	}
 	return func(o *RequestOptions) {
 		o.ResponseInfo = info
+	}
+}
+
+// ResetResponseInfo обнуляет ResponseInfo из opts, в том числе переданный через составную
+// опцию. Публичные операции вызывают её первой строкой, до проверки аргументов.
+func ResetResponseInfo(opts []RequestOption) {
+	if info := newRequestOptions(opts...).ResponseInfo; info != nil {
+		*info = ResponseInfo{}
 	}
 }
 

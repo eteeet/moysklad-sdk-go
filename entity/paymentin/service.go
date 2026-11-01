@@ -26,6 +26,7 @@ func NewService(client *transport.Client) (*Service, error) {
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-in
 func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*PaymentIn, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: paymentin id must be a UUID")
 	}
@@ -35,6 +36,7 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-in
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль PaymentIn.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*PaymentIn, error) {
+	transport.ResetResponseInfo(opts)
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create paymentin: organization.meta.href must not be empty")
 	}
@@ -46,6 +48,7 @@ func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...trans
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-in
 func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*PaymentIn, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update paymentin: id must be a UUID")
 	}

@@ -26,6 +26,7 @@ func NewService(client *transport.Client) (*Service, error) {
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashout
 func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*CashOut, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: cashout id must be a UUID")
 	}
@@ -35,6 +36,7 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashout
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль CashOut.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*CashOut, error) {
+	transport.ResetResponseInfo(opts)
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create cashout: organization.meta.href must not be empty")
 	}
@@ -49,6 +51,7 @@ func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...trans
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashout
 func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*CashOut, error) {
+	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update cashout: id must be a UUID")
 	}

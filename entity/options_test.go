@@ -230,46 +230,123 @@ func testServiceOptions(t *testing.T, tc optionsCase, unauthorized bool) {
 	}
 }
 
-// Регрессия ревью 46e9d06: локальная ошибка (валидация до запроса) не оставляет в ResponseInfo
-// метаданных предыдущего успешного вызова.
+// localCase — вызов, который падает на локальной проверке до запроса.
+type localCase struct {
+	name   string
+	invoke func(context.Context, *transport.Client, ...transport.RequestOption) error
+}
+
+func localCases[S, C, U, T any](name string, newService func(*transport.Client) (*S, error),
+	get func(*S, context.Context, string, ...transport.RequestOption) (*T, error),
+	create func(*S, context.Context, C, ...transport.RequestOption) (*T, error),
+	update func(*S, context.Context, string, U, ...transport.RequestOption) (*T, error),
+	list func(*S, context.Context, query.ListOptions, ...transport.RequestOption) (*model.Collection[T], error)) []localCase {
+	call := func(f func(*S, context.Context, ...transport.RequestOption) error) func(context.Context, *transport.Client, ...transport.RequestOption) error {
+		return func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, err := newService(c)
+			if err != nil {
+				return err
+			}
+			return f(s, ctx, opts...)
+		}
+	}
+	var zeroCreate C
+	var zeroUpdate U
+	return []localCase{
+		{name + " get invalid id", call(func(s *S, ctx context.Context, opts ...transport.RequestOption) error {
+			_, err := get(s, ctx, "bad", opts...)
+			return err
+		})},
+		{name + " create empty", call(func(s *S, ctx context.Context, opts ...transport.RequestOption) error {
+			_, err := create(s, ctx, zeroCreate, opts...)
+			return err
+		})},
+		{name + " update no fields", call(func(s *S, ctx context.Context, opts ...transport.RequestOption) error {
+			_, err := update(s, ctx, testID, zeroUpdate, opts...)
+			return err
+		})},
+		{name + " list limit", call(func(s *S, ctx context.Context, opts ...transport.RequestOption) error {
+			_, err := list(s, ctx, query.ListOptions{Limit: 1001}, opts...)
+			return err
+		})},
+	}
+}
+
+func positionsLocal[S, P any](name string, newService func(*transport.Client) (*S, error),
+	get func(*S, context.Context, string, positions.PageOptions, ...transport.RequestOption) (*model.Collection[P], error)) localCase {
+	return localCase{name + " positions invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+		s, err := newService(c)
+		if err != nil {
+			return err
+		}
+		_, err = get(s, ctx, "bad", positions.PageOptions{}, opts...)
+		return err
+	}}
+}
+
+// composed — свежая составная опция поверх WithResponseInfo (сценарий ревью 35078b4).
+func composed(info *transport.ResponseInfo) transport.RequestOption {
+	return func(o *transport.RequestOptions) {
+		transport.WithResponseInfo(info)(o)
+	}
+}
+
+// Регрессия ревью 46e9d06 и 35078b4: локальная ошибка (валидация до запроса) не оставляет
+// в ResponseInfo метаданных предыдущего вызова, и при составной опции тоже.
 func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Lognex-Content-Region", "kz")
-		w.Write([]byte(`{"id":"` + testID + `"}`))
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"errors":[{"error":"x","code":1074}]}`))
 	}))
 	defer server.Close()
 	client, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {
 		t.Fatal(err)
 	}
-	units, err := uom.NewService(client)
-	if err != nil {
-		t.Fatal(err)
-	}
-	demands, err := demand.NewService(client)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var info transport.ResponseInfo
-	for name, call := range map[string]func() error{
-		"get invalid id": func() error {
-			_, err := units.Get(t.Context(), "bad", transport.WithResponseInfo(&info))
-			return err
-		},
-		"list limit": func() error {
-			_, err := units.List(t.Context(), query.ListOptions{Limit: 1001}, transport.WithResponseInfo(&info))
-			return err
-		},
-		"positions invalid id": func() error {
-			_, err := demands.GetPositions(t.Context(), "bad", positions.PageOptions{}, transport.WithResponseInfo(&info))
-			return err
-		},
-	} {
-		if _, err := units.Get(t.Context(), testID, transport.WithResponseInfo(&info)); err != nil || info.StatusCode != 200 {
-			t.Fatalf("%s: setup: err = %v, info = %+v", name, err, info)
+	var cases []localCase
+	cases = append(cases, localCases("cashin", cashin.NewService, (*cashin.Service).Get, (*cashin.Service).Create, (*cashin.Service).Update, (*cashin.Service).List)...)
+	cases = append(cases, localCases("cashout", cashout.NewService, (*cashout.Service).Get, (*cashout.Service).Create, (*cashout.Service).Update, (*cashout.Service).List)...)
+	cases = append(cases, localCases("counterparty", counterparty.NewService, (*counterparty.Service).Get, (*counterparty.Service).Create, (*counterparty.Service).Update, (*counterparty.Service).List)...)
+	cases = append(cases, localCases("country", country.NewService, (*country.Service).Get, (*country.Service).Create, (*country.Service).Update, (*country.Service).List)...)
+	cases = append(cases, localCases("demand", demand.NewService, (*demand.Service).Get, (*demand.Service).Create, (*demand.Service).Update, (*demand.Service).List)...)
+	cases = append(cases, localCases("expenseitem", expenseitem.NewService, (*expenseitem.Service).Get, (*expenseitem.Service).Create, (*expenseitem.Service).Update, (*expenseitem.Service).List)...)
+	cases = append(cases, localCases("invoicein", invoicein.NewService, (*invoicein.Service).Get, (*invoicein.Service).Create, (*invoicein.Service).Update, (*invoicein.Service).List)...)
+	cases = append(cases, localCases("invoiceout", invoiceout.NewService, (*invoiceout.Service).Get, (*invoiceout.Service).Create, (*invoiceout.Service).Update, (*invoiceout.Service).List)...)
+	cases = append(cases, localCases("move", move.NewService, (*move.Service).Get, (*move.Service).Create, (*move.Service).Update, (*move.Service).List)...)
+	cases = append(cases, localCases("organization", organization.NewService, (*organization.Service).Get, (*organization.Service).Create, (*organization.Service).Update, (*organization.Service).List)...)
+	cases = append(cases, localCases("paymentin", paymentin.NewService, (*paymentin.Service).Get, (*paymentin.Service).Create, (*paymentin.Service).Update, (*paymentin.Service).List)...)
+	cases = append(cases, localCases("paymentout", paymentout.NewService, (*paymentout.Service).Get, (*paymentout.Service).Create, (*paymentout.Service).Update, (*paymentout.Service).List)...)
+	cases = append(cases, localCases("product", product.NewService, (*product.Service).Get, (*product.Service).Create, (*product.Service).Update, (*product.Service).List)...)
+	cases = append(cases, localCases("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).Get, (*purchaseorder.Service).Create, (*purchaseorder.Service).Update, (*purchaseorder.Service).List)...)
+	cases = append(cases, localCases("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).Get, (*purchasereturn.Service).Create, (*purchasereturn.Service).Update, (*purchasereturn.Service).List)...)
+	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
+	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases,
+		positionsLocal("demand", demand.NewService, (*demand.Service).GetPositions),
+		positionsLocal("invoicein", invoicein.NewService, (*invoicein.Service).GetPositions),
+		positionsLocal("invoiceout", invoiceout.NewService, (*invoiceout.Service).GetPositions),
+		positionsLocal("move", move.NewService, (*move.Service).GetPositions),
+		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
+		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
+		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+	)
+	for _, tc := range cases {
+		for _, option := range map[string]func(*transport.ResponseInfo) transport.RequestOption{
+			"direct": transport.WithResponseInfo, "composed": composed,
+		} {
+			// Прошлый вызов оставил 503 и три попытки.
+			info := transport.ResponseInfo{StatusCode: 503, Attempts: 3, Header: http.Header{"X-Stale": {"1"}}}
+			err := tc.invoke(t.Context(), client, option(&info))
+			if err == nil || sdkerrors.StatusCode(err) != 0 {
+				t.Fatalf("%s: expected local error, got %v", tc.name, err)
+			}
+			if info.StatusCode != 0 || info.Attempts != 0 || info.Header != nil {
+				t.Errorf("%s: stale info = %+v", tc.name, info)
+			}
 		}
-		if err := call(); err == nil || info.StatusCode != 0 || info.Attempts != 0 || info.Header != nil {
-			t.Errorf("%s: err = %v, stale info = %+v", name, err, info)
-		}
+	}
+	if len(cases) != 17*4+7 {
+		t.Fatalf("cases = %d", len(cases))
 	}
 }

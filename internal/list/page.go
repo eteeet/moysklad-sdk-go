@@ -39,6 +39,7 @@ func Page[T any](ctx context.Context, client *transport.Client, operation, endpo
 // а expand вне SDK; строки с остатками читает GetPositions.
 func Entity[T any](ctx context.Context, client *transport.Client, entity string, options query.ListOptions,
 	fields []string, opts ...transport.RequestOption) (*model.Collection[T], error) {
+	transport.ResetResponseInfo(opts)
 	operation := "list " + entity
 	if options.Fields != "" && !slices.Contains(fields, options.Fields) {
 		return nil, fmt.Errorf("moysklad: %s: fields=%q is not supported", operation, options.Fields)
