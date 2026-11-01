@@ -5,7 +5,7 @@
 иной набор методов указан в строке.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 
-Итого: справочники 19/59, документы 15/37, отчёты 0/9, прочее 2/8.
+Итого: справочники 22/59, документы 18/37, отчёты 0/9, прочее 2/8.
 
 ## Справочники
 
@@ -13,8 +13,8 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] aggregatepack — транспортная упаковка
 - [ ] application — серверные решения
 - [x] assortment — ассортимент: List (assortmentWithoutStock) и ListLegacy
-- [ ] bonusprogram — бонусная программа
-- [ ] bonustransaction — бонусная операция
+- [x] bonusprogram — бонусная программа
+- [x] bonustransaction — бонусная операция
 - [x] bundle — комплект: Get/List/Create/Update, GetComponents/GetComponent
 - [ ] cashier — кассир (retailstore/{id}/cashiers)
 - [x] characteristic — характеристики модификаций: List/Get/Create
@@ -50,7 +50,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] productfolder — группа товаров
 - [ ] project — проект
 - [ ] region — регион
-- [ ] retailstore — точка продаж
+- [x] retailstore — точка продаж
 - [x] role — пользовательские роли и предустановленные (Preset)
 - [ ] saleplatform — площадка для продаж
 - [ ] saleschannel — канал продаж
@@ -100,11 +100,11 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] productiontask — производственное задание
 - [x] purchaseorder — заказ поставщику
 - [x] purchasereturn — возврат поставщику
-- [ ] retaildemand — розничная продажа
+- [x] retaildemand — розничная продажа
 - [ ] retaildrawercashin — внесение денег
 - [ ] retaildrawercashout — выплата денег
-- [ ] retailsalesreturn — розничный возврат
-- [ ] retailshift — розничная смена
+- [x] retailsalesreturn — розничный возврат
+- [x] retailshift — розничная смена
 - [ ] retireorder — вывод из оборота
 - [x] salesreturn — возврат покупателя
 - [x] supply — приёмка

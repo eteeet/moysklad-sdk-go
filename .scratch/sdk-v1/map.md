@@ -99,12 +99,12 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| E01 | [RetailStore Get/List/Create/Update](../sdk-v1-retail/issues/01-retailstore.md) | T02, T06 | needs-triage |
-| E02 | [RetailShift Get/List/Create/Update](../sdk-v1-retail/issues/02-retailshift.md) | T02, T06 | needs-triage |
-| E03 | [RetailDemand Get/List/Create/Update/GetPositions](../sdk-v1-retail/issues/03-retaildemand.md) | T02, T06, D01 | needs-triage |
-| E04 | [RetailSalesReturn Get/List/Create/Update/GetPositions](../sdk-v1-retail/issues/04-retailsalesreturn.md) | T02, T06, D01 | needs-triage |
-| E05 | [BonusProgram Get/List/Create/Update](../sdk-v1-retail/issues/05-bonusprogram.md) | T02, T06 | needs-triage |
-| E06 | [BonusTransaction Get/List/Create/Update](../sdk-v1-retail/issues/06-bonustransaction.md) | T02, T06 | needs-triage |
+| E01 | [RetailStore Get/List/Create/Update](../sdk-v1-retail/issues/01-retailstore.md) | T02, T06 | resolved |
+| E02 | [RetailShift Get/List/Create/Update](../sdk-v1-retail/issues/02-retailshift.md) | T02, T06 | resolved |
+| E03 | [RetailDemand Get/List/Create/Update/GetPositions](../sdk-v1-retail/issues/03-retaildemand.md) | T02, T06, D01 | resolved |
+| E04 | [RetailSalesReturn Get/List/Create/Update/GetPositions](../sdk-v1-retail/issues/04-retailsalesreturn.md) | T02, T06, D01 | resolved |
+| E05 | [BonusProgram Get/List/Create/Update](../sdk-v1-retail/issues/05-bonusprogram.md) | T02, T06 | resolved |
+| E06 | [BonusTransaction Get/List/Create/Update](../sdk-v1-retail/issues/06-bonustransaction.md) | T02, T06 | resolved |
 
 ### Файлы и семейство отчётов Turnover
 

@@ -13,8 +13,8 @@ Create — POST `entity/<type>`, Update — PUT `entity/<type>/{id}`.
 После неоднозначного сбоя POST проверь результат на сервере до повторного создания.
 
 Get/Update проверяют форму UUID без ограничения версии. Create проверяет только
-непустой Meta.Href обязательных ссылок, а у InvoiceIn/InvoiceOut также Name != ""
-без trim. Update отклоняет полностью незаданный request. Name остальных документов
+непустой Meta.Href обязательных ссылок, а у InvoiceIn/InvoiceOut и RetailSalesReturn также
+Name != "" без trim. Update отклоняет полностью незаданный request. Name остальных документов
 необязателен; SDK не подставляет суммы, даты, имена и другие defaults.
 Типы/доступность ссылок, требуемые сочетания полей и бизнес-правила проверяет API.
 
@@ -35,7 +35,7 @@ float64 в копейках, без округления, пересчётов �
 ## Позиции
 
 InvoiceIn, InvoiceOut, Supply, Demand, PurchaseOrder, Move, PurchaseReturn, CustomerOrder, Enter,
-Loss и SalesReturn используют
+Loss, SalesReturn, RetailDemand и RetailSalesReturn ([розница](retail.md)) используют
 общие `positions.Position`/`PositionRequest`. Каждый entity-пакет экспортирует aliases
 `Position` и `PositionRequest`, а Service предоставляет типизированный
 `GetPositions(ctx, id, positions.PageOptions) (*model.Collection[Position], error)`.

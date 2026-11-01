@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -45,3 +45,34 @@ reads; tax/price/payment settings exact JSON, readonly secure fields не отп
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `2f21bcf`, code commit `69c8611`; общий тест опций — `410a255`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| name, organization, store, priceType | значения / ссылки | обяз. | Field |
+| 29 флагов (active, allowCreateProducts, controlShippingStock, required*, sync*, qrPayEnabled …) | `bool` | Field | Field |
+| address, description, demandPrefix, idQR, qrTerminalId | `string` | Field | Field |
+| 8 перечислений (defaultTaxSystem, orderTaxSystem, fiscalType, markingSellingMode, marksCheckMode, minionToMasterType, priorityOfdSend, tobaccoMrcControlType) | открытые `string` | Field | Field |
+| bankPercent, qrBankPercent, discountMaxPercent | `float64` (проценты) | Field | Field |
+| acquire, qrAcquire, createOrderWithState, orderToState, organizationBranch, owner, group, receiptTemplate | `*Reference` | Field | Field |
+| addressFull | `*Address` | Field | Field |
+| createAgentsTags, filterAgentsTags | `[]string` | Field | Field |
+| customerOrderStates | `[]Reference` | Field | Field |
+| masterRetailStores, productFolders | `*Links` (коллекция или массив) | Field `[]Reference` | Field |
+| externalCode, allowCustomPrice, authTokenAttached, ofdEnabled, environment, state, lastOperationNames, id, meta, accountId, updated | readonly | — | — |
+| cashiers | `*Collection` (meta) | — (администрирование кассиров не входит) | — |
+
+- environment и state — `jsontext.Value` без потерь: readonly, SDK их не интерпретирует; вложенные таблицы
+  источника (ПО, ККТ, ФН, синхронизация) не типизированы — осознанное решение.
+- Противоречия: createAgentsTags — Array(Object) в таблице, строки в описании и примерах (SDK: строки);
+  discountMaxPercent — Int в таблице, 100.0 в фикстуре (float64); masterRetailStores/productFolders —
+  объект коллекции в фикстуре и массив в примере ответа Create (`Links` читает обе формы); пример Create
+  передаёт readonly allowCustomPrice и authTokenAttached (не пишутся).
+- Конфликт allowCreateProducts/controlShippingStock, тариф и валюта счёта организации — сервер; тест
+  отправляет конфликт как есть. Скрытых чтений настроек нет.
+- Review Standards: замечаний нет. Review Spec: `Links` для двух форм, причина исключения cashiers
+  исправлена (не readonly, а вне scope), golden расширен (перечисления, ссылки, null).
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

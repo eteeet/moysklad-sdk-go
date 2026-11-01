@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-documents/issues/01-position-contracts.md
 
@@ -45,3 +45,30 @@ Based/unbased minimal bodies, cash/noCash explicit0, active shift/moment про�
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `64d76cd`, code commit `2114fad`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| name, organization, store, retailStore, retailShift, agent | значения / `*Reference` | обяз. | Field (кроме agent) |
+| demand (RetailDemand) | `*Reference` | Field — только по основанию | нет: запрещено |
+| agentAccount | `*Reference` | Field | нет: запрещено |
+| cashSum, noCashSum | копейки | Field (без основания обязательны; Value(0) уходит) | Field |
+| qrSum | копейки | Field | Field |
+| organizationAccount, contract, owner, group, state | `*Reference` | Field | Field |
+| description, code, externalCode, syncId, moment, applicable, shared, attributes, rate, taxSystem, vatEnabled, vatIncluded | значения | Field | Field |
+| positions | `*Collection[Position]` | Field, ≤1000 | Field, ≤1000, заменяет все строки |
+| organizationBranch, sum, vatSum, printed, published, id, meta, accountId, created, updated, deleted | | — | — |
+
+- Минимальные тела: по основанию (demand без позиций) и без основания (cashSum и noCashSum = 0) — в тестах.
+- Сервер проверяет: активность смены и moment, совпадение контрагента/юрлица/валюты с основанием, строки
+  основания с количеством не больше исходного; на Update — валюту и строки не из основания, счёт при смене
+  organization, неизменность syncId. Запреты Update взяты из источника, не по аналогии с SalesReturn.
+- Противоречие: agent метод называет обязательным, но примеры записи его не передают — SDK следует методу.
+- Строки — общая форма D01: cost (без основания), pack, things; GetPositions — `fields=stock`
+  (у возврата без основания stock без cost).
+- Review Standards: имя обязательно по методу; исключение для общего guide документов — в docs-коммите
+  волны. Review Spec: противоречие agent, минимальные тела, комментарий stock.cost, syncId — исправлено.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

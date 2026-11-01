@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -45,3 +45,29 @@ effects только документированным Update и с явным 
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `69c8611`, code commit `c476624`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| organization, retailStore | `*Reference` | обяз. | Field |
+| organizationAccount, organizationBranch, store, owner, group, acquire, qrAcquire | `*Reference` | Field | Field |
+| name, description, externalCode, syncId, moment, closeDate, shared, attributes | значения | Field | Field |
+| bankComission, qrBankComission, bankPercent, qrBankPercent | `float64` | Field | Field |
+| cheque {start, end} | `*Cheque` | `ChequeRequest` (Field) | `ChequeRequest` |
+| proceedsCash/NoCash, receivedCash/NoCash (копейки), printed, published, meta, id, accountId, created, deleted, files | | — | — |
+| operations | `[]Reference` | — | — |
+| paymentOperations | `[]FinanceOperation` (linkedSum) | — | — |
+| updated | `DateTime` | — (нет маркера readonly, но запись не описана) | — |
+
+- Позиций и GetPositions у смены нет. Открытие — Create, закрытие — явный closeDate/cheque в Update; SDK
+  смену сам не создаёт и не ищет. Открытая смена: closeDate и cheque.end отсутствуют (тест).
+- Store без значения сервер берёт из точки; комиссии не больше безналичных платежей — сервер.
+- syncId после заполнения не меняется (сервер); Null у organization/retailStore отправляется как есть.
+- Фикстура содержит agentAccount, contract, vatEnabled, vatIncluded, которых нет в таблице смены, — не
+  моделируются.
+- Review Standards: отдельный `ChequeRequest` на Field — 0 и "" больше не теряются (golden с chequesTotal 0).
+- Review Spec: paymentOperations — `model.FinanceOperation` с linkedSum; единица комиссий не утверждается.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

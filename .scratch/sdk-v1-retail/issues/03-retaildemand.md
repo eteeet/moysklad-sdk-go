@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-documents/issues/01-position-contracts.md
 
@@ -46,3 +46,31 @@ fiscal/read-only fields, server permissions и ошибки, ни автомат
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `c476624`, code commit `64d76cd`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| retailShift | `*Reference` | обяз. (по методу) | Field |
+| agent, store | `*Reference` | Field (таблица: «Необходимо при создании» — противоречит методу) | Field |
+| agentAccount, organizationAccount, owner, group, state, customerOrder | `*Reference` | Field | Field |
+| name, description, code, externalCode, syncId, moment, applicable, shared, attributes, rate, taxSystem, vatEnabled, vatIncluded | значения | Field | Field |
+| cashSum, noCashSum, qrSum, prepaymentCashSum, prepaymentNoCashSum, prepaymentQrSum, advancePaymentSum, checkSum | копейки | Field | Field |
+| checkNumber, documentNumber, sessionNumber | `int` | Field | Field |
+| giftCards | `[]GiftCard{Name, PaymentSum}` | `[]GiftCardRequest{Name}` | то же |
+| positions | `*Collection[Position]` | Field, ≤1000 | Field, ≤1000, заменяет все строки |
+| organization, organizationBranch (readonly), retailStore (записи нет в источнике), cheque, sum, vatSum, payedSum, printed, published, id, meta, accountId, created, updated, deleted, files | | — | — |
+
+- Противоречия: обязательность agent/store (таблица против метода — SDK следует методу); sum и payedSum в
+  примерах записи при маркере readonly; organization readonly при тексте Update о смене organization.
+- Правила оплаты (сумма полей = сумме продажи, без смешанной оплаты с QR, без аванса вместе с предоплатой,
+  распределение остатка) — сервер; тест отправляет несходящуюся оплату как есть. Активность смены и moment
+  позже смены — сервер. SDK не фискализирует и не начисляет бонусы.
+- Строки — общая форма D01: cost (услуги, Int в таблице, float64 копейки), pack, things, trackingCodes;
+  trackingCodes_1162 и declaration только читаются. GetPositions — `fields=stock` или `declaration`.
+- syncId после заполнения не меняется — проверяет сервер (как у прочих документов).
+- Review Standards: замечаний нет. Review Spec: матрица и противоречия записаны здесь; docs — в
+  завершающем коммите волны.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

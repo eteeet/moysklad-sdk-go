@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,22 @@ name/active/allProducts/allAgents/earnRateRoublesToPoint/spendRatePointsToRouble
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `2114fad`, code commit `0de1969`.
+
+| Поле | Read | Create | Update |
+| --- | --- | --- | --- |
+| name, active, allProducts, allAgents, earnRateRoublesToPoint, spendRatePointsToRouble, maxPaidRatePercents | значения | обяз., обычные значения (false и 0 уходят) | Field |
+| agentTags | `[]string` | Field | Field |
+| earnWhileRedeeming, welcomeBonusesEnabled, welcomeBonusesMode, welcomeBonusesValue, postponedBonusesDelayDays | значения | Field | Field |
+| id, meta, accountId | readonly | — | — |
+
+- Курсы, проценты, баллы и дни — `int`, не деньги; welcomeBonusesMode открыт.
+- Сервер проверяет диапазоны, приветственные баллы (не пусто при welcomeBonusesEnabled, не отрицательно)
+  и тарифную опцию отложенного начисления; тест отправляет 150% и −1 как есть. allProducts источник
+  описывает «всегда true» — SDK передаёт значение вызывающего кода.
+- Локально: непустое name (метод называет его обязательным), UUID и непустой Update.
+- Review Standards: замечаний нет. Review Spec: чтение отсутствующих полей как 0/"" отмечено в godoc.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

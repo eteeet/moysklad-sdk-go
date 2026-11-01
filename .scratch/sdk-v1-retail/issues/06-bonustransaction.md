@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -47,3 +47,29 @@ Draft — отдельное согласие и не доказано unit test
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `0de1969`, code commit `a98771c`; общий тест опций — `410a255`.
+
+| Поле | Read | Create | Update |
+| --- | --- | --- | --- |
+| agent, bonusProgram | `*Reference` | обяз. | Field |
+| transactionType (EARNING/SPENDING) | `string` | обяз. | нет: тип менять нельзя |
+| bonusValue | `int` (баллы) | Field | Field |
+| name, description, code, externalCode, moment, executionDate, applicable, shared | значения | Field | Field |
+| organization, owner, group, parentDocument | `*Reference` | Field | Field |
+| transactionStatus, categoryType (readonly), id, meta, accountId, created, updated, updatedBy | | — | — |
+
+- Перечисления открыты; статусы WAIT_PROCESSING, COMPLETED, CANCELED и неизвестный читаются (тест).
+- executionDate источник описывает для начислений (отложенная обработка, тарифная опция); для
+  списаний и баланс баллов решает сервер.
+- Противоречия: bonusProgram без маркера в таблице атрибутов, но обязателен в таблице метода; пример Create
+  передаёт readonly categoryType и не передаёт bonusProgram/transactionType; updatedBy назван атрибутом
+  только для фильтрации, но фикстура его возвращает.
+- Права: источник не описывает разрешения токенов. Синтетический отказ токену решения (WithAuth, 403)
+  возвращается как APIError после одной попытки, без перехода на токен клиента (тест). Live в Draft не
+  выполнялся.
+- Review Standards: замечаний нет. Review Spec: неподтверждённое утверждение о токене сотрудника убрано,
+  противоречия записаны, golden Update без недокументированного null.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

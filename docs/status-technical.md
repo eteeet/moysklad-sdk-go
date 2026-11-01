@@ -71,9 +71,9 @@
 
 ## Методы ресурсов
 
-- [x] Get/Create/Update: 13 справочников, 15 документов
-- [x] GetPositions: generic GetPage и typed в 11 документах
-- [x] List: 13 справочников и assortment, 15 документов
+- [x] Get/Create/Update: 16 справочников, 18 документов
+- [x] GetPositions: generic GetPage и typed в 13 документах
+- [x] List: 16 справочников и assortment, 18 документов
 - [x] Beta-режим: assortment List с assortmentWithoutStock, ListLegacy без него
 - [x] Вложенные коллекции справочников: компоненты комплекта (одна страница, без мутаций)
 - [ ] Delete и массовое удаление (POST …/delete)

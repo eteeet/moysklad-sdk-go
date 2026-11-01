@@ -12,6 +12,10 @@ SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 Валюты, типы цен, ставки НДС, услуги, комплекты, модификации и их характеристики, ассортимент
 (`entity/currency`, `pricetype`, `taxrate`, `service`, `bundle`, `variant`, `assortment`):
 [docs/catalog.md](docs/catalog.md).
+
+Точки продаж, розничные смены, продажи и возвраты, бонусные программы и операции
+(`entity/retailstore`, `retailshift`, `retaildemand`, `retailsalesreturn`, `bonusprogram`,
+`bonustransaction`): [docs/retail.md](docs/retail.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
 
 ## Справочники
