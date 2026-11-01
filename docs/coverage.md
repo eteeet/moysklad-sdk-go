@@ -26,12 +26,14 @@ integer за пределами 2^53. Это не относится к ID, сч
   OverheadDistribution с weight/volume/price; unknown значения сохраняются, распределяет сервер.
 - [x] `FinanceOperation`/`FinanceOperationRequest`: плоские meta/linkedSum,
   optional LinkedSum в запросе. Очистка/полное замещение operations по [] не обещаются.
-- [x] Общие `positions.Core`, `Item`, `Commercial` и отдельные request-формы:
+- [x] Общие `positions.Core`, `Item`, `Position` и отдельные request-формы:
   плоский JSON, matching ID embedded Update, Field с unset/null/value и пустыми/nil slice как [].
-- [x] `positions.Movement`/`MovementRequest`: отдельная форма без скидок/НДС,
-  Price/Overhead float64 в копейках, optional SourceSlot/TargetSlot; Overhead только чтение.
+- [x] Одна `positions.Position`/`PositionRequest` для всех товарных документов:
+  Price/Discount/Overhead float64 в копейках, VAT/VATEnabled, optional SourceSlot/TargetSlot;
+  Overhead только чтение. Допустимость заданных request-полей проверяет сервер.
   Nil-ссылки ячеек пропускаются при кодировании модели чтения через omitzero.
   Read/request/consumer container проверены обоими JSON codecs, включая 0/0.0/дроби и omission/null/[].
+  У move zero values VAT/VATEnabled означают отсутствующие поля, не «без НДС».
 - [x] `positions.Service[T any].GetPage`: открытый безопасный documentType, UUID,
   Limit=0→1000/1…1000, Offset>=0, один GET без body/expand/follow-up/auto-pagination.
   HTTP 200, непустой meta.href и non-null rows-array; пустая страница успешна, ID в T не нужен.
