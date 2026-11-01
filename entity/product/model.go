@@ -17,6 +17,7 @@ type Product struct {
 	Shared       bool           `json:"shared"`
 	PathName     string         `json:"pathName"`
 	Updated      model.DateTime `json:"updated,omitzero"`
+	SyncID       string         `json:"syncId"`
 
 	BuyPrice   *model.Price      `json:"buyPrice,omitzero"`
 	MinPrice   *model.Price      `json:"minPrice,omitzero"`

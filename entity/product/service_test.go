@@ -459,3 +459,39 @@ func TestServiceWriteRequestErrorWrapping(t *testing.T) {
 		}
 	}
 }
+
+// SyncID передаётся в Create как есть: без предварительного Get и без повтора при ошибке.
+func TestServiceCreateSyncID(t *testing.T) {
+	fixture, err := os.ReadFile("../../testdata/upstream/product_full.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, status := range []int{http.StatusOK, http.StatusServiceUnavailable} {
+		var calls atomic.Int32
+		service := newProductService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			calls.Add(1)
+			body, err := io.ReadAll(r.Body)
+			if err != nil || r.Method != http.MethodPost || r.URL.Path != "/api/remap/1.2/entity/product" {
+				t.Errorf("request = %s %s, err = %v", r.Method, r.URL, err)
+			}
+			assertJSONEqual(t, body, []byte(`{"name":"p","syncId":"12345678-1234-1234-1234-123456789012"}`))
+			w.WriteHeader(status)
+			if status == http.StatusOK {
+				w.Write(fixture)
+				return
+			}
+			w.Write([]byte(`{"errors":[{"error":"unavailable","code":1074}]}`))
+		}))
+		got, err := service.Create(t.Context(), product.CreateRequest{Name: "p", SyncID: model.Value("12345678-1234-1234-1234-123456789012")})
+		if calls.Load() != 1 {
+			t.Fatalf("status %d: calls = %d", status, calls.Load())
+		}
+		if status == http.StatusOK && (err != nil || got.SyncID != "12345678-1234-1234-1234-123456789012") {
+			t.Fatalf("got = %+v, err = %v", got, err)
+		}
+		var apiErr *sdkerrors.APIError
+		if status != http.StatusOK && (got != nil || !errors.As(err, &apiErr) || !sdkerrors.HasCode(err, sdkerrors.Code1074)) {
+			t.Fatalf("got = %+v, err = %v", got, err)
+		}
+	}
+}

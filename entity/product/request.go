@@ -30,6 +30,11 @@ type CreateRequest struct {
 	MinPrice   model.Field[model.Price]       `json:"minPrice,omitzero"`
 	SalePrices model.Field[[]model.SalePrice] `json:"salePrices,omitzero"`
 	Attributes model.Field[[]model.Attribute] `json:"attributes,omitzero"`
+
+	// SyncID — UUID, сгенерированный клиентом: повторный Create с тем же SyncID вернёт ранее
+	// созданный товар. Это не общий Idempotency-Key, SDK сам Create не повторяет.
+	// В UpdateRequest его нет: API помечает поле «только для чтения» и заполняет при создании.
+	SyncID model.Field[string] `json:"syncId,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-izmenit-tovar

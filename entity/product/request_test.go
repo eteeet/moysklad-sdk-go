@@ -18,6 +18,9 @@ func TestCreateRequestJSON(t *testing.T) {
 			}{
 				{product.CreateRequest{}, []byte(`{"name":""}`)},
 				{product.CreateRequest{Name: "SDK product"}, []byte(`{"name":"SDK product"}`)},
+				{product.CreateRequest{Name: "p", SyncID: model.Value("11111111-1111-1111-1111-111111111111")}, []byte(`{"name":"p","syncId":"11111111-1111-1111-1111-111111111111"}`)},
+				{product.CreateRequest{Name: "p", SyncID: model.Value("")}, []byte(`{"name":"p","syncId":""}`)},
+				{product.CreateRequest{Name: "p", SyncID: model.Null[string]()}, []byte(`{"name":"p","syncId":null}`)},
 				{fullCreateRequest(t), productGolden(t, "create")},
 			} {
 				data, err := codec.marshal(tc.request)
@@ -31,8 +34,12 @@ func TestCreateRequestJSON(t *testing.T) {
 }
 
 func TestRequestReadOnlyFields(t *testing.T) {
+	// SyncID заполняется только при создании.
+	if _, exists := reflect.TypeFor[product.UpdateRequest]().FieldByName("SyncID"); exists {
+		t.Error("UpdateRequest contains create-only SyncID")
+	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[product.CreateRequest](), reflect.TypeFor[product.UpdateRequest]()} {
-		for _, name := range []string{"ID", "AccountID", "Updated", "PathName", "EffectiveVAT", "EffectiveVATEnabled", "SyncID", "VariantsCount", "Meta"} {
+		for _, name := range []string{"ID", "AccountID", "Updated", "PathName", "EffectiveVAT", "EffectiveVATEnabled", "VariantsCount", "Meta"} {
 			if _, exists := typ.FieldByName(name); exists {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}

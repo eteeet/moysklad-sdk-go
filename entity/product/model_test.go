@@ -24,6 +24,9 @@ func TestProductFixtures(t *testing.T) {
 					if !time.Time(got.Updated).Equal(time.Date(2024, 1, 15, 7, 30, 0, 0, time.UTC)) {
 						t.Fatalf("updated = %s", time.Time(got.Updated))
 					}
+					if want := map[string]string{"product.json": "", "product_full.json": "12345678-1234-1234-1234-123456789012"}[file]; got.SyncID != want {
+						t.Fatalf("syncId = %q, want %q", got.SyncID, want)
+					}
 					if file == "product.json" {
 						if got.BuyPrice != nil || got.MinPrice != nil || len(got.SalePrices) != 0 || len(got.Attributes) != 0 {
 							t.Fatal("absent prices or attributes were invented")
