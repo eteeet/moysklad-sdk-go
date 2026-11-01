@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -43,3 +43,25 @@ Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundatio
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `d9aced4`, code commit `bc01138`.
+
+| Поле | Create | Update | Примечание |
+| --- | --- | --- | --- |
+| rate | обяз. (`*float64`, 0 допустим) | + | процент, не деньги; у предустановленных ставок менять не даёт сервер (L526) |
+| comment, archived | + | + | |
+| shared, owner, group | + | + | только у пользовательских ставок |
+| id, meta, accountId, updated | — | — | readonly |
+
+- Противоречие: таблица помечает updated «Необходимо при создании», текст L234 — «единственное поле … rate»;
+  SDK следует тексту (в contracts.md пометка осталась как в источнике).
+- Shared у предустановленной ставки отсутствует и читается как false — как у других моделей SDK;
+  отличить можно по Owner == nil.
+- search (по rate и comment), filter и order передаются общими ListOptions; listtest проверяет кодирование.
+- Тесты: фикстура и разреженная системная ставка обоими codecs, golden full/zero/update, null, защита
+  readonly, HTTP-контракт documenttest + LocalErrors, List, валидация без запросов.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review: обе оси одним агентом с раздельными разделами (малый ticket); дефектов нет.
+- Регистрация в общих тестах опций и сброса ResponseInfo (`entity/options_test.go`) — `cc61f6a` (найдено в review C07).

@@ -1,22 +1,23 @@
 # Статус сущностей JSON API 1.2
 
 Источник: api-remap-1.2-doc, revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.
-[x] — есть пакет с Get/Create/Update (документы с позициями — ещё GetPositions).
+[x] — есть пакет с Get/Create/Update (документы с позициями — ещё GetPositions);
+иной набор методов указан в строке.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 
-Итого: справочники 6/59, документы 11/37, отчёты 0/9, прочее 0/8.
+Итого: справочники 19/59, документы 11/37, отчёты 0/9, прочее 2/8.
 
 ## Справочники
 
 - [ ] accumulationdiscount — накопительная скидка
 - [ ] aggregatepack — транспортная упаковка
 - [ ] application — серверные решения
-- [ ] assortment — ассортимент
+- [x] assortment — ассортимент: List (assortmentWithoutStock) и ListLegacy
 - [ ] bonusprogram — бонусная программа
 - [ ] bonustransaction — бонусная операция
-- [ ] bundle — комплект
+- [x] bundle — комплект: Get/List/Create/Update, GetComponents/GetComponent
 - [ ] cashier — кассир (retailstore/{id}/cashiers)
-- [ ] characteristic — характеристики модификаций
+- [x] characteristic — характеристики модификаций: List/Get/Create
 - [x] companysettings — метаданные: пользовательские справочники (metadata.GetCompanySettings)
 - [ ] companysubscription — подписка компании (accountSettings)
 - [ ] consignment — партия
@@ -24,7 +25,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] contract — договор
 - [x] counterparty — контрагент
 - [x] country — страна
-- [ ] currency — валюта
+- [x] currency — валюта
 - [ ] customentity — пользовательский справочник
 - [ ] discount — скидки (общий список)
 - [x] employee — сотрудник: Get/List/Create/Update, права GetSecurity/UpdateSecurity
@@ -40,7 +41,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [x] organization — юрлицо
 - [ ] organizationbranch — подразделение юрлица
 - [ ] personaldiscount — персональная скидка
-- [ ] pricetype — типы цен (context/companysettings)
+- [x] pricetype — типы цен (context/companysettings): List/Get/GetDefault/ReplaceAll
 - [ ] processingplan — техкарта
 - [ ] processingplanfolder — группа техкарт
 - [ ] processingprocess — техпроцесс
@@ -53,18 +54,18 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [x] role — пользовательские роли и предустановленные (Preset)
 - [ ] saleplatform — площадка для продаж
 - [ ] saleschannel — канал продаж
-- [ ] service — услуга
+- [x] service — услуга
 - [ ] specialpricediscount — скидка на спеццену
 - [x] states — статусы: чтение через metadata, Create/Update
 - [ ] store — склад (+ slots, zones)
 - [ ] task — задача
-- [ ] taxrate — ставка НДС
+- [x] taxrate — ставка НДС
 - [ ] template — шаблоны печатных форм
 - [ ] thing — серийный номер
 - [ ] trackingcode — коды маркировки
 - [x] uom — единица измерения
 - [ ] usersettings — настройки пользователя (context)
-- [ ] variant — модификация
+- [x] variant — модификация
 - [ ] webhook — вебхук
 - [ ] webhookstock — вебхук остатков
 

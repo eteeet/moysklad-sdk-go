@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-catalog/issues/04-service.md; ../../sdk-v1-catalog/issues/06-bundle.md; ../../sdk-v1-catalog/issues/07-variant.md
 
@@ -47,3 +47,33 @@ List вместо склейки четырёх списков.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `9eccf22`, code commit `df29cc6`; общий тест опций — `cc61f6a`.
+
+| Метод | Endpoint / режим | Остатки |
+| --- | --- | --- |
+| `List(ctx, Options)` | GET entity/assortment + `X-Lognex-Remap-Beta-Feature: assortmentWithoutStock` | нет |
+| `ListLegacy(ctx, Options)` (Deprecated) | GET entity/assortment без заголовка | stock, reserve, inTransit, quantity |
+
+- Решение пользователя: два явных метода. List ставит beta-тег последним, поверх опций вызова — отступление
+  от порядка ADR 0001 записано в godoc: иначе чужой тег молча переключил бы режим.
+- `Options{query.ListOptions; GroupBy}`; GroupBy — открытый тип (product, variant, consignment), умолчание —
+  без параметра. fields не принимается, groupBy через Extra отклоняется.
+- Фильтры, умолчания (archived — только неархивные, withSubFolders — true, type=consignment только с
+  groupBy=consignment), недоступные фильтры, LIKE-комбинации и сортировки нового endpoint — в godoc List;
+  legacy-фильтры и поиск как filter search= — в godoc ListLegacy. Проверяет сервер.
+- Противоречие: groupBy=variant — «товары и модификации», но пример без groupBy содержит услуги и
+  комплекты; SDK передаёт значение как есть.
+- `Row`: union по meta.type — Product, Service, Bundle, Variant (модели C04, C06, C07, product),
+  `Consignment` (общая модель чтения, 13 полей); неизвестный тип — только Type и Raw. Запись Row —
+  Raw байт в байт. Остатки — `Balances`.
+- Скрытых запросов нет: остатки для List — отчёт report/stock/all/current по id (вне этого ticket).
+- Фикстуры: примеры List и groupBy=consignment из источника (`testdata/custom/assortment`, SHA-256 в
+  README), legacy — upstream `assortment.json`.
+- Review Standards: типизированный GroupBy, Balances вместо дублирования четырёх полей, `json:"-"` у Raw,
+  комментарий о записи Row, t.Run по codecs. Дублирование с list.Entity (нужен groupBy) — осознанно.
+- Review Spec: поддерживаемые фильтры и умолчания, minimumBalance и LIKE-комбинации, противоречие groupBy,
+  поиск legacy; listtest List — на строке нового endpoint без остатков.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

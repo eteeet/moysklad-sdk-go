@@ -76,14 +76,14 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| C01 | [Currency Get/List/Create/Update](../sdk-v1-catalog/issues/01-currency.md) | T02, T06 | needs-triage |
-| C02 | [PriceType List/Get/GetDefault/ReplaceAll](../sdk-v1-catalog/issues/02-pricetype.md) | T02 | needs-triage |
-| C03 | [TaxRate Get/List/Create/Update](../sdk-v1-catalog/issues/03-taxrate.md) | T02, T06 | needs-triage |
-| C04 | [Service Get/List/Create/Update](../sdk-v1-catalog/issues/04-service.md) | T02, T06 | needs-triage |
-| C05 | [Характеристики Variant: definitions и значения](../sdk-v1-catalog/issues/05-characteristics.md) | A05 | needs-triage |
-| C06 | [Bundle и components](../sdk-v1-catalog/issues/06-bundle.md) | T02, T06 | needs-triage |
-| C07 | [Variant Get/List/Create/Update](../sdk-v1-catalog/issues/07-variant.md) | T02, T06, C05 | needs-triage |
-| C08 | [Assortment List/search и mixed rows](../sdk-v1-catalog/issues/08-assortment.md) | T02, T06, C04, C06, C07 | needs-triage |
+| C01 | [Currency Get/List/Create/Update](../sdk-v1-catalog/issues/01-currency.md) | T02, T06 | resolved |
+| C02 | [PriceType List/Get/GetDefault/ReplaceAll](../sdk-v1-catalog/issues/02-pricetype.md) | T02 | resolved |
+| C03 | [TaxRate Get/List/Create/Update](../sdk-v1-catalog/issues/03-taxrate.md) | T02, T06 | resolved |
+| C04 | [Service Get/List/Create/Update](../sdk-v1-catalog/issues/04-service.md) | T02, T06 | resolved |
+| C05 | [Характеристики Variant: definitions и значения](../sdk-v1-catalog/issues/05-characteristics.md) | A05 | resolved |
+| C06 | [Bundle и components](../sdk-v1-catalog/issues/06-bundle.md) | T02, T06 | resolved |
+| C07 | [Variant Get/List/Create/Update](../sdk-v1-catalog/issues/07-variant.md) | T02, T06, C05 | resolved |
+| C08 | [Assortment List/search и mixed rows](../sdk-v1-catalog/issues/08-assortment.md) | T02, T06, C04, C06, C07 | resolved |
 
 ### Заказ покупателя, складские операции и возврат
 

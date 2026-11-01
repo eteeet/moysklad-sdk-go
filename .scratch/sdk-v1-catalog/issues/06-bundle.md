@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,42 @@ product/service/variant refs без expand; salePrices/attributes сохраня
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `1d90849`, code commit `efabaa8`.
+
+| Поле | Create | Update | Примечание |
+| --- | --- | --- | --- |
+| name | обяз. | + | |
+| components | обяз., непустой | + | `ComponentRequest{ID, Assortment, Quantity}`; слияние по ID |
+| code, externalCode, description, article, archived, shared | + | + | |
+| vat, vatEnabled, useParentVat, discountProhibited | + | + | |
+| paymentItemType, taxSystem, trackingType, partialDisposal, tnved, weight, volume | + | + | enum открыты |
+| owner, group, productFolder, uom, country | + | + | Reference |
+| minPrice, overhead, salePrices | + | + | копейки; salePrices сливаются по типу цены |
+| barcodes | + | + | заменяются целиком; при Create пусто/нет → случайный EAN13 |
+| attributes | + | + | сливаются |
+| mod__tasnif__uz, mod__marking__uz | + | + | только с `WithAcceptRegion(RegionUZ)` |
+| syncId | + | — | |
+| id, meta, accountId, updated, pathName, effectiveVat*, images, files | — | — | readonly / не пишутся в v1 |
+
+| Метод | Endpoint |
+| --- | --- |
+| Get / List / Create / Update | entity/bundle[/{id}] |
+| `GetComponents(id, query.PageOptions)` | GET entity/bundle/{id}/components (limit/offset) |
+| `GetComponent(id, componentID)` | GET entity/bundle/{id}/components/{componentID} |
+
+- Component — отдельный тип (assortment + quantity), не Position. Добавление/изменение/удаление
+  отдельных компонентов в v1 не входит: состав меняется через Update.
+- Противоречия: quantity помечен readonly, но примеры записи его передают — SDK пишет; minPrice (таблица) /
+  minprice (пример Update) — по таблице; assortment «товар/услуга/партия» в таблице и «модификация» во
+  вступлении — тип открыт.
+- Null: семантики источник не описывает; Field.Null отправляется как есть (как у остальных сущностей),
+  факт не подтверждён.
+- Review Standards: локальные проверки лимита 50 и assortment убраны (бизнес-ограничения — серверу),
+  MaxComponents удалён; тип страницы вынесен в `query.PageOptions` с префиксом `moysklad:` и тестом.
+- Review Spec: ID у ComponentRequest для изменения существующих компонентов; компоненты больше не
+  зависят от пакета positions; null отмечен как неподтверждённый.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Регистрация в общих тестах опций и сброса ResponseInfo (`entity/options_test.go`) — `cc61f6a` (найдено в review C07).

@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -45,3 +45,37 @@ read-only exclusions.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `bc01138`, code commit `bdfa7fa`.
+
+| Поле | Create | Update | Примечание |
+| --- | --- | --- | --- |
+| name | обяз. | + | непустое |
+| code, externalCode, description, archived, shared | + | + | |
+| vat, vatEnabled, useParentVat, discountProhibited | + | + | vat — процент |
+| paymentItemType, taxSystem | + | + | открытые строки |
+| owner, group, productFolder, uom | + | + | Reference, null очищает |
+| buyPrice, minPrice, salePrices | + | + | деньги в копейках |
+| barcodes | + | + | `model.Barcode`: объект с одним форматом |
+| attributes | + | + | |
+| mod__tasnif__uz | + | + | `model.TasnifUZ`, только с `WithAcceptRegion(RegionUZ)` |
+| syncId | + | — | сервер пишет один раз |
+| id, meta, accountId, updated, pathName, files, effectiveVat… | — | — | readonly; files — Collection без догрузки |
+
+- Противоречия источника записаны в godoc: minPrice (таблица) / minprice (примеры) — SDK следует таблице
+  и фикстуре; «услуга без закупочной цены» при buyPrice в таблице — поле читается и пишется.
+- Слияние attributes и salePrices по метаданным/типу цены — серверное; что делает пустой массив
+  штрихкодов, источник не описывает, SDK передаёт его как есть.
+- List: поиск по name и code, фильтр `barcode` в единственном числе, archived не учитывается вместе с id —
+  в godoc; кодирование проверяет listtest.
+- Клиент — `service.Client` (имя Service занято сущностью), конструктор `NewService`, как в других пакетах.
+- Тесты: фикстура и сжатые формы обоими codecs, golden full/update, null/false/0, readonly, HTTP-контракт
+  documenttest + LocalErrors, List, валидация без запросов.
+- Review Standards: Fields встраивался в обе requests → отдельные плоские CreateRequest/UpdateRequest;
+  TasnifUZ вынесен в model/tasnif.go с пояснением omitempty; имя клиента задокументировано.
+- Review Spec: противоречия minPrice/buyPrice, регион UZ, заметки List, слияние attributes, неподтверждённое
+  утверждение о пустых массивах и о защите SyncID от дублей — исправлено в godoc.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Регистрация в общих тестах опций и сброса ResponseInfo (`entity/options_test.go`) — `cc61f6a` (найдено в review C07).

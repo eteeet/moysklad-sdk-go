@@ -62,7 +62,7 @@
 - [x] search: контекстный поиск
 - [x] namedfilter: применение сохранённого фильтра
 - [x] fields: одно значение; в List справочников и документов пока не принимается
-- [ ] fields=minimumStock у Product: нужна модель неснижаемого остатка
+- [ ] fields=minimumStock у Product и Variant: нужна модель неснижаемого остатка
 - [ ] fields=stock у positions — D01
 - [x] Параметры отчётов: momentFrom/momentTo, groupBy, interval (query.ReportOptions)
 - [x] Обход страниц: pages.All по nextHref
@@ -71,9 +71,11 @@
 
 ## Методы ресурсов
 
-- [x] Get/Create/Update: 6 справочников, 11 документов
+- [x] Get/Create/Update: 13 справочников, 11 документов
 - [x] GetPositions: generic GetPage и typed в 7 документах
-- [x] List: 6 справочников, 11 документов
+- [x] List: 13 справочников и assortment, 11 документов
+- [x] Beta-режим: assortment List с assortmentWithoutStock, ListLegacy без него
+- [x] Вложенные коллекции справочников: компоненты комплекта (одна страница, без мутаций)
 - [ ] Delete и массовое удаление (POST …/delete)
 - [ ] Удаление в корзину
 - [ ] Массовое создание/обновление (POST массивом)

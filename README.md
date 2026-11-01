@@ -8,6 +8,10 @@ SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 
 Сотрудники (`entity/employee`) и их права, роли (`entity/role`), контекст запроса (`contexts`),
 метаданные и статусы (`metadata`), аудит (`audit`): [docs/access.md](docs/access.md).
+
+Валюты, типы цен, ставки НДС, услуги, комплекты, модификации и их характеристики, ассортимент
+(`entity/currency`, `pricetype`, `taxrate`, `service`, `bundle`, `variant`, `assortment`):
+[docs/catalog.md](docs/catalog.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
 
 ## Справочники

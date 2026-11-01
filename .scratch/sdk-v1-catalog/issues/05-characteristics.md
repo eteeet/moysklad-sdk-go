@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-access/issues/05-entity-metadata.md
 
@@ -46,3 +46,33 @@ framework.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `bdfa7fa`, code commit `1d90849`.
+
+| Метод | Endpoint | Примечание |
+| --- | --- | --- |
+| `ListCharacteristics` | GET entity/variant/metadata | массив characteristics, не Collection; meta.href и массив обязательны |
+| `GetCharacteristic` | GET entity/variant/metadata/characteristics/{id} | |
+| `CreateCharacteristic` | POST entity/variant/metadata/characteristics | только `{"name"}`; Update нет в источнике |
+
+| Тип | Поля | Примечание |
+| --- | --- | --- |
+| `CharacteristicDefinition` | meta, id, name, type, required | readonly; type открыт |
+| `Characteristic` (значение в Variant) | meta, id, name, value | запись значений — в C07 (id, иначе поиск по name) |
+
+- Противоречие required: _characteristic.md — «всегда false», _variant.md — флаг обязательности; SDK отдаёт
+  значение сервера, противоречие в godoc.
+- GET entity/variant/metadata/characteristics как список не используется: источник не даёт формы ответа.
+- Массовое создание (POST массива) не входит в v1 (batch исключён решением по X02).
+- Неизвестные значения type и лишние поля читаются без ошибки; Raw у описаний нет — полный ответ
+  метаданных доступен через metadata.Service.
+- Review Standards: ListCharacteristics переведён на documenttest.HTTP (gzip, ошибки, null), фикстура
+  метаданных — обоими codecs; проверка имени — как в остальных пакетах (`== ""`, без TrimSpace).
+  Возврат среза вместо Collection и второй читатель metadata — осознанно, в godoc. validID в internal
+  не переносится в этом ticket: дублирование общее для всех пакетов.
+- Review Spec: добавлен тип значения Characteristic, правило id/name, противоречие required, отказ на
+  ответ без characteristics; решения по второму endpoint и bulk — здесь.
+- Проверки: go test -race ./entity/variant, go vet, gofmt — PASS (полный прогон — при коммите C06).
+- Регистрация в общих тестах опций и сброса ResponseInfo (`entity/options_test.go`) — `cc61f6a` (найдено в review C07).

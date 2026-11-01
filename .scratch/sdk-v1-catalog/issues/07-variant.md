@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-catalog/issues/05-characteristics.md
 
@@ -45,3 +45,29 @@ blocker references.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `efabaa8`, code commit `9eccf22`.
+
+| Поле | Create | Update | Примечание |
+| --- | --- | --- | --- |
+| product | обяз. | + | Reference; товар не загружается. Смену источник не описывает — решает сервер |
+| characteristics | обяз., непустой | + | `CharacteristicValue{ID, Name, Value}`; Update заменяет набор целиком |
+| name, code, externalCode, description, article, archived, discountProhibited | + | + | |
+| buyPrice, minPrice, salePrices | + | + | копейки; salePrices сливаются по типу цены, без своих — цены товара |
+| barcodes | + | + | заменяются целиком |
+| packs | + | + | `PackRequest{Barcodes, ParentPack}`; один штрихкод — проверяет сервер |
+| id, meta, accountId, updated, things, images | — | — | readonly |
+| minimumStock | — | — | отложен, как у Product; List отклоняет fields=minimumStock |
+
+- Чтение значений характеристик — `Characteristic` из C05; описания — отдельные методы C05.
+- List: search только по name, фильтр `productid` (= и !=), barcode в единственном числе — в godoc, тест productid.
+- Противоречия: правила штрихкодов при создании в разделе variant скопированы из bundle («при создании
+  комплекта») — отмечено как неподтверждённое; «taxes» из ticket — в источнике у модификации нет НДС/налогов.
+- Null: семантики источник не описывает; Field.Null отправляется как есть.
+- Review Standards: проверки префикса и операции в ошибках валидации; регистрация в общем тесте опций и
+  сброса ResponseInfo — отдельным test-коммитом волны вместе с остальными сервисами каталога (пропущены и в C01–C06).
+- Review Spec: исправлен комментарий о штрихкодах, отмечено отсутствие налогов, тесты неизвестной
+  характеристики (один запрос, APIError) и фильтра productid.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

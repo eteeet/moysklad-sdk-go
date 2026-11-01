@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md
 
@@ -46,3 +46,23 @@ JSON, no hidden GET/read-modify-write; externalCode/name/readonly shape по м�
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `1e29d0d`, code commit `d9aced4`.
+
+- Пакет `entity/pricetype` на context/companysettings/pricetype: `List` (голый массив), `Get(id)`,
+  `GetDefault`, `ReplaceAll([]ReplaceItem)` — POST полного упорядоченного списка. Одиночных PUT/POST нет.
+- Ответы — существующий `model.PriceType`. Запись — `ReplaceItem{Meta, Name, ExternalCode *string}`:
+  model.PriceType не годится (meta не опускается у новых, externalCode "" опускается).
+- ReplaceAll локально: 1…100 элементов (ограничение API), непустое (не из пробелов) имя у всех, meta с href
+  у существующих; externalCode — указатель: null не отправить («нельзя удалить»), "" — сервер сгенерирует.
+  `Existing(p)` передаёт meta, имя и внешний код. Уникальность имён, удаление исключённых и выбор первого
+  типом по умолчанию — сервер. Pre-GET нет; потеря параллельных изменений описана в godoc.
+- Критерии успеха: непустой массив (все типы удалить нельзя) и id у одиночного ответа.
+- Тесты: фикстура, golden полного списка обоими codecs, HTTP-таблица (plain/gzip, 403, 412, null,
+  malformed, неверная форма, 204, один запрос), LocalErrors, валидация без запросов.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: null externalCode невозможен, Existing с externalCode, href у meta, имя у всех, doc List.
+  Review Standards: ReplaceItem, omitzero, читаемая таблица тестов, t.Helper.
+- Регистрация в общих тестах опций и сброса ResponseInfo (`entity/options_test.go`) — `cc61f6a` (найдено в review C07).
