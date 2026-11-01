@@ -28,7 +28,10 @@ Services теряли headers и status ответа, а per-call headers (ре�
 - `transport.Client.Send` — seam JSON-вызова: сборка запроса, Do и ResponseInfo.
   Services вызывают только его. Limiter и retry (T08/T09) встраиваются сюда, а не
   в services. Download (F01) не может идти через Send, потому что Do закрывает body:
-  он получит отдельный streaming-метод Client с тем же limiter/retry Client.
+  это отдельный метод Client с тем же limiter и retry. Решение F01 — writer, а не
+  ReadCloser: тело закрывается внутри метода на всех путях, слоты limiter держатся ровно
+  до конца копирования, вызывающий код ничего не закрывает. Retry повторяет попытку
+  только пока в writer ничего не записано.
 - Policy принадлежит `*transport.Client`: services и будущий фасад, собранные на
   одном Client, делят его настройки, limiter и retry.
 - `NewRequest`/`Do` остаются низкоуровневым API без опций; ResponseInfo они не заполняют.
@@ -47,7 +50,7 @@ Update(ctx, id, input, opts...) (*T, error)
 List(ctx, query, opts...) (*model.Collection[T], error)        // T06/T11/T12
 GetPositions(ctx, id, page, opts...) (*model.Collection[P], error)
 Report(ctx, query, opts...) (*R, error)                         // форма R своя у каждого отчёта
-Download(ctx, href, opts...) (io.ReadCloser, error)             // F01: caller закрывает body
+Download(ctx, href, w io.Writer, opts...) (int64, error)       // F01: тело копируется в w
 ```
 
 Query-параметры остаются отдельным аргументом конкретного метода, а не RequestOption:

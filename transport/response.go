@@ -30,36 +30,15 @@ func (c *Client) Do(req *http.Request, dst any) (*http.Response, error) {
 
 	var reader io.Reader = resp.Body
 	if hasBody {
-		switch encoding := strings.ToLower(strings.TrimSpace(resp.Header.Get("Content-Encoding"))); encoding {
-		case "", "identity":
-		case "gzip":
-			compressed, err := gzip.NewReader(resp.Body)
-			if err != nil {
-				return resp, responseError(resp.StatusCode, fmt.Errorf("open gzip response: %w", err))
-			}
-			defer compressed.Close()
-			reader = compressed
-		default:
-			return resp, responseError(resp.StatusCode, fmt.Errorf("unsupported content encoding %q", encoding))
+		decoded, err := decodedBody(resp)
+		if err != nil {
+			return resp, err
 		}
+		reader = decoded
 	}
 
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		apiErr := &sdkerrors.APIError{StatusCode: resp.StatusCode}
-		data, err := io.ReadAll(io.LimitReader(reader, maxErrorBodySize+1))
-		if err != nil {
-			return resp, errors.Join(apiErr, fmt.Errorf("read error response: %w", err))
-		}
-		if len(data) > maxErrorBodySize {
-			return resp, errors.Join(apiErr, fmt.Errorf("error response exceeds %d bytes", maxErrorBodySize))
-		}
-
-		// Пустой или невалидный JSON не должен скрывать HTTP-статус.
-		var payload sdkerrors.APIError
-		if err := json.Unmarshal(data, &payload); err == nil {
-			apiErr.Errors = payload.Errors
-		}
-		return resp, apiErr
+		return resp, readAPIError(resp.StatusCode, reader)
 	}
 
 	if dst == nil || !hasBody {
@@ -73,6 +52,39 @@ func (c *Client) Do(req *http.Request, dst any) (*http.Response, error) {
 		return resp, fmt.Errorf("moysklad: decode response: %w", err)
 	}
 	return resp, nil
+}
+
+// decodedBody распаковывает gzip-ответ; ошибка уже несёт статус ответа (APIError для не 2xx).
+func decodedBody(resp *http.Response) (io.Reader, error) {
+	switch encoding := strings.ToLower(strings.TrimSpace(resp.Header.Get("Content-Encoding"))); encoding {
+	case "", "identity":
+		return resp.Body, nil
+	case "gzip":
+		compressed, err := gzip.NewReader(resp.Body)
+		if err != nil {
+			return nil, responseError(resp.StatusCode, fmt.Errorf("open gzip response: %w", err))
+		}
+		return compressed, nil
+	default:
+		return nil, responseError(resp.StatusCode, fmt.Errorf("unsupported content encoding %q", encoding))
+	}
+}
+
+// readAPIError читает тело ошибки до maxErrorBodySize; пустой или невалидный JSON не скрывает статус.
+func readAPIError(statusCode int, reader io.Reader) error {
+	apiErr := &sdkerrors.APIError{StatusCode: statusCode}
+	data, err := io.ReadAll(io.LimitReader(reader, maxErrorBodySize+1))
+	if err != nil {
+		return errors.Join(apiErr, fmt.Errorf("read error response: %w", err))
+	}
+	if len(data) > maxErrorBodySize {
+		return errors.Join(apiErr, fmt.Errorf("error response exceeds %d bytes", maxErrorBodySize))
+	}
+	var payload sdkerrors.APIError
+	if err := json.Unmarshal(data, &payload); err == nil {
+		apiErr.Errors = payload.Errors
+	}
+	return apiErr
 }
 
 // Префикс moysklad: даёт APIError; без него err получает префикс сам.

@@ -64,23 +64,29 @@ func (c *Client) Send(ctx context.Context, method, endpoint string, query url.Va
 
 // sendOnce — одна отправка с учётом Limiter; sent=false, если запрос не ушёл.
 func (c *Client) sendOnce(ctx context.Context, req *http.Request, dst any, options RequestOptions) (resp *http.Response, err error, sent bool) {
-	// Вызов с WithAuth идёт от другого principal: бюджет клиента к нему не относится.
-	// Без WithLimiter такой вызов учитывается только в параллельности аккаунта.
+	release, err := c.acquire(ctx, req, options)
+	if err != nil {
+		return nil, err, false
+	}
+	// Do закрывает body до возврата: слоты освобождаются после чтения ответа.
+	defer release()
+	resp, err = c.Do(req, dst)
+	return resp, err, true
+}
+
+// acquire занимает слоты Limiter для одной отправки. Вызов с WithAuth идёт от другого principal:
+// бюджет клиента к нему не относится; без WithLimiter он учитывается только в параллельности
+// аккаунта.
+func (c *Client) acquire(ctx context.Context, req *http.Request, options RequestOptions) (release func(), err error) {
 	limiter, principal := c.limiter, options.Auth == nil
 	if options.Limiter != nil {
 		limiter, principal = options.Limiter, true
 	}
-	if limiter != nil {
-		path := strings.Trim(strings.TrimPrefix(req.URL.Path, c.baseURL.Path), "/")
-		release, err := limiter.acquire(ctx, req.Method, path, principal)
-		if err != nil {
-			return nil, err, false
-		}
-		// Do закрывает body до возврата: слоты освобождаются после чтения ответа.
-		defer release()
+	if limiter == nil {
+		return func() {}, nil
 	}
-	resp, err = c.Do(req, dst)
-	return resp, err, true
+	path := strings.Trim(strings.TrimPrefix(req.URL.Path, c.baseURL.Path), "/")
+	return limiter.acquire(ctx, req.Method, path, principal)
 }
 
 // Явные query-параметры заменяют одноимённые параметры из endpoint.

@@ -532,6 +532,10 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			_, err := s.ListLegacy(ctx, assortment.Options{ListOptions: query.ListOptions{Limit: 1001}}, opts...)
 			return err
 		}},
+		localCase{"transport download nil writer", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			_, err := c.Download(ctx, "download/1", nil, opts...)
+			return err
+		}},
 		localCase{"role preset unsafe", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
 			s, err := role.NewService(c)
 			if err != nil {
@@ -556,7 +560,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 34*4+13+3+8 {
+	if len(cases) != 34*4+13+3+8+1 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
