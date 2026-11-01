@@ -1,0 +1,217 @@
+package assortment_test
+
+import (
+	"context"
+	"encoding/json/jsontext"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
+	"sync/atomic"
+	"testing"
+
+	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
+	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
+	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/query"
+	"github.com/eteeet/moysklad-sdk-go/transport"
+)
+
+func read(t *testing.T, path string) []byte {
+	t.Helper()
+	data, err := os.ReadFile("../../testdata/" + path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return data
+}
+
+func service(c *transport.Client) *assortment.Service {
+	// NewService падает только на nil client, которого тесты не передают.
+	s, _ := assortment.NewService(c)
+	return s
+}
+
+// Каждая строка типизирована по meta.type, неизвестный тип остаётся только в Raw,
+// а запись Row возвращает строку байт в байт.
+func TestRows(t *testing.T) {
+	for _, codec := range documenttest.Codecs {
+		t.Run(codec.Name, func(t *testing.T) {
+			var rows model.Collection[assortment.Row]
+			if err := codec.Unmarshal(read(t, "custom/assortment/list.json"), &rows); err != nil {
+				t.Fatal(err)
+			}
+			if len(rows.Rows) != 6 {
+				t.Fatalf("rows = %d", len(rows.Rows))
+			}
+			p, s, b, v := rows.Rows[0], rows.Rows[1], rows.Rows[2], rows.Rows[4]
+			if p.Type != "product" || p.Product == nil || p.Product.Name != "product" || p.Service != nil ||
+				s.Type != "service" || s.Service == nil || s.Service.ID != "437f2d67-36e7-11e7-8a7f-40d0000000df" ||
+				b.Type != "bundle" || b.Bundle == nil || b.Bundle.Name != "bundle" ||
+				v.Type != "variant" || v.Variant == nil || v.Variant.Product.Meta.Href == "" || len(v.Variant.Characteristics) == 0 {
+				t.Fatalf("rows = %+v", rows.Rows)
+			}
+			for _, row := range rows.Rows {
+				if row.Stock != nil || row.Quantity != nil || row.Reserve != nil || row.InTransit != nil {
+					t.Fatalf("stock in new endpoint row: %+v", row)
+				}
+				var raw map[string]jsontext.Value
+				if err := codec.Unmarshal(row.Raw, &raw); err != nil || raw["id"] == nil {
+					t.Fatalf("raw = %s, err = %v", row.Raw, err)
+				}
+				data, err := codec.Marshal(row)
+				if err != nil {
+					t.Fatal(err)
+				}
+				documenttest.JSONEqual(t, data, row.Raw)
+			}
+
+			var consignments model.Collection[assortment.Row]
+			if err := codec.Unmarshal(read(t, "custom/assortment/consignment.json"), &consignments); err != nil {
+				t.Fatal(err)
+			}
+			c := consignments.Rows[1].Consignment
+			if consignments.Rows[1].Type != "consignment" || c == nil || c.Name != "продукт / consignment" || c.Label == "" ||
+				c.Assortment.Meta.Type != "product" {
+				t.Fatalf("consignment = %+v", consignments.Rows[1])
+			}
+
+			var unknown assortment.Row
+			future := []byte(`{"meta":{"href":"h","type":"future"},"id":"x","extra":[1,{"a":null}]}`)
+			if err := codec.Unmarshal(future, &unknown); err != nil || unknown.Type != "future" || unknown.Product != nil ||
+				unknown.Service != nil || unknown.Bundle != nil || unknown.Variant != nil || unknown.Consignment != nil {
+				t.Fatalf("unknown = %+v, err = %v", unknown, err)
+			}
+			if data, err := codec.Marshal(unknown); err != nil || string(data) != string(future) {
+				t.Fatalf("marshal = %s, err = %v", data, err)
+			}
+			if err := codec.Unmarshal([]byte(`{"meta":{"type":"product"},"name":1}`), &unknown); err == nil {
+				t.Fatal("malformed product row accepted")
+			}
+		})
+	}
+}
+
+// Строка legacy endpoint несёт остатки.
+func TestLegacyStock(t *testing.T) {
+	for _, codec := range documenttest.Codecs {
+		t.Run(codec.Name, func(t *testing.T) {
+			var row assortment.Row
+			if err := codec.Unmarshal(read(t, "upstream/assortment.json"), &row); err != nil || row.Product == nil ||
+				row.Stock == nil || row.Reserve == nil || row.InTransit == nil || row.Quantity == nil {
+				t.Fatalf("row = %+v, err = %v", row, err)
+			}
+		})
+	}
+}
+
+func lists(s *assortment.Service) map[string]listtest.ListFunc[assortment.Row] {
+	return map[string]listtest.ListFunc[assortment.Row]{
+		"list": func(ctx context.Context, o query.ListOptions, opts ...transport.RequestOption) (*model.Collection[assortment.Row], error) {
+			return s.List(ctx, assortment.Options{ListOptions: o}, opts...)
+		},
+		"legacy": func(ctx context.Context, o query.ListOptions, opts ...transport.RequestOption) (*model.Collection[assortment.Row], error) {
+			return s.ListLegacy(ctx, assortment.Options{ListOptions: o}, opts...)
+		},
+	}
+}
+
+// Строка нового endpoint — из примера источника без остатков, legacy — upstream-фикстура с остатками.
+func TestListContract(t *testing.T) {
+	var example struct {
+		Rows []jsontext.Value `json:"rows"`
+	}
+	if err := documenttest.Codecs[0].Unmarshal(read(t, "custom/assortment/list.json"), &example); err != nil {
+		t.Fatal(err)
+	}
+	rows := map[string][]byte{"list": example.Rows[0], "legacy": read(t, "upstream/assortment.json")}
+	for _, name := range []string{"list", "legacy"} {
+		t.Run(name, func(t *testing.T) {
+			listtest.Run(t, "assortment", rows[name], "", "archived", func(c *transport.Client) listtest.ListFunc[assortment.Row] {
+				return lists(service(c))[name]
+			}, func(t *testing.T, got assortment.Row) {
+				if got.Type != "product" || got.Product == nil {
+					t.Fatalf("row = %+v", got)
+				}
+			})
+		})
+	}
+}
+
+// List всегда включает assortmentWithoutStock, поверх чужого beta-тега вызова; ListLegacy
+// заголовок не передаёт. groupBy уходит как есть, скрытых запросов нет.
+func TestListModes(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		call  func(*assortment.Service, context.Context) error
+		beta  string
+		query string
+	}{
+		{"list", func(s *assortment.Service, ctx context.Context) error {
+			_, err := s.List(ctx, assortment.Options{GroupBy: assortment.GroupByConsignment}, transport.WithBetaFeature("other"))
+			return err
+		}, assortment.BetaFeature, "groupBy=consignment"},
+		{"legacy", func(s *assortment.Service, ctx context.Context) error {
+			_, err := s.ListLegacy(ctx, assortment.Options{GroupBy: assortment.GroupByProduct})
+			return err
+		}, "", "groupBy=product"},
+		{"list default", func(s *assortment.Service, ctx context.Context) error {
+			_, err := s.List(ctx, assortment.Options{})
+			return err
+		}, assortment.BetaFeature, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var calls atomic.Int32
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls.Add(1)
+				if got := r.Header.Values(transport.HeaderBetaFeature); tc.beta == "" && len(got) != 0 || tc.beta != "" && (len(got) != 1 || got[0] != tc.beta) {
+					t.Errorf("beta = %q", got)
+				}
+				if r.URL.Path != "/entity/assortment" || r.URL.RawQuery != tc.query {
+					t.Errorf("request = %s", r.URL)
+				}
+				w.Write(read(t, "custom/assortment/list.json"))
+			}))
+			defer server.Close()
+			c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := tc.call(service(c), t.Context()); err != nil || calls.Load() != 1 {
+				t.Fatalf("err = %v, calls = %d", err, calls.Load())
+			}
+		})
+	}
+}
+
+func TestListRejects(t *testing.T) {
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	defer server.Close()
+	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := service(c)
+	for name, options := range map[string]assortment.Options{
+		"fields":        {ListOptions: query.ListOptions{Fields: "stock"}},
+		"extra groupBy": {ListOptions: query.ListOptions{Extra: url.Values{"groupBy": {"product"}}}},
+		"limit":         {ListOptions: query.ListOptions{Limit: 1001}},
+	} {
+		for mode, list := range lists(s) {
+			if _, err := list(t.Context(), options.ListOptions); err == nil {
+				t.Errorf("%s %s accepted", mode, name)
+			}
+		}
+		if _, err := s.List(t.Context(), options); err == nil {
+			t.Errorf("list %s accepted", name)
+		}
+	}
+	if _, err := assortment.NewService(nil); err == nil {
+		t.Error("nil client accepted")
+	}
+	if calls.Load() != 0 {
+		t.Fatalf("calls = %d", calls.Load())
+	}
+}
