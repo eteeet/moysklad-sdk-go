@@ -10,7 +10,7 @@ JSON-формы позиций и generic reader одной страницы; н
 | --- | --- |
 | `Core` | Meta, ID, AccountID |
 | `Item`, встраивает Core | Assortment model.Reference, Quantity float64 |
-| `Position`, встраивает Item | Price/Discount/Overhead float64, VAT int, VATEnabled bool, SourceSlot/TargetSlot *model.Reference |
+| `Position`, встраивает Item | Price/Discount/Overhead/Cost float64, Shipped/InTransit float64, VAT int, VATEnabled bool, SourceSlot/TargetSlot *model.Reference |
 
 Встраивание даёт плоский JSON. Неизвестные поля игнорируются, отсутствующие значения
 читаются как нулевые; ID и обязательность полей не проверяются самой JSON-моделью.
@@ -22,7 +22,8 @@ VAT=0 с VATEnabled=false означает «без НДС», с true — ста
 а не «без НДС». Деньги остаются в копейках, без арифметики SDK.
 
 `PositionRequest` встраивает `ItemRequest` и использует Field с omitzero для Price,
-Discount, VAT, VATEnabled, SourceSlot и TargetSlot. CoreRequest/ItemRequest — общие части.
+Discount, VAT, VATEnabled, Cost, InTransit, SourceSlot и TargetSlot. CoreRequest/ItemRequest
+— общие части.
 В request нет Meta/AccountID. ID разрешён только как selector существующей строки
 embedded Update, не как назначение ID новой позиции. Sparse request не достраивается
 из старого документа.
@@ -34,7 +35,8 @@ embedded Update, не как назначение ID новой позиции. 
 что любое поле можно записать в любой документ. В частности, ограничения возврата
 по основанию сохраняются, а коммерческие поля для move обычно не задают.
 Отдельный тип строки вводится только при реальном конфликте: одно JSON-поле имеет
-разный тип или смысл в разных документах. Core/Item — части формы, не варианты по документам.
+разный тип или смысл в разных документах. Core/Item — части формы, не варианты по
+документам.
 
 Overhead — read-only float64 в копейках, включая API Int: принимаются 0, 0.0 и дроби;
 в PositionRequest его нет. Точность денежных integer за пределами 2^53 не гарантируется.
@@ -42,9 +44,11 @@ SourceSlot/TargetSlot — ссылки без expand; отсутствие ил�
 При кодировании модели чтения nil-ссылки пропускаются через omitzero.
 Кодирование Null в request не обещает допустимость очистки ячеек сервером.
 
-Cost, Shipped/InTransit будут добавлены в общий тип соответствующими entity tickets;
-сейчас они не реализованы. Pack/Things, serial/tracking/GTD, stock enrichment и прочие
-поля тоже не считаются покрытыми. Generic reader остаётся T any: это не закрытый union
+Cost читается и записывается через Field для услуг Demand; Shipped только читается,
+InTransit читается и записывается через Field для PurchaseOrder. Pack/Things,
+serial/tracking/GTD, stock enrichment и прочие
+не перечисленные поля не считаются покрытыми. Generic reader остаётся T any: это не закрытый
+union
 и не требование реализовать каждую будущую строку через наследование Core/Item.
 
 ## Одна страница
@@ -67,8 +71,8 @@ if err != nil {
 ```
 
 Этот generic вход требует выбрать подходящий T. Типизированные entity.GetPositions
-с фиксированными ресурсом и Position предусмотрены в entity spec, но пока не реализованы.
-Их появление не меняет общий reader и не требует expand.
+с фиксированными ресурсом и Position реализованы для семи товарных документов.
+Они используют общий reader без expand; [контракты документов](documents.md).
 
 GetPage делает один GET `entity/{documentType}/{documentID}/positions`, без тела,
 с явными limit/offset. documentID проверяется по форме UUID без ограничения версии.
@@ -88,8 +92,8 @@ context errors — errors.Is. Нет retry, auto-pagination и перехода 
 ## Embedded запись
 
 Для поля документа используется `model.Field[[]PositionRequest]` с omitzero,
-а не response-объект Collection. В текущем модуле это самостоятельный JSON-контракт;
-HTTP Create/Update документа пока не реализованы.
+а не response-объект Collection. Это самостоятельный JSON-контракт, используемый
+HTTP Create/Update всех семи товарных документов.
 
 - Unset: поле не отправляется, при Update существующие строки остаются.
 - Value пустого/nil slice: передаётся [].
@@ -102,7 +106,8 @@ Embedded write имеет предел API 1000 строк. SDK не долже�
 конкретных полей/количеств определяет документ; модель JSON не является бизнес-валидатором.
 
 Обычный Get заголовка документа возвращает positions metadata; наличие meta не означает,
-что Rows прочитаны. Для строк нужна явная страница. Этот модуль не добавляет List документов,
+что Rows прочитаны. Для строк нужна явная страница. Этот модуль не добавляет List
+документов,
 отдельные HTTP Get/Create/Update/Delete строк, batch, templates, walker, stock enrichment
 или expand. Expand отложен до конца разработки всего остального SDK, если понадобится.
 

@@ -33,9 +33,29 @@ List, Delete, expand и массовые операции в эти срезы �
 без expand, автообхода и скрытого Get. Используется существующий `model.Collection[T]`.
 [Контракт позиций и пагинации](docs/positions.md).
 
-Это ещё не Get/Create/Update документов и не typed entity.GetPositions. Остальные
-специфические поля документов, отдельные HTTP mutations строк и остальные возможности
-остаются отдельными tickets. Все деньги — float64 в копейках с ограничениями точности.
+Get/Create/Update документов и типизированные entity.GetPositions реализованы
+в перечисленных ниже пакетах. Все деньги — float64 в копейках с ограничениями точности.
+
+## Документы
+
+| Пакет | Методы | Контракт полей и ограничения |
+| --- | --- | --- |
+| `entity/paymentin` | `Get/Create/Update` | [PaymentIn](docs/paymentin.md) |
+| `entity/paymentout` | `Get/Create/Update` | [PaymentOut](docs/paymentout.md) |
+| `entity/cashin` | `Get/Create/Update` | [CashIn](docs/cashin.md) |
+| `entity/cashout` | `Get/Create/Update` | [CashOut](docs/cashout.md) |
+| `entity/invoicein` | `Get/Create/Update` и `GetPositions` | [InvoiceIn](docs/invoicein.md) |
+| `entity/invoiceout` | `Get/Create/Update` и `GetPositions` | [InvoiceOut](docs/invoiceout.md) |
+| `entity/supply` | `Get/Create/Update` и `GetPositions` | [Supply](docs/supply.md) |
+| `entity/demand` | `Get/Create/Update` и `GetPositions` | [Demand](docs/demand.md) |
+| `entity/purchaseorder` | `Get/Create/Update` и `GetPositions` | [PurchaseOrder](docs/purchaseorder.md) |
+| `entity/move` | `Get/Create/Update` и `GetPositions` | [Move](docs/move.md) |
+| `entity/purchasereturn` | `Get/Create/Update` и `GetPositions` | [PurchaseReturn](docs/purchasereturn.md) |
+
+[Общий контракт](docs/documents.md): обязательные поля Create различаются по
+документам; optional поля и Update используют Field. Get читает metadata positions,
+строки — отдельным GetPositions. Embedded positions ограничены 1000 и полностью
+заменяют набор при Update. Expand, List/Delete/batch и отдельные mutations строк отложены.
 
 ## Product
 
