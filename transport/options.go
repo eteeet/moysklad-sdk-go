@@ -16,6 +16,9 @@ type RequestOptions struct {
 
 	// ResponseInfo заполняется метаданными последнего полученного ответа.
 	ResponseInfo *ResponseInfo
+
+	// Auth заменяет Config.Auth для одного вызова; nil оставляет Auth клиента.
+	Auth Auth
 }
 
 // ResponseInfo принадлежит вызывающему коду: параллельные вызовы должны передавать разные указатели.
@@ -54,6 +57,14 @@ func WithResponseInfo(info *ResponseInfo) RequestOption {
 	}
 }
 
+// WithAuth авторизует один вызов иначе, чем клиент: например, Basic для security/token
+// на клиенте с Bearer. Config.Auth не меняется.
+func WithAuth(auth Auth) RequestOption {
+	return func(o *RequestOptions) {
+		o.Auth = auth
+	}
+}
+
 // Эти заголовки задаёт transport: их подмена ломает авторизацию, gzip или JSON-контракт.
 var protectedHeaders = map[string]bool{
 	"Authorization":   true,
@@ -62,6 +73,9 @@ var protectedHeaders = map[string]bool{
 	"Content-Type":    true,
 	"Content-Length":  true,
 	"Host":            true,
+	// net/http повторяет запрос с этими заголовками при обрыве соединения: запись ушла бы дважды.
+	"Idempotency-Key":   true,
+	"X-Idempotency-Key": true,
 }
 
 func checkHeaders(header http.Header) error {

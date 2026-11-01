@@ -91,8 +91,12 @@ func (c *Client) newRequest(ctx context.Context, method, endpoint string, query 
 	}
 	overrideHeaders(req.Header, c.header)
 	overrideHeaders(req.Header, options.Header)
-	if c.auth != nil {
-		if err := c.auth(req); err != nil {
+	auth := c.auth
+	if options.Auth != nil {
+		auth = options.Auth
+	}
+	if auth != nil {
+		if err := auth(req); err != nil {
 			return nil, fmt.Errorf("moysklad: authorize request: %w", err)
 		}
 	}

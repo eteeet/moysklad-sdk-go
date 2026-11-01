@@ -76,7 +76,8 @@ func TestSendHeaderPrecedence(t *testing.T) {
 }
 
 func TestProtectedHeaders(t *testing.T) {
-	for _, key := range []string{"Authorization", "accept", "Accept-Encoding", "content-type", "Content-Length", "Host"} {
+	for _, key := range []string{"Authorization", "accept", "Accept-Encoding", "content-type", "Content-Length", "Host",
+		"Idempotency-Key", "x-idempotency-key"} {
 		t.Run(key, func(t *testing.T) {
 			if _, err := transport.NewClient(transport.Config{Header: http.Header{key: {"x"}}}); err == nil {
 				t.Fatal("NewClient accepted protected header")
@@ -222,5 +223,24 @@ func TestServicesShareClient(t *testing.T) {
 	}
 	if strings.Join(regions, ",") != "/entity/uom=kz,/entity/product=kz" {
 		t.Fatalf("regions = %v", regions)
+	}
+}
+
+func TestWithAuth(t *testing.T) {
+	var got []string
+	client := newOptionsClient(t, nil, func(w http.ResponseWriter, r *http.Request) {
+		got = append(got, r.Header.Get("Authorization"))
+	})
+	basic, err := transport.BasicAuth("u", "p")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, opts := range [][]transport.RequestOption{{transport.WithAuth(basic)}, nil} {
+		if _, err := client.Send(t.Context(), http.MethodGet, "entity/uom", nil, nil, nil, opts...); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if strings.Join(got, ",") != "Basic dTpw,Bearer secret" {
+		t.Fatalf("Authorization = %v", got)
 	}
 }

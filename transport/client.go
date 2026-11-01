@@ -89,6 +89,11 @@ func NewClient(cfg Config) (*Client, error) {
 // Заголовок удаляется до next: свой CheckRedirect может осознанно вернуть его доверенному хосту.
 func dropForeignAuthorization(base *url.URL, next func(*http.Request, []*http.Request) error) func(*http.Request, []*http.Request) error {
 	return func(req *http.Request, via []*http.Request) error {
+		// 307/308 повторили бы запись тем же методом: обычный вызов — одна отправка.
+		if code := req.Response.StatusCode; (code == http.StatusTemporaryRedirect || code == http.StatusPermanentRedirect) &&
+			req.Method != http.MethodGet && req.Method != http.MethodHead {
+			return http.ErrUseLastResponse
+		}
 		if !sameOrigin(req.URL, base) {
 			req.Header.Del("Authorization")
 		}

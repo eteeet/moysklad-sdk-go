@@ -21,6 +21,8 @@ Services теряли headers и status ответа, а per-call headers (ре�
   < `Config.Header` < опции вызова; key из опций заменяет key клиента целиком.
 - `Authorization`, `Accept`, `Accept-Encoding`, `Content-Type`, `Content-Length`, `Host`
   задаёт transport. Попытка задать их в Config или опциях — ошибка до отправки.
+- `transport.WithAuth(auth)` заменяет `Config.Auth` на один вызов (T04: Basic для
+  `security/token` на клиенте с Bearer); заголовок `Authorization` по-прежнему задаёт transport.
 - `transport.Client.Send` — seam JSON-вызова: сборка запроса, Do и ResponseInfo.
   Services вызывают только его. Limiter и retry (T08/T09) встраиваются сюда, а не
   в services. Download (F01) не может идти через Send, потому что Do закрывает body:
