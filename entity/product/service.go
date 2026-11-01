@@ -78,8 +78,9 @@ func validID(id string) bool {
 	return err == nil
 }
 
-// List читает одну страницу без expand и автообхода; следующие страницы — pages.All. Поддержан fields=minimumStock.
+// List читает одну страницу без expand и автообхода; следующие страницы — pages.All.
+// fields=minimumStock не принимается: в модели Product нет поля неснижаемого остатка (TODO).
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Product], error) {
-	return list.Entity[Product](ctx, s.client, "product", options, []string{"minimumStock"}, opts...)
+	return list.Entity[Product](ctx, s.client, "product", options, nil, opts...)
 }

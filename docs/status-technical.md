@@ -61,7 +61,9 @@
 - [x] order
 - [x] search: контекстный поиск
 - [x] namedfilter: применение сохранённого фильтра
-- [x] fields: одно значение, только где документирован (Product: minimumStock); fields=stock у positions — D01
+- [x] fields: одно значение; в List справочников и документов пока не принимается
+- [ ] fields=minimumStock у Product: нужна модель неснижаемого остатка
+- [ ] fields=stock у positions — D01
 - [x] Параметры отчётов: momentFrom/momentTo, groupBy, interval (query.ReportOptions)
 - [x] Обход страниц: pages.All по nextHref
 - [x] Нет скрытых запросов по href/nextHref
