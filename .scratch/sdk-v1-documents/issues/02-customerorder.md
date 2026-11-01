@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-documents/issues/01-position-contracts.md
 
@@ -45,3 +45,32 @@ accounts/null/positions replacement, server-responses вместо input.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `448ff35`, code commit `c4dbe13`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| organization, agent | `*Reference` | обяз. | Field |
+| organizationAccount, agentAccount, contract, owner, group, project, state, store, salesChannel | `*Reference` | Field | Field |
+| name, description, code, externalCode, syncId, moment, deliveryPlannedMoment, applicable, shared | значения | Field | Field |
+| attributes, rate, taxSystem, vatEnabled, vatIncluded | значения | Field | Field |
+| shipmentAddress, shipmentAddressFull | `string`, `*Address` | Field | Field |
+| positions | `*Collection[Position]` (meta) | Field, ≤1000 | Field, ≤1000, заменяет все строки |
+| id, meta, accountId, created, updated, deleted, printed, published | | — | — |
+| sum, vatSum, payedSum, shippedSum, invoicedSum, reservedSum | копейки | — | — |
+| files | Collection | — (файлы — отдельный ресурс) | — |
+| purchaseOrders, demands, payments, productionTasks, invoicesOut, moves, prepayments | `[]Reference` | — | — |
+
+- Строки — общая форма D01: reserve пишется, shipped только читается, pack/taxSystem.
+- GetPositions — одна страница, `fields=stock` (остатки на текущий момент, общий раздел источника).
+- Правила сервера только в godoc: при смене organization/agent нужен и счёт; syncId после заполнения
+  не меняется; адресу null не поддерживается, удаление — shipmentAddress "".
+- Union-поля строк D01, которых нет у заказа (cost, inTransit, slot, reason …), доступны через общий тип;
+  принимает ли их заказ, решает API — решение D01, не дополнение по аналогии.
+- Review Standards: раздельные ошибки organization/agent; в тесте лимитов — единый префикс и операция,
+  локальные ошибки GetPositions и Update. Дублирование do/validID — конвенция пакетов.
+- Review Spec: правило null адреса в godoc UpdateRequest; Files в тесте помечен «не пишется», а не readonly.
+  Docs/status — в завершающем docs-коммите волны.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

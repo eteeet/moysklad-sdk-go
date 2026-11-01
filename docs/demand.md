@@ -80,9 +80,9 @@ TODO.
 Transport fields cargoName/carrier/consignee/consigneeBranch/consignor/consignorBranch/
 goodPackQuantity/shippingInstructions/stateContractId/transportFacility/transportFacilityNumber/
 shippingDocumentNumber/shippingDocumentDate — TODO и read, и write.
-Reserve, country/gtd/declaration, маркировка и прочие расширения позиций TODO.
-Pack, things, slot (кроме SourceSlot/TargetSlot общей формы), serial/tracking/stock
-и остальные не перечисленные поля позиций остаются TODO.
+Поля строк общей формы (pack, things, trackingCodes, stock через `GetPositions` с
+`fields=stock` и др.) описаны в [контракте позиций](positions.md); остальные не
+перечисленные поля позиций остаются TODO.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/demand),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_demand.md).

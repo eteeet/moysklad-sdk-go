@@ -40,8 +40,8 @@ Delete, expand и массовые операции в эти срезы не в
 Общий пакет `positions` содержит универсальные Position/PositionRequest для строк
 товарных документов. Core/Item и их request-формы — переиспользуемые части этих типов.
 `positions.NewService[T](client, documentType)` предоставляет `GetPage(ctx, id, PageOptions)`:
-одна страница `/positions` через существующий transport, с явными limit/offset,
-без expand, автообхода и скрытого Get. Используется существующий `model.Collection[T]`.
+одна страница `/positions` через существующий transport, с явными limit/offset и
+`fields=stock`/`declaration` там, где источник их документирует, без expand, автообхода и скрытого Get. Используется существующий `model.Collection[T]`.
 [Контракт позиций и пагинации](docs/positions.md).
 
 Get/Create/Update документов и типизированные entity.GetPositions реализованы
@@ -62,6 +62,10 @@ Get/Create/Update документов и типизированные entity.Ge
 | `entity/purchaseorder` | `Get/Create/Update` и `GetPositions` | [PurchaseOrder](docs/purchaseorder.md) |
 | `entity/move` | `Get/Create/Update` и `GetPositions` | [Move](docs/move.md) |
 | `entity/purchasereturn` | `Get/Create/Update` и `GetPositions` | [PurchaseReturn](docs/purchasereturn.md) |
+| `entity/customerorder` | `Get/List/Create/Update` и `GetPositions` | [CustomerOrder](docs/customerorder.md) |
+| `entity/enter` | `Get/List/Create/Update` и `GetPositions` | [Enter](docs/enter.md) |
+| `entity/loss` | `Get/List/Create/Update` и `GetPositions` | [Loss](docs/loss.md) |
+| `entity/salesreturn` | `Get/List/Create/Update` и `GetPositions` | [SalesReturn](docs/salesreturn.md) |
 
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,

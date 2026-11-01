@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-documents/issues/01-position-contracts.md
 
@@ -44,3 +44,22 @@ unknown refs и APIErrors.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `9b27979`, code commit `d403c7e`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| organization, store | `*Reference` | обяз. | Field |
+| owner, group, project, state, salesReturn | `*Reference` | Field | Field |
+| name, description, code, externalCode, syncId, moment, applicable, shared, attributes, rate | значения | Field | Field |
+| positions | `*Collection[Position]` | Field, ≤1000 | Field, ≤1000, заменяет все строки |
+| id, meta, accountId, created, updated, deleted, printed, published, sum, files | | — | — |
+| expenseItem (readonly по таблице), inventory | `*Reference` | — | — |
+
+- Строки: reason, slot, pack, things; declaration — `GetPositions(fields=declaration)`, readonly.
+- Цены, себестоимость и количество не пересчитываются; шаблон PUT /new и wizard не добавлены.
+- Противоречие: пример Update передаёт sum, таблица — readonly; SDK sum не пишет (godoc).
+- Review Standards: замечаний нет. Review Spec: inventory и противоречие sum записаны; нулевые даты в тесте.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

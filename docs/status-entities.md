@@ -5,7 +5,7 @@
 иной набор методов указан в строке.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 
-Итого: справочники 19/59, документы 11/37, отчёты 0/9, прочее 2/8.
+Итого: справочники 19/59, документы 15/37, отчёты 0/9, прочее 2/8.
 
 ## Справочники
 
@@ -76,17 +76,17 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] commissionreportin — полученный отчёт комиссионера
 - [ ] commissionreportout — выданный отчёт комиссионера
 - [ ] counterpartyadjustment — корректировка взаиморасчётов
-- [ ] customerorder — заказ покупателя
+- [x] customerorder — заказ покупателя
 - [x] demand — отгрузка
 - [ ] emissionorder — заказ кодов маркировки
-- [ ] enter — оприходование
+- [x] enter — оприходование
 - [ ] facturein — счёт-фактура полученный
 - [ ] factureout — счёт-фактура выданный
 - [ ] internalorder — внутренний заказ
 - [ ] inventory — инвентаризация
 - [x] invoicein — счёт поставщика
 - [x] invoiceout — счёт покупателю
-- [ ] loss — списание
+- [x] loss — списание
 - [x] move — перемещение
 - [x] paymentin — входящий платёж
 - [x] paymentout — исходящий платёж
@@ -106,7 +106,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] retailsalesreturn — розничный возврат
 - [ ] retailshift — розничная смена
 - [ ] retireorder — вывод из оборота
-- [ ] salesreturn — возврат покупателя
+- [x] salesreturn — возврат покупателя
 - [x] supply — приёмка
 
 ## Отчёты

@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-documents/issues/01-position-contracts.md
 
@@ -46,3 +46,30 @@ PurchaseReturn запретов по аналогии.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `d403c7e`, code commit `826adc3`; общий тест опций — `42771d9`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| organization, store, agent | `*Reference` | обяз. | organization, store — Field; agent — нет |
+| agentAccount, demand | `*Reference` | Field (demand — только по основанию) | нет: источник запрещает менять |
+| organizationAccount, contract, owner, group, project, state, salesChannel | `*Reference` | Field | Field |
+| name, description, code, externalCode, syncId, moment, applicable, shared, attributes, rate, vatEnabled, vatIncluded | значения | Field | Field |
+| positions | `*Collection[Position]` | Field, ≤1000 | Field, ≤1000, заменяет все строки |
+| id, meta, accountId, created, updated, deleted, printed, published, sum, vatSum, payedSum, files | | — | — |
+| losses, payments, factureOut | ссылки | — | — |
+
+- Два режима Create одним типом: с Demand (по основанию) и без; golden на оба. Совпадение контрагента,
+  юрлица, валюты и строк с основанием проверяет сервер, Demand-сервис для ссылки не нужен.
+- «Запреты цен» из ticket — в источнике это запрет валюты, отличной от основания; цену строки источник
+  менять не запрещает. Запреты PurchaseReturn по аналогии не перенесены.
+- Строки: cost (без основания), country, gtd, slot, pack, things; `GetPositions(fields=stock)`, stock без
+  cost у возврата без основания (`Stock.Cost` nil). `Position.Cost` общей формы — float64: отсутствие
+  у возврата по основанию читается как 0 (смена на указатель сломала бы прочие документы).
+- Union-поля строк D01 (reserve, inTransit, slots …) доступны через общий тип; принимает ли их документ,
+  решает API — решение D01.
+- Review Standards: неиспользуемый параметр тестового хелпера убран. Review Spec: ограничение stock в
+  Get/List/Update (только с expand) — в godoc GetPositions.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

@@ -11,6 +11,7 @@ JSON-формы позиций и generic reader одной страницы; н
 | `Core` | Meta, ID, AccountID |
 | `Item`, встраивает Core | Assortment model.Reference, Quantity float64 |
 | `Position`, встраивает Item | Price/Discount/Overhead/Cost float64, Shipped/InTransit float64, VAT int, VATEnabled bool, SourceSlot/TargetSlot *model.Reference |
+| `Position`, поля D01 | Reserve float64, TaxSystem/Reason string, Slot/Country *model.Reference, Pack *Pack, GTD *GTD, Things []string, TrackingCodes []TrackingCode, TrackingCodes1162 []TrackingCode1162, Declaration []Declaration, Stock *Stock |
 
 Встраивание даёт плоский JSON. Неизвестные поля игнорируются, отсутствующие значения
 читаются как нулевые; ID и обязательность полей не проверяются самой JSON-моделью.
@@ -44,9 +45,13 @@ SourceSlot/TargetSlot — ссылки без expand; отсутствие ил�
 При кодировании модели чтения nil-ссылки пропускаются через omitzero.
 Кодирование Null в request не обещает допустимость очистки ячеек сервером.
 
-Cost читается и записывается через Field для услуг Demand; Shipped только читается,
-InTransit читается и записывается через Field для PurchaseOrder. Pack/Things,
-serial/tracking/GTD, stock enrichment и прочие
+Cost читается и записывается через Field для услуг Demand и возвратов без основания; Shipped
+только читается, InTransit читается и записывается через Field для PurchaseOrder.
+Поля строк заказа покупателя, оприходования, списания, возвратов и розницы (D01): reserve,
+taxSystem, reason, slot, pack (`PackRequest{ID}`), country, gtd (`GTD{Name}`), things,
+trackingCodes пишутся через Field; trackingCodes_1162, declaration и stock только читаются.
+Таблица enter называет things Object(String), остальные — Array(String): SDK использует массив.
+Stock.Cost — указатель: у возвратов без основания сервер его не возвращает. Прочие
 не перечисленные поля не считаются покрытыми. Generic reader остаётся T any: это не закрытый
 union
 и не требование реализовать каждую будущую строку через наследование Core/Item.
@@ -56,6 +61,9 @@ union
 `NewService[T any](client *transport.Client, documentType string)` возвращает
 `(*Service[T], error)`. Nil client отклоняется. documentType — открытый код одного
 сегмента `[a-z][a-z0-9]*`: нет allowlist ресурсов и скрытой нормализации.
+`PageOptions.Fields` — одно значение и только документированное для кода: `stock` у demand,
+customerorder, invoiceout, purchaseorder, invoicein, supply, purchasereturn, salesreturn,
+retaildemand, retailsalesreturn; `declaration` у loss и retaildemand. Иное — ошибка до HTTP.
 Проверка синтаксиса не гарантирует поддержку endpoint сервером.
 
 ```go
@@ -71,7 +79,7 @@ if err != nil {
 ```
 
 Этот generic вход требует выбрать подходящий T. Типизированные entity.GetPositions
-с фиксированными ресурсом и Position реализованы для семи товарных документов.
+с фиксированными ресурсом и Position реализованы для одиннадцати товарных документов.
 Они используют общий reader без expand; [контракты документов](documents.md).
 
 GetPage делает один GET `entity/{documentType}/{documentID}/positions`, без тела,

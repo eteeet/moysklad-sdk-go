@@ -34,7 +34,8 @@ float64 в копейках, без округления, пересчётов �
 
 ## Позиции
 
-InvoiceIn, InvoiceOut, Supply, Demand, PurchaseOrder, Move и PurchaseReturn используют
+InvoiceIn, InvoiceOut, Supply, Demand, PurchaseOrder, Move, PurchaseReturn, CustomerOrder, Enter,
+Loss и SalesReturn используют
 общие `positions.Position`/`PositionRequest`. Каждый entity-пакет экспортирует aliases
 `Position` и `PositionRequest`, а Service предоставляет типизированный
 `GetPositions(ctx, id, positions.PageOptions) (*model.Collection[Position], error)`.
@@ -42,7 +43,9 @@ InvoiceIn, InvoiceOut, Supply, Demand, PurchaseOrder, Move и PurchaseReturn и�
 допустимы 1…1000 и Offset>=0. Обход страниц выполняет вызывающий код.
 
 Get документа читает positions.meta, без обещания rows и без вызова reader.
-GetPositions делает отдельный GET `entity/<type>/{id}/positions?limit=...&offset=...`.
+GetPositions делает отдельный GET `entity/<type>/{id}/positions?limit=...&offset=...`;
+`PageOptions.Fields` добавляет `fields=stock` или `fields=declaration`, если источник документирует
+их для этого документа.
 У страницы требуются HTTP 200, непустой meta.href и non-null rows; [] — успешная
 пустая страница. Дополнительные правила: [positions](positions.md).
 
@@ -55,7 +58,8 @@ Null остаётся wire null, не превращается в []; приня
 
 Price/Overhead/Cost — float64 в копейках; Quantity/Shipped/InTransit — количества,
 Discount — процент (отрицательный означает наценку). Overhead и Shipped только читаются.
-Cost записывается для услуг Demand; SDK не определяет тип assortment локально.
+Cost записывается для услуг Demand и возвратов без основания; SDK не определяет тип assortment
+локально. Reserve пишется у заказа покупателя, Reason — у оприходования и списания.
 InTransit доступен в общем request для PurchaseOrder; допустимость заданных полей
 общей формы у остальных документов определяет API. SourceSlot/TargetSlot —
 optional Reference; Overhead строки отличается от объекта overhead документа.

@@ -63,7 +63,7 @@
 - [x] namedfilter: применение сохранённого фильтра
 - [x] fields: одно значение; в List справочников и документов пока не принимается
 - [ ] fields=minimumStock у Product и Variant: нужна модель неснижаемого остатка
-- [ ] fields=stock у positions — D01
+- [x] fields=stock и fields=declaration у GetPositions — по документам источника
 - [x] Параметры отчётов: momentFrom/momentTo, groupBy, interval (query.ReportOptions)
 - [x] Обход страниц: pages.All по nextHref
 - [x] Нет скрытых запросов по href/nextHref
@@ -71,16 +71,16 @@
 
 ## Методы ресурсов
 
-- [x] Get/Create/Update: 13 справочников, 11 документов
-- [x] GetPositions: generic GetPage и typed в 7 документах
-- [x] List: 13 справочников и assortment, 11 документов
+- [x] Get/Create/Update: 13 справочников, 15 документов
+- [x] GetPositions: generic GetPage и typed в 11 документах
+- [x] List: 13 справочников и assortment, 15 документов
 - [x] Beta-режим: assortment List с assortmentWithoutStock, ListLegacy без него
 - [x] Вложенные коллекции справочников: компоненты комплекта (одна страница, без мутаций)
 - [ ] Delete и массовое удаление (POST …/delete)
 - [ ] Удаление в корзину
 - [ ] Массовое создание/обновление (POST массивом)
 - [ ] Отдельные операции позиций: Get, Create, Update, Delete
-- [ ] Позиции: pack, things, slot, trackingCodes, gtd, остатки (fields=stock)
+- [x] Позиции: pack, things, slot, trackingCodes, gtd, declaration, остатки (fields=stock)
 - [ ] Шаблон документа: PUT entity/{type}/new
 - [ ] Автозаполнение: wizard/demand, wizard/salesreturn
 - [ ] Печать (export), публикации, шаблоны печатных форм

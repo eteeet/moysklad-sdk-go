@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -47,3 +47,37 @@ Write matrix из contracts.md: reserve/shipped/cost/inTransit и прочие �
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `25a7485`, code commit `448ff35`.
+
+| Поле строки | Read | Write | Источник / примечание |
+| --- | --- | --- | --- |
+| reserve | `float64` | Field | customerorder; количество, не деньги |
+| shipped | `float64` | — | readonly (уже было) |
+| taxSystem | `string` | Field | customerorder, enum открыт |
+| reason | `string` | Field | enter, loss |
+| slot | `*Reference` | Field | enter, loss, salesreturn |
+| pack | `*Pack{ID, Quantity, UOM, Barcodes}` | `PackRequest{ID}` | ссылка таблиц на «Упаковки Товара»; примеры пишут только id |
+| country | `*Reference` | Field | enter, salesreturn |
+| gtd | `*GTD{Name}` | Field | enter, salesreturn (объект); в declaration — строка |
+| things | `[]string` | Field | enter: Object(String) против Array(String) у остальных — массив |
+| trackingCodes | `[]TrackingCode` (рекурсивно) | Field | retaildemand: cis/type необходимы при создании; есть в фикстурах demand/supply |
+| trackingCodes_1162 | `[]TrackingCode1162` | — | readonly |
+| declaration | `[]Declaration{GTD, RNPT, Country, Quantity}` | — | loss, retaildemand, `fields=declaration`, readonly |
+| stock | `*Stock{Cost *float64, Quantity, Reserve, InTransit, Available}` | — | `fields=stock`, readonly; Cost — копейки, нет у возвратов без основания |
+| cost | `float64` | Field | уже было; теперь и возвраты без основания |
+
+- `query.PageOptions.Fields` — одно значение. `positions.GetPage` принимает только значения из
+  `positionFields`: stock для 10 документов из общего раздела (_general L1122), declaration для loss
+  и retaildemand. Список — в одном месте пакета positions, а не в каждом документе: он выписан из
+  одного раздела источника. Компоненты комплекта fields отклоняют.
+- Новые скалярные поля чтения — с omitzero; прежние семь документов не регрессировали, их фикстуры
+  теперь дополнительно читают things/trackingCodes.
+- Review Standards: trackingCodes записывается по маркеру «Необходимо при создании» (не по аналогии);
+  противоречие things и устаревший комментарий Cost исправлены; формулировка ошибки fields едина;
+  allowlist оставлен в positions (обоснование выше). Docs (positions.md, demand.md, status) — в
+  завершающем docs-коммите волны.
+- Review Spec: источник полей Pack указан; остальное — как Standards.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.

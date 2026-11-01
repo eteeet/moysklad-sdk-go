@@ -89,11 +89,11 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| D01 | [Расширения общей формы позиций](../sdk-v1-documents/issues/01-position-contracts.md) | T06 | needs-triage |
-| D02 | [CustomerOrder Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/02-customerorder.md) | T02, T06, D01 | needs-triage |
-| D03 | [Enter Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/03-enter.md) | T02, T06, D01 | needs-triage |
-| D04 | [Loss Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/04-loss.md) | T02, T06, D01 | needs-triage |
-| D05 | [SalesReturn Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/05-salesreturn.md) | T02, T06, D01 | needs-triage |
+| D01 | [Расширения общей формы позиций](../sdk-v1-documents/issues/01-position-contracts.md) | T06 | resolved |
+| D02 | [CustomerOrder Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/02-customerorder.md) | T02, T06, D01 | resolved |
+| D03 | [Enter Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/03-enter.md) | T02, T06, D01 | resolved |
+| D04 | [Loss Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/04-loss.md) | T02, T06, D01 | resolved |
+| D05 | [SalesReturn Get/List/Create/Update/GetPositions](../sdk-v1-documents/issues/05-salesreturn.md) | T02, T06, D01 | resolved |
 
 ### Розница и штатные бонусы
 

@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md; ../../sdk-v1-documents/issues/01-position-contracts.md
 
@@ -44,3 +44,24 @@ queries только где документированы, одна отпра�
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `c4dbe13`, code commit `9b27979`.
+
+| Группа | Read | Create | Update |
+| --- | --- | --- | --- |
+| organization, store | `*Reference` | обяз. | Field |
+| owner, group, project, state | `*Reference` | Field | Field |
+| name, description, code, externalCode, syncId, moment, applicable, shared, attributes, rate | значения | Field | Field |
+| overhead `{sum, distribution}` | `*DocumentOverhead` | Field | Field |
+| positions | `*Collection[Position]` | Field, ≤1000 | Field, ≤1000, заменяет все строки |
+| id, meta, accountId, created, updated, deleted, printed, published, sum, files | | — | — |
+| inventory | `*Reference` | — | — |
+
+- Контрагента у оприходования нет. Строки: reason, country, gtd, things, slot, pack; overhead строки readonly.
+- GetPositions — одна страница; fields у позиций источник не документирует (отклоняется до запроса).
+- inventory: маркера readonly нет, но и в примерах записи нет — SDK не пишет (в godoc).
+- Review Standards: замечаний нет (дублирование do/validID — конвенция пакетов). Review Spec: формулировка
+  об inventory исправлена; нулевые даты проверяются в тесте.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
