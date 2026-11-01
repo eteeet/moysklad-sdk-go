@@ -27,12 +27,17 @@ type Config struct {
 	Timeout time.Duration
 
 	Auth Auth
+
+	// Header добавляется ко всем запросам клиента; RequestOption того же key его заменяет.
+	// Authorization, Accept, Accept-Encoding, Content-Type, Content-Length и Host задаёт transport.
+	Header http.Header
 }
 
 type Client struct {
 	httpClient *http.Client
 	baseURL    *url.URL
 	auth       Auth
+	header     http.Header
 }
 
 // HTTPClient копируется поверхностно: Transport и Jar общие с исходным клиентом,
@@ -58,6 +63,10 @@ func NewClient(cfg Config) (*Client, error) {
 		return nil, fmt.Errorf("moysklad: base URL must not contain credentials, query or fragment")
 	}
 
+	if err := checkHeaders(cfg.Header); err != nil {
+		return nil, err
+	}
+
 	httpClient := http.Client{Timeout: DefaultTimeout}
 	if cfg.HTTPClient != nil {
 		httpClient = *cfg.HTTPClient
@@ -71,6 +80,7 @@ func NewClient(cfg Config) (*Client, error) {
 		httpClient: &httpClient,
 		baseURL:    parsedURL,
 		auth:       cfg.Auth,
+		header:     cfg.Header.Clone(),
 	}, nil
 }
 

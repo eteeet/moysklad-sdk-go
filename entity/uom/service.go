@@ -22,24 +22,24 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-poluchit-edinicu-izmereniya
-func (s *Service) Get(ctx context.Context, id string) (*UOM, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*UOM, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: uom id must be a UUID")
 	}
-	return s.do(ctx, "get uom "+id, http.MethodGet, "entity/uom/"+id, nil)
+	return s.do(ctx, "get uom "+id, http.MethodGet, "entity/uom/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-sozdat-edinicu-izmereniya
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль UOM.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*UOM, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*UOM, error) {
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create uom: name must not be empty")
 	}
-	return s.do(ctx, "create uom", http.MethodPost, "entity/uom", input)
+	return s.do(ctx, "create uom", http.MethodPost, "entity/uom", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-izmenit-edinicu-izmereniya
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*UOM, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*UOM, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update uom: id must be a UUID")
 	}
@@ -47,16 +47,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update uom: no fields specified")
 	}
-	return s.do(ctx, "update uom "+id, http.MethodPut, "entity/uom/"+id, input)
+	return s.do(ctx, "update uom "+id, http.MethodPut, "entity/uom/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*UOM, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*UOM, error) {
 	var result UOM
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

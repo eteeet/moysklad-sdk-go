@@ -11,8 +11,34 @@ import (
 	"strings"
 )
 
+// Send выполняет один запрос без повторов: NewRequest, Do и заполнение ResponseInfo из opts.
+func (c *Client) Send(ctx context.Context, method, endpoint string, query url.Values, body, dst any, opts ...RequestOption) (*http.Response, error) {
+	options := newRequestOptions(opts...)
+	if options.ResponseInfo != nil {
+		*options.ResponseInfo = ResponseInfo{}
+	}
+	req, err := c.newRequest(ctx, method, endpoint, query, body, options)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.Do(req, dst)
+	if resp != nil && options.ResponseInfo != nil {
+		*options.ResponseInfo = ResponseInfo{StatusCode: resp.StatusCode, Header: resp.Header.Clone()}
+	}
+	return resp, err
+}
+
 // Явные query-параметры заменяют одноимённые параметры из endpoint.
+// Заголовки: значения transport < Config.Header; per-call опции принимает только Send.
 func (c *Client) NewRequest(ctx context.Context, method, endpoint string, query url.Values, body any) (*http.Request, error) {
+	return c.newRequest(ctx, method, endpoint, query, body, RequestOptions{})
+}
+
+func (c *Client) newRequest(ctx context.Context, method, endpoint string, query url.Values, body any, options RequestOptions) (*http.Request, error) {
+	if err := checkHeaders(options.Header); err != nil {
+		return nil, err
+	}
+
 	resource, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("moysklad: invalid endpoint: %w", err)
@@ -63,6 +89,8 @@ func (c *Client) NewRequest(ctx context.Context, method, endpoint string, query 
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
+	overrideHeaders(req.Header, c.header)
+	overrideHeaders(req.Header, options.Header)
 	if c.auth != nil {
 		if err := c.auth(req); err != nil {
 			return nil, fmt.Errorf("moysklad: authorize request: %w", err)

@@ -593,3 +593,61 @@ type roundTripFunc func(*http.Request) (*http.Response, error)
 func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req)
 }
+
+func TestServiceRequestOptions(t *testing.T) {
+	fixture, err := os.ReadFile("../../testdata/upstream/uom.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name   string
+		status int
+		invoke func(*uom.Service, ...transport.RequestOption) (*uom.UOM, error)
+	}{
+		{"get", http.StatusOK, func(s *uom.Service, opts ...transport.RequestOption) (*uom.UOM, error) {
+			return s.Get(t.Context(), fixtureUOMID, opts...)
+		}},
+		{"create", http.StatusOK, func(s *uom.Service, opts ...transport.RequestOption) (*uom.UOM, error) {
+			return s.Create(t.Context(), uom.CreateRequest{Name: "шт"}, opts...)
+		}},
+		{"update", http.StatusOK, func(s *uom.Service, opts ...transport.RequestOption) (*uom.UOM, error) {
+			return s.Update(t.Context(), fixtureUOMID, uom.UpdateRequest{Code: model.Value("796")}, opts...)
+		}},
+		{"update api error", http.StatusConflict, func(s *uom.Service, opts ...transport.RequestOption) (*uom.UOM, error) {
+			return s.Update(t.Context(), fixtureUOMID, uom.UpdateRequest{Code: model.Value("796")}, opts...)
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var calls atomic.Int32
+			service := newUOMService(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls.Add(1)
+				if r.Header.Get("Accept-Language") != "en" || r.Header.Get("Authorization") != "Bearer test-token" {
+					t.Errorf("headers = %v", r.Header)
+				}
+				w.Header().Set("X-Lognex-Content-Region", "kz")
+				if tc.status != http.StatusOK {
+					w.WriteHeader(tc.status)
+					w.Write([]byte(`{"errors":[{"error":"conflict","code":1065}]}`))
+					return
+				}
+				writeUOMResponse(t, w, fixture, false)
+			}))
+
+			var info transport.ResponseInfo
+			got, err := tc.invoke(service, transport.WithHeader("Accept-Language", "en"), transport.WithResponseInfo(&info))
+			if tc.status == http.StatusOK {
+				if err != nil || got.ID != fixtureUOMID {
+					t.Fatalf("got = %+v, err = %v", got, err)
+				}
+			} else {
+				var apiErr *sdkerrors.APIError
+				if got != nil || !errors.As(err, &apiErr) || apiErr.StatusCode != http.StatusConflict {
+					t.Fatalf("got = %+v, err = %v", got, err)
+				}
+			}
+			if info.StatusCode != tc.status || info.Header.Get("X-Lognex-Content-Region") != "kz" || calls.Load() != 1 {
+				t.Fatalf("info = %+v, calls = %d", info, calls.Load())
+			}
+		})
+	}
+}
