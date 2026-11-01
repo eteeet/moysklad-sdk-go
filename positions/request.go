@@ -16,10 +16,13 @@ type ItemRequest struct {
 // Price задаётся в копейках; допустимость Null определяет API документа.
 type PositionRequest struct {
 	ItemRequest
-	Price      model.Field[float64]         `json:"price,omitzero"`
-	Discount   model.Field[float64]         `json:"discount,omitzero"`
-	VAT        model.Field[int]             `json:"vat,omitzero"`
-	VATEnabled model.Field[bool]            `json:"vatEnabled,omitzero"`
+	Price      model.Field[float64] `json:"price,omitzero"`
+	Discount   model.Field[float64] `json:"discount,omitzero"`
+	VAT        model.Field[int]     `json:"vat,omitzero"`
+	VATEnabled model.Field[bool]    `json:"vatEnabled,omitzero"`
+	// Cost — себестоимость услуги Demand, InTransit — количество в пути PurchaseOrder.
+	Cost       model.Field[float64]         `json:"cost,omitzero"`
+	InTransit  model.Field[float64]         `json:"inTransit,omitzero"`
 	SourceSlot model.Field[model.Reference] `json:"sourceSlot,omitzero"`
 	TargetSlot model.Field[model.Reference] `json:"targetSlot,omitzero"`
 }

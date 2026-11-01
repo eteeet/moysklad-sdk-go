@@ -156,7 +156,7 @@ func TestPositionJSON(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			jsonAssertEqual(t, encoded, `{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":2.5,"price":101.25,"discount":-2.5,"vat":0,"vatEnabled":true,"overhead":0}`)
+			jsonAssertEqual(t, encoded, `{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":2.5,"price":101.25,"discount":-2.5,"vat":0,"vatEnabled":true,"overhead":0,"cost":0,"shipped":0,"inTransit":0}`)
 		})
 	}
 }
@@ -201,7 +201,7 @@ func TestPositionDocumentFieldsJSON(t *testing.T) {
 				"meta":{"href":"https://example.test/positions/row-1","type":"moveposition","mediaType":"application/json"},
 				"id":"row-1","accountId":"account-1",
 				"assortment":{"meta":{"href":"https://example.test/entity/product/product-1","type":"product"}},
-				"quantity":1.25,"price":12345.67,"overhead":12.5,"discount":0,"vat":0,"vatEnabled":false,
+				"quantity":1.25,"price":12345.67,"overhead":12.5,"cost":0,"shipped":0,"inTransit":0,"discount":0,"vat":0,"vatEnabled":false,
 				"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},
 				"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}
 			}`)
@@ -257,17 +257,17 @@ func TestPositionOptionalFieldsEncoding(t *testing.T) {
 				{
 					"nil slots",
 					positions.Position{},
-					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false}`,
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"cost":0,"shipped":0,"inTransit":0,"discount":0,"vat":0,"vatEnabled":false}`,
 				},
 				{
 					"source slot only",
 					positions.Position{SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}}},
-					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}}}`,
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"cost":0,"shipped":0,"inTransit":0,"discount":0,"vat":0,"vatEnabled":false,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}}}`,
 				},
 				{
 					"target slot only",
 					positions.Position{TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}}},
-					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false,"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"cost":0,"shipped":0,"inTransit":0,"discount":0,"vat":0,"vatEnabled":false,"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
 				},
 				{
 					"both slots",
@@ -275,7 +275,7 @@ func TestPositionOptionalFieldsEncoding(t *testing.T) {
 						SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}},
 						TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}},
 					},
-					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"cost":0,"shipped":0,"inTransit":0,"discount":0,"vat":0,"vatEnabled":false,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
 				},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
