@@ -1,0 +1,9 @@
+{
+  "agent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/88888888-8888-8888-8888-888888888888", "type": "counterparty"}},
+  "agentAccount": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/88888888-8888-8888-8888-888888888888/accounts/99999999-9999-9999-9999-999999999999", "type": "account"}},
+  "contract": null,
+  "shipmentAddress": "",
+  "positions": [
+    {"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "quantity": 3, "reserve": 0}
+  ]
+}
