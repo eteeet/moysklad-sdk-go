@@ -32,6 +32,9 @@ type Config struct {
 	// Один Limiter делится между всеми Client одного пользователя или решения.
 	Limiter *Limiter
 
+	// Retry повторяет чтения при 429, 500, 502, 503, 504 и временном сбое соединения; nil — без повторов.
+	Retry *RetryPolicy
+
 	// Header добавляется ко всем запросам клиента; RequestOption того же key его заменяет.
 	// Authorization, Accept, Accept-Encoding, Content-Type, Content-Length и Host задаёт transport.
 	Header http.Header
@@ -43,6 +46,7 @@ type Client struct {
 	auth       Auth
 	header     http.Header
 	limiter    *Limiter
+	retry      *RetryPolicy
 }
 
 // HTTPClient копируется поверхностно: Transport и Jar общие с исходным клиентом,
@@ -87,6 +91,7 @@ func NewClient(cfg Config) (*Client, error) {
 		auth:       cfg.Auth,
 		header:     cfg.Header.Clone(),
 		limiter:    cfg.Limiter,
+		retry:      cfg.Retry,
 	}, nil
 }
 

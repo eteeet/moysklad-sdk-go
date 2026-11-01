@@ -22,11 +22,17 @@ type RequestOptions struct {
 
 	// Limiter заменяет Config.Limiter для одного вызова — нужен вместе с Auth другого principal.
 	Limiter *Limiter
+
+	// NoRetry запрещает повтор вызова независимо от Config.Retry.
+	NoRetry bool
 }
 
 // ResponseInfo принадлежит вызывающему коду: параллельные вызовы должны передавать разные указатели.
 type ResponseInfo struct {
+	// Всё — о последней отправленной попытке: без ответа StatusCode 0 и Header nil.
+	// Attempts — число отправленных попыток.
 	StatusCode int
+	Attempts   int
 	// Копия всех заголовков ответа, включая повторные и неизвестные значения.
 	Header http.Header
 }
@@ -73,6 +79,13 @@ func WithAuth(auth Auth) RequestOption {
 func WithLimiter(l *Limiter) RequestOption {
 	return func(o *RequestOptions) {
 		o.Limiter = l
+	}
+}
+
+// WithoutRetry запрещает повтор этого вызова при любой RetryPolicy клиента.
+func WithoutRetry() RequestOption {
+	return func(o *RequestOptions) {
+		o.NoRetry = true
 	}
 }
 

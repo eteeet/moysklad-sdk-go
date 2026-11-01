@@ -41,9 +41,10 @@ func (s *Service) CreateToken(ctx context.Context, username, password string, op
 		return nil, fmt.Errorf("create token: %w", err)
 	}
 	var result Token
-	// Basic идёт последним, чтобы WithAuth caller его не заменил; cap защищает массив caller от append.
+	// Basic и запрет повтора идут последними, чтобы опции caller их не заменили;
+	// cap защищает массив caller от append.
 	resp, err := s.client.Send(ctx, http.MethodPost, "security/token", nil, nil, &result,
-		append(opts[:len(opts):len(opts)], transport.WithAuth(auth))...)
+		append(opts[:len(opts):len(opts)], transport.WithAuth(auth), transport.WithoutRetry())...)
 	if err != nil {
 		return nil, fmt.Errorf("create token: %w", err)
 	}

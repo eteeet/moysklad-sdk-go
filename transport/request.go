@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json/v2"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,16 +12,58 @@ import (
 	"strings"
 )
 
-// Send выполняет один запрос без повторов: NewRequest, Do и заполнение ResponseInfo из opts.
+// Send выполняет вызов: сборка запроса, Do и заполнение ResponseInfo из opts.
+// Повторы — только по Config.Retry и только для чтений; каждая попытка заново собирает запрос
+// и проходит Limiter, слоты освобождаются до паузы. Возвращается ответ и ошибка последней
+// отправленной попытки; если повторы прервала отмена ctx, ошибка содержит и её (errors.Join).
 func (c *Client) Send(ctx context.Context, method, endpoint string, query url.Values, body, dst any, opts ...RequestOption) (*http.Response, error) {
 	options := newRequestOptions(opts...)
-	if options.ResponseInfo != nil {
-		*options.ResponseInfo = ResponseInfo{}
+	info := options.ResponseInfo
+	if info != nil {
+		*info = ResponseInfo{}
 	}
-	req, err := c.newRequest(ctx, method, endpoint, query, body, options)
-	if err != nil {
-		return nil, err
+	var policy RetryPolicy
+	retry := c.retry != nil && retryableCall(method, endpoint, query, options)
+	if retry {
+		policy = c.retry.withDefaults()
 	}
+	var lastResp *http.Response
+	var lastErr error
+	for attempt := 1; ; attempt++ {
+		req, err := c.newRequest(ctx, method, endpoint, query, body, options)
+		if err != nil {
+			return nil, err
+		}
+		resp, err, sent := c.sendOnce(ctx, req, dst, options)
+		if !sent {
+			// Попытка не ушла (отмена в ожидании Limiter): итог — предыдущая попытка.
+			if attempt > 1 {
+				return lastResp, errors.Join(lastErr, err)
+			}
+			return nil, err
+		}
+		if info != nil {
+			*info = ResponseInfo{Attempts: attempt}
+			if resp != nil {
+				info.StatusCode, info.Header = resp.StatusCode, resp.Header.Clone()
+			}
+		}
+		lastResp, lastErr = resp, err
+		if !retry {
+			return resp, err
+		}
+		delay, ok := policy.retryDelay(attempt, resp, err)
+		if !ok {
+			return resp, err
+		}
+		if waited, ctxErr := policy.sleep(ctx, delay); !waited {
+			return resp, errors.Join(err, ctxErr)
+		}
+	}
+}
+
+// sendOnce — одна отправка с учётом Limiter; sent=false, если запрос не ушёл.
+func (c *Client) sendOnce(ctx context.Context, req *http.Request, dst any, options RequestOptions) (resp *http.Response, err error, sent bool) {
 	// Вызов с WithAuth идёт от другого principal: бюджет клиента к нему не относится.
 	// Без WithLimiter такой вызов учитывается только в параллельности аккаунта.
 	limiter, principal := c.limiter, options.Auth == nil
@@ -29,18 +72,15 @@ func (c *Client) Send(ctx context.Context, method, endpoint string, query url.Va
 	}
 	if limiter != nil {
 		path := strings.Trim(strings.TrimPrefix(req.URL.Path, c.baseURL.Path), "/")
-		release, err := limiter.acquire(ctx, method, path, principal)
+		release, err := limiter.acquire(ctx, req.Method, path, principal)
 		if err != nil {
-			return nil, err
+			return nil, err, false
 		}
 		// Do закрывает body до возврата: слоты освобождаются после чтения ответа.
 		defer release()
 	}
-	resp, err := c.Do(req, dst)
-	if resp != nil && options.ResponseInfo != nil {
-		*options.ResponseInfo = ResponseInfo{StatusCode: resp.StatusCode, Header: resp.Header.Clone()}
-	}
-	return resp, err
+	resp, err = c.Do(req, dst)
+	return resp, err, true
 }
 
 // Явные query-параметры заменяют одноимённые параметры из endpoint.

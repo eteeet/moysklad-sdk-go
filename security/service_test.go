@@ -180,3 +180,24 @@ func TestCreateTokenNoRequest(t *testing.T) {
 		t.Fatal("nil client accepted")
 	}
 }
+
+// Даже при RetryPolicy клиента выпуск токена отправляется один раз.
+func TestCreateTokenNoRetryWithPolicy(t *testing.T) {
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
+	defer server.Close()
+	client, err := transport.NewClient(transport.Config{BaseURL: server.URL, Retry: &transport.RetryPolicy{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := security.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.CreateToken(t.Context(), "admin@shop", "password"); err == nil || calls.Load() != 1 {
+		t.Fatalf("err = %v, calls = %d", err, calls.Load())
+	}
+}
