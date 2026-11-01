@@ -1,0 +1,31 @@
+{
+  "name": "Набор",
+  "components": [
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/11111111-1111-1111-1111-111111111111", "type": "product", "mediaType": "application/json"}}, "quantity": 2},
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/33333333-3333-3333-3333-333333333333", "type": "variant", "mediaType": "application/json"}}, "quantity": 0.5}
+  ],
+  "code": "SET-1",
+  "externalCode": "set-1",
+  "description": "",
+  "article": "A-1",
+  "archived": false,
+  "vat": 0,
+  "vatEnabled": true,
+  "useParentVat": false,
+  "discountProhibited": false,
+  "paymentItemType": "GOOD",
+  "taxSystem": "GENERAL_TAX_SYSTEM",
+  "trackingType": "NOT_TRACKED",
+  "partialDisposal": false,
+  "tnved": "1234567890",
+  "weight": 0,
+  "volume": 1.5,
+  "uom": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/uom/19f1edc0-fc42-4001-94cb-c9ec9c62ec10", "type": "uom", "mediaType": "application/json"}},
+  "country": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/country/44444444-4444-4444-4444-444444444444", "type": "country", "mediaType": "application/json"}},
+  "minPrice": {"value": 50000, "currency": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/22222222-2222-2222-2222-222222222222", "type": "currency", "mediaType": "application/json"}}},
+  "overhead": {"value": 1050.5, "currency": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/22222222-2222-2222-2222-222222222222", "type": "currency", "mediaType": "application/json"}}},
+  "salePrices": [{"value": 99900, "priceType": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/88888888-8888-8888-8888-888888888888", "type": "pricetype", "mediaType": "application/json"}}}],
+  "barcodes": [{"ean13": "2000000000046"}],
+  "mod__marking__uz": {"trackingType": "WATER"},
+  "syncId": "66666666-6666-6666-6666-666666666666"
+}

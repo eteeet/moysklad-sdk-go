@@ -1,0 +1,11 @@
+{
+  "name": "Набор 2",
+  "components": [
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/service/55555555-5555-5555-5555-555555555555", "type": "service", "mediaType": "application/json"}}, "quantity": 1},
+    {"id": "1545552d-26af-11f1-0a83-1f2500000185", "quantity": 3}
+  ],
+  "barcodes": [],
+  "overhead": null,
+  "country": null,
+  "weight": 0
+}

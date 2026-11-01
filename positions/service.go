@@ -4,13 +4,10 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"net/url"
 	"regexp"
-	"strconv"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
-	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -44,19 +41,9 @@ func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOp
 	if !validID(documentID) {
 		return nil, fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
 	}
-	if page.Limit < 0 || page.Limit > query.MaxLimit {
-		return nil, fmt.Errorf("moysklad: %s: limit must be between 1 and 1000, or 0 for default", operation)
-	}
-	if page.Offset < 0 {
-		return nil, fmt.Errorf("moysklad: %s: offset must not be negative", operation)
-	}
-	limit := page.Limit
-	if limit == 0 {
-		limit = query.MaxLimit
-	}
-	query := url.Values{
-		"limit":  {strconv.Itoa(limit)},
-		"offset": {strconv.Itoa(page.Offset)},
+	query, err := page.Values()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 	return list.Page[T](ctx, s.client, operation, "entity/"+s.documentType+"/"+documentID+"/positions", query, opts...)
 }
