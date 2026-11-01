@@ -1,0 +1,107 @@
+{
+  "id": "read-id",
+  "accountId": "read-accountId",
+  "name": "request-name",
+  "description": "",
+  "code": "",
+  "externalCode": "request-externalCode",
+  "syncId": "request-syncId",
+  "created": "2026-11-01 10:20:30.000",
+  "updated": "2026-11-01 10:20:30.000",
+  "deleted": "2026-11-01 10:20:30.000",
+  "moment": "2026-11-01 12:34:56.000",
+  "applicable": false,
+  "shared": false,
+  "printed": true,
+  "published": true,
+  "organization": {
+    "meta": {
+      "href": "https://example.test/organization",
+      "type": "organization"
+    }
+  },
+  "owner": {
+    "meta": {
+      "href": "https://example.test/owner",
+      "type": "owner"
+    }
+  },
+  "group": {
+    "meta": {
+      "href": "https://example.test/group",
+      "type": "group"
+    }
+  },
+  "project": {
+    "meta": {
+      "href": "https://example.test/project",
+      "type": "project"
+    }
+  },
+  "state": {
+    "meta": {
+      "href": "https://example.test/state",
+      "type": "state"
+    }
+  },
+  "meta": {
+    "href": "https://example.test/entity/cashin/read-id",
+    "type": "cashin"
+  },
+  "attributes": [
+    {
+      "meta": {
+        "href": "https://example.test/attributes/long"
+      },
+      "type": "long",
+      "value": 9007199254740993
+    }
+  ],
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://example.test/currency",
+        "type": "currency"
+      }
+    }
+  },
+  "sum": 123.25,
+  "agent": {
+    "meta": {
+      "href": "https://example.test/agent",
+      "type": "agent"
+    }
+  },
+  "contract": {
+    "meta": {
+      "href": "https://example.test/contract",
+      "type": "contract"
+    }
+  },
+  "vatSum": 0,
+  "paymentPurpose": "request-paymentPurpose",
+  "operations": [
+    {
+      "meta": {
+        "href": "https://example.test/operation",
+        "type": "futureoperation"
+      },
+      "linkedSum": 1.25
+    }
+  ],
+  "salesChannel": {
+    "meta": {
+      "href": "https://example.test/salesChannel",
+      "type": "salesChannel"
+    }
+  },
+  "factureOut": {
+    "meta": {
+      "href": "https://example.test/factureOut",
+      "type": "factureOut"
+    }
+  },
+  "futureField": {
+    "ignored": true
+  }
+}
