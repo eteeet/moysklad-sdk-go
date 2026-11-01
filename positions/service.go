@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"regexp"
+	"slices"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -12,6 +13,14 @@ import (
 )
 
 var readerDocumentTypePattern = regexp.MustCompile(`^[a-z][a-z0-9]*$`)
+
+// positionFields — значения fields, которые источник документирует для позиций: stock — остатки
+// и себестоимость (общий раздел), declaration — прослеживаемость у списания и розничной продажи.
+var positionFields = map[string][]string{
+	"demand": {"stock"}, "customerorder": {"stock"}, "invoiceout": {"stock"}, "purchaseorder": {"stock"},
+	"invoicein": {"stock"}, "supply": {"stock"}, "purchasereturn": {"stock"}, "salesreturn": {"stock"},
+	"retailsalesreturn": {"stock"}, "retaildemand": {"stock", "declaration"}, "loss": {"declaration"},
+}
 
 // Service читает отдельные страницы позиций документа в выбранную вызывающим кодом форму T.
 // Generic reader не определяет полноту полей позиций конкретного документа.
@@ -33,6 +42,7 @@ func NewService[T any](client *transport.Client, documentType string) (*Service[
 }
 
 // GetPage читает одну страницу без повторов и переходов по href; limit/offset задаёт вызывающий код.
+// fields принимается только из positionFields для этого кода документа.
 // Metadata positions в заголовке документа не означает, что строки уже прочитаны.
 // https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L2468-L2525
 func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOptions, opts ...transport.RequestOption) (*model.Collection[T], error) {
@@ -40,6 +50,9 @@ func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOp
 	operation := "get " + s.documentType + " " + documentID + " positions"
 	if !validID(documentID) {
 		return nil, fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
+	}
+	if page.Fields != "" && !slices.Contains(positionFields[s.documentType], page.Fields) {
+		return nil, fmt.Errorf("moysklad: %s: fields=%q is not supported", operation, page.Fields)
 	}
 	query, err := page.Values()
 	if err != nil {

@@ -78,6 +78,9 @@ func (s *Service) GetComponents(ctx context.Context, id string, page query.PageO
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: %s: bundle id must be a UUID", operation)
 	}
+	if page.Fields != "" {
+		return nil, fmt.Errorf("moysklad: %s: fields=%q is not supported", operation, page.Fields)
+	}
 	params, err := page.Values()
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)

@@ -238,7 +238,7 @@ func TestBundleValidation(t *testing.T) {
 	if _, err := s.GetComponent(t.Context(), testID, "bad"); err == nil {
 		t.Error("bad component id accepted")
 	}
-	for _, page := range []query.PageOptions{{Limit: -1}, {Limit: 1001}, {Offset: -1}} {
+	for _, page := range []query.PageOptions{{Limit: -1}, {Limit: 1001}, {Offset: -1}, {Fields: "stock"}} {
 		if _, err := s.GetComponents(t.Context(), testID, page); err == nil {
 			t.Errorf("page %+v accepted", page)
 		}

@@ -169,6 +169,7 @@ func TestModelJSON(t *testing.T) {
 										MediaType: "application/json",
 									},
 								}),
+								Things: []string{"serial-001", "serial-002"},
 							},
 						},
 					}),

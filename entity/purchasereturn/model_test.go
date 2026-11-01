@@ -184,6 +184,7 @@ func TestModelJSON(t *testing.T) {
 								Discount:   float64(0),
 								VAT:        0,
 								VATEnabled: false,
+								Things:     []string{},
 							},
 						},
 					}),
