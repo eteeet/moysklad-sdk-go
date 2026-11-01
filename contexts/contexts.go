@@ -1,5 +1,5 @@
-// Package contexts читает контекст запроса: сотрудника, от имени которого авторизован клиент.
-// Это не model.ResponseContext из коллекций.
+// Package contexts читает контекст запроса: сотрудника или серверного решения, от имени которых
+// авторизован клиент. Это не model.ResponseContext из коллекций.
 package contexts
 
 import (
@@ -38,6 +38,22 @@ type EmployeeContext struct {
 func (s *Service) Employee(ctx context.Context, opts ...transport.RequestOption) (*EmployeeContext, error) {
 	transport.ResetResponseInfo(opts)
 	return get(ctx, s, "get employee context", "context/employee", func(c *EmployeeContext) string { return c.ID }, opts)
+}
+
+// ApplicationContext — установленное серверное решение, токеном которого авторизован запрос.
+// ID — id установки на аккаунте, AppUID — идентификатор решения; это не Vendor API.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/general#4-poluchenie-konteksta-resheniya
+type ApplicationContext struct {
+	Meta   model.Meta `json:"meta"`
+	ID     string     `json:"id"`
+	AppUID string     `json:"appUid"`
+}
+
+// Application выполняет один GET context/application; работает с токеном решения.
+// NewClient его не вызывает, установку и активацию решения SDK не выполняет.
+func (s *Service) Application(ctx context.Context, opts ...transport.RequestOption) (*ApplicationContext, error) {
+	transport.ResetResponseInfo(opts)
+	return get(ctx, s, "get application context", "context/application", func(c *ApplicationContext) string { return c.ID }, opts)
 }
 
 // get выполняет один GET контекста. Критерий успеха контекста — HTTP 200 и id, который

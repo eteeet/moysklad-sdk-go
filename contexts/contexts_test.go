@@ -81,6 +81,30 @@ func TestServiceEmployee(t *testing.T) {
 	documenttest.LocalErrors(t, invoke)
 }
 
+func TestServiceApplication(t *testing.T) {
+	body, err := os.ReadFile("../testdata/custom/contexts/application.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	invoke := func(ctx context.Context, client *transport.Client) (*contexts.ApplicationContext, error) {
+		s, err := contexts.NewService(client)
+		if err != nil {
+			return nil, err
+		}
+		return s.Application(ctx)
+	}
+	for _, tc := range documenttest.ResponseCases(string(body)) {
+		t.Run(tc.Name, func(t *testing.T) {
+			documenttest.HTTP(t, tc, "GET", "context/application", nil, invoke, func(got *contexts.ApplicationContext) {
+				if got.ID != "b58a6312-f958-11e9-ac12-000a00000020" || got.AppUID != "test.moysklad@reqwy1" || got.Meta.Type != "application" {
+					t.Fatalf("context = %+v", got)
+				}
+			})
+		})
+	}
+	documenttest.LocalErrors(t, invoke)
+}
+
 func TestNewServiceNilClient(t *testing.T) {
 	if _, err := contexts.NewService(nil); err == nil {
 		t.Fatal("nil client accepted")
