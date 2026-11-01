@@ -19,6 +19,9 @@ type RequestOptions struct {
 
 	// Auth заменяет Config.Auth для одного вызова; nil оставляет Auth клиента.
 	Auth Auth
+
+	// Limiter заменяет Config.Limiter для одного вызова — нужен вместе с Auth другого principal.
+	Limiter *Limiter
 }
 
 // ResponseInfo принадлежит вызывающему коду: параллельные вызовы должны передавать разные указатели.
@@ -62,6 +65,14 @@ func WithResponseInfo(info *ResponseInfo) RequestOption {
 func WithAuth(auth Auth) RequestOption {
 	return func(o *RequestOptions) {
 		o.Auth = auth
+	}
+}
+
+// WithLimiter учитывает вызов в бюджете другого principal, например пользователя, от имени
+// которого вызов авторизован через WithAuth.
+func WithLimiter(l *Limiter) RequestOption {
+	return func(o *RequestOptions) {
+		o.Limiter = l
 	}
 }
 

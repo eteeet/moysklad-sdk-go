@@ -21,6 +21,21 @@ func (c *Client) Send(ctx context.Context, method, endpoint string, query url.Va
 	if err != nil {
 		return nil, err
 	}
+	// Вызов с WithAuth идёт от другого principal: бюджет клиента к нему не относится.
+	// Без WithLimiter такой вызов учитывается только в параллельности аккаунта.
+	limiter, principal := c.limiter, options.Auth == nil
+	if options.Limiter != nil {
+		limiter, principal = options.Limiter, true
+	}
+	if limiter != nil {
+		path := strings.Trim(strings.TrimPrefix(req.URL.Path, c.baseURL.Path), "/")
+		release, err := limiter.acquire(ctx, method, path, principal)
+		if err != nil {
+			return nil, err
+		}
+		// Do закрывает body до возврата: слоты освобождаются после чтения ответа.
+		defer release()
+	}
 	resp, err := c.Do(req, dst)
 	if resp != nil && options.ResponseInfo != nil {
 		*options.ResponseInfo = ResponseInfo{StatusCode: resp.StatusCode, Header: resp.Header.Clone()}

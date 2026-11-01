@@ -28,6 +28,10 @@ type Config struct {
 
 	Auth Auth
 
+	// Limiter ограничивает бюджет и параллельность запросов; nil — без ограничений SDK.
+	// Один Limiter делится между всеми Client одного пользователя или решения.
+	Limiter *Limiter
+
 	// Header добавляется ко всем запросам клиента; RequestOption того же key его заменяет.
 	// Authorization, Accept, Accept-Encoding, Content-Type, Content-Length и Host задаёт transport.
 	Header http.Header
@@ -38,6 +42,7 @@ type Client struct {
 	baseURL    *url.URL
 	auth       Auth
 	header     http.Header
+	limiter    *Limiter
 }
 
 // HTTPClient копируется поверхностно: Transport и Jar общие с исходным клиентом,
@@ -81,6 +86,7 @@ func NewClient(cfg Config) (*Client, error) {
 		baseURL:    parsedURL,
 		auth:       cfg.Auth,
 		header:     cfg.Header.Clone(),
+		limiter:    cfg.Limiter,
 	}, nil
 }
 
