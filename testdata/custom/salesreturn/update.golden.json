@@ -1,0 +1,8 @@
+{
+  "organization": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/77777777-7777-7777-7777-777777777777", "type": "organization"}},
+  "organizationAccount": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/77777777-7777-7777-7777-777777777777/accounts/99999999-9999-9999-9999-999999999999", "type": "account"}},
+  "contract": null,
+  "positions": [
+    {"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "quantity": 0.5}
+  ]
+}
