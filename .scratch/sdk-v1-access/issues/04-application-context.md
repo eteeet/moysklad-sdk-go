@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md
 
@@ -45,3 +45,15 @@ NewClient не делает этот запрос.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `842adec`, code commit `c7b17f3`.
+
+- `contexts.Service.Application(ctx, opts...)`: один GET context/application; `ApplicationContext` —
+  meta, id (id установки) и appUid. Не Vendor API, не установка/активация; NewClient не вызывает;
+  entity/application/{id} не алиасится.
+- Тесты: пример источника, HTTP-контракт documenttest (успех, ошибки, пустой/отсутствующий id),
+  локальные ошибки. Общий `get[T]` с A03.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review: обе оси вместе с A03; дублирование с Employee убрано через get[T].

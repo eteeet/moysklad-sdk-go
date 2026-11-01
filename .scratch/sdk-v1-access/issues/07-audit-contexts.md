@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,24 @@ FilterCatalog, metadata страницы. Default limit25, max100 именно c
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `1c6f83a`, code commit `38787b5`.
+
+- Пакет `audit`: `ListContexts(ctx, ContextsOptions, opts...)` — одна страница GET audit без чтения
+  событий (limit 0 → default сервера 25, max 100, offset, filter; других параметров маршрут не описывает);
+  `GetFilters` — GET audit/metadata/filters. Типы `audit.Context` и `audit.FilterCatalog` (в ticket —
+  AuditContext/FilterCatalog; имя пакета уже даёт префикс).
+- Фильтры (godoc): moment >= <= в МСК через DateTime.QueryValue, employee href, uid, source, eventType,
+  entityType (код или href пользовательского справочника), application (href установки, не appUid).
+- Противоречия источника записаны: events — Array(Object) в таблице, объект с meta в примерах;
+  info — Object в таблице, строка в примере списка, объект в фикстуре (хранится сырым);
+  ключи каталога entityType/eventType (таблица) vs entitytype/eventtype (пример) — читаются оба.
+- Критерии успеха: страница — Collection (meta.href, rows); каталог — ключ source.
+- Не обещается курсор, хранение, exactly-once и порядок при равных moment (godoc пакета).
+- Тесты: фикстуры обоими codecs, открытые значения, info строкой/объектом, null, оба регистра ключей,
+  точный query для всех полей фильтра, страница без context, 403 с ResponseInfo, max 100, локальные ошибки.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: оба регистра ключей, objectType убран из фильтров, href справочника, info, Extra убран.
+  Review Standards: критерий source у каталога, FilterCatalog, doc типов, wantErr, t.Run.

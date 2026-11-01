@@ -17,7 +17,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] bundle — комплект
 - [ ] cashier — кассир (retailstore/{id}/cashiers)
 - [ ] characteristic — характеристики модификаций
-- [ ] companysettings — настройки компании (context)
+- [x] companysettings — метаданные: пользовательские справочники (metadata.GetCompanySettings)
 - [ ] companysubscription — подписка компании (accountSettings)
 - [ ] consignment — партия
 - [ ] contentcard — карточка контента
@@ -27,8 +27,8 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] currency — валюта
 - [ ] customentity — пользовательский справочник
 - [ ] discount — скидки (общий список)
-- [ ] employee — сотрудник
-- [ ] context/employee — контекст сотрудника
+- [x] employee — сотрудник: Get/List/Create/Update, права GetSecurity/UpdateSecurity
+- [x] context/employee — контекст сотрудника
 - [ ] eventfeed — лента событий (notes)
 - [x] expenseitem — статья расходов
 - [ ] files — файлы
@@ -50,12 +50,12 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] project — проект
 - [ ] region — регион
 - [ ] retailstore — точка продаж
-- [ ] role — пользовательские роли
+- [x] role — пользовательские роли и предустановленные (Preset)
 - [ ] saleplatform — площадка для продаж
 - [ ] saleschannel — канал продаж
 - [ ] service — услуга
 - [ ] specialpricediscount — скидка на спеццену
-- [ ] states — статусы (metadata/states)
+- [x] states — статусы: чтение через metadata, Create/Update
 - [ ] store — склад (+ slots, zones)
 - [ ] task — задача
 - [ ] taxrate — ставка НДС
@@ -122,11 +122,11 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 
 ## Прочие ресурсы
 
-- [ ] audit — аудит (+ events, filters)
+- [x] audit — аудит: контексты, события, фильтры
 - [ ] notification — уведомления (лента, markasread)
 - [ ] notification/settings — настройки уведомлений
 - [ ] async — асинхронные задачи
 - [ ] security/token — получение токена
 - [ ] download — скачивание файлов
-- [ ] entity/metadata — общие метаданные
+- [x] entity/metadata — общие метаданные, метаданные типа, описания доп. полей
 - [ ] wizard — автозаполнение (demand, salesreturn)

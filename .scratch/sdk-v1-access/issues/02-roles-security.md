@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-access/issues/01-employee.md
 
@@ -47,3 +47,35 @@ Role; known typed values + lossless unknown jsontext.Value, без map[string]an
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `c7b17f3`, code commit `1c6f83a` (тип прав `model.Permissions` введён в A03 `842adec`).
+
+JSON-контракт permissions (противоречие таблицы и примеров): объект «имя права → значение», где
+значение — флаг (пользовательские права роли, `importData: true`), объект «действие → область»
+(`supply: {"view":"ALL"}`, у задач — ключ `script` и действие `done`) или иная форма, которая
+сохраняется в `Raw` без изменений; большие целые не проходят через float64, map[string]any нет.
+Области открыты: NO, OWN, OWN_SHARED, OWN_GROUP, OWN_GROUP_SHARED, ALL, AUTHOR, ASSIGNEE,
+AUTHOR_OR_ASSIGNEE. Ключи без нормализации регистра.
+
+| Ресурс | Метод | Путь | Запись |
+| --- | --- | --- | --- |
+| Role | Get / List / Create / Update | entity/role[/{uuid}] | name (Create required), permissions |
+| Role preset | Preset | entity/role/{owner,admin,individual,cashier,worker,…} | — (только meta) |
+| Employee security | GetSecurity / UpdateSecurity | entity/employee/{id}/security | role{meta, permissions}, group, authorizedHosts, authorizedIpNetwork, authorizedIpNetmask |
+
+- Не входят: Delete (X01), активация/деактивация и сброс пароля, login/isActive (меняются активацией),
+  email — через Employee.Update. null источник не описывает: Field позволяет, решает сервер.
+- Правила индивидуальной роли в godoc: переданные права выставляются, остальные выключаются (кроме
+  view=ALL у currency, country, uom); без permissions сохраняются прежние права сотрудника.
+- Критерии успеха: Role — id; Preset — meta.href; security — group (обязателен в ответе).
+  Имя preset — открытое, проверяется только как безопасный сегмент пути.
+- Права администратора/решения проверяет сервер; скрытых вызовов нет.
+- Тесты: фикстуры custom_role, employee_role, employee_role_individual, employee_security обоими codecs,
+  round-trip прав без потерь, golden Create/Update/security, documenttest.HTTP + LocalErrors для Get/
+  Create/Update/Preset/GetSecurity/UpdateSecurity, listtest для List, матрица сброса ResponseInfo.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Standards: общий HTTP-контракт для security/preset, критерии успеха, role.Role вместо дубля,
+  jsontext.Value в тесте. Review Spec: открытый preset, точные комментарии (email, authorized*),
+  правила индивидуальной роли, ключ script, порядок полей при записи.

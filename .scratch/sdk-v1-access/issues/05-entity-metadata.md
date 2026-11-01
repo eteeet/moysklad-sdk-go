@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundation/issues/06-query-pages.md
 
@@ -46,3 +46,31 @@ auth errors. Создание/редактирование definitions — от�
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `c272bd7`, code commit `bee5782`.
+
+| Метод | Маршрут | Критерий успеха |
+| --- | --- | --- |
+| Catalog(types) | GET entity/metadata[?filter=type=a;type=b] | объект «тип → {meta}» |
+| Get(type) | GET entity/{type}/metadata | meta.href |
+| GetCustomEntity(id) | GET entity/customentity/{id}/metadata | meta.href |
+| GetCompanySettings | GET context/companysettings/metadata | meta.href |
+| ListAttributes(type, page) | GET entity/{type}/metadata/attributes (limit ≤ 1000) | коллекция |
+| GetAttribute(type, id) | GET entity/{type}/metadata/attributes/{id} | meta.href |
+
+- `Entity`, `CompanySettings` хранят весь ответ в `Raw` (tags контрагента и др.); известные поля —
+  createShared, states, attributes. `attributes` принимает обе формы источника: массив (38 примеров) и
+  коллекцию {meta[, rows]} (product, фикстуры) — `AttributeList`.
+- Противоречия: id описания доп. поля «обязателен» в таблице, но отсутствует в примере customerorder —
+  критерий meta.href, ID не навязывается. Catalog хранит только meta: других полей источник не описывает.
+- Тип сущности — безопасный сегмент; пользовательские справочники — через GetCustomEntity и
+  GetCompanySettings. Характеристики модификаций — C05. Создание/изменение описаний доп. полей не входит.
+- Тесты: 7 upstream-фикстур metadata и companysettings обоими codecs, Raw без потерь, массив attributes
+  без id, общий HTTP-контракт documenttest для всех 6 методов, 401/403/404 с кодами, точный filter
+  каталога, валидация без запросов.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: форма-массив attributes (было падение декодирования), без требования id, маршруты
+  справочников, ошибки сервера. Review Standards: gzip/401/403/заголовки через documenttest, LocalErrors
+  на всех методах, сообщения с %q, единый do.

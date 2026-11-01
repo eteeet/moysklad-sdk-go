@@ -5,6 +5,9 @@ SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
 
 Опции вызова и метаданные ответа, коды ошибок, выпуск токена, List с filter/order и обход
 страниц, rate limiter, повторы и ограничения размера запроса: [docs/transport.md](docs/transport.md).
+
+Сотрудники (`entity/employee`) и их права, роли (`entity/role`), контекст запроса (`contexts`),
+метаданные и статусы (`metadata`), аудит (`audit`): [docs/access.md](docs/access.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
 
 ## Справочники

@@ -63,14 +63,14 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| A01 | [Employee: Get/List/Create/Update](../sdk-v1-access/issues/01-employee.md) | T02, T06 | needs-triage |
-| A02 | [Role и права Employee](../sdk-v1-access/issues/02-roles-security.md) | A01 | needs-triage |
-| A03 | [GET context/employee](../sdk-v1-access/issues/03-employee-context.md) | T02 | needs-triage |
-| A04 | [GET context/application](../sdk-v1-access/issues/04-application-context.md) | T02 | needs-triage |
-| A05 | [Общий каталог и metadata сущностей](../sdk-v1-access/issues/05-entity-metadata.md) | T02, T06 | needs-triage |
-| A06 | [States: чтение, Create/Update](../sdk-v1-access/issues/06-states.md) | A05 | needs-triage |
-| A07 | [Audit contexts и filters](../sdk-v1-access/issues/07-audit-contexts.md) | T02, T06 | needs-triage |
-| A08 | [Audit events и lossless diff](../sdk-v1-access/issues/08-audit-events.md) | A07 | needs-triage |
+| A01 | [Employee: Get/List/Create/Update](../sdk-v1-access/issues/01-employee.md) | T02, T06 | resolved |
+| A02 | [Role и права Employee](../sdk-v1-access/issues/02-roles-security.md) | A01 | resolved |
+| A03 | [GET context/employee](../sdk-v1-access/issues/03-employee-context.md) | T02 | resolved |
+| A04 | [GET context/application](../sdk-v1-access/issues/04-application-context.md) | T02 | resolved |
+| A05 | [Общий каталог и metadata сущностей](../sdk-v1-access/issues/05-entity-metadata.md) | T02, T06 | resolved |
+| A06 | [States: чтение, Create/Update](../sdk-v1-access/issues/06-states.md) | A05 | resolved |
+| A07 | [Audit contexts и filters](../sdk-v1-access/issues/07-audit-contexts.md) | T02, T06 | resolved |
+| A08 | [Audit events и lossless diff](../sdk-v1-access/issues/08-audit-events.md) | A07 | resolved |
 
 ### Товары, услуги, комплекты, модификации и цены
 
@@ -140,6 +140,10 @@ Type: wayfinder:map
   захватками с остановкой после каждой; dirty worktree core-* — stash -u и удалить.
 - Захватка 1 (T01–T13) resolved: итоги и BASE в Answer каждого ticket. Отклонение T13: SyncID
   Product без Update — по read-only маркеру источника.
+- Ревью foundation 46e9d06, 35078b4 и db22bf1: замечания исправлены, последнее — 0 замечаний.
+- Захватка 2 (A01–A08) resolved. JSON-контракт прав записан в model.Permissions (A02/A03);
+  противоречия источника (events/info аудита, attributes массивом/объектом, id описаний полей,
+  stateType по умолчанию) записаны в godoc и Answer.
 
 - Пользователь запросил план/spec/tickets для перечисленного профиля v1.
   Это авторизация planning, не запуска реализации или commit planning.

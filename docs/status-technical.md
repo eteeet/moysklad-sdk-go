@@ -83,10 +83,10 @@
 - [ ] Автозаполнение: wizard/demand, wizard/salesreturn
 - [ ] Печать (export), публикации, шаблоны печатных форм
 - [ ] Файлы и изображения: загрузка base64, скачивание
-- [ ] Metadata: entity/{type}/metadata, states, customtemplate/embeddedtemplate
+- [x] Metadata: entity/{type}/metadata, states (customtemplate/embeddedtemplate — нет)
 - [ ] Доп. поля: CRUD описаний, типы файл/справочник
 - [ ] Async: async=true, статус, результат, отмена
-- [ ] Серверные решения: context/application
+- [x] Серверные решения: context/application
 
 ## Качество и выпуск
 

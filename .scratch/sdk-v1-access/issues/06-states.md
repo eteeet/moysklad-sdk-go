@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-access/issues/05-entity-metadata.md
 
@@ -46,3 +46,20 @@ Delete зависит от X01.
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `bee5782`, code commit `6cb0b37`.
+
+- `CreateState(ctx, type, StateCreateRequest)` — POST entity/{type}/metadata/states; `UpdateState(ctx, type,
+  id, StateUpdateRequest)` — PUT …/states/{id}. Критерий успеха — id. Чтение — `Get(type).States` (A05);
+  отдельного GET и списка статусов API не описывает — не придуманы. Batch и Delete — X02/X01.
+- Create: name, color, stateType обязательны; color — `*int64`, чтобы 0 (прозрачный чёрный) отличался от
+  «не задан». Противоречие «Regular по умолчанию» vs «Необходимо при создании» — по пометке, в godoc.
+  Диапазон ARGB (4 байта) и права администратора проверяет сервер. Update — name/color/stateType, null
+  не описан источником — решает сервер. stateType открыт.
+- Тесты: golden Create/Update обоими codecs (явный 0), чтение цвета > int32 и неизвестного типа, общий
+  HTTP-контракт documenttest + LocalErrors, валидация всех полей без запросов и со сбросом ResponseInfo.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: color обязателен (указатель). Review Standards: единый do, ссылки на API у методов,
+  t.Run, общий хелпер файлов, проверка типа в UpdateState.

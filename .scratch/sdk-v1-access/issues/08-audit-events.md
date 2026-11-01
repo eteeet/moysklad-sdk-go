@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-access/issues/07-audit-contexts.md
 
@@ -46,3 +46,24 @@ registration/publication/email diff, отсутствие подтверждён
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `38787b5`, code commit `c272bd7`.
+
+- `audit.Service.EventsByContext(ctx, contextID)` — GET audit/{id}/events; `EventsByEntity(ctx, type, id)` —
+  GET entity/{type}/{id}/audit. Одна страница; параметров пагинации маршруты не описывают — SDK их не
+  передаёт и не обещает полноты (в примере limit 25), nextHref можно пройти pages.All. Тип — безопасный
+  сегмент; customentity отклоняется: элементы справочника адресуются с metadataId, маршрут их не покрывает.
+- `Event`: типизированные заголовки (audit-контекст и entity как Reference, name, entityType, eventType,
+  objectType, objectCount, source, uid, moment, supportAccess, additionalInfo), `Diff` сырым JSON,
+  `Raw` — всё событие без потерь. Старые значения не раскладываются в текущие модели сущностей.
+- Доступ к diff: `FieldChanges()` — «атрибут → oldValue/newValue» (удаление — только oldValue) со значениями
+  jsontext.Value; `DecodeDiff` в `RegistrationDiff`, `PublicationDiff`, `EmailDiff`.
+- Не входят: воркер синхронизации, durable checkpoint, реплика.
+- Тесты: фикстуры обоими codecs, diff без потерь (большие целые, вложенность, null/отсутствие, неизвестное),
+  Raw, типизированные diff, оба маршрута plain/gzip/403 с префиксом, валидация без запросов.
+  Независимый golden записи не нужен: Event только читается, round-trip Raw проверен.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: Raw для неизвестных полей, customentity. Review Standards: gzip и префикс, единые
+  метки операций, godoc типов diff.

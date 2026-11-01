@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: task
 Blocked by: ../../sdk-v1-foundation/issues/02-headers.md
 
@@ -45,3 +45,24 @@ Basic/Employee/App responses/permission errors, sparse fields и неизвес�
 
 Expand, live API и не перечисленные What to build lifecycle операции.
 Этот DRAFT не является командой реализации или публикации.
+
+## Answer
+
+BASE `8f5942d`, code commit `842adec`.
+
+- `contexts.NewService(client).Employee(ctx, opts...)`: один GET context/employee без id, query и тела.
+  Пакет `contexts`, а не `context/employee.Get` из ticket: имя `context` занято стандартной библиотекой.
+- `EmployeeContext` встраивает `employee.Employee` (JSON-контракт совпадает; Salary в таблице контекста нет,
+  остаётся nil) и добавляет `code` и `permissions`. Не путается с model.ResponseContext.
+- Права — общий `model.Permissions` (введён здесь, переиспользуется A02): значение — флаг, области по
+  действиям или, если форма другая, Raw без потерь; неизвестные права, действия (done) и области открыты.
+  Противоречия источника записаны в godoc: Array(Object) в таблицах vs объект в примерах, VIEW vs view,
+  customerOrder vs customerorder; ключи хранятся как пришли.
+- Критерий успеха контекста — HTTP 200 и id, который таблица помечает «Обязательное при ответе»;
+  не общий ID-gate сущностей.
+- Тесты: пример источника обоими codecs (73 права, task.done), открытые множества и нестроковое значение,
+  HTTP через documenttest, Basic и Bearer, 401/403 как APIError, локальные ошибки. Фикстура из
+  _general.md с SHA-256 в README.
+- Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
+- Review Spec: lossless права через model.Permissions, константа AUTHOR, 401/403 и Basic, противоречия.
+  Review Standards: критерий id обоснован источником, SHA-256 provenance, общий get[T], тесты.
