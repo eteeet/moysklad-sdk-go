@@ -27,6 +27,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
+	"github.com/eteeet/moysklad-sdk-go/entity/role"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
@@ -106,7 +107,7 @@ func fillRequest[I any]() I {
 			field.SetString("x")
 		case field.Type() == reflect.TypeFor[model.Reference]():
 			field.Set(reflect.ValueOf(model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
-		case v.Type().Field(i).Name == "Description" && field.Type() == reflect.TypeFor[model.Field[string]]():
+		case (v.Type().Field(i).Name == "Description" || v.Type().Field(i).Name == "Name") && field.Type() == reflect.TypeFor[model.Field[string]]():
 			field.Set(reflect.ValueOf(model.Value("x")))
 		}
 	}
@@ -131,6 +132,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("product", product.NewService, (*product.Service).Get),
 		getCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).Get),
 		getCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).Get),
+		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
 		createCase("cashin", cashin.NewService, (*cashin.Service).Create),
@@ -165,6 +167,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).Update),
 		createCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).Create),
 		updateCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).Update),
+		createCase("role", role.NewService, (*role.Service).Create),
+		updateCase("role", role.NewService, (*role.Service).Update),
 		createCase("supply", supply.NewService, (*supply.Service).Create),
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
@@ -325,6 +329,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("product", product.NewService, (*product.Service).Get, (*product.Service).Create, (*product.Service).Update, (*product.Service).List)...)
 	cases = append(cases, localCases("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).Get, (*purchaseorder.Service).Create, (*purchaseorder.Service).Update, (*purchaseorder.Service).List)...)
 	cases = append(cases, localCases("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).Get, (*purchasereturn.Service).Create, (*purchasereturn.Service).Update, (*purchasereturn.Service).List)...)
+	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
 	cases = append(cases,
@@ -335,6 +340,30 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+		localCase{"employee get security invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, err := employee.NewService(c)
+			if err != nil {
+				return err
+			}
+			_, err = s.GetSecurity(ctx, "bad", opts...)
+			return err
+		}},
+		localCase{"employee update security empty", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, err := employee.NewService(c)
+			if err != nil {
+				return err
+			}
+			_, err = s.UpdateSecurity(ctx, testID, employee.UpdateSecurityRequest{}, opts...)
+			return err
+		}},
+		localCase{"role preset unsafe", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, err := role.NewService(c)
+			if err != nil {
+				return err
+			}
+			_, err = s.Preset(ctx, "../x", opts...)
+			return err
+		}},
 	)
 	for _, tc := range cases {
 		for _, option := range map[string]func(*transport.ResponseInfo) transport.RequestOption{
@@ -351,7 +380,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 18*4+7 {
+	if len(cases) != 19*4+7+3 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

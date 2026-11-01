@@ -1,0 +1,1 @@
+{"name":"Кладовщик","permissions":{"importData":true,"viewAudit":false,"supply":{"view":"ALL","create":"OWN","approve":"NO"},"script":{"view":"OWN","done":"ASSIGNEE"}}}

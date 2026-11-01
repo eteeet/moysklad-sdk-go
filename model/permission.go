@@ -17,7 +17,8 @@ type Permissions map[string]Permission
 
 // Permission — значение одного права: флаг (у пользовательских прав роли) или области по
 // действиям (view, create, update, delete, print, approve, у задач done). Значение другой
-// формы сохраняется в Raw и записывается обратно без изменений.
+// формы сохраняется в Raw и записывается обратно без изменений. Заполняется одно поле; если
+// заполнено несколько, при записи используется первое из Raw, Flag, Actions.
 type Permission struct {
 	Flag    *bool
 	Actions map[string]PermissionScope
