@@ -19,11 +19,14 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/entity/country"
 	"github.com/eteeet/moysklad-sdk-go/entity/currency"
+	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/entity/employee"
+	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoicein"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoiceout"
+	"github.com/eteeet/moysklad-sdk-go/entity/loss"
 	"github.com/eteeet/moysklad-sdk-go/entity/move"
 	"github.com/eteeet/moysklad-sdk-go/entity/organization"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentin"
@@ -33,6 +36,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
+	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
 	"github.com/eteeet/moysklad-sdk-go/entity/taxrate"
@@ -238,6 +242,22 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 			_, err := s.ListLegacy(ctx, assortment.Options{}, opts...)
 			return err
 		}),
+		getCase("customerorder", customerorder.NewService, (*customerorder.Service).Get),
+		createCase("customerorder", customerorder.NewService, (*customerorder.Service).Create),
+		updateCase("customerorder", customerorder.NewService, (*customerorder.Service).Update),
+		positionsCase("customerorder", customerorder.NewService, (*customerorder.Service).GetPositions),
+		getCase("enter", enter.NewService, (*enter.Service).Get),
+		createCase("enter", enter.NewService, (*enter.Service).Create),
+		updateCase("enter", enter.NewService, (*enter.Service).Update),
+		positionsCase("enter", enter.NewService, (*enter.Service).GetPositions),
+		getCase("loss", loss.NewService, (*loss.Service).Get),
+		createCase("loss", loss.NewService, (*loss.Service).Create),
+		updateCase("loss", loss.NewService, (*loss.Service).Update),
+		positionsCase("loss", loss.NewService, (*loss.Service).GetPositions),
+		getCase("salesreturn", salesreturn.NewService, (*salesreturn.Service).Get),
+		createCase("salesreturn", salesreturn.NewService, (*salesreturn.Service).Create),
+		updateCase("salesreturn", salesreturn.NewService, (*salesreturn.Service).Update),
+		positionsCase("salesreturn", salesreturn.NewService, (*salesreturn.Service).GetPositions),
 		positionsCase("demand", demand.NewService, (*demand.Service).GetPositions),
 		positionsCase("invoicein", invoicein.NewService, (*invoicein.Service).GetPositions),
 		positionsCase("invoiceout", invoiceout.NewService, (*invoiceout.Service).GetPositions),
@@ -402,7 +422,15 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("service", service.NewService, (*service.Client).Get, (*service.Client).Create, (*service.Client).Update, (*service.Client).List)...)
 	cases = append(cases, localCases("bundle", bundle.NewService, (*bundle.Service).Get, (*bundle.Service).Create, (*bundle.Service).Update, (*bundle.Service).List)...)
 	cases = append(cases, localCases("variant", variant.NewService, (*variant.Service).Get, (*variant.Service).Create, (*variant.Service).Update, (*variant.Service).List)...)
+	cases = append(cases, localCases("customerorder", customerorder.NewService, (*customerorder.Service).Get, (*customerorder.Service).Create, (*customerorder.Service).Update, (*customerorder.Service).List)...)
+	cases = append(cases, localCases("enter", enter.NewService, (*enter.Service).Get, (*enter.Service).Create, (*enter.Service).Update, (*enter.Service).List)...)
+	cases = append(cases, localCases("loss", loss.NewService, (*loss.Service).Get, (*loss.Service).Create, (*loss.Service).Update, (*loss.Service).List)...)
+	cases = append(cases, localCases("salesreturn", salesreturn.NewService, (*salesreturn.Service).Get, (*salesreturn.Service).Create, (*salesreturn.Service).Update, (*salesreturn.Service).List)...)
 	cases = append(cases,
+		positionsLocal("customerorder", customerorder.NewService, (*customerorder.Service).GetPositions),
+		positionsLocal("enter", enter.NewService, (*enter.Service).GetPositions),
+		positionsLocal("loss", loss.NewService, (*loss.Service).GetPositions),
+		positionsLocal("salesreturn", salesreturn.NewService, (*salesreturn.Service).GetPositions),
 		positionsLocal("demand", demand.NewService, (*demand.Service).GetPositions),
 		positionsLocal("invoicein", invoicein.NewService, (*invoicein.Service).GetPositions),
 		positionsLocal("invoiceout", invoiceout.NewService, (*invoiceout.Service).GetPositions),
@@ -490,7 +518,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 24*4+7+3+8 {
+	if len(cases) != 28*4+11+3+8 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
