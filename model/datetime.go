@@ -60,3 +60,13 @@ func (d *DateTime) UnmarshalJSON(data []byte) error {
 	*d = DateTime(parsed.In(moscowLocation()))
 	return nil
 }
+
+// QueryValue форматирует момент для query (momentFrom, filter=moment>…) в московском времени;
+// миллисекунды пишутся, только если они не нулевые.
+func (d DateTime) QueryValue() string {
+	value := time.Time(d).In(moscowLocation())
+	if value.Nanosecond()/int(time.Millisecond) != 0 {
+		return value.Format(dateTimeLayout + ".000")
+	}
+	return value.Format(dateTimeLayout)
+}

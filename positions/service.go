@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"net/http"
 	"net/url"
 	"regexp"
 	"strconv"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -42,7 +43,7 @@ func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOp
 	if !validID(documentID) {
 		return nil, fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
 	}
-	if page.Limit < 0 || page.Limit > 1000 {
+	if page.Limit < 0 || page.Limit > query.MaxLimit {
 		return nil, fmt.Errorf("moysklad: %s: limit must be between 1 and 1000, or 0 for default", operation)
 	}
 	if page.Offset < 0 {
@@ -50,28 +51,13 @@ func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOp
 	}
 	limit := page.Limit
 	if limit == 0 {
-		limit = 1000
+		limit = query.MaxLimit
 	}
 	query := url.Values{
 		"limit":  {strconv.Itoa(limit)},
 		"offset": {strconv.Itoa(page.Offset)},
 	}
-	var result model.Collection[T]
-	resp, err := s.client.Send(ctx, http.MethodGet,
-		"entity/"+s.documentType+"/"+documentID+"/positions", query, nil, &result, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
-	}
-	if result.Meta.Href == "" {
-		return nil, fmt.Errorf("moysklad: %s: response has no meta.href", operation)
-	}
-	if result.Rows == nil {
-		return nil, fmt.Errorf("moysklad: %s: response rows must be a non-null array", operation)
-	}
-	return &result, nil
+	return list.Page[T](ctx, s.client, operation, "entity/"+s.documentType+"/"+documentID+"/positions", query, opts...)
 }
 
 // Проверяем форму UUID, не ограничивая его версию.

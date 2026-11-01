@@ -207,3 +207,18 @@ func TestDateTimeProductFixture(t *testing.T) {
 		})
 	}
 }
+
+func TestDateTimeQueryValue(t *testing.T) {
+	for _, tc := range []struct {
+		value time.Time
+		want  string
+	}{
+		{time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC), "2026-01-02 06:04:05"},
+		{time.Date(2026, 1, 2, 3, 4, 5, 7_000_000, time.UTC), "2026-01-02 06:04:05.007"},
+		{time.Date(2026, 1, 2, 3, 4, 5, 999, time.UTC), "2026-01-02 06:04:05"},
+	} {
+		if got := model.DateTime(tc.value).QueryValue(); got != tc.want {
+			t.Errorf("QueryValue(%v) = %q, want %q", tc.value, got, tc.want)
+		}
+	}
+}
