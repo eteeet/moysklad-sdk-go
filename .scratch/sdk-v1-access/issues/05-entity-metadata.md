@@ -74,3 +74,7 @@ BASE `c272bd7`, code commit `bee5782`.
 - Review Spec: форма-массив attributes (было падение декодирования), без требования id, маршруты
   справочников, ошибки сервера. Review Standards: gzip/401/403/заголовки через documenttest, LocalErrors
   на всех методах, сообщения с %q, единый do.
+
+## Comments
+
+Ревью 3306518 (P2): AttributeList писался как {"Meta","Rows"}. Исправлено в `d446807`: MarshalJSON в форме чтения, round-trip тесты.

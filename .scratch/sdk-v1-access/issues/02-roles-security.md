@@ -79,3 +79,7 @@ AUTHOR_OR_ASSIGNEE. Ключи без нормализации регистра.
 - Review Standards: общий HTTP-контракт для security/preset, критерии успеха, role.Role вместо дубля,
   jsontext.Value в тесте. Review Spec: открытый preset, точные комментарии (email, authorized*),
   правила индивидуальной роли, ключ script, порядок полей при записи.
+
+## Comments
+
+Ревью 3306518 (P2): null внутри объекта прав терялся. Исправлено в `251f638`: Actions только для объекта из строк, иначе Raw без потерь.
