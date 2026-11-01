@@ -186,7 +186,8 @@ func TestSendRetryLimiterPerAttempt(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Send(t.Context(), "GET", "entity/product", nil, nil, nil); err != nil || admissions.Load() != 2 {
+	// Weight вызывается дважды на попытку: проверка окна и списание после слота аккаунта.
+	if _, err := client.Send(t.Context(), "GET", "entity/product", nil, nil, nil); err != nil || admissions.Load() != 4 || calls.Load() != 2 {
 		t.Fatalf("err = %v, admissions = %d", err, admissions.Load())
 	}
 }

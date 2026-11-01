@@ -80,9 +80,13 @@ func TestSendLimiterPath(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	// Weight вызывается дважды на запрос: проверка окна и списание после слота аккаунта.
 	want := []string{"GET report/stock/all", "GET report/stock/bystore", "GET report/stock/all"}
+	if len(paths) != 2*len(want) {
+		t.Fatalf("paths = %v", paths)
+	}
 	for i := range want {
-		if i >= len(paths) || paths[i] != want[i] {
+		if paths[2*i] != want[i] || paths[2*i+1] != want[i] {
 			t.Fatalf("paths = %v", paths)
 		}
 	}

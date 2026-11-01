@@ -144,8 +144,10 @@ func DefaultWeight(profile Profile, method, path string, now time.Time) int {
 	return 4
 }
 
-// acquire ждёт слот principal, бюджет и слот аккаунта для одной попытки запроса: ожидание
-// бюджета не занимает слот аккаунта, нужный другим principal.
+// acquire ждёт слот principal, бюджет и слот аккаунта для одной попытки запроса. Бюджет
+// списывается только после получения слота аккаунта, по времени фактической отправки:
+// иначе долгое ожидание аккаунта сдвинуло бы окно клиента относительно окна сервера.
+// Ожидание бюджета при этом не занимает слот аккаунта, нужный другим principal.
 // release нужно вызвать после закрытия body ответа; потраченные единицы не возвращаются.
 func (l *Limiter) acquire(ctx context.Context, method, path string, principal bool) (release func(), err error) {
 	var held []chan struct{}
@@ -160,26 +162,32 @@ func (l *Limiter) acquire(ctx context.Context, method, path string, principal bo
 			held = append(held, slots)
 			return nil
 		case <-ctx.Done():
-			release()
 			return fmt.Errorf("moysklad: wait for request slot: %w", ctx.Err())
 		}
 	}
-	if principal {
-		if err := take(l.slots); err != nil {
+	if !principal {
+		if err := take(l.cfg.Account.slots); err != nil {
 			return nil, err
 		}
-		if err := l.waitBudget(ctx, method, path); err != nil {
-			release()
-			return nil, err
-		}
+		return release, nil
 	}
-	if err := take(l.cfg.Account.slots); err != nil {
+	if err := take(l.slots); err != nil {
+		return nil, err
+	}
+	account := func() error { return take(l.cfg.Account.slots) }
+	dropAccount := func() {
+		<-l.cfg.Account.slots
+		held = held[:len(held)-1]
+	}
+	if err := l.admit(ctx, method, path, account, dropAccount); err != nil {
+		release()
 		return nil, err
 	}
 	return release, nil
 }
 
-func (l *Limiter) waitBudget(ctx context.Context, method, path string) error {
+// admit держит очередь principal: ждёт места в окне, берёт слот аккаунта и списывает бюджет.
+func (l *Limiter) admit(ctx context.Context, method, path string, account func() error, dropAccount func()) error {
 	select {
 	case l.turn <- struct{}{}:
 	case <-ctx.Done():
@@ -188,23 +196,30 @@ func (l *Limiter) waitBudget(ctx context.Context, method, path string) error {
 	defer func() { <-l.turn }()
 
 	for {
-		now := l.cfg.Clock.Now()
-		// Вес больше бюджета не поместился бы никогда; вес меньше 1 добавил бы бюджет.
-		units := min(max(l.cfg.Weight(l.cfg.Profile, method, path, now), 1), l.cfg.Budget)
-		wait := l.reserve(now, units)
-		if wait <= 0 {
+		if wait := l.reserve(l.cfg.Clock.Now(), method, path, false); wait > 0 {
+			select {
+			case <-l.cfg.Clock.After(wait):
+				continue
+			case <-ctx.Done():
+				return fmt.Errorf("moysklad: wait for rate limit: %w", ctx.Err())
+			}
+		}
+		if err := account(); err != nil {
+			return err
+		}
+		if l.reserve(l.cfg.Clock.Now(), method, path, true) <= 0 {
 			return nil
 		}
-		select {
-		case <-l.cfg.Clock.After(wait):
-		case <-ctx.Done():
-			return fmt.Errorf("moysklad: wait for rate limit: %w", ctx.Err())
-		}
+		// Вес вырос на смене даты, пока ждали аккаунт: отдаём слот и ждём окно заново.
+		dropAccount()
 	}
 }
 
-// reserve списывает units, если они помещаются в окно, иначе возвращает время до освобождения.
-func (l *Limiter) reserve(now time.Time, units int) time.Duration {
+// reserve проверяет, помещается ли запрос в окно на момент now; commit — списать единицы.
+// Если не помещается, возвращает время до освобождения нужных единиц.
+func (l *Limiter) reserve(now time.Time, method, path string, commit bool) time.Duration {
+	// Вес больше бюджета не поместился бы никогда; вес меньше 1 добавил бы бюджет.
+	units := min(max(l.cfg.Weight(l.cfg.Profile, method, path, now), 1), l.cfg.Budget)
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	start := now.Add(-l.cfg.Window)
@@ -216,7 +231,9 @@ func (l *Limiter) reserve(now time.Time, units int) time.Duration {
 		total += a.units
 	}
 	if total+units <= l.cfg.Budget {
-		l.used = append(l.used, admission{at: now, units: units})
+		if commit {
+			l.used = append(l.used, admission{at: now, units: units})
+		}
 		return 0
 	}
 	// Ждём, пока из окна выйдет столько ранних списаний, чтобы units поместились.

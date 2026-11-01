@@ -14,6 +14,7 @@ type fakeClock struct {
 	now     time.Time
 	waiters []fakeWaiter
 	added   chan time.Duration // каждый After сообщает о себе: тесты ждут без sleep
+	nows    chan time.Time     // если задан, каждый Now сообщает о себе
 }
 
 type fakeWaiter struct {
@@ -23,8 +24,12 @@ type fakeWaiter struct {
 
 func (c *fakeClock) Now() time.Time {
 	c.mu.Lock()
-	defer c.mu.Unlock()
-	return c.now
+	now, nows := c.now, c.nows
+	c.mu.Unlock()
+	if nows != nil {
+		nows <- now
+	}
+	return now
 }
 
 func (c *fakeClock) After(d time.Duration) <-chan time.Time {
@@ -269,5 +274,42 @@ func TestNewLimiterRejects(t *testing.T) {
 	}
 	if _, err := NewAccount(0); err == nil {
 		t.Error("zero account concurrency accepted")
+	}
+}
+
+// Регрессия ревью 46e9d06: бюджет списывается по времени фактической отправки. Запрос, долго
+// ждавший занятый другим principal слот аккаунта, не открывает окно для следующего сразу.
+func TestLimiterBudgetChargedAtSend(t *testing.T) {
+	account, err := NewAccount(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	l, clock := newTestLimiter(t, LimiterConfig{Profile: ProfileApp, Budget: 1, Account: account})
+	other, _ := newTestLimiter(t, LimiterConfig{Profile: ProfileApp, Account: account})
+	busy := mustAcquire(t, other, true) // аккаунт занят другим principal
+
+	clock.mu.Lock()
+	clock.nows = make(chan time.Time, 100)
+	clock.mu.Unlock()
+	first := acquireAsync(t.Context(), l, "x")
+	<-clock.nows // окно проверено в 12:00:00, дальше — ожидание слота аккаунта
+	clock.Advance(4 * time.Second)
+	busy()
+	if err := <-first; err != nil {
+		t.Fatal(err)
+	}
+
+	second := acquireAsync(t.Context(), l, "x")
+	select {
+	case err := <-second:
+		t.Fatalf("second request admitted without waiting (err = %v): the first was sent at 12:00:04", err)
+	case wait := <-clock.added:
+		if wait != 3*time.Second {
+			t.Fatalf("second request waits %v, want 3s", wait)
+		}
+	}
+	clock.Advance(3 * time.Second)
+	if err := <-second; err != nil {
+		t.Fatal(err)
 	}
 }
