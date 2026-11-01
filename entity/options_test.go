@@ -13,6 +13,8 @@ import (
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
+	"github.com/eteeet/moysklad-sdk-go/entity/bonusprogram"
+	"github.com/eteeet/moysklad-sdk-go/entity/bonustransaction"
 	"github.com/eteeet/moysklad-sdk-go/entity/bundle"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
@@ -35,6 +37,10 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
+	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
+	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
+	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
+	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
@@ -118,6 +124,10 @@ func fillRequest[I any]() I {
 		switch {
 		case (v.Type().Field(i).Name == "Name" || v.Type().Field(i).Name == "LastName") && field.Kind() == reflect.String:
 			field.SetString("x")
+		case v.Type().Field(i).Name == "TransactionType" && field.Kind() == reflect.String:
+			field.SetString("EARNING")
+		case field.Type() == reflect.TypeFor[model.PriceType]():
+			field.Set(reflect.ValueOf(model.PriceType{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
 		case field.Type() == reflect.TypeFor[model.Reference]():
 			field.Set(reflect.ValueOf(model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
 		case slices.Contains([]string{"Description", "Name", "Code", "ISOCode"}, v.Type().Field(i).Name) && field.Type() == reflect.TypeFor[model.Field[string]]():
@@ -258,6 +268,26 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		createCase("salesreturn", salesreturn.NewService, (*salesreturn.Service).Create),
 		updateCase("salesreturn", salesreturn.NewService, (*salesreturn.Service).Update),
 		positionsCase("salesreturn", salesreturn.NewService, (*salesreturn.Service).GetPositions),
+		getCase("retailstore", retailstore.NewService, (*retailstore.Service).Get),
+		createCase("retailstore", retailstore.NewService, (*retailstore.Service).Create),
+		updateCase("retailstore", retailstore.NewService, (*retailstore.Service).Update),
+		getCase("retailshift", retailshift.NewService, (*retailshift.Service).Get),
+		createCase("retailshift", retailshift.NewService, (*retailshift.Service).Create),
+		updateCase("retailshift", retailshift.NewService, (*retailshift.Service).Update),
+		getCase("retaildemand", retaildemand.NewService, (*retaildemand.Service).Get),
+		createCase("retaildemand", retaildemand.NewService, (*retaildemand.Service).Create),
+		updateCase("retaildemand", retaildemand.NewService, (*retaildemand.Service).Update),
+		getCase("retailsalesreturn", retailsalesreturn.NewService, (*retailsalesreturn.Service).Get),
+		createCase("retailsalesreturn", retailsalesreturn.NewService, (*retailsalesreturn.Service).Create),
+		updateCase("retailsalesreturn", retailsalesreturn.NewService, (*retailsalesreturn.Service).Update),
+		getCase("bonusprogram", bonusprogram.NewService, (*bonusprogram.Service).Get),
+		createCase("bonusprogram", bonusprogram.NewService, (*bonusprogram.Service).Create),
+		updateCase("bonusprogram", bonusprogram.NewService, (*bonusprogram.Service).Update),
+		getCase("bonustransaction", bonustransaction.NewService, (*bonustransaction.Service).Get),
+		createCase("bonustransaction", bonustransaction.NewService, (*bonustransaction.Service).Create),
+		updateCase("bonustransaction", bonustransaction.NewService, (*bonustransaction.Service).Update),
+		positionsCase("retaildemand", retaildemand.NewService, (*retaildemand.Service).GetPositions),
+		positionsCase("retailsalesreturn", retailsalesreturn.NewService, (*retailsalesreturn.Service).GetPositions),
 		positionsCase("demand", demand.NewService, (*demand.Service).GetPositions),
 		positionsCase("invoicein", invoicein.NewService, (*invoicein.Service).GetPositions),
 		positionsCase("invoiceout", invoiceout.NewService, (*invoiceout.Service).GetPositions),
@@ -426,7 +456,15 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("enter", enter.NewService, (*enter.Service).Get, (*enter.Service).Create, (*enter.Service).Update, (*enter.Service).List)...)
 	cases = append(cases, localCases("loss", loss.NewService, (*loss.Service).Get, (*loss.Service).Create, (*loss.Service).Update, (*loss.Service).List)...)
 	cases = append(cases, localCases("salesreturn", salesreturn.NewService, (*salesreturn.Service).Get, (*salesreturn.Service).Create, (*salesreturn.Service).Update, (*salesreturn.Service).List)...)
+	cases = append(cases, localCases("retailstore", retailstore.NewService, (*retailstore.Service).Get, (*retailstore.Service).Create, (*retailstore.Service).Update, (*retailstore.Service).List)...)
+	cases = append(cases, localCases("retailshift", retailshift.NewService, (*retailshift.Service).Get, (*retailshift.Service).Create, (*retailshift.Service).Update, (*retailshift.Service).List)...)
+	cases = append(cases, localCases("retaildemand", retaildemand.NewService, (*retaildemand.Service).Get, (*retaildemand.Service).Create, (*retaildemand.Service).Update, (*retaildemand.Service).List)...)
+	cases = append(cases, localCases("retailsalesreturn", retailsalesreturn.NewService, (*retailsalesreturn.Service).Get, (*retailsalesreturn.Service).Create, (*retailsalesreturn.Service).Update, (*retailsalesreturn.Service).List)...)
+	cases = append(cases, localCases("bonusprogram", bonusprogram.NewService, (*bonusprogram.Service).Get, (*bonusprogram.Service).Create, (*bonusprogram.Service).Update, (*bonusprogram.Service).List)...)
+	cases = append(cases, localCases("bonustransaction", bonustransaction.NewService, (*bonustransaction.Service).Get, (*bonustransaction.Service).Create, (*bonustransaction.Service).Update, (*bonustransaction.Service).List)...)
 	cases = append(cases,
+		positionsLocal("retaildemand", retaildemand.NewService, (*retaildemand.Service).GetPositions),
+		positionsLocal("retailsalesreturn", retailsalesreturn.NewService, (*retailsalesreturn.Service).GetPositions),
 		positionsLocal("customerorder", customerorder.NewService, (*customerorder.Service).GetPositions),
 		positionsLocal("enter", enter.NewService, (*enter.Service).GetPositions),
 		positionsLocal("loss", loss.NewService, (*loss.Service).GetPositions),
@@ -518,7 +556,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 28*4+11+3+8 {
+	if len(cases) != 34*4+13+3+8 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
