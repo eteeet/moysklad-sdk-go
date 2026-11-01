@@ -1,0 +1,138 @@
+{
+  "id": "read-id",
+  "accountId": "read-accountId",
+  "name": "request-name",
+  "description": "",
+  "code": "",
+  "externalCode": "request-externalCode",
+  "syncId": "request-syncId",
+  "created": "2026-11-01 10:20:30.000",
+  "updated": "2026-11-01 10:20:30.000",
+  "deleted": "2026-11-01 10:20:30.000",
+  "moment": "2026-11-01 12:34:56.000",
+  "applicable": false,
+  "shared": false,
+  "printed": true,
+  "published": true,
+  "organization": {
+    "meta": {
+      "href": "https://example.test/organization",
+      "type": "organization"
+    }
+  },
+  "owner": {
+    "meta": {
+      "href": "https://example.test/owner",
+      "type": "owner"
+    }
+  },
+  "group": {
+    "meta": {
+      "href": "https://example.test/group",
+      "type": "group"
+    }
+  },
+  "project": {
+    "meta": {
+      "href": "https://example.test/project",
+      "type": "project"
+    }
+  },
+  "state": {
+    "meta": {
+      "href": "https://example.test/state",
+      "type": "state"
+    }
+  },
+  "meta": {
+    "href": "https://example.test/entity/move/read-id",
+    "type": "move"
+  },
+  "attributes": [
+    {
+      "meta": {
+        "href": "https://example.test/attributes/long"
+      },
+      "type": "long",
+      "value": 9007199254740993
+    }
+  ],
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://example.test/currency",
+        "type": "currency"
+      }
+    }
+  },
+  "sum": 4321.25,
+  "positions": {
+    "meta": {
+      "href": "https://example.test/positions",
+      "type": "moveposition",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "files": {
+    "meta": {
+      "href": "https://example.test/files",
+      "type": "files",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "sourceStore": {
+    "meta": {
+      "href": "https://example.test/sourceStore",
+      "type": "sourceStore"
+    }
+  },
+  "targetStore": {
+    "meta": {
+      "href": "https://example.test/targetStore",
+      "type": "targetStore"
+    }
+  },
+  "internalOrder": {
+    "meta": {
+      "href": "https://example.test/internalOrder",
+      "type": "internalOrder"
+    }
+  },
+  "customerOrder": {
+    "meta": {
+      "href": "https://example.test/customerOrder",
+      "type": "customerOrder"
+    }
+  },
+  "demand": {
+    "meta": {
+      "href": "https://example.test/demand",
+      "type": "demand"
+    }
+  },
+  "supply": {
+    "meta": {
+      "href": "https://example.test/supply",
+      "type": "supply"
+    }
+  },
+  "productionTasks": [
+    {
+      "meta": {
+        "href": "https://example.test/productionTasks",
+        "type": "productionTasks"
+      }
+    }
+  ],
+  "overhead": {
+    "sum": 12.25,
+    "distribution": "volume"
+  },
+  "futureField": {
+    "ignored": true
+  }
+}

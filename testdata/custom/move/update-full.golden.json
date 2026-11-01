@@ -1,0 +1,109 @@
+{
+  "name": "request-name",
+  "description": "",
+  "code": "",
+  "externalCode": "request-externalCode",
+  "syncId": "request-syncId",
+  "moment": "2026-11-01 12:34:56.000",
+  "applicable": false,
+  "shared": false,
+  "organization": {
+    "meta": {
+      "href": "https://example.test/organization",
+      "type": "organization"
+    }
+  },
+  "owner": {
+    "meta": {
+      "href": "https://example.test/owner",
+      "type": "owner"
+    }
+  },
+  "group": {
+    "meta": {
+      "href": "https://example.test/group",
+      "type": "group"
+    }
+  },
+  "project": {
+    "meta": {
+      "href": "https://example.test/project",
+      "type": "project"
+    }
+  },
+  "state": {
+    "meta": {
+      "href": "https://example.test/state",
+      "type": "state"
+    }
+  },
+  "attributes": [
+    {
+      "meta": {
+        "href": "https://example.test/attributes/long"
+      },
+      "type": "long",
+      "value": 9007199254740993
+    }
+  ],
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://example.test/currency",
+        "type": "currency"
+      }
+    }
+  },
+  "positions": [
+    {
+      "assortment": {
+        "meta": {
+          "href": "https://example.test/assortment",
+          "type": "assortment"
+        }
+      },
+      "quantity": 1.25,
+      "sourceSlot": {
+        "meta": {
+          "href": "https://example.test/sourceSlot",
+          "type": "sourceSlot"
+        }
+      },
+      "targetSlot": {
+        "meta": {
+          "href": "https://example.test/targetSlot",
+          "type": "targetSlot"
+        }
+      },
+      "id": "existing-row"
+    }
+  ],
+  "sourceStore": {
+    "meta": {
+      "href": "https://example.test/sourceStore",
+      "type": "sourceStore"
+    }
+  },
+  "targetStore": {
+    "meta": {
+      "href": "https://example.test/targetStore",
+      "type": "targetStore"
+    }
+  },
+  "internalOrder": {
+    "meta": {
+      "href": "https://example.test/internalOrder",
+      "type": "internalOrder"
+    }
+  },
+  "customerOrder": {
+    "meta": {
+      "href": "https://example.test/customerOrder",
+      "type": "customerOrder"
+    }
+  },
+  "overhead": {
+    "sum": 12.25,
+    "distribution": "weight"
+  }
+}

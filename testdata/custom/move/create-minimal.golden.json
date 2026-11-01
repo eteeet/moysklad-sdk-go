@@ -1,0 +1,20 @@
+{
+  "organization": {
+    "meta": {
+      "href": "https://example.test/organization",
+      "type": "organization"
+    }
+  },
+  "sourceStore": {
+    "meta": {
+      "href": "https://example.test/sourceStore",
+      "type": "sourceStore"
+    }
+  },
+  "targetStore": {
+    "meta": {
+      "href": "https://example.test/targetStore",
+      "type": "targetStore"
+    }
+  }
+}
