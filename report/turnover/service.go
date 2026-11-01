@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -31,6 +32,55 @@ type AllOptions struct {
 	GroupBy    string
 	Filter     string
 	Extra      url.Values
+}
+
+// DetailOptions — параметры отчётов по одному товару или модификации (ByStore). Assortment
+// обязателен: meta.type product или variant выбирает фильтр product=… или variant=…. Filter —
+// остальные условия через query.Filter (agent, agentTag, contract, organization, project,
+// retailStore, store, type). Период — как у AllOptions; limit, offset и groupBy источник для этих
+// отчётов не описывает.
+type DetailOptions struct {
+	Assortment model.Reference
+	MomentFrom model.DateTime
+	MomentTo   model.DateTime
+	Filter     string
+}
+
+func (o DetailOptions) values() (url.Values, error) {
+	key := string(o.Assortment.Meta.Type)
+	if o.Assortment.Meta.Href == "" || key != "product" && key != "variant" {
+		return nil, fmt.Errorf("moysklad: assortment must be a product or variant reference")
+	}
+	filter, err := query.Filter(query.Eq(key, o.Assortment.Meta.Href))
+	if err != nil {
+		return nil, err
+	}
+	if o.Filter != "" {
+		// Обязательное условие задаёт Assortment; второй product или variant сервер не примет.
+		for _, condition := range conditions(o.Filter) {
+			if name := strings.TrimSpace(strings.SplitN(condition, "=", 2)[0]); name == "product" || name == "variant" {
+				return nil, fmt.Errorf("moysklad: filter must not repeat product or variant; use Assortment")
+			}
+		}
+		filter += ";" + o.Filter
+	}
+	return query.ReportOptions{MomentFrom: o.MomentFrom, MomentTo: o.MomentTo, Filter: filter}.Values()
+}
+
+// conditions делит filter по ; без экранирования \.
+func conditions(filter string) []string {
+	var out []string
+	start := 0
+	for i := 0; i < len(filter); i++ {
+		switch filter[i] {
+		case '\\':
+			i++
+		case ';':
+			out = append(out, filter[start:i])
+			start = i + 1
+		}
+	}
+	return append(out, filter[start:])
 }
 
 type Service struct {
@@ -66,4 +116,17 @@ func (s *Service) All(ctx context.Context, options AllOptions, opts ...transport
 		params[key] = values
 	}
 	return list.Page[Row](ctx, s.client, operation, "report/turnover/all", params, opts...)
+}
+
+// ByStore читает отчёт по товару или модификации с детализацией по складам: одна строка на
+// товар и каждую его модификацию; показатели складов SDK не суммирует и не выводит из All.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/reports/report-turnover#3-poluchit-oboroty-po-tovaru-s-detalizaciej-po-skladu
+func (s *Service) ByStore(ctx context.Context, options DetailOptions, opts ...transport.RequestOption) (*model.Collection[StoreRow], error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "get turnover bystore"
+	params, err := options.values()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return list.Page[StoreRow](ctx, s.client, operation, "report/turnover/bystore", params, opts...)
 }

@@ -1,4 +1,4 @@
-// Package turnover читает отчёт «Обороты»: report/turnover/all.
+// Package turnover читает отчёт «Обороты»: report/turnover/all и /bystore.
 // Отчёт только для чтения; суммы себестоимости — копейки, количества — не деньги.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/reports/report-turnover
 package turnover
@@ -21,7 +21,7 @@ type Assortment struct {
 	UOM           *Named         `json:"uom,omitzero"`
 }
 
-// Named — ссылка с именем: группа товара, единица измерения.
+// Named — ссылка с именем: группа товара, единица измерения, склад.
 type Named struct {
 	Meta model.Meta `json:"meta"`
 	Name string     `json:"name"`
@@ -40,4 +40,20 @@ type Row struct {
 	OnPeriodEnd   Metrics    `json:"onPeriodEnd"`
 	Income        Metrics    `json:"income"`
 	Outcome       Metrics    `json:"outcome"`
+}
+
+// StoreRow — строка отчёта по товару с детализацией по складам. Таблица называет stockByStore
+// объектом, ответы содержат массив — SDK читает массив.
+type StoreRow struct {
+	Assortment   Assortment      `json:"assortment"`
+	StockByStore []StoreTurnover `json:"stockByStore"`
+}
+
+// StoreTurnover — показатели одного склада.
+type StoreTurnover struct {
+	Store         Named   `json:"store"`
+	OnPeriodStart Metrics `json:"onPeriodStart"`
+	OnPeriodEnd   Metrics `json:"onPeriodEnd"`
+	Income        Metrics `json:"income"`
+	Outcome       Metrics `json:"outcome"`
 }
