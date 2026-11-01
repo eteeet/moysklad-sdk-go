@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 
 	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -29,4 +31,21 @@ func Page[T any](ctx context.Context, client *transport.Client, operation, endpo
 		return nil, fmt.Errorf("moysklad: %s: response rows must be a non-null array", operation)
 	}
 	return &result, nil
+}
+
+// Entity читает одну страницу /entity/{entity}. fields — значения fields, которые List этого
+// endpoint принимает; остальные отклоняются до запроса. fields=stock у списков документов не
+// принимается: остатки лежат в positions и в списке появляются только с expand=positions,
+// а expand вне SDK; строки с остатками читает GetPositions.
+func Entity[T any](ctx context.Context, client *transport.Client, entity string, options query.ListOptions,
+	fields []string, opts ...transport.RequestOption) (*model.Collection[T], error) {
+	operation := "list " + entity
+	if options.Fields != "" && !slices.Contains(fields, options.Fields) {
+		return nil, fmt.Errorf("moysklad: %s: fields=%q is not supported", operation, options.Fields)
+	}
+	params, err := options.Values(query.MaxLimit)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return Page[T](ctx, client, operation, "entity/"+entity, params, opts...)
 }

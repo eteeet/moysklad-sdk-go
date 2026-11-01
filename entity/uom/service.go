@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -72,4 +75,10 @@ func validID(id string) bool {
 	}
 	_, err := hex.DecodeString(id[:8] + id[9:13] + id[14:18] + id[19:23] + id[24:])
 	return err == nil
+}
+
+// List читает одну страницу без expand и автообхода; следующие страницы — pages.All.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom
+func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[UOM], error) {
+	return list.Entity[UOM](ctx, s.client, "uom", options, nil, opts...)
 }
