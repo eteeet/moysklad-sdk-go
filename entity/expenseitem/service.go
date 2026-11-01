@@ -22,24 +22,24 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/expenseitem#3-poluchit-statyu-rashodov
-func (s *Service) Get(ctx context.Context, id string) (*ExpenseItem, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*ExpenseItem, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: expenseitem id must be a UUID")
 	}
-	return s.do(ctx, "get expenseitem "+id, http.MethodGet, "entity/expenseitem/"+id, nil)
+	return s.do(ctx, "get expenseitem "+id, http.MethodGet, "entity/expenseitem/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/expenseitem#3-sozdat-statyu-rashodov
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль ExpenseItem.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*ExpenseItem, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*ExpenseItem, error) {
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create expenseitem: name must not be empty")
 	}
-	return s.do(ctx, "create expenseitem", http.MethodPost, "entity/expenseitem", input)
+	return s.do(ctx, "create expenseitem", http.MethodPost, "entity/expenseitem", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/expenseitem#3-izmenit-statyu-rashodov
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*ExpenseItem, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*ExpenseItem, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update expenseitem: id must be a UUID")
 	}
@@ -47,16 +47,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update expenseitem: no fields specified")
 	}
-	return s.do(ctx, "update expenseitem "+id, http.MethodPut, "entity/expenseitem/"+id, input)
+	return s.do(ctx, "update expenseitem "+id, http.MethodPut, "entity/expenseitem/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*ExpenseItem, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*ExpenseItem, error) {
 	var result ExpenseItem
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

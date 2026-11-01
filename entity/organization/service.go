@@ -22,24 +22,24 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/organization#3-poluchit-yurlico
-func (s *Service) Get(ctx context.Context, id string) (*Organization, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*Organization, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: organization id must be a UUID")
 	}
-	return s.do(ctx, "get organization "+id, http.MethodGet, "entity/organization/"+id, nil)
+	return s.do(ctx, "get organization "+id, http.MethodGet, "entity/organization/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/organization#3-sozdat-yurlico
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль Organization.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*Organization, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Organization, error) {
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create organization: name must not be empty")
 	}
-	return s.do(ctx, "create organization", http.MethodPost, "entity/organization", input)
+	return s.do(ctx, "create organization", http.MethodPost, "entity/organization", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/organization#3-izmenit-yurlico
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*Organization, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*Organization, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update organization: id must be a UUID")
 	}
@@ -47,16 +47,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update organization: no fields specified")
 	}
-	return s.do(ctx, "update organization "+id, http.MethodPut, "entity/organization/"+id, input)
+	return s.do(ctx, "update organization "+id, http.MethodPut, "entity/organization/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*Organization, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*Organization, error) {
 	var result Organization
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

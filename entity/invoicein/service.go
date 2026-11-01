@@ -24,16 +24,16 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
-func (s *Service) Get(ctx context.Context, id string) (*InvoiceIn, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*InvoiceIn, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: invoicein id must be a UUID")
 	}
-	return s.do(ctx, "get invoicein "+id, http.MethodGet, "entity/invoicein/"+id, nil)
+	return s.do(ctx, "get invoicein "+id, http.MethodGet, "entity/invoicein/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль InvoiceIn.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*InvoiceIn, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*InvoiceIn, error) {
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create invoicein: name must not be empty")
 	}
@@ -46,11 +46,11 @@ func (s *Service) Create(ctx context.Context, input CreateRequest) (*InvoiceIn, 
 	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: create invoicein: positions must not exceed 1000")
 	}
-	return s.do(ctx, "create invoicein", http.MethodPost, "entity/invoicein", input)
+	return s.do(ctx, "create invoicein", http.MethodPost, "entity/invoicein", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*InvoiceIn, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*InvoiceIn, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update invoicein: id must be a UUID")
 	}
@@ -61,16 +61,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: update invoicein: positions must not exceed 1000")
 	}
-	return s.do(ctx, "update invoicein "+id, http.MethodPut, "entity/invoicein/"+id, input)
+	return s.do(ctx, "update invoicein "+id, http.MethodPut, "entity/invoicein/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*InvoiceIn, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*InvoiceIn, error) {
 	var result InvoiceIn
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
@@ -94,10 +90,10 @@ func validID(id string) bool {
 
 // GetPositions читает одну страницу без expand, скрытого Get и автоматического обхода.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
-func (s *Service) GetPositions(ctx context.Context, id string, page positions.PageOptions) (*model.Collection[Position], error) {
+func (s *Service) GetPositions(ctx context.Context, id string, page positions.PageOptions, opts ...transport.RequestOption) (*model.Collection[Position], error) {
 	reader, err := positions.NewService[Position](s.client, "invoicein")
 	if err != nil {
 		return nil, err
 	}
-	return reader.GetPage(ctx, id, page)
+	return reader.GetPage(ctx, id, page, opts...)
 }

@@ -22,24 +22,24 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/country#3-poluchit-stranu
-func (s *Service) Get(ctx context.Context, id string) (*Country, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*Country, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: country id must be a UUID")
 	}
-	return s.do(ctx, "get country "+id, http.MethodGet, "entity/country/"+id, nil)
+	return s.do(ctx, "get country "+id, http.MethodGet, "entity/country/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/country#3-sozdat-stranu
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль Country.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*Country, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Country, error) {
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create country: name must not be empty")
 	}
-	return s.do(ctx, "create country", http.MethodPost, "entity/country", input)
+	return s.do(ctx, "create country", http.MethodPost, "entity/country", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/country#3-izmenit-stranu
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*Country, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*Country, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update country: id must be a UUID")
 	}
@@ -47,16 +47,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update country: no fields specified")
 	}
-	return s.do(ctx, "update country "+id, http.MethodPut, "entity/country/"+id, input)
+	return s.do(ctx, "update country "+id, http.MethodPut, "entity/country/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*Country, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*Country, error) {
 	var result Country
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

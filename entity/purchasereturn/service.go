@@ -24,16 +24,16 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return
-func (s *Service) Get(ctx context.Context, id string) (*PurchaseReturn, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*PurchaseReturn, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: purchasereturn id must be a UUID")
 	}
-	return s.do(ctx, "get purchasereturn "+id, http.MethodGet, "entity/purchasereturn/"+id, nil)
+	return s.do(ctx, "get purchasereturn "+id, http.MethodGet, "entity/purchasereturn/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль PurchaseReturn.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*PurchaseReturn, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*PurchaseReturn, error) {
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create purchasereturn: organization.meta.href must not be empty")
 	}
@@ -46,11 +46,11 @@ func (s *Service) Create(ctx context.Context, input CreateRequest) (*PurchaseRet
 	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: create purchasereturn: positions must not exceed 1000")
 	}
-	return s.do(ctx, "create purchasereturn", http.MethodPost, "entity/purchasereturn", input)
+	return s.do(ctx, "create purchasereturn", http.MethodPost, "entity/purchasereturn", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*PurchaseReturn, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*PurchaseReturn, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update purchasereturn: id must be a UUID")
 	}
@@ -61,16 +61,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: update purchasereturn: positions must not exceed 1000")
 	}
-	return s.do(ctx, "update purchasereturn "+id, http.MethodPut, "entity/purchasereturn/"+id, input)
+	return s.do(ctx, "update purchasereturn "+id, http.MethodPut, "entity/purchasereturn/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*PurchaseReturn, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*PurchaseReturn, error) {
 	var result PurchaseReturn
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
@@ -94,10 +90,10 @@ func validID(id string) bool {
 
 // GetPositions читает одну страницу без expand, скрытого Get и автоматического обхода.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return
-func (s *Service) GetPositions(ctx context.Context, id string, page positions.PageOptions) (*model.Collection[Position], error) {
+func (s *Service) GetPositions(ctx context.Context, id string, page positions.PageOptions, opts ...transport.RequestOption) (*model.Collection[Position], error) {
 	reader, err := positions.NewService[Position](s.client, "purchasereturn")
 	if err != nil {
 		return nil, err
 	}
-	return reader.GetPage(ctx, id, page)
+	return reader.GetPage(ctx, id, page, opts...)
 }

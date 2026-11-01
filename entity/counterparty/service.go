@@ -22,24 +22,24 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/counterparty#3-poluchit-kontragenta
-func (s *Service) Get(ctx context.Context, id string) (*Counterparty, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*Counterparty, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: counterparty id must be a UUID")
 	}
-	return s.do(ctx, "get counterparty "+id, http.MethodGet, "entity/counterparty/"+id, nil)
+	return s.do(ctx, "get counterparty "+id, http.MethodGet, "entity/counterparty/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/counterparty#3-sozdat-kontragenta
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль Counterparty.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*Counterparty, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Counterparty, error) {
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create counterparty: name must not be empty")
 	}
-	return s.do(ctx, "create counterparty", http.MethodPost, "entity/counterparty", input)
+	return s.do(ctx, "create counterparty", http.MethodPost, "entity/counterparty", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/counterparty#3-izmenit-kontragenta
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*Counterparty, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*Counterparty, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update counterparty: id must be a UUID")
 	}
@@ -47,16 +47,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update counterparty: no fields specified")
 	}
-	return s.do(ctx, "update counterparty "+id, http.MethodPut, "entity/counterparty/"+id, input)
+	return s.do(ctx, "update counterparty "+id, http.MethodPut, "entity/counterparty/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*Counterparty, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*Counterparty, error) {
 	var result Counterparty
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

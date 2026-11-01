@@ -22,16 +22,16 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashout
-func (s *Service) Get(ctx context.Context, id string) (*CashOut, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*CashOut, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: cashout id must be a UUID")
 	}
-	return s.do(ctx, "get cashout "+id, http.MethodGet, "entity/cashout/"+id, nil)
+	return s.do(ctx, "get cashout "+id, http.MethodGet, "entity/cashout/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashout
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль CashOut.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*CashOut, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*CashOut, error) {
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create cashout: organization.meta.href must not be empty")
 	}
@@ -41,11 +41,11 @@ func (s *Service) Create(ctx context.Context, input CreateRequest) (*CashOut, er
 	if input.ExpenseItem.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create cashout: expenseItem.meta.href must not be empty")
 	}
-	return s.do(ctx, "create cashout", http.MethodPost, "entity/cashout", input)
+	return s.do(ctx, "create cashout", http.MethodPost, "entity/cashout", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashout
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*CashOut, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*CashOut, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update cashout: id must be a UUID")
 	}
@@ -53,16 +53,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update cashout: no fields specified")
 	}
-	return s.do(ctx, "update cashout "+id, http.MethodPut, "entity/cashout/"+id, input)
+	return s.do(ctx, "update cashout "+id, http.MethodPut, "entity/cashout/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*CashOut, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*CashOut, error) {
 	var result CashOut
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

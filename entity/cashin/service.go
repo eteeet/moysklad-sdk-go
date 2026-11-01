@@ -22,27 +22,27 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashin
-func (s *Service) Get(ctx context.Context, id string) (*CashIn, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*CashIn, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: cashin id must be a UUID")
 	}
-	return s.do(ctx, "get cashin "+id, http.MethodGet, "entity/cashin/"+id, nil)
+	return s.do(ctx, "get cashin "+id, http.MethodGet, "entity/cashin/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashin
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль CashIn.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*CashIn, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*CashIn, error) {
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create cashin: organization.meta.href must not be empty")
 	}
 	if input.Agent.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create cashin: agent.meta.href must not be empty")
 	}
-	return s.do(ctx, "create cashin", http.MethodPost, "entity/cashin", input)
+	return s.do(ctx, "create cashin", http.MethodPost, "entity/cashin", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/cashin
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*CashIn, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*CashIn, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update cashin: id must be a UUID")
 	}
@@ -50,16 +50,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update cashin: no fields specified")
 	}
-	return s.do(ctx, "update cashin "+id, http.MethodPut, "entity/cashin/"+id, input)
+	return s.do(ctx, "update cashin "+id, http.MethodPut, "entity/cashin/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*CashIn, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*CashIn, error) {
 	var result CashIn
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

@@ -24,16 +24,16 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
-func (s *Service) Get(ctx context.Context, id string) (*Supply, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*Supply, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: supply id must be a UUID")
 	}
-	return s.do(ctx, "get supply "+id, http.MethodGet, "entity/supply/"+id, nil)
+	return s.do(ctx, "get supply "+id, http.MethodGet, "entity/supply/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль Supply.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*Supply, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Supply, error) {
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create supply: organization.meta.href must not be empty")
 	}
@@ -46,11 +46,11 @@ func (s *Service) Create(ctx context.Context, input CreateRequest) (*Supply, err
 	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: create supply: positions must not exceed 1000")
 	}
-	return s.do(ctx, "create supply", http.MethodPost, "entity/supply", input)
+	return s.do(ctx, "create supply", http.MethodPost, "entity/supply", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*Supply, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*Supply, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update supply: id must be a UUID")
 	}
@@ -61,16 +61,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: update supply: positions must not exceed 1000")
 	}
-	return s.do(ctx, "update supply "+id, http.MethodPut, "entity/supply/"+id, input)
+	return s.do(ctx, "update supply "+id, http.MethodPut, "entity/supply/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*Supply, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*Supply, error) {
 	var result Supply
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
@@ -94,10 +90,10 @@ func validID(id string) bool {
 
 // GetPositions читает одну страницу без expand, скрытого Get и автоматического обхода.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
-func (s *Service) GetPositions(ctx context.Context, id string, page positions.PageOptions) (*model.Collection[Position], error) {
+func (s *Service) GetPositions(ctx context.Context, id string, page positions.PageOptions, opts ...transport.RequestOption) (*model.Collection[Position], error) {
 	reader, err := positions.NewService[Position](s.client, "supply")
 	if err != nil {
 		return nil, err
 	}
-	return reader.GetPage(ctx, id, page)
+	return reader.GetPage(ctx, id, page, opts...)
 }

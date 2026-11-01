@@ -22,25 +22,25 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-poluchit-tovar
-func (s *Service) Get(ctx context.Context, id string) (*Product, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*Product, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: product id must be a UUID")
 	}
 
-	return s.do(ctx, "get product "+id, http.MethodGet, "entity/product/"+id, nil)
+	return s.do(ctx, "get product "+id, http.MethodGet, "entity/product/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-sozdat-tovar
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль товара.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*Product, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Product, error) {
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: create product: name must not be empty")
 	}
-	return s.do(ctx, "create product", http.MethodPost, "entity/product", input)
+	return s.do(ctx, "create product", http.MethodPost, "entity/product", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-izmenit-tovar
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*Product, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*Product, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update product: id must be a UUID")
 	}
@@ -48,16 +48,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update product: no fields specified")
 	}
-	return s.do(ctx, "update product "+id, http.MethodPut, "entity/product/"+id, input)
+	return s.do(ctx, "update product "+id, http.MethodPut, "entity/product/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*Product, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*Product, error) {
 	var result Product
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

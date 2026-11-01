@@ -37,7 +37,7 @@ func NewService[T any](client *transport.Client, documentType string) (*Service[
 // GetPage читает одну страницу без повторов и переходов по href; limit/offset задаёт вызывающий код.
 // Metadata positions в заголовке документа не означает, что строки уже прочитаны.
 // https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L2468-L2525
-func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOptions) (*model.Collection[T], error) {
+func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOptions, opts ...transport.RequestOption) (*model.Collection[T], error) {
 	operation := "get " + s.documentType + " " + documentID + " positions"
 	if !validID(documentID) {
 		return nil, fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
@@ -56,13 +56,9 @@ func (s *Service[T]) GetPage(ctx context.Context, documentID string, page PageOp
 		"limit":  {strconv.Itoa(limit)},
 		"offset": {strconv.Itoa(page.Offset)},
 	}
-	req, err := s.client.NewRequest(ctx, http.MethodGet,
-		"entity/"+s.documentType+"/"+documentID+"/positions", query, nil)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
 	var result model.Collection[T]
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, http.MethodGet,
+		"entity/"+s.documentType+"/"+documentID+"/positions", query, nil, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}

@@ -22,16 +22,16 @@ func NewService(client *transport.Client) (*Service, error) {
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-out
-func (s *Service) Get(ctx context.Context, id string) (*PaymentOut, error) {
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*PaymentOut, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: paymentout id must be a UUID")
 	}
-	return s.do(ctx, "get paymentout "+id, http.MethodGet, "entity/paymentout/"+id, nil)
+	return s.do(ctx, "get paymentout "+id, http.MethodGet, "entity/paymentout/"+id, nil, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-out
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль PaymentOut.
-func (s *Service) Create(ctx context.Context, input CreateRequest) (*PaymentOut, error) {
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*PaymentOut, error) {
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create paymentout: organization.meta.href must not be empty")
 	}
@@ -41,11 +41,11 @@ func (s *Service) Create(ctx context.Context, input CreateRequest) (*PaymentOut,
 	if input.ExpenseItem.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create paymentout: expenseItem.meta.href must not be empty")
 	}
-	return s.do(ctx, "create paymentout", http.MethodPost, "entity/paymentout", input)
+	return s.do(ctx, "create paymentout", http.MethodPost, "entity/paymentout", input, opts)
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-out
-func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*PaymentOut, error) {
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*PaymentOut, error) {
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: update paymentout: id must be a UUID")
 	}
@@ -53,16 +53,12 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest) (*
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: update paymentout: no fields specified")
 	}
-	return s.do(ctx, "update paymentout "+id, http.MethodPut, "entity/paymentout/"+id, input)
+	return s.do(ctx, "update paymentout "+id, http.MethodPut, "entity/paymentout/"+id, input, opts)
 }
 
-func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any) (*PaymentOut, error) {
-	req, err := s.client.NewRequest(ctx, method, endpoint, nil, body)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
-	}
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*PaymentOut, error) {
 	var result PaymentOut
-	resp, err := s.client.Do(req, &result)
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
