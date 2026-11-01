@@ -7,14 +7,18 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"testing"
 
+	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
+	"github.com/eteeet/moysklad-sdk-go/entity/bundle"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
 	"github.com/eteeet/moysklad-sdk-go/entity/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/entity/country"
+	"github.com/eteeet/moysklad-sdk-go/entity/currency"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/entity/employee"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
@@ -24,12 +28,16 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/organization"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentin"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
+	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
+	"github.com/eteeet/moysklad-sdk-go/entity/service"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
+	"github.com/eteeet/moysklad-sdk-go/entity/taxrate"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
+	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
@@ -96,7 +104,8 @@ func updateCase[S, I, T any](name string, newService func(*transport.Client) (*S
 		}}
 }
 
-// fillRequest заполняет обязательные для локальной проверки поля: Name/LastName, ссылки и Description.
+// fillRequest заполняет обязательные для локальной проверки поля: Name/LastName, ссылки, Description,
+// Code/ISOCode, rate и непустые срезы (components, characteristics).
 func fillRequest[I any]() I {
 	var input I
 	v := reflect.ValueOf(&input).Elem()
@@ -107,11 +116,22 @@ func fillRequest[I any]() I {
 			field.SetString("x")
 		case field.Type() == reflect.TypeFor[model.Reference]():
 			field.Set(reflect.ValueOf(model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
-		case (v.Type().Field(i).Name == "Description" || v.Type().Field(i).Name == "Name") && field.Type() == reflect.TypeFor[model.Field[string]]():
+		case slices.Contains([]string{"Description", "Name", "Code", "ISOCode"}, v.Type().Field(i).Name) && field.Type() == reflect.TypeFor[model.Field[string]]():
 			field.Set(reflect.ValueOf(model.Value("x")))
+		case field.Type() == reflect.TypeFor[*float64]():
+			field.Set(reflect.ValueOf(new(1.0)))
+		case v.Type().Field(i).Name == "Rate" && field.Type() == reflect.TypeFor[model.Field[float64]]():
+			field.Set(reflect.ValueOf(model.Value(1.0)))
+		case field.Kind() == reflect.Slice && field.Type().Elem().Kind() == reflect.Struct:
+			field.Set(reflect.MakeSlice(field.Type(), 1, 1))
 		}
 	}
 	return input
+}
+
+// catalogCase — GET вне формы entity/{name}/{id}; NewService падает только на nil client.
+func catalogCase(name, path string, invoke func(context.Context, *transport.Client, ...transport.RequestOption) error) optionsCase {
+	return optionsCase{name, http.MethodGet, path, invoke}
 }
 
 func TestServicesAcceptRequestOptions(t *testing.T) {
@@ -135,6 +155,11 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("currency", currency.NewService, (*currency.Service).Get),
+		getCase("taxrate", taxrate.NewService, (*taxrate.Service).Get),
+		getCase("service", service.NewService, (*service.Client).Get),
+		getCase("bundle", bundle.NewService, (*bundle.Service).Get),
+		getCase("variant", variant.NewService, (*variant.Service).Get),
 		createCase("cashin", cashin.NewService, (*cashin.Service).Create),
 		updateCase("cashin", cashin.NewService, (*cashin.Service).Update),
 		createCase("cashout", cashout.NewService, (*cashout.Service).Create),
@@ -173,6 +198,46 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("currency", currency.NewService, (*currency.Service).Create),
+		updateCase("currency", currency.NewService, (*currency.Service).Update),
+		createCase("taxrate", taxrate.NewService, (*taxrate.Service).Create),
+		updateCase("taxrate", taxrate.NewService, (*taxrate.Service).Update),
+		createCase("service", service.NewService, (*service.Client).Create),
+		updateCase("service", service.NewService, (*service.Client).Update),
+		createCase("bundle", bundle.NewService, (*bundle.Service).Create),
+		updateCase("bundle", bundle.NewService, (*bundle.Service).Update),
+		createCase("variant", variant.NewService, (*variant.Service).Create),
+		updateCase("variant", variant.NewService, (*variant.Service).Update),
+		catalogCase("pricetype get", "context/companysettings/pricetype/"+testID, func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := pricetype.NewService(c)
+			_, err := s.Get(ctx, testID, opts...)
+			return err
+		}),
+		catalogCase("variant characteristic get", "entity/variant/metadata/characteristics/"+testID, func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := variant.NewService(c)
+			_, err := s.GetCharacteristic(ctx, testID, opts...)
+			return err
+		}),
+		catalogCase("bundle component get", "entity/bundle/"+testID+"/components/"+testID, func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := bundle.NewService(c)
+			_, err := s.GetComponent(ctx, testID, testID, opts...)
+			return err
+		}),
+		catalogCase("bundle components", "entity/bundle/"+testID+"/components?limit=1000&offset=0", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := bundle.NewService(c)
+			_, err := s.GetComponents(ctx, testID, query.PageOptions{}, opts...)
+			return err
+		}),
+		catalogCase("assortment list", "entity/assortment", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := assortment.NewService(c)
+			_, err := s.List(ctx, assortment.Options{}, opts...)
+			return err
+		}),
+		catalogCase("assortment legacy", "entity/assortment", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := assortment.NewService(c)
+			_, err := s.ListLegacy(ctx, assortment.Options{}, opts...)
+			return err
+		}),
 		positionsCase("demand", demand.NewService, (*demand.Service).GetPositions),
 		positionsCase("invoicein", invoicein.NewService, (*invoicein.Service).GetPositions),
 		positionsCase("invoiceout", invoiceout.NewService, (*invoiceout.Service).GetPositions),
@@ -206,7 +271,7 @@ func testServiceOptions(t *testing.T, tc optionsCase, unauthorized bool) {
 			w.Write([]byte(`{"errors":[{"error":"auth","code":1056}]}`))
 			return
 		}
-		if strings.HasSuffix(r.URL.Path, "/positions") {
+		if strings.HasSuffix(r.URL.Path, "/positions") || strings.HasSuffix(r.URL.Path, "/components") || strings.HasSuffix(r.URL.Path, "/assortment") {
 			w.Write([]byte(`{"meta":{"href":"https://api.moysklad.ru/x"},"rows":[]}`))
 			return
 		}
@@ -332,6 +397,11 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("currency", currency.NewService, (*currency.Service).Get, (*currency.Service).Create, (*currency.Service).Update, (*currency.Service).List)...)
+	cases = append(cases, localCases("taxrate", taxrate.NewService, (*taxrate.Service).Get, (*taxrate.Service).Create, (*taxrate.Service).Update, (*taxrate.Service).List)...)
+	cases = append(cases, localCases("service", service.NewService, (*service.Client).Get, (*service.Client).Create, (*service.Client).Update, (*service.Client).List)...)
+	cases = append(cases, localCases("bundle", bundle.NewService, (*bundle.Service).Get, (*bundle.Service).Create, (*bundle.Service).Update, (*bundle.Service).List)...)
+	cases = append(cases, localCases("variant", variant.NewService, (*variant.Service).Get, (*variant.Service).Create, (*variant.Service).Update, (*variant.Service).List)...)
 	cases = append(cases,
 		positionsLocal("demand", demand.NewService, (*demand.Service).GetPositions),
 		positionsLocal("invoicein", invoicein.NewService, (*invoicein.Service).GetPositions),
@@ -354,6 +424,46 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 				return err
 			}
 			_, err = s.UpdateSecurity(ctx, testID, employee.UpdateSecurityRequest{}, opts...)
+			return err
+		}},
+		localCase{"pricetype get invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := pricetype.NewService(c)
+			_, err := s.Get(ctx, "bad", opts...)
+			return err
+		}},
+		localCase{"pricetype replace empty", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := pricetype.NewService(c)
+			_, err := s.ReplaceAll(ctx, nil, opts...)
+			return err
+		}},
+		localCase{"variant characteristic invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := variant.NewService(c)
+			_, err := s.GetCharacteristic(ctx, "bad", opts...)
+			return err
+		}},
+		localCase{"variant characteristic empty name", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := variant.NewService(c)
+			_, err := s.CreateCharacteristic(ctx, "", opts...)
+			return err
+		}},
+		localCase{"bundle components invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := bundle.NewService(c)
+			_, err := s.GetComponents(ctx, "bad", query.PageOptions{}, opts...)
+			return err
+		}},
+		localCase{"bundle component invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := bundle.NewService(c)
+			_, err := s.GetComponent(ctx, testID, "bad", opts...)
+			return err
+		}},
+		localCase{"assortment list fields", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := assortment.NewService(c)
+			_, err := s.List(ctx, assortment.Options{ListOptions: query.ListOptions{Fields: "stock"}}, opts...)
+			return err
+		}},
+		localCase{"assortment legacy limit", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := assortment.NewService(c)
+			_, err := s.ListLegacy(ctx, assortment.Options{ListOptions: query.ListOptions{Limit: 1001}}, opts...)
 			return err
 		}},
 		localCase{"role preset unsafe", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
@@ -380,7 +490,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 19*4+7+3 {
+	if len(cases) != 24*4+7+3+8 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
