@@ -79,7 +79,10 @@ HTTP-серверами: plain/gzip, exact wire JSON, headers, одна отпр
 context, auth/transport/APIError, malformed/null/empty ответы и ошибочные статусы.
 Это не проверка бизнес-поведения живого API. Живой аккаунт не использовался.
 
-List, поиск/filter/query документов, Delete, batch, templates/new, expand,
-отдельные mutations позиций, файлы и их операции, pack/things/serial/tracking/stock,
-автоматический обход страниц и финансовые вычисления остаются вне этих срезов.
+Реализованы: List одной страницы с filter/search/order ([transport](transport.md)), явный обход
+страниц через `pages.All`, поля строк общей формы (pack, things, gtd, trackingCodes, declaration,
+stock — [positions](positions.md)) и `fields=stock`/`declaration` у GetPositions.
+Delete, batch, templates/new, wizard, expand (в том числе stock в Get/List через expand=positions),
+отдельные mutations позиций, файлы и их операции, автоматический обход страниц и финансовые
+вычисления остаются вне этих срезов.
 Точный scope полей и исключений каждого документа указан в его документации.

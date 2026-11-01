@@ -3,9 +3,10 @@ package salesreturn
 import "github.com/eteeet/moysklad-sdk-go/model"
 
 // CreateRequest: необходимы organization, store и agent. Возврат по основанию задаёт Demand;
-// без основания Demand не передают. Сервер требует, чтобы контрагент, юрлицо и валюта совпадали
-// с основанием, а строки соответствовали его строкам; cost строки задаётся у возврата без
-// основания. Positions — не больше 1000 строк.
+// без основания Demand не передают. При Create по основанию сервер требует: контрагент, юрлицо
+// и валюта совпадают с основанием; строки соответствуют его строкам, quantity не больше, чем
+// в основании, строк не из основания нет, price не меняется. SDK это не проверяет и не делает
+// Get основания. cost строки задаётся у возврата без основания. Positions — не больше 1000 строк.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/sales-return#3-sozdat-vozvrat-pokupatelya
 type CreateRequest struct {
 	Organization        model.Reference                        `json:"organization"`
