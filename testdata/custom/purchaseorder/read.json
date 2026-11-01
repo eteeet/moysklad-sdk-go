@@ -1,0 +1,174 @@
+{
+  "id": "read-id",
+  "accountId": "read-accountId",
+  "name": "request-name",
+  "description": "",
+  "code": "",
+  "externalCode": "request-externalCode",
+  "syncId": "request-syncId",
+  "created": "2026-11-01 10:20:30.000",
+  "updated": "2026-11-01 10:20:30.000",
+  "deleted": "2026-11-01 10:20:30.000",
+  "moment": "2026-11-01 12:34:56.000",
+  "applicable": false,
+  "shared": false,
+  "printed": true,
+  "published": true,
+  "organization": {
+    "meta": {
+      "href": "https://example.test/organization",
+      "type": "organization"
+    }
+  },
+  "owner": {
+    "meta": {
+      "href": "https://example.test/owner",
+      "type": "owner"
+    }
+  },
+  "group": {
+    "meta": {
+      "href": "https://example.test/group",
+      "type": "group"
+    }
+  },
+  "project": {
+    "meta": {
+      "href": "https://example.test/project",
+      "type": "project"
+    }
+  },
+  "state": {
+    "meta": {
+      "href": "https://example.test/state",
+      "type": "state"
+    }
+  },
+  "meta": {
+    "href": "https://example.test/entity/purchaseorder/read-id",
+    "type": "purchaseorder"
+  },
+  "attributes": [
+    {
+      "meta": {
+        "href": "https://example.test/attributes/long"
+      },
+      "type": "long",
+      "value": 9007199254740993
+    }
+  ],
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://example.test/currency",
+        "type": "currency"
+      }
+    }
+  },
+  "sum": 4321.25,
+  "agent": {
+    "meta": {
+      "href": "https://example.test/agent",
+      "type": "agent"
+    }
+  },
+  "organizationAccount": {
+    "meta": {
+      "href": "https://example.test/organizationAccount",
+      "type": "organizationAccount"
+    }
+  },
+  "agentAccount": {
+    "meta": {
+      "href": "https://example.test/agentAccount",
+      "type": "agentAccount"
+    }
+  },
+  "contract": {
+    "meta": {
+      "href": "https://example.test/contract",
+      "type": "contract"
+    }
+  },
+  "vatSum": 4321.25,
+  "positions": {
+    "meta": {
+      "href": "https://example.test/positions",
+      "type": "purchaseorderposition",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "vatEnabled": false,
+  "vatIncluded": false,
+  "payedSum": 4321.25,
+  "store": {
+    "meta": {
+      "href": "https://example.test/store",
+      "type": "store"
+    }
+  },
+  "payments": [
+    {
+      "meta": {
+        "href": "https://example.test/payments",
+        "type": "payments"
+      }
+    }
+  ],
+  "files": {
+    "meta": {
+      "href": "https://example.test/files",
+      "type": "files",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "deliveryPlannedMoment": "2026-11-01 12:34:56.000",
+  "invoicedSum": 4321.25,
+  "shippedSum": 4321.25,
+  "waitSum": 4321.25,
+  "internalOrder": {
+    "meta": {
+      "href": "https://example.test/internalOrder",
+      "type": "internalOrder"
+    }
+  },
+  "customerOrders": [
+    {
+      "meta": {
+        "href": "https://example.test/customerOrders",
+        "type": "customerOrders"
+      }
+    }
+  ],
+  "invoicesIn": [
+    {
+      "meta": {
+        "href": "https://example.test/invoicesIn",
+        "type": "invoicesIn"
+      }
+    }
+  ],
+  "productionTasks": [
+    {
+      "meta": {
+        "href": "https://example.test/productionTasks",
+        "type": "productionTasks"
+      }
+    }
+  ],
+  "supplies": [
+    {
+      "meta": {
+        "href": "https://example.test/supplies",
+        "type": "supplies"
+      }
+    }
+  ],
+  "futureField": {
+    "ignored": true
+  }
+}
