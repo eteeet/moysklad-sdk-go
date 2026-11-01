@@ -1,5 +1,11 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
+
+> Все entity tickets этой spec реализованы по команде пользователя выполнить
+> 11 tickets SDK. DRAFT/proposal и прежние ограничения запуска ниже сохранены как
+> история подготовки; все перечисленные решения приняты этой командой.
+> Актуальные контракты: [docs/documents.md](../../docs/documents.md);
+> проверки: [отчёт](../document-workstream/review-entities.md).
 
 # InvoiceIn и InvoiceOut: отдельная захватка счетов
 
@@ -86,7 +92,7 @@ Get/Update используют /{id}. Один HTTP-запрос на вызо�
 | organizationAccount, agentAccount, owner, group, state, project, store, contract | OrganizationAccount, AgentAccount, Owner, Group, State, Project, Store, Contract | *model.Reference | Create/Update через Field[Reference] |
 | rate | Rate | *model.DocumentRate | Create/Update через Field[model.DocumentRateRequest] |
 | attributes | Attributes | []model.Attribute | Create/Update через Field[[]model.Attribute] |
-| positions | Positions | *model.Collection[positions.Commercial] | Create/Update через Field[[]positions.CommercialRequest] |
+| positions | Positions | *model.Collection[positions.Position] | Create/Update через Field[[]positions.PositionRequest] |
 | sum, vatSum, payedSum, shippedSum | Sum, VATSum, PayedSum, ShippedSum | float64 | нет |
 | printed, published | Printed, Published | bool | нет |
 | syncId | SyncID | string | Create/Update через Field[string], write-once проверяет сервер |
@@ -125,7 +131,7 @@ InvoiceIn допускает ассортимент из его документ
 закрытого enum meta.type; сервер проверяет применимость конкретного объекта.
 
 Обычный Get не раскрывает rows. Его Positions содержит meta и допускает отсутствие Rows.
-Страница строк — positions.Service[positions.Commercial].GetPage с documentType
+Страница строк — positions.Service[positions.Position].GetPage с documentType
 invoicein либо invoiceout. Entity-пакеты не дублируют reader и не добавляют expand.
 Reader — самостоятельный ticket и обязательная зависимость entity tickets с GetPositions.
 
@@ -205,8 +211,10 @@ Expand — только после всего остального SDK, если
 (*model.Collection[Position], error). Он вызывает общий reader с фиксированными documentType
 и Position; вызывающий код не выбирает строку ресурса и generic type. Один HTTP GET, без expand,
 автообхода и скрытого Get заголовка. Ошибки/envelope/UUID/page validation остаются контрактом P02.
-Move экспортирует alias Position = positions.Movement; InvoiceIn/InvoiceOut/PurchaseReturn —
-alias Position = positions.Commercial. Supply/Demand/PurchaseOrder используют собственные Position.
+Все товарные документы используют positions.Position и PositionRequest. Entity packages могут
+экспортировать aliases Position = positions.Position и PositionRequest = positions.PositionRequest;
+это не отдельная форма. Дополнительные поля добавляются в общий positions соответствующим
+entity ticket, а не в собственную структуру строки документа.
 Тестовый seam — публичный GetPositions через transport.Client + httptest.Server;
 отдельный TestServiceGetPositions с таблицами правильного path/type/query, plain/gzip, пустой страницы,
 ошибок и одной отправки. P02 — обязательная зависимость всего entity ticket.

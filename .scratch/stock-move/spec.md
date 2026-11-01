@@ -1,5 +1,11 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
+
+> Все entity tickets этой spec реализованы по команде пользователя выполнить
+> 11 tickets SDK. DRAFT/proposal и прежние ограничения запуска ниже сохранены как
+> история подготовки; все перечисленные решения приняты этой командой.
+> Актуальные контракты: [docs/documents.md](../../docs/documents.md);
+> проверки: [отчёт](../document-workstream/review-entities.md).
 
 # Move — Get/Create/Update
 
@@ -9,7 +15,7 @@ Move (перемещение) переносит запасы между дву�
 
 ## Solution
 
-Предлагается один вертикальный срез Move: model, отдельные CreateRequest/UpdateRequest, Service.Get/Create/Update, JSON/HTTP-тесты и документация. Общие shapes positions.Movement/MovementRequest и отдельный GetPage остаются общей возможностью SDK. Все choices ниже proposed; сохранение DRAFT не разрешает реализацию.
+Предлагается один вертикальный срез Move: model, отдельные CreateRequest/UpdateRequest, Service.Get/Create/Update, JSON/HTTP-тесты и документация. Строки используют общие positions.Position/PositionRequest, GetPage остаётся общей возможностью SDK. Все choices заголовка ниже proposed; сохранение DRAFT не разрешает реализацию.
 
 ## User Stories
 
@@ -40,7 +46,7 @@ Move (перемещение) переносит запасы между дву�
 | productionTasks | []Reference | TODO write | TODO write |
 | rate | *model.DocumentRate | Field[model.DocumentRateRequest] | Field[model.DocumentRateRequest] |
 | overhead | *model.DocumentOverhead | Field[model.DocumentOverheadRequest] | Field[model.DocumentOverheadRequest] |
-| positions | *model.Collection[positions.Movement] | Field[[]positions.MovementRequest] | Field[[]positions.MovementRequest] |
+| positions | *model.Collection[positions.Position] | Field[[]positions.PositionRequest] | Field[[]positions.PositionRequest] |
 | attributes | []model.Attribute | Field[[]model.Attribute] | Field[[]model.Attribute] |
 | syncId | string | optional Field[string] | Field[string], write-once проверяет сервер |
 | sum | float64, копейки | — | — |
@@ -49,7 +55,7 @@ Move (перемещение) переносит запасы между дву�
 
 Field означает model.Field с omitzero. Optional read Reference — указатель. Go names — ID/AccountID/SyncID. agent, agentAccount, organizationAccount, store, contract, vatEnabled/vatIncluded/vatSum не добавляются по аналогии: их нет в таблице Move. Минимальный Create — organization, sourceStore, targetStore; name и positions не обязательны. [Таблица и связи](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_move.md#L8-L60), [Create](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_move.md#L317-L323).
 
-Position читает positions.Core(meta/id/accountId), assortment Reference, quantity/price float64, overhead float64 (API Int, копейки), sourceSlot/targetSlot *Reference. Write MovementRequest: matching ID, assortment, quantity, price, sourceSlot/targetSlot через Field; overhead readonly. Discount/vat/vatEnabled не являются частью Move строки. Pack/things — explicit TODO read/write. Assortment — Reference: таблица и Create position включают service, вводное описание — только товары/модификации/партии; это открытая неоднозначность, локального union validator нет. [Позиции](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_move.md#L62-L89), [Create position](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_move.md#L2044-L2051).
+Строки используют общие positions.Position/PositionRequest без собственной формы. Общая Position читает meta/id/accountId, assortment, quantity/price, read-only overhead и optional sourceSlot/targetSlot. Неиспользуемые discount/vat/vatEnabled дают zero value: у move это отсутствие поля, не «без НДС». В общем request эти Field существуют, но обычно не задаются; допустимость заданных проверяет сервер. Overhead в request отсутствует. Новая строка требует assortment и положительный quantity по API, matching ID применяется для replacement. Pack/things/serial/tracking/stock — TODO read/write. Таблица допускает service, вводный текст не перечисляет его; локального assortment validator нет до решения. [Позиции](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_move.md#L62-L89).
 
 DocumentOverhead имеет sum float64 и distribution weight/volume/price; не смешивается с read-only overhead float64 строки. Без позиций расходы задать нельзя по API; SDK не выполняет Get для проверки. Общий объект не распределяет суммы локально.
 
@@ -63,13 +69,13 @@ Omitted Field не отправляется; false/0/""/[] сохраняютс�
 
 ### Зависимости
 
-Единственный [entity ticket](issues/01-move.md) зависит от [DocumentRate](../document-common/issues/01-rate.md), [DocumentOverhead](../document-common/issues/02-overhead.md), [positions JSON](../document-positions/issues/01-json-contracts.md) и [Movement shapes](../document-positions/issues/03-movement-contracts.md). Готовые Supply/Demand и справочники складов/ячеек не нужны: используются Reference. [GetPage](../document-positions/issues/02-get-page.md) — обязательная зависимость entity ticket с типизированным GetPositions.
+Единственный [entity ticket](issues/01-move.md) зависит от [DocumentRate](../document-common/issues/01-rate.md), [DocumentOverhead](../document-common/issues/02-overhead.md), [positions JSON](../document-positions/issues/01-json-contracts.md). Готовые Supply/Demand и справочники складов/ячеек не нужны: используются Reference. [GetPage](../document-positions/issues/02-get-page.md) — обязательная зависимость entity ticket с типизированным GetPositions.
 
 ## Testing Decisions
 
 Публичные JSON-seams encoding/json и encoding/json/v2; HTTP seam — реальный transport.Client + локальный httptest.Server. Обязательный образец структуры — entity/uom/service_test.go: отдельные TestServiceGet/Create/Update с table cases.
 
-Проверить значения всех поддержанных полей неизменённой upstream move fixture, отсутствие/null/unknown, metadata без rows; sourceSlot/targetSlot отдельно и вместе, дробные quantity/price, overhead в формах 0, 0.0 и дробного числа обоими кодеками. Независимые golden минимального и полного Create/Update, omission/false/0/""/[]/null, отсутствие agent/VAT/discount и readonly demand/supply/overhead строки. HTTP-тесты фиксируют method/path/query/body/headers, plain/gzip, один запрос, данные сервера, context/auth/transport/APIError/errors.As/Is, malformed/null JSON, неожиданный status и пустой id.
+Проверить значения всех поддержанных полей неизменённой upstream move fixture, отсутствие/null/unknown, metadata без rows; sourceSlot/targetSlot отдельно и вместе, дробные quantity/price, overhead в формах 0, 0.0 и дробного числа обоими кодеками. Независимые golden минимального и полного Create/Update, omission/false/0/""/[]/null, отсутствие agent/VAT заголовка и readonly demand/supply/overhead строки; неиспользуемые коммерческие Field строк не задаются и пропускаются. HTTP-тесты фиксируют method/path/query/body/headers, plain/gzip, один запрос, данные сервера, context/auth/transport/APIError/errors.As/Is, malformed/null JSON, неожиданный status и пустой id.
 
 ## Out of Scope
 
@@ -92,8 +98,10 @@ Revision 9a811cef3dc4a3f3a46f070e60452361a06bf7cd проверен исслед�
 (*model.Collection[Position], error). Он вызывает общий reader с фиксированными documentType
 и Position; вызывающий код не выбирает строку ресурса и generic type. Один HTTP GET, без expand,
 автообхода и скрытого Get заголовка. Ошибки/envelope/UUID/page validation остаются контрактом P02.
-Move экспортирует alias Position = positions.Movement; InvoiceIn/InvoiceOut/PurchaseReturn —
-alias Position = positions.Commercial. Supply/Demand/PurchaseOrder используют собственные Position.
+Все товарные документы используют positions.Position и PositionRequest. Entity packages могут
+экспортировать aliases Position = positions.Position и PositionRequest = positions.PositionRequest;
+это не отдельная форма. Дополнительные поля добавляются в общий positions соответствующим
+entity ticket, а не в собственную структуру строки документа.
 Тестовый seam — публичный GetPositions через transport.Client + httptest.Server;
 отдельный TestServiceGetPositions с таблицами правильного path/type/query, plain/gzip, пустой страницы,
 ошибок и одной отправки. P02 — обязательная зависимость всего entity ticket.

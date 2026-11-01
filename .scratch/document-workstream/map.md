@@ -1,12 +1,14 @@
-Status: needs-triage
-Stage: PARTIALLY IMPLEMENTED
+Status: resolved
+Stage: IMPLEMENTED
 
 # Документы SDK: карта spec и tickets
 
-Подготовлено 2026-11-01: 7 spec, 17 tickets. Первая волна C01/C02/F01/P01/P02 завершена
-и включена в dev, все пять tickets resolved. Остальные 12 tickets остаются DRAFT/needs-triage.
-Полные entity-контракты и P03 не разрешены этим запуском.
-В колонке зависимостей указаны технические blockers; готовность не заменяет triage.
+Все 11 оставшихся entity tickets реализованы по команде пользователя 2026-11-01.
+В исходных 17 tickets: **16 resolved, 1 wontfix/superseded (P03)**.
+Общая Position/PositionRequest завершена отдельно; Cost/Shipped/InTransit добавлены
+соответствующими entity tickets, Cost и InTransit доступны в общем request.
+[Итоговые проверки и независимые review](review-entities.md): race/vet/gofmt/diff-check
+PASS, Standards 0 / Spec 0; upstream/provenance сохранены.
 
 Актуальные [коммиты, проверки и независимые review первой волны](review-wave-1.md).
 [Утверждённый scope первой волны](approval.md) сохраняет основания решений.
@@ -33,21 +35,21 @@ Stage: PARTIALLY IMPLEMENTED
 | --- | --- | --- | --- |
 | C01 | [DocumentRate / DocumentRateRequest](../document-common/issues/01-rate.md) | нет | resolved |
 | C02 | [DocumentOverhead / DocumentOverheadRequest](../document-common/issues/02-overhead.md) | нет | resolved |
-| P01 | [Core/Item/Commercial и embedded JSON](../document-positions/issues/01-json-contracts.md) | нет | resolved |
+| P01 | [Core/Item и общий JSON](../document-positions/issues/01-json-contracts.md) | нет | resolved |
 | P02 | [Generic reader одной страницы GetPage](../document-positions/issues/02-get-page.md) | нет | resolved |
-| P03 | [Movement / MovementRequest](../document-positions/issues/03-movement-contracts.md) | P01 | needs-triage |
+| P03 | [Отдельный контракт заменён общей формой](../document-positions/issues/03-movement-contracts.md) | нет | wontfix / superseded |
 | F01 | [FinanceOperation / FinanceOperationRequest](../financial-documents/issues/01-finance-operation.md) | нет | resolved |
-| F02 | [PaymentIn Get/Create/Update](../financial-documents/issues/02-paymentin.md) | C01, F01 | needs-triage |
-| F03 | [PaymentOut Get/Create/Update](../financial-documents/issues/03-paymentout.md) | C01, F01 | needs-triage |
-| F04 | [CashIn Get/Create/Update](../financial-documents/issues/04-cashin.md) | C01, F01 | needs-triage |
-| F05 | [CashOut Get/Create/Update](../financial-documents/issues/05-cashout.md) | C01, F01 | needs-triage |
-| I01 | [InvoiceIn Get/Create/Update + GetPositions](../invoice-documents/issues/01-invoicein.md) | C01, P01, P02 | needs-triage |
-| I02 | [InvoiceOut Get/Create/Update + GetPositions](../invoice-documents/issues/02-invoiceout.md) | C01, P01, P02 | needs-triage |
-| S01 | [Supply Get/Create/Update + GetPositions](../stock-documents/issues/01-supply.md) | C01, C02, P01, P02 | needs-triage |
-| S02 | [Demand Get/Create/Update + GetPositions](../stock-documents/issues/02-demand.md) | C01, C02, P01, P02 | needs-triage |
-| S03 | [PurchaseOrder Get/Create/Update + GetPositions](../stock-documents/issues/03-purchaseorder.md) | C01, P01, P02 | needs-triage |
-| M01 | [Move Get/Create/Update + GetPositions](../stock-move/issues/01-move.md) | C01, C02, P01, P02, P03 | needs-triage |
-| R01 | [PurchaseReturn Get/Create/Update + GetPositions](../purchase-return/issues/01-purchasereturn.md) | C01, P01, P02 | needs-triage |
+| F02 | [PaymentIn Get/Create/Update](../financial-documents/issues/02-paymentin.md) | C01, F01 | resolved |
+| F03 | [PaymentOut Get/Create/Update](../financial-documents/issues/03-paymentout.md) | C01, F01 | resolved |
+| F04 | [CashIn Get/Create/Update](../financial-documents/issues/04-cashin.md) | C01, F01 | resolved |
+| F05 | [CashOut Get/Create/Update](../financial-documents/issues/05-cashout.md) | C01, F01 | resolved |
+| I01 | [InvoiceIn Get/Create/Update + GetPositions](../invoice-documents/issues/01-invoicein.md) | C01, P01, P02 | resolved |
+| I02 | [InvoiceOut Get/Create/Update + GetPositions](../invoice-documents/issues/02-invoiceout.md) | C01, P01, P02 | resolved |
+| S01 | [Supply Get/Create/Update + GetPositions](../stock-documents/issues/01-supply.md) | C01, C02, P01, P02 | resolved |
+| S02 | [Demand Get/Create/Update + GetPositions](../stock-documents/issues/02-demand.md) | C01, C02, P01, P02 | resolved |
+| S03 | [PurchaseOrder Get/Create/Update + GetPositions](../stock-documents/issues/03-purchaseorder.md) | C01, P01, P02 | resolved |
+| M01 | [Move Get/Create/Update + GetPositions](../stock-move/issues/01-move.md) | C01, C02, P01, P02 | resolved |
+| R01 | [PurchaseReturn Get/Create/Update + GetPositions](../purchase-return/issues/01-purchasereturn.md) | C01, P01, P02 | resolved |
 
 ### Параллельность после утверждения
 
@@ -55,12 +57,13 @@ Stage: PARTIALLY IMPLEMENTED
 Ниже технически допустимый порядок, не команда запуска всех семейств:
 
 1. Независимо: C01, C02, P01, P02 и F01.
-2. По готовности соответствующих зависимостей: P03, финансовые F02–F05,
-   счета I01–I02, складские S01–S03 и возврат R01. Между entity tickets зависимостей нет.
-3. M01 — после P03 и остальных его зависимостей. Не нужно ждать все tickets шага 2.
+2. По готовности соответствующих зависимостей: финансовые F02–F05,
+   счета I01–I02, складские S01–S03, M01 и возврат R01. Отдельный P03 не нужен.
+   S02/S03 расширяют общий positions полями Cost и Shipped/InTransit: их изменения
+   в общих файлах согласовать при параллельной интеграции, не создавать entity-owned формы.
 
 P02 не требует P01: reader принимает T any и уже существующий model.Collection[T].
-P02 — обязательная зависимость позиционных entity tickets: они включают типизированный GetPositions. Финансовая группа не зависит от P01/P02/P03.
+P02 — обязательная зависимость позиционных entity tickets: они включают типизированный GetPositions. Финансовая группа не зависит от positions.
 Reference не требует готовых services связанных сущностей, счетов, складов и ячеек.
 
 Для первой волны разрешён [трёхпоточный запуск](wave-1.md); три model tickets выполняются
@@ -71,14 +74,17 @@ Reference не требует готовых services связанных сущ�
 сводит исполнитель интеграции, чтобы параллельные изменения не перетирали друг друга.
 Общие JSON-типы и HTTP reader — самостоятельные проверяемые срезы, не этапы-заглушки.
 
-## Утверждённые контракты и оставшееся triage
+## Утверждённые контракты (история triage)
 
-Это список предметных решений, а не предложение снова обсуждать состав групп.
-Нормативные детали и предложения находятся в соответствующих spec.
+Ниже сохранены решения и предложения этапа triage. Команда пользователя выполнить
+все 11 tickets утвердила предложенные контракты; реализация завершена.
+Уточнение S02: Cost записывается для услуг через общий PositionRequest.
+Актуальные поля и границы — в docs/documents.md и guides сущностей.
 
-1. Core/Item/Commercial, отдельные requests, NewService/GetPage/PageOptions,
+1. Core/Item/Position, общий PositionRequest, NewService/GetPage/PageOptions,
    синтаксис documentType и response envelope утверждены и реализованы P01/P02.
-   Movement P03 остаётся отдельным needs-triage ticket.
+   Различия набора полей не требуют отдельных форм; допустимость записи проверяет сервер.
+   Отдельная форма возможна только при реальном конфликте типа/смысла одного JSON-поля.
 2. DocumentRate/Request и DocumentOverhead/Request реализованы. Value=nil в присутствующем
    rate означает курс 1 без подстановки в JSON; распределение открытое.
    Все денежные поля, включая cost/overhead строки, читаются float64 в копейках независимо от API Int/Float; строковый overhead не является объектом расходов.
@@ -99,11 +105,13 @@ Reference не требует готовых services связанных сущ�
 6. Demand: предложен Store Field[Reference] в Create/Update без local required-validator;
    сервер проверяет применимость. Утвердить это и reuse Address/Request
    без обещания FIASCodeRU; reserve и транспортные поля пока TODO.
-7. PurchaseOrder: предложен документный PositionRequest с InTransit Field[float64]
+7. PurchaseOrder: S03 добавит InTransit Field[float64] в общий positions.PositionRequest
    по официальным примерам записи; shipped и waitSum proposed read-only в scope SDK.
    Нельзя приписывать этим двум полям отсутствующий readonly marker таблиц.
-8. Move: утвердить отдельный Movement без discount/VAT, ссылки на ячейки и scope связей.
-9. PurchaseReturn: разрешить расхождения embedded price/vat/discount, запреты Update
+8. Move использует общие Position/PositionRequest; overhead read-only, ячейки optional.
+   Неиспользуемые Field не задают; нули VAT/VATEnabled в read не означают «без НДС».
+   Entity-контракт Move и scope его связей требуют отдельного утверждения.
+9. PurchaseReturn использует общие Position/PositionRequest; документировать расхождения embedded price/vat/discount, запреты Update
    сторон и применение ограничений основания к возврату без supply. Quantity-only
    отдельного PUT строки не переносить на embedded Update без основания.
 
@@ -122,7 +130,7 @@ Reference не требует готовых services связанных сущ�
   с табличными сценариями; reader имеет собственный GetPage test. JSON — оба кодека,
   независимые golden, upstream fixtures без изменения и с provenance.
 - После реализации каждого ticket: race/vet/gofmt/diff-check и независимые Standards/Spec
-  review; после интеграции — общий прогон. Сейчас Go-код и тесты реализации не менялись.
+  review; после интеграции — общий прогон.
 - Service отложен, variant/bundle после документов. List/delete/batch и транспортные
   расширения не добавляются автоматически. Нет .env/live API/push/PR/VPS.
 - Spec/tickets и temp_plan не коммитятся без отдельной команды пользователя.
@@ -150,4 +158,31 @@ Planning commit a280428 сохранён до начала Go-изменений
 C02 7e6b812, F01 02026e0, P01 20e00ad (GoDoc fix fc8e040), P02 1b28603.
 Полный интеграционный race/vet/gofmt/diff-check пройден; Standards 0, Spec 0.
 Документацию README/coverage и отдельные guides свёл интегратор после слияния.
-Следующая группа не запущена; для P03 или entity tickets нужна отдельная команда/triage.
+Первая волна принята пользователем. Следующей командой разрешён P03; entity tickets
+не запущены и требуют отдельной команды/triage.
+
+### Пересмотр общей формы
+
+2026-11-01 пользователь заменил отдельный P03 одной Position/PositionRequest.
+[Согласованный контракт](../universal-positions/spec.md); overhead и ссылки на ячейки
+перенесены в общий тип, P03 больше не блокирует M01. Cost/Shipped/InTransit добавятся
+в общий тип entity tickets, а не в собственные формы документов.
+Это не утверждает entity-контракты автоматически. Следующий рекомендуемый triage —
+paymentin/paymentout/cashin/cashout; четыре tickets независимы после утверждения.
+
+### Завершение entity tickets
+
+- 2026-11-01 [F02 PaymentIn](../financial-documents/issues/02-paymentin.md): Get/Create/Update реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [F03 PaymentOut](../financial-documents/issues/03-paymentout.md): Get/Create/Update реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [F04 CashIn](../financial-documents/issues/04-cashin.md): Get/Create/Update реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [F05 CashOut](../financial-documents/issues/05-cashout.md): Get/Create/Update реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [I01 InvoiceIn](../invoice-documents/issues/01-invoicein.md): Get/Create/Update + GetPositions реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [I02 InvoiceOut](../invoice-documents/issues/02-invoiceout.md): Get/Create/Update + GetPositions реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [S01 Supply](../stock-documents/issues/01-supply.md): Get/Create/Update + GetPositions реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [S02 Demand](../stock-documents/issues/02-demand.md): Get/Create/Update + GetPositions реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [S03 PurchaseOrder](../stock-documents/issues/03-purchaseorder.md): Get/Create/Update + GetPositions реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [M01 Move](../stock-move/issues/01-move.md): Get/Create/Update + GetPositions реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+- 2026-11-01 [R01 PurchaseReturn](../purchase-return/issues/01-purchasereturn.md): Get/Create/Update + GetPositions реализованы; JSON/HTTP/race/vet и Standards/Spec PASS.
+
+Коммиты/push/live API и cleanup worktree не выполнялись. Review-followups cleanup
+остаётся отдельной задачей. Исходные planning/temp_plan изменения сохранены.

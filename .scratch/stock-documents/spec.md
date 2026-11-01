@@ -1,5 +1,11 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
+
+> Все entity tickets этой spec реализованы по команде пользователя выполнить
+> 11 tickets SDK. DRAFT/proposal и прежние ограничения запуска ниже сохранены как
+> история подготовки; все перечисленные решения приняты этой командой.
+> Актуальные контракты: [docs/documents.md](../../docs/documents.md);
+> проверки: [отчёт](../document-workstream/review-entities.md).
 
 # Supply, Demand, PurchaseOrder — Get/Create/Update
 
@@ -82,9 +88,9 @@ Stage: DRAFT
 
 ### Positions и значения записи
 
-Position документов использует proposed positions.Commercial: core meta/id/accountId, assortment Reference, quantity/price/discount float64, vat int, vatEnabled bool. Supply добавляет read-only overhead float64; Demand — read-only cost и overhead float64; PurchaseOrder — read shipped/inTransit float64. Supply/Demand используют positions.CommercialRequest. PurchaseOrder.PositionRequest встраивает CommercialRequest и добавляет InTransit Field[float64] с omitzero; поле документное, не добавляется в общий CommercialRequest. Overhead/cost/shipped/reserve в записи отсутствуют. Все поля запроса строки — Field, ID служит только matching при полной замене. Required новой строки — assortment и положительный quantity по API; response-required price/discount/vat не становятся required Create. Запись inTransit подтверждается embedded Create и отдельными примерами; readonly shipped — выбранный scope SDK, не readonly marker таблицы.
+Все три документа используют одну positions.Position и PositionRequest, без собственных structs строки. Core meta/id/accountId, assortment Reference, quantity/price/discount float64, vat int, vatEnabled bool и read-only Overhead уже входят в общую форму. S02 добавит Cost float64 в общую Position и Cost Field[float64] с omitzero в общий PositionRequest: себестоимость в копейках только для услуг, применимость проверяет сервер без Get. S03 добавит Shipped/InTransit float64 в общую Position и InTransit Field[float64] с omitzero в общий PositionRequest. Сейчас Cost/Shipped/InTransit в коде не реализованы. Overhead/Shipped/reserve в запросе отсутствуют. Все optional write поля — Field; unset не отправляется, допустимость заданного проверяет сервер. ID — matching selector embedded Update, для новой строки его не задают. Required новой строки — assortment и положительный quantity по API; response-required price/discount/vat не становятся required Create. InTransit write подтверждается примерами; readonly Shipped — выбранный scope SDK, не marker таблицы.
 
-Assortment поддерживает Reference на product/service/variant/consignment; Demand также bundle. Полные объекты Product и остальных справочников не загружаются. Country/gtd/pack/slot/things/trackingCodes/trackingCodes_1162/declaration и stock enrichment — explicit TODO; эти поля не присутствуют в предлагаемых request types. Общие позиции не принадлежат entity tickets. [Supply positions](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L66-L96), [Demand](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_demand.md#L86-L117), [PurchaseOrder](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_purchaseOrder.md#L60-L86).
+Assortment поддерживает Reference на product/service/variant/consignment; Demand также bundle. Полные объекты Product и остальных справочников не загружаются. Country/gtd/pack/slot/things/trackingCodes/trackingCodes_1162/declaration и stock enrichment — explicit TODO; эти поля не присутствуют в предлагаемых request types. Общие позиции не принадлежат отдельному документу; entity tickets расширяют общий тип, не создавая собственные формы. [Supply positions](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_supply.md#L66-L96), [Demand](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_demand.md#L86-L117), [PurchaseOrder](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_purchaseOrder.md#L60-L86).
 
 Omitted field не отправляется; false/0/"" не исчезают. Null сохраняется как JSON-состояние Field, но server-допустимость не предполагается для каждого поля: contract:null удаляет необязательную связь; rate:null возвращает валюту по умолчанию с пересчётом. У Demand shipmentAddressFull:null не очищает адрес, shipmentAddress:"" очищает; при двух формах приоритет у структурированной. [Null](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1170-L1187), [адрес](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_demand.md#L178-L197).
 
@@ -92,7 +98,7 @@ Positions omitted сохраняет прежний набор; positions:[] о�
 
 ### Зависимости и ownership
 
-Supply/Demand/PurchaseOrder зависят от [общего DocumentRate](../document-common/issues/01-rate.md) и [positions JSON](../document-positions/issues/01-json-contracts.md). Supply/Demand дополнительно зависят от [DocumentOverhead](../document-common/issues/02-overhead.md). Между тремя entity tickets зависимостей нет. [GetPage](../document-positions/issues/02-get-page.md) — обязательная зависимость entity tickets с типизированным GetPositions. Итоговая группа проверяется совместно после всех этих tickets.
+Supply/Demand/PurchaseOrder зависят от [общего DocumentRate](../document-common/issues/01-rate.md) и [positions JSON](../document-positions/issues/01-json-contracts.md). Supply/Demand дополнительно зависят от [DocumentOverhead](../document-common/issues/02-overhead.md). Между тремя entity tickets технических зависимостей нет; S02/S03 правят общие файлы positions, поэтому эти изменения координируются при параллельной интеграции. [GetPage](../document-positions/issues/02-get-page.md) — обязательная зависимость entity tickets с типизированным GetPositions. Итоговая группа проверяется совместно после всех этих tickets.
 
 ## Testing Decisions
 
@@ -112,7 +118,7 @@ List документов, query/filter/search, expand, Delete, batch, metadata/
 
 1. Утвердить таблицы scope, proposed имена экспортов и локальную валидацию обязательных ссылок.
 2. Demand store: proposed Field[Reference] в Create/Update, без локального required-validator; условие applicable проверяет сервер. Расхождение документации сохраняется, live-проверка не проведена.
-3. PurchaseOrder: proposed запись inTransit через документный PositionRequest; shipped и waitSum остаются read-only в scope SDK, хотя readonly marker таблиц нет.
+3. PurchaseOrder: S03 добавляет inTransit в общий PositionRequest; shipped и waitSum остаются read-only в scope SDK, хотя readonly marker таблиц нет.
 4. Demand reserve отсутствует в таблице, но есть в примерах; proposed TODO.
 5. Утвердить write support purchaseOrder/customerOrder/internalOrder/salesChannel и оставление остальных связей read-only в scope.
 6. Подтвердить reuse Address/AddressRequest без promise о demand FIASCodeRU и typed overhead из общего ticket.
@@ -125,8 +131,10 @@ List документов, query/filter/search, expand, Delete, batch, metadata/
 (*model.Collection[Position], error). Он вызывает общий reader с фиксированными documentType
 и Position; вызывающий код не выбирает строку ресурса и generic type. Один HTTP GET, без expand,
 автообхода и скрытого Get заголовка. Ошибки/envelope/UUID/page validation остаются контрактом P02.
-Move экспортирует alias Position = positions.Movement; InvoiceIn/InvoiceOut/PurchaseReturn —
-alias Position = positions.Commercial. Supply/Demand/PurchaseOrder используют собственные Position.
+Все товарные документы используют positions.Position и PositionRequest. Entity packages могут
+экспортировать aliases Position = positions.Position и PositionRequest = positions.PositionRequest;
+это не отдельная форма. Дополнительные поля добавляются в общий positions соответствующим
+entity ticket, а не в собственную структуру строки документа.
 Тестовый seam — публичный GetPositions через transport.Client + httptest.Server;
 отдельный TestServiceGetPositions с таблицами правильного path/type/query, plain/gzip, пустой страницы,
 ошибок и одной отправки. P02 — обязательная зависимость всего entity ticket.

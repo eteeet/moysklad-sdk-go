@@ -1,5 +1,11 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
+
+> Все entity tickets этой spec реализованы по команде пользователя выполнить
+> 11 tickets SDK. DRAFT/proposal и прежние ограничения запуска ниже сохранены как
+> история подготовки; все перечисленные решения приняты этой командой.
+> Актуальные контракты: [docs/documents.md](../../docs/documents.md);
+> проверки: [отчёт](../document-workstream/review-entities.md).
 
 F01 (самостоятельные FinanceOperation/FinanceOperationRequest) утверждён отдельно
 в первой волне 2026-11-01. Ниже DRAFT entity-контрактов F02–F05; их реализация не разрешена.

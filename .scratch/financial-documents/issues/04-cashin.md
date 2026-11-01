@@ -1,6 +1,10 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: 01-finance-operation.md; ../../document-common/issues/01-rate.md
+
+> Реализовано по команде пользователя выполнить все 11 tickets. Предложения и
+> запреты запуска в исходном DRAFT ниже отражают этап подготовки; команда исполнения
+> их заменила. Итоговый контракт — docs/cashin.md, результат — в Answer.
 
 # 04: CashIn — полный Get/Create/Update slice
 
@@ -59,27 +63,27 @@ Slice включает модель, requests, Service, публичные JSON/
 
 ## Acceptance criteria
 
-- [ ] Scope/новые решения утверждены triage; blockers resolved и доступны в рабочем дереве.
-- [ ] Каждый read-field проверен по значениям encoding/json и encoding/json/v2;
+- [x] Scope/новые решения утверждены triage; blockers resolved и доступны в рабочем дереве.
+- [x] Каждый read-field проверен по значениям encoding/json и encoding/json/v2;
   sparse/null даты, references, rate с отсутствующим value, operations с linkedSum,
   неизвестные поля не мешают декодированию.
-- [ ] Независимые golden minimal/full Create, full/partial Update покрывают обе required
+- [x] Независимые golden minimal/full Create, full/partial Update покрывают обе required
   ссылки, отсутствие defaults/readonly/excluded, false, sum/vatSum=0, дроби, "", [],
   nil slice как [], null/unset, SyncID в Create и Update. Нет банковских request-полей.
-- [ ] HTTP структура entity/uom/service_test.go: отдельные TestServiceGet/Create/Update
+- [x] HTTP структура entity/uom/service_test.go: отдельные TestServiceGet/Create/Update
   с table cases и настоящим transport.Client на локальный сервер. Точные method/path,
   пустой query, отсутствие тела GET, заголовки, plain/gzip, один запрос, server data != input.
-- [ ] Minimal Create — только organization/agent; minimal Update applicable:false;
+- [x] Minimal Create — только organization/agent; minimal Update applicable:false;
   full body соответствует независимому golden и не содержит выдуманных defaults.
-- [ ] Проверены nil/отменённый context, validation по triage; APIError 400/404/429/5xx,
+- [x] Проверены nil/отменённый context, validation по triage; APIError 400/404/429/5xx,
   auth/transport errors, errors.As/errors.Is, unexpected status, malformed JSON,
   null/empty/missing ID и отсутствие retry. Не имитировать недоказанное account-правило.
-- [ ] Upstream fixtures остаются неизменными с provenance; собственный маленький
+- [x] Upstream fixtures остаются неизменными с provenance; собственный маленький
   unexpanded JSON дополняет scope. Expanded поля operations/files.rows игнорируются,
   наличие их в fixture не объявляется поддержкой expand.
-- [ ] Docs/coverage отражают полный scope, required Create refs, account-противоречие,
+- [x] Docs/coverage отражают полный scope, required Create refs, account-противоречие,
   отсутствие account/expenseItem/noClosingDocs, null/float64/operations ограничения и TODO files.
-- [ ] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check; независимые Standards/Spec reviews с фиксированным BASE.
 
 ## Out of Scope
@@ -93,3 +97,20 @@ expand/query expand, List/Delete/batch/metadata/templates, финансовые 
 [Official CashIn, master SHA проверен 2026-11-01](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_cashin.md),
 [общие операции/DocumentRate](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_common_info.md#L476-L699),
 [null](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1170-L1187).
+
+## Triage 2026-11-01
+
+Пользователь поручил выполнить все 11 entity tickets SDK. Предложенные таблицы полей,
+local validation и ограничения scope приняты к реализации этой командой. Общие зависимости resolved.
+BASE: eba6f75154929790c5b9d2cb1454dd80783b14db; исходные изменения сохранены.
+
+## Answer
+
+Реализован `entity/cashin`: CashIn, отдельные CreateRequest/UpdateRequest,
+Get/Create/Update.
+[Публичный контракт](../../../docs/cashin.md). JSON и HTTP проверки, required/readonly
+scope и ограничения покрыты; общие типы не дублируются.
+
+Полный race/vet/gofmt/diff-check PASS; независимые Standards 0 / Spec 0.
+Upstream fixtures/provenance неизменны.
+[Интеграционный отчёт](../../document-workstream/review-entities.md).

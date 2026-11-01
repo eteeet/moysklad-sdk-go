@@ -1,6 +1,10 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: 01-finance-operation.md; ../../document-common/issues/01-rate.md
+
+> Реализовано по команде пользователя выполнить все 11 tickets. Предложения и
+> запреты запуска в исходном DRAFT ниже отражают этап подготовки; команда исполнения
+> их заменила. Итоговый контракт — docs/cashout.md, результат — в Answer.
 
 # 05: CashOut — полный Get/Create/Update slice
 
@@ -61,28 +65,28 @@ Slice включает модель/requests, Service, JSON/HTTP-тесты и �
 
 ## Acceptance criteria
 
-- [ ] Новые решения triage утверждены; blockers resolved, их код в рабочем дереве.
-- [ ] Все read-поля проверены по значениям encoding/json и encoding/json/v2;
+- [x] Новые решения triage утверждены; blockers resolved, их код в рабочем дереве.
+- [x] Все read-поля проверены по значениям encoding/json и encoding/json/v2;
   accrualDate/expenseItem/noClosingDocs, sparse/null даты, refs, rate без value,
   operation linkedSum, неизвестные поля. Не объявлены недоказанные agent-типы CashOut.
-- [ ] Независимые golden minimal/full Create и full/partial Update: required refs,
+- [x] Независимые golden minimal/full Create и full/partial Update: required refs,
   отсутствие defaults/readonly/accounts, noClosingDocs=false, sum/vatSum=0, дробь,
   "", [], nil slice как [], null/unset, SyncID в Create/Update.
-- [ ] HTTP образец entity/uom/service_test.go: отдельные TestServiceGet/Create/Update
+- [x] HTTP образец entity/uom/service_test.go: отдельные TestServiceGet/Create/Update
   с table cases, локальный сервер и настоящий transport.Client. Проверены точные
   method/path, пустой query, GET без тела, заголовки, plain/gzip, один запрос,
   фактические server data отличаются от input.
-- [ ] Minimal Create содержит только organization/agent/expenseItem; minimal Update
+- [x] Minimal Create содержит только organization/agent/expenseItem; minimal Update
   передаёт applicable:false; full body соответствует независимому golden.
-- [ ] Nil/отменённый context, утверждённая local validation, APIError 400/404/429/5xx,
+- [x] Nil/отменённый context, утверждённая local validation, APIError 400/404/429/5xx,
   synthetic noClosingDocs conflict, transport/auth wrapping, errors.As/errors.Is,
   unexpected status, malformed JSON, null/empty/missing ID и отсутствие retry.
   Local server не доказывает бизнес-поведение реального API или account-правило CashOut.
-- [ ] Upstream fixtures неизменены с provenance; собственный unexpanded case покрывает
+- [x] Upstream fixtures неизменены с provenance; собственный unexpanded case покрывает
   accrualDate/отсутствующие поля. Expanded operation/files.rows данные игнорируются.
-- [ ] Docs/coverage перечисляют scope, required expenseItem, noClosingDocs restriction,
+- [x] Docs/coverage перечисляют scope, required expenseItem, noClosingDocs restriction,
   CashOut.agent/account неопределённости, float64/null/operations и files/expand TODO.
-- [ ] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check; независимые Standards/Spec reviews с фиксированным BASE.
 
 ## Out of Scope
@@ -96,3 +100,20 @@ List/Delete/batch/metadata/templates, новая финансовая арифм
 [Official CashOut, master SHA проверен 2026-11-01](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_cashout.md),
 [общие операции/DocumentRate](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_common_info.md#L476-L699),
 [null](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1170-L1187).
+
+## Triage 2026-11-01
+
+Пользователь поручил выполнить все 11 entity tickets SDK. Предложенные таблицы полей,
+local validation и ограничения scope приняты к реализации этой командой. Общие зависимости resolved.
+BASE: eba6f75154929790c5b9d2cb1454dd80783b14db; исходные изменения сохранены.
+
+## Answer
+
+Реализован `entity/cashout`: CashOut, отдельные CreateRequest/UpdateRequest,
+Get/Create/Update.
+[Публичный контракт](../../../docs/cashout.md). JSON и HTTP проверки, required/readonly
+scope и ограничения покрыты; общие типы не дублируются.
+
+Полный race/vet/gofmt/diff-check PASS; независимые Standards 0 / Spec 0.
+Upstream fixtures/provenance неизменны.
+[Интеграционный отчёт](../../document-workstream/review-entities.md).

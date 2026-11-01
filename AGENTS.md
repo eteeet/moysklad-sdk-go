@@ -9,6 +9,10 @@ vendor: `https://dev.moysklad.ru/doc/api/vendor/1.0/#bystryj-start`
 - `openspec` и другая документация может отставать;
 - sdk java (новый), python, ts - контролировать изменения.
 
+## Ponytail
+- Правила тестов, docs и review проекта важнее ponytail; не сокращать их.
+- Комментарии `shortcut:` не писать.
+- Уровень ponytail: full; ultra не использовать для утверждённых tickets.
 
 ## Agent skills
 

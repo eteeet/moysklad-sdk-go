@@ -56,7 +56,7 @@ Ticket завершён; entity endpoints в эту волну не входят
 ## Blocked by
 
 Нет. Reader использует существующие model.Collection и transport.Client; T any не
-зависит от Core/Commercial из 01. Общая готовность чтения строк требует завершения 02,
+зависит от Core/Position из 01. Общая готовность чтения строк требует завершения 02,
 entity tickets с типизированным GetPositions зависят от 02. JSON-срез 01 независим.
 
 ## Testing Decisions

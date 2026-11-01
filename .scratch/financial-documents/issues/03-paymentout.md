@@ -1,6 +1,10 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: 01-finance-operation.md; ../../document-common/issues/01-rate.md
+
+> Реализовано по команде пользователя выполнить все 11 tickets. Предложения и
+> запреты запуска в исходном DRAFT ниже отражают этап подготовки; команда исполнения
+> их заменила. Итоговый контракт — docs/paymentout.md, результат — в Answer.
 
 # 03: PaymentOut — полный Get/Create/Update slice
 
@@ -59,28 +63,28 @@ Blocked by: 01-finance-operation.md; ../../document-common/issues/01-rate.md
 
 ## Acceptance criteria
 
-- [ ] Новые решения triage утверждены; blockers resolved и доступны в рабочем дереве.
-- [ ] Read всех полей проверен по значениям encoding/json и encoding/json/v2;
+- [x] Новые решения triage утверждены; blockers resolved и доступны в рабочем дереве.
+- [x] Read всех полей проверен по значениям encoding/json и encoding/json/v2;
   polymorphic agent каждого документированного типа, sparse поля, DateTime, false/0,
   expenseItem/noClosingDocs/accrualDate, references и operations с linkedSum.
-- [ ] Независимые golden JSON minimal/full Create, full/partial Update; обязательные
+- [x] Независимые golden JSON minimal/full Create, full/partial Update; обязательные
   три ссылки, отсутствие defaults, явные noClosingDocs=false, sum/vatSum=0, дроби,
   "", [], nil slice как [], null/unset, SyncID в Create/Update и отсутствие readonly/excluded полей.
-- [ ] HTTP-тесты построены как entity/uom/service_test.go: отдельные TestServiceGet,
+- [x] HTTP-тесты построены как entity/uom/service_test.go: отдельные TestServiceGet,
   TestServiceCreate, TestServiceUpdate с таблицами, локальный HTTP и реальный transport.Client.
   Точные method/path/query/GET-body/headers, plain/gzip, серверные данные отличаются от input,
   один запрос без retry/preliminary GET.
-- [ ] Minimal Create отправляет только organization/agent/expenseItem; minimal Update
+- [x] Minimal Create отправляет только organization/agent/expenseItem; minimal Update
   передаёт false. Проверен полный body по независимому golden.
-- [ ] Nil/отменённый context, local validation по triage; APIError 400/404/429/5xx,
+- [x] Nil/отменённый context, local validation по triage; APIError 400/404/429/5xx,
   synthetic noClosingDocs conflict и 22004; auth/transport wrapping, errors.As/errors.Is,
   unexpected status, malformed JSON, null/empty/missing ID. Synthetic fixture не доказывает
   реальное business-поведение сервера.
-- [ ] Upstream fixtures неизменены с provenance; собственные unexpanded cases проверяют
+- [x] Upstream fixtures неизменены с provenance; собственные unexpanded cases проверяют
   accrualDate и отсутствующие поля. Expanded operation fields/files.rows игнорируются.
-- [ ] Docs/coverage фиксируют полный scope, типы agent, expenseItem required Create,
+- [x] Docs/coverage фиксируют полный scope, типы agent, expenseItem required Create,
   ограничения счетов/валют/noClosingDocs, float64/null/operations и TODO files/expand.
-- [ ] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check; независимые Standards/Spec reviews с фиксированным BASE.
 
 ## Out of Scope
@@ -94,3 +98,20 @@ List/Delete/batch/metadata/templates, финансовая арифметика,
 [Official PaymentOut, master SHA проверен 2026-11-01](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_payment_out.md),
 [общие DocumentRate/operations](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_common_info.md#L476-L699),
 [null](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1170-L1187).
+
+## Triage 2026-11-01
+
+Пользователь поручил выполнить все 11 entity tickets SDK. Предложенные таблицы полей,
+local validation и ограничения scope приняты к реализации этой командой. Общие зависимости resolved.
+BASE: eba6f75154929790c5b9d2cb1454dd80783b14db; исходные изменения сохранены.
+
+## Answer
+
+Реализован `entity/paymentout`: PaymentOut, отдельные CreateRequest/UpdateRequest,
+Get/Create/Update.
+[Публичный контракт](../../../docs/paymentout.md). JSON и HTTP проверки, required/readonly
+scope и ограничения покрыты; общие типы не дублируются.
+
+Полный race/vet/gofmt/diff-check PASS; независимые Standards 0 / Spec 0.
+Upstream fixtures/provenance неизменны.
+[Интеграционный отчёт](../../document-workstream/review-entities.md).

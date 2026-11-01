@@ -1,6 +1,10 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
 Blocked by: 01-finance-operation.md; ../../document-common/issues/01-rate.md
+
+> Реализовано по команде пользователя выполнить все 11 tickets. Предложения и
+> запреты запуска в исходном DRAFT ниже отражают этап подготовки; команда исполнения
+> их заменила. Итоговый контракт — docs/paymentin.md, результат — в Answer.
 
 # 02: PaymentIn — полный Get/Create/Update slice
 
@@ -60,28 +64,28 @@ Slice включает модель, оба request-типа, Service, публ�
 
 ## Acceptance criteria
 
-- [ ] Triage утвердил scope/числа/null/required refs/SyncID в Create/Update; blockers resolved.
-- [ ] Все перечисленные read-поля проверены по значениям обоими JSON-кодеками;
+- [x] Triage утвердил scope/числа/null/required refs/SyncID в Create/Update; blockers resolved.
+- [x] Все перечисленные read-поля проверены по значениям обоими JSON-кодеками;
   read sparse/null даты, неизвестные поля, references и operation linkedSum декодируются.
-- [ ] Create/Update JSON проверен независимо заданными golden: minimal/full Create,
+- [x] Create/Update JSON проверен независимо заданными golden: minimal/full Create,
   full/partial Update, unset, false, sum/vatSum=0, дроби, "", [], nil slice, null,
   attributes values, SyncID в Create и Update. Readonly/excluded поля отсутствуют в requests.
-- [ ] Отдельные TestServiceGet/Create/Update с table cases по entity/uom/service_test.go;
+- [x] Отдельные TestServiceGet/Create/Update с table cases по entity/uom/service_test.go;
   используется локальный HTTP-сервер и настоящий transport.Client. Проверены точные
   method/path/пустой query, GET без тела, заголовки, plain/gzip, один запрос,
   ответ с данными, отличающимися от input.
-- [ ] HTTP minimal Create содержит только две required ссылки; minimal Update false
+- [x] HTTP minimal Create содержит только две required ссылки; minimal Update false
   не считается пустым. Full HTTP body совпадает с независимым golden.
-- [ ] Проверены nil/отменённый context, локальная validation по утверждённому triage,
+- [x] Проверены nil/отменённый context, локальная validation по утверждённому triage,
   transport/auth errors, APIError 400/404/429/5xx и 22004 как synthetic server error;
   errors.As/errors.Is, неожиданный статус, malformed JSON, null/empty/missing ID, без retry.
-- [ ] Использованы неизменённые upstream fixtures с существующим provenance;
+- [x] Использованы неизменённые upstream fixtures с существующим provenance;
   собственный маленький unexpanded case дополняет incomingDate/incomingNumber,
   paymentPurpose, false/0 и отсутствующие поля. Expanded operation/files поля fixture
   игнорируются и не заявляются поддержанными.
-- [ ] Документация сущности и coverage перечисляют полный read/write scope, readonly,
+- [x] Документация сущности и coverage перечисляют полный read/write scope, readonly,
   account References, SyncID в Create/Update, null/float64/operations ограничения и TODO files/expand.
-- [ ] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] Форматирование, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check; независимые Standards/Spec reviews с фиксированным BASE.
 
 ## Out of Scope
@@ -95,3 +99,20 @@ expand/query expand, List/Delete/batch/metadata/templates, Money/Decimal и ра
 [Official PaymentIn, master SHA проверен 2026-11-01](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_payment_in.md),
 [DocumentRate/operations](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_common_info.md#L476-L699),
 [null](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1170-L1187).
+
+## Triage 2026-11-01
+
+Пользователь поручил выполнить все 11 entity tickets SDK. Предложенные таблицы полей,
+local validation и ограничения scope приняты к реализации этой командой. Общие зависимости resolved.
+BASE: eba6f75154929790c5b9d2cb1454dd80783b14db; исходные изменения сохранены.
+
+## Answer
+
+Реализован `entity/paymentin`: PaymentIn, отдельные CreateRequest/UpdateRequest,
+Get/Create/Update.
+[Публичный контракт](../../../docs/paymentin.md). JSON и HTTP проверки, required/readonly
+scope и ограничения покрыты; общие типы не дублируются.
+
+Полный race/vet/gofmt/diff-check PASS; независимые Standards 0 / Spec 0.
+Upstream fixtures/provenance неизменны.
+[Интеграционный отчёт](../../document-workstream/review-entities.md).

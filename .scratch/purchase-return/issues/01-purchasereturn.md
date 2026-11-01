@@ -1,7 +1,11 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
 Type: task
 Blocked by: ../../document-common/issues/01-rate.md; ../../document-positions/issues/01-json-contracts.md; ../../document-positions/issues/02-get-page.md
+
+> Реализовано по команде пользователя выполнить все 11 tickets. Предложения и
+> запреты запуска в исходном DRAFT ниже отражают этап подготовки; команда исполнения
+> их заменила. Итоговый контракт — docs/purchasereturn.md, результат — в Answer.
 
 # 01: PurchaseReturn — Get/Create/Update
 
@@ -22,16 +26,15 @@ Blocked by: ../../document-common/issues/01-rate.md; ../../document-positions/is
 - Update использует Field и исключает Agent/AgentAccount/Supply,
   readonly и TODO поля; SyncID разрешён как Field[string] без local write-once validation. Organization/OrganizationAccount передаются явно вместе
   при необходимости; старое состояние не загружается для проверки.
-- Rate — model.DocumentRate/DocumentRateRequest. Read Positions —
-  *model.Collection[positions.Commercial]. CommercialRequest не является write-моделью возврата.
-- CreatePositionRequest: Assortment Field[Reference], Quantity/Price Field[float64],
-  VAT Field[int], VATEnabled Field[bool]. Нет ID/Meta/AccountID/Discount.
-- UpdatePositionRequest: встраивает positions.ItemRequest и добавляет Price/VAT/
-  VATEnabled через Field, JSON плоский; нет Meta/AccountID/Discount.
-  Matching ID — selector существующей строки, не назначение ID новой.
-- Price/VAT/VATEnabled embedded Update — PROPOSED по таблице и примеру; ограничения
-  основания требуют triage. Quantity-only отдельного PUT позиции не переносить
-  автоматически на embedded Update. Discount read-only по таблице, write — TODO.
+- Rate — model.DocumentRate/DocumentRateRequest. Positions читается через
+  *model.Collection[positions.Position], запись Create/Update — Field[[]positions.PositionRequest].
+  Собственные формы строки не создаются. Matching ID — selector существующей строки
+  embedded Update, не назначение ID новой Create строки.
+- Общий PositionRequest содержит коммерческие Field и ячейки; unset не отправляется,
+  допустимость заданного проверяет сервер. Overhead/Meta/AccountID в request отсутствуют.
+- Ограничения основания и расхождения price/vat/discount сохраняются в документации:
+  Discount помечен readonly в таблице, хотя есть в write examples. Его Field в общем
+  request не обещает изменение. Quantity-only отдельного PUT не переносится на embedded Update.
 - Get GET entity/purchasereturn/{id}, Create POST entity/purchasereturn,
   Update PUT entity/purchasereturn/{id}; (*PurchaseReturn,error), 200+непустой ID.
   transport.Client, context/errors.As/Is/gzip по UOM; nil-модель при ошибке.
@@ -52,30 +55,32 @@ Entity Service предоставляет GetPositions(ctx context.Context, id s
 follow-up и auto-pagination. Ошибки, UUID/page validation и response envelope — как у P02.
 Отдельные TestServiceGetPositions с таблицами проверяют фиксированный resource path, правильный
 Position, limit/offset, plain/gzip, пустую страницу, ошибки и ровно один запрос через настоящий transport.
-Position — публичный alias positions.Commercial.
+Position — публичный alias positions.Position.
 Технический blocker P02 обязателен. Реализация сущности остаётся needs-triage до отдельного разрешения.
 
 ## Acceptance criteria
 
-- [ ] Все open decisions spec согласованы до реализации; DRAFT переведён отдельным triage,
+- [x] Все open decisions spec согласованы до реализации; DRAFT переведён отдельным triage,
   обе зависимости resolved. Готовый Supply или SDK связанных сущностей не требуются.
-- [ ] Model/requests/методы покрывают полную таблицу spec; readonly/TODO отсутствуют в
-  записи, общие Rate/позиции не дублируются. Запрет Update сторон выражен в публичном request.
-- [ ] Оба JSON-кодека проверяют значения каждого поддержанного поля upstream fixture
+- [x] Model/requests/методы покрывают полную таблицу spec; readonly/TODO заголовка отсутствуют
+  в request документа, общие Rate/позиции не дублируются. В общем request строки нет
+  Meta/AccountID/Overhead; допустимость заданных коммерческих Field проверяет сервер.
+  Запрет Update сторон выражен в request заголовка, не в отдельной форме позиции.
+- [x] Оба JSON-кодека проверяют значения каждого поддержанного поля upstream fixture
   с provenance, optional/unknown/null, даты/ссылки/readonly Discount и metadata без rows.
-- [ ] Независимые golden: Create с основанием/без него и полный, полный/одно поле Update,
+- [x] Независимые golden: Create с основанием/без него и полный, полный/одно поле Update,
   все zero/unset/null/[] states, matching ID, частичный rate и отсутствие запрещённых полей.
-- [ ] HTTP-структура строго entity/uom/service_test.go: отдельные TestServiceGet/Create/Update
+- [x] HTTP-структура строго entity/uom/service_test.go: отдельные TestServiceGet/Create/Update
   с table cases, настоящий transport.Client + httptest.Server. Exact method/path/query/
   headers/body, plain/gzip, одна отправка, фактический server response без merge/input fallback.
-- [ ] Проверены local validation без HTTP, 1000/1001 позиций, nil/cancelled context,
+- [x] Проверены local validation без HTTP, 1000/1001 позиций, nil/cancelled context,
   auth/transport/APIError 4xx/5xx/429, errors.As/Is и operation context без двойного префикса;
   unexpected status, malformed/null JSON, пустой/отсутствующий ID, nil-модель при ошибке.
-- [ ] Синтетическая ошибка ограничений основания передаётся без retry; локальный тест
+- [x] Синтетическая ошибка ограничений основания передаётся без retry; локальный тест
   не выдаётся за доказательство правил настоящего API. Get не вызывает GetPage.
-- [ ] Документация и coverage фиксируют минимум Create, два режима, запреты Update,
-  full replacement/1000, различия request строк, отдельный reader, TODO и неоднозначности.
-- [ ] Пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata,
+- [x] Документация и coverage фиксируют минимум Create, два режима, запреты Update,
+  full replacement/1000, общую форму строк и серверные ограничения, отдельный reader, TODO и неоднозначности.
+- [x] Пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata,
   git diff --check и независимые Standards/Spec review с фиксированным BASE.
 
 ## Blocked by / readiness
@@ -95,3 +100,20 @@ local validation и SyncID из spec; готовность зависимост�
 List/query/expand/Delete/batch/templates, отдельные mutations позиций, pack/slot/serial/
 tracking/stock, новые transport features, live API и .env вне scope. Сейчас сохраняется
 только DRAFT; Go-код, tests реализации, commits подготовки и push не выполняются.
+
+## Triage 2026-11-01
+
+Пользователь поручил выполнить все 11 entity tickets SDK. Предложенные таблицы полей,
+local validation и ограничения scope приняты к реализации этой командой. Общие зависимости resolved.
+BASE: eba6f75154929790c5b9d2cb1454dd80783b14db; исходные изменения сохранены.
+
+## Answer
+
+Реализован `entity/purchasereturn`: PurchaseReturn, отдельные CreateRequest/UpdateRequest,
+Get/Create/Update и типизированный GetPositions, aliases общей формы позиции.
+[Публичный контракт](../../../docs/purchasereturn.md). JSON и HTTP проверки, required/readonly
+scope и ограничения покрыты; общие типы не дублируются.
+
+Полный race/vet/gofmt/diff-check PASS; независимые Standards 0 / Spec 0.
+Upstream fixtures/provenance неизменны.
+[Интеграционный отчёт](../../document-workstream/review-entities.md).

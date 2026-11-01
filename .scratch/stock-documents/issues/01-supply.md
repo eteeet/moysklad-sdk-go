@@ -1,7 +1,11 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
 Type: task
 Blocked by: ../../document-common/issues/01-rate.md; ../../document-common/issues/02-overhead.md; ../../document-positions/issues/01-json-contracts.md; ../../document-positions/issues/02-get-page.md
+
+> Реализовано по команде пользователя выполнить все 11 tickets. Предложения и
+> запреты запуска в исходном DRAFT ниже отражают этап подготовки; команда исполнения
+> их заменила. Итоговый контракт — docs/supply.md, результат — в Answer.
 
 # 01: Supply — Get/Create/Update
 
@@ -25,7 +29,7 @@ R — модель чтения; C/U — отдельные requests. Ниже �
 | owner, group, project, contract, state | *Reference | optional Field[Reference] | Field[Reference] |
 | attributes | []Attribute | optional Field[[]Attribute] | Field[[]Attribute] |
 | rate | *DocumentRate | optional Field[DocumentRateRequest] | Field[DocumentRateRequest] |
-| positions | *model.Collection[Position] | optional Field[[]positions.CommercialRequest] | Field[[]positions.CommercialRequest] |
+| positions | *model.Collection[Position] | optional Field[[]positions.PositionRequest] | Field[[]positions.PositionRequest] |
 | syncId | string | optional Field[string] | Field[string], write-once проверяет сервер |
 | sum, payedSum, vatSum | float64 | — | — |
 | printed, published | bool | — | — |
@@ -37,7 +41,7 @@ R — модель чтения; C/U — отдельные requests. Ниже �
 | factureIn, productionTask | *Reference | TODO write | TODO write |
 | invoicesIn, payments, returns | []Reference | TODO write | TODO write |
 
-DocumentRate/DocumentRateRequest и DocumentOverhead/DocumentOverheadRequest — proposed общие экспорты соответствующих dependencies; не копировать их в пакет сущности. Go names: ID/AccountID/SyncID/VATEnabled/VATIncluded/VATSum. Supply Position в entity package встраивает positions.Commercial и добавляет read-only Overhead float64 (API Int, копейки). Position write использует positions.CommercialRequest без overhead.
+DocumentRate/DocumentRateRequest и DocumentOverhead/DocumentOverheadRequest — proposed общие экспорты соответствующих dependencies; не копировать их в пакет сущности. Go names: ID/AccountID/SyncID/VATEnabled/VATIncluded/VATSum. Supply использует aliases Position = positions.Position и PositionRequest = positions.PositionRequest. Read-only Overhead float64 в копейках уже находится в общей Position; в request его нет. Собственная форма строки не создаётся.
 
 Минимальный Create содержит только organization, agent, store. Required-at-response не означает required-at-Create. Встроенная новая строка требует assortment и положительный quantity по API; в write shape это Field, обязательность зависит от нового/matching элемента. Readonly meta/accountId/id (кроме matching ID строки), вычисленные суммы/даты и flags не попадают в requests.
 
@@ -63,21 +67,21 @@ Entity Service предоставляет GetPositions(ctx context.Context, id s
 follow-up и auto-pagination. Ошибки, UUID/page validation и response envelope — как у P02.
 Отдельные TestServiceGetPositions с таблицами проверяют фиксированный resource path, правильный
 Position, limit/offset, plain/gzip, пустую страницу, ошибки и ровно один запрос через настоящий transport.
-Position расширяет positions.Commercial полем Overhead float64.
+Position — alias positions.Position; Overhead читается из общей формы.
 Технический blocker P02 обязателен. Реализация сущности остаётся needs-triage до отдельного разрешения.
 
 ## Acceptance criteria
 
-- [ ] До реализации согласованы таблица полей, proposed exports и открытые вопросы ниже; Status меняется отдельным triage, DRAFT не считается ready.
-- [ ] Dependencies resolved; общий JSON/DocumentRate/Overhead не дублируется. Нет зависимости от готовой другой entity: связи задаются Reference.
-- [ ] Публичные model/CreateRequest/UpdateRequest и три метода полностью покрывают таблицу; readonly/TODO отсутствуют в requests. Сохраняются absence/null/false/0/""/[] без нормализации.
-- [ ] JSON-тесты через encoding/json и encoding/json/v2 проверяют значения каждого поддержанного поля неизменённой upstream fixture, отсутствующие/null/unknown поля, даты, References и metadata positions без rows.
-- [ ] Независимые golden покрывают минимальный Create, полный Create/Update, Update одного поля, paired accounts, false/0/""/[], contract:null и rate:null, omitted/[] positions и matching ID. Дробные quantity/price, отрицательный discount, vat=0 с vatEnabled=false/true не теряются.
-- [ ] Proposed validation проверена без HTTP при пустых обязательных Meta.Href и 1001 позиции; 1000 позиций допускаются, positions:null/omitted не превращаются в [] или local merge.
-- [ ] HTTP-тесты строго по структуре entity/uom/service_test.go: отдельные TestServiceGet/Create/Update с table cases; реальный transport.Client + httptest.Server, точные method/path/query/headers/body, plain/gzip, один запрос, серверный ответ отличается от input.
-- [ ] Каждый метод проверяет context cancellation, auth/transport/APIError 4xx/5xx/429, errors.As/Is, отсутствие double moysklad:, неожиданные 201/204, malformed/null JSON, пустой/отсутствующий id. Успех — 200 с id, ошибка — nil-модель, без retry.
-- [ ] Документация сущности и coverage перечисляют реально поддержанные поля, TODO, minimum Create, account coupling, full replacement/1000 и разделение Get/GetPage; пример чтения документа не обещает rows.
-- [ ] Пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata, git diff --check и предусмотренное репозиторием review; исходные чужие/плановые изменения сохранены отдельно.
+- [x] До реализации согласованы таблица полей, proposed exports и открытые вопросы ниже; Status меняется отдельным triage, DRAFT не считается ready.
+- [x] Dependencies resolved; общий JSON/DocumentRate/Overhead не дублируется. Нет зависимости от готовой другой entity: связи задаются Reference.
+- [x] Публичные model/CreateRequest/UpdateRequest и три метода полностью покрывают таблицу; readonly/TODO отсутствуют в requests. Сохраняются absence/null/false/0/""/[] без нормализации.
+- [x] JSON-тесты через encoding/json и encoding/json/v2 проверяют значения каждого поддержанного поля неизменённой upstream fixture, отсутствующие/null/unknown поля, даты, References и metadata positions без rows.
+- [x] Независимые golden покрывают минимальный Create, полный Create/Update, Update одного поля, paired accounts, false/0/""/[], contract:null и rate:null, omitted/[] positions и matching ID. Дробные quantity/price, отрицательный discount, vat=0 с vatEnabled=false/true не теряются.
+- [x] Proposed validation проверена без HTTP при пустых обязательных Meta.Href и 1001 позиции; 1000 позиций допускаются, positions:null/omitted не превращаются в [] или local merge.
+- [x] HTTP-тесты строго по структуре entity/uom/service_test.go: отдельные TestServiceGet/Create/Update с table cases; реальный transport.Client + httptest.Server, точные method/path/query/headers/body, plain/gzip, один запрос, серверный ответ отличается от input.
+- [x] Каждый метод проверяет context cancellation, auth/transport/APIError 4xx/5xx/429, errors.As/Is, отсутствие double moysklad:, неожиданные 201/204, malformed/null JSON, пустой/отсутствующий id. Успех — 200 с id, ошибка — nil-модель, без retry.
+- [x] Документация сущности и coverage перечисляют реально поддержанные поля, TODO, minimum Create, account coupling, full replacement/1000 и разделение Get/GetPage; пример чтения документа не обещает rows.
+- [x] Пройдены gofmt, go test -race -count=1 ./..., go vet ./... ./testdata, git diff --check и предусмотренное репозиторием review; исходные чужие/плановые изменения сохранены отдельно.
 
 ## Blocked by
 
@@ -97,3 +101,20 @@ Position расширяет positions.Commercial полем Overhead float64.
 - [Null и адресные исключения](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1170-L1187), [positions replacement](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1031-L1063).
 
 Revision 9a811cef3dc4a3f3a46f070e60452361a06bf7cd проверен командой исследования 2026-11-01. List/query/expand/Delete/batch/templates, дополнительные position mutations и transport features — вне scope. Go-код, tests реализации, .env, живой API и commits сейчас не выполняются. Завершение DRAFT — сохранённый reviewable ticket с явными blockers/open decisions.
+
+## Triage 2026-11-01
+
+Пользователь поручил выполнить все 11 entity tickets SDK. Предложенные таблицы полей,
+local validation и ограничения scope приняты к реализации этой командой. Общие зависимости resolved.
+BASE: eba6f75154929790c5b9d2cb1454dd80783b14db; исходные изменения сохранены.
+
+## Answer
+
+Реализован `entity/supply`: Supply, отдельные CreateRequest/UpdateRequest,
+Get/Create/Update и типизированный GetPositions, aliases общей формы позиции.
+[Публичный контракт](../../../docs/supply.md). JSON и HTTP проверки, required/readonly
+scope и ограничения покрыты; общие типы не дублируются.
+
+Полный race/vet/gofmt/diff-check PASS; независимые Standards 0 / Spec 0.
+Upstream fixtures/provenance неизменны.
+[Интеграционный отчёт](../../document-workstream/review-entities.md).

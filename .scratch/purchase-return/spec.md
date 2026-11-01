@@ -1,5 +1,11 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: IMPLEMENTED
+
+> Все entity tickets этой spec реализованы по команде пользователя выполнить
+> 11 tickets SDK. DRAFT/proposal и прежние ограничения запуска ниже сохранены как
+> история подготовки; все перечисленные решения приняты этой командой.
+> Актуальные контракты: [docs/documents.md](../../docs/documents.md);
+> проверки: [отчёт](../document-workstream/review-entities.md).
 
 # PurchaseReturn — Get/Create/Update
 
@@ -53,7 +59,7 @@ Optional ссылки чтения — *model.Reference, даты — сущес
 | supply | *Reference | Field[Reference], обязательно только для возврата по основанию | —, запрет Update |
 | organizationAccount, owner, group, project, contract, state | *Reference | Field[Reference] | Field[Reference] |
 | rate | *model.DocumentRate | Field[model.DocumentRateRequest] | Field[model.DocumentRateRequest] |
-| positions | *model.Collection[positions.Commercial] | Field[[]CreatePositionRequest] | Field[[]UpdatePositionRequest] |
+| positions | *model.Collection[positions.Position] | Field[[]positions.PositionRequest] | Field[[]positions.PositionRequest] |
 | attributes | []model.Attribute | Field[[]model.Attribute] | Field[[]model.Attribute] |
 | syncId | string | Field[string] | Field[string], write-once проверяет сервер |
 | sum, vatSum, payedSum | float64 | — | — |
@@ -74,26 +80,23 @@ SyncID предлагается в Create/Update. API запрещает изм�
 Readonly суммы, даты и flags не попадают в requests; массивы связей читаются без
 автоматической загрузки. TODO записи связей не означает запрет этих операций API.
 
-### Отдельные формы записи строк — PROPOSED, требуют triage
+### Общая форма строк
 
-Чтение использует positions.Commercial: meta/id/accountId, assortment Reference,
-quantity/price/discount float64, vat int, vatEnabled bool. Это переиспользование
-формы JSON, а не обещание редактирования всех её полей.
+Чтение использует positions.Position, запись — positions.PositionRequest и в Create,
+и в Update. Собственные CreatePositionRequest/UpdatePositionRequest не вводятся.
+Незаданные Field не отправляются; допустимость заданных полей проверяет сервер.
 
-- CreatePositionRequest: Assortment Field[Reference], Quantity/Price Field[float64],
-  VAT Field[int], VATEnabled Field[bool]. Без ID, Meta, AccountID и Discount.
-- UpdatePositionRequest встраивает positions.ItemRequest (matching ID, assortment,
-  quantity) и добавляет Price Field[float64], VAT Field[int], VATEnabled Field[bool].
-  Нет Meta, AccountID и Discount. JSON плоский, все Field с omitzero.
-- CommercialRequest не используется автоматически. Discount в таблице возврата
-  readonly, хотя примеры передают его: proposed scope не включает запись Discount.
+- Matching ID применяют только для существующей строки embedded Update; для новой
+  строки Create ID не задают. Meta/AccountID/Overhead отсутствуют в общем request.
+- Discount в таблице возврата readonly, хотя примеры его передают. Общий PositionRequest
+  имеет этот Field, но это не обещает допустимость изменения Discount у возврата.
+  Ограничения основания, валюты, price/vat/discount проверяет сервер без скрытого Get.
 - Таблица и embedded Update example включают price/vat; правило «только quantity»
-  явно относится к отдельному PUT /positions/{positionID}, который вне scope.
-  Его нельзя молча переносить на embedded Update. Предложенный write scope
-  price/vat/vatEnabled необходимо утвердить с учётом ограничений основания.
-- Pack, slot, things, маркировка и stock enrichment — TODO read/write. Ассортимент
-  передаётся существующим Reference; services product/service/variant/consignment
-  не становятся зависимостями, закрытого union validator нет.
+  относится к отдельному PUT /positions/{positionID}, который вне scope.
+  Его нельзя переносить на embedded Update. Расхождения документации отмечаются
+  в entity docs, не порождают отдельный тип строки.
+- Pack, slot, things, маркировка и stock enrichment — TODO. Ассортимент передаётся
+  Reference; services product/service/variant/consignment не становятся зависимостями.
 
 ### Операции, ограничения и ошибки
 
@@ -120,7 +123,7 @@ Update запрещает agent/agentAccount/supply и другую валюту
 доступен вместе с Organization; согласованность оставлена серверу.
 
 Обычный Get читает positions.meta одним запросом. Строки — отдельный явный вызов
-positions.Service[positions.Commercial] с documentType=purchasereturn; его наличие
+positions.Service[positions.Position] с documentType=purchasereturn; его наличие
 не означает полного typed покрытия всех особенностей возврата.
 
 Unset не отправляется; false/0/"" сохраняются. Positions omitted сохраняет набор,
@@ -149,8 +152,8 @@ entity/uom/service_test.go: отдельные TestServiceGet/Create/Update с t
   даты/ссылки/суммы, readonly Discount, отсутствие/null/unknown и positions metadata.
 - Независимые golden минимального Create с основанием/без него, полного Create,
   полного и одно-полевого Update, false/0/""/[]/null, matching ID и частичного Rate.
-- Отсутствие agent/agentAccount/supply в UpdateRequest, readonly/TODO в записи;
-  различия CreatePositionRequest и UpdatePositionRequest, отсутствие Discount.
+- Отсутствие agent/agentAccount/supply и readonly/TODO полей заголовка в UpdateRequest;
+  общий PositionRequest, omission неиспользуемых Field и отсутствие read-only Overhead. Наличие Discount Field не обещает его изменяемость у возврата.
 - Exact method/path/query/body/headers, plain/gzip, один запрос, серверный ответ
   отличается от input; Get не заполняет Rows и не вызывает reader.
 - Nil/cancelled context, nil client, malformed UUID, empty required href/Update,
@@ -182,8 +185,9 @@ List/query/filter, expand, Delete/batch, templates и создание /new по
 
 ### Explicit Open Decisions
 
-1. Утвердить scope документа и отдельные формы записи позиции; price/vat/vatEnabled
-   embedded Update и исключение Discount требуют явного решения, не ready по умолчанию.
+1. Общая Position/PositionRequest утверждена, отдельные формы строк не обсуждаются.
+   Утвердить scope заголовка документа и отразить серверные ограничения price/vat/discount
+   и основания в документации; наличие Field не обещает допустимость его изменения.
 2. Уточнить ограничения основания для возврата без supply и конфликт agent/account Update.
 3. Утвердить local validation, SyncID в Create/Update и выбранные readonly связи/TODO.
 4. Подтвердить общие public types и тестовые seams; затем отдельно разрешить реализацию.
@@ -194,8 +198,10 @@ List/query/filter, expand, Delete/batch, templates и создание /new по
 (*model.Collection[Position], error). Он вызывает общий reader с фиксированными documentType
 и Position; вызывающий код не выбирает строку ресурса и generic type. Один HTTP GET, без expand,
 автообхода и скрытого Get заголовка. Ошибки/envelope/UUID/page validation остаются контрактом P02.
-Move экспортирует alias Position = positions.Movement; InvoiceIn/InvoiceOut/PurchaseReturn —
-alias Position = positions.Commercial. Supply/Demand/PurchaseOrder используют собственные Position.
+Все товарные документы используют positions.Position и PositionRequest. Entity packages могут
+экспортировать aliases Position = positions.Position и PositionRequest = positions.PositionRequest;
+это не отдельная форма. Дополнительные поля добавляются в общий positions соответствующим
+entity ticket, а не в собственную структуру строки документа.
 Тестовый seam — публичный GetPositions через transport.Client + httptest.Server;
 отдельный TestServiceGetPositions с таблицами правильного path/type/query, plain/gzip, пустой страницы,
 ошибок и одной отправки. P02 — обязательная зависимость всего entity ticket.

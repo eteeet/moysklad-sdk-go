@@ -5,7 +5,8 @@ Stage: COMPLETED WAVE 1
 
 2026-11-01 пользователь поручил внести согласованные замечания, закоммитить все
 накопленные изменения и запустить следующий этап — первую волну из пяти tickets ниже.
-Этот файл фиксирует одобрение только C01/C02/F01/P01/P02, не всех entity spec или P03.
+Этот файл фиксирует первую волну C01/C02/F01/P01/P02 и последующий пересмотр формы строк,
+но не утверждает entity spec. P03 отменён/заменён общей формой.
 Подробные таблицы и criteria остаются в связанных spec/tickets. [Handoff](wave-1.md).
 
 ## Общие контракты — рекомендованный вариант
@@ -15,7 +16,7 @@ Stage: COMPLETED WAVE 1
 | Валюта | model.DocumentRate / DocumentRateRequest. Чтение: Currency *Reference, Value *float64; nil Value в присутствующем rate означает курс 1, но 1 в JSON не подставляется. Запись через Field; unset/null/{}/value различаются |
 | Накладные расходы | model.DocumentOverhead / DocumentOverheadRequest. Sum float64, открытый OverheadDistribution с weight/volume/price; запись через Field, без распределения сумм в SDK |
 | Платёжные связи | model.FinanceOperation / FinanceOperationRequest: плоские meta и linkedSum. Read LinkedSum float64, write Field[float64]; неизвестный Meta.Type не запрещается |
-| Формы позиций | positions.Core/Item/Commercial/Movement и отдельные request-формы по spec. Commercial — количество/цена/скидка/НДС; Movement — отдельная форма без скидки/НДС, с sourceSlot/targetSlot |
+| Форма позиций | positions.Position/PositionRequest для всех товарных документов; Core/Item — общие части. Price/Discount/VAT/VATEnabled, read-only Overhead и sourceSlot/targetSlot. Незаданные Field не отправляются, допустимость заданных проверяет сервер |
 | Чтение страниц | Один generic reader positions.Service[T any].GetPage, открытый documentType, существующий model.Collection[T]. Без обязательного interface у T и без allowlist документов |
 | Числа | Все денежные поля → float64 в копейках независимо от API Int/Float, ставка vat → int. Без Money/Decimal, масштабирования и вычислений SDK |
 
@@ -47,7 +48,8 @@ NewService[T any](client *transport.Client, documentType string) (*Service[T], e
 1. Demand.Store — Field[Reference] в Create/Update. Не блокировать пропуск локально:
    таблица требует склад при applicable=true, раздел Create перечисляет его без условия.
    Пример со складом остаётся; успех applicable=false без склада живым API не проверен.
-2. PurchaseOrder.PositionRequest — CommercialRequest + InTransit Field[float64].
+2. PurchaseOrder S03 добавит Shipped/InTransit в общую Position, InTransit Field[float64] —
+   в общий PositionRequest; собственная форма строки не вводится.
    Запись inTransit есть в официальных примерах; shipped и waitSum предлагаются только
    для чтения как scope SDK, а не как доказанный readonly-запрет API.
 3. SyncID — Field[string] в Create и Update всех этих документов. Убираем произвольное
@@ -57,7 +59,7 @@ NewService[T any](client *transport.Client, documentType string) (*Service[T], e
    Не переносить polymorphic agent из PaymentOut на CashOut по сходству имён.
 5. InvoiceIn/InvoiceOut — Name требуется разделами Create; это не универсальное
    требование имени для всех документов. Счета остаются отдельной позиционной группой.
-6. PurchaseReturn — отдельные request-формы; не использовать CommercialRequest напрямую.
+6. PurchaseReturn использует общий PositionRequest; отдельные request-формы не нужны.
    Embedded price/vat/discount и ограничения возврата без основания ещё требуют выбора
    scope. Эти вопросы не блокируют общий reader, JSON positions и финансовую группу.
 
@@ -72,12 +74,12 @@ tickets ещё не утверждены. Пять tickets первой волн
 
 - [C01 — DocumentRate](../document-common/issues/01-rate.md).
 - [C02 — DocumentOverhead](../document-common/issues/02-overhead.md).
-- [P01 — Core/Item/Commercial JSON](../document-positions/issues/01-json-contracts.md).
+- [P01 — Core/Item и общий JSON](../document-positions/issues/01-json-contracts.md).
 - [P02 — GetPage](../document-positions/issues/02-get-page.md).
 - [F01 — FinanceOperation JSON](../financial-documents/issues/01-finance-operation.md).
 
-[P03 — Movement JSON](../document-positions/issues/03-movement-contracts.md) можно
-выполнять после P01; он относится к тем же общим контрактам, но не к первой волне.
+[P03 отменён/заменён](../document-positions/issues/03-movement-contracts.md) одной формой
+Position/PositionRequest. Повторно не запускать и не добавлять как зависимость M01.
 Согласование этих foundations не означает утверждение всех entity spec.
 
 Разрешены три потока в отдельных worktree: один implementer последовательно выполняет
@@ -85,9 +87,10 @@ C01/C02/F01 отдельными коммитами; P01 и P02 выполняю
 не изменяются исполнителями — интегратор сведёт их отдельным коммитом после слияния.
 Имена файлов P01/P02 заранее разведены в handoff. Независимые Standards/Spec review
 координирует интегратор относительно planning BASE. После этой волны остановка.
-Никаких push/live API/.env. Service (услуга) и P03 в этот запуск не входят.
+Никаких push/live API/.env. Service (услуга) в этот запуск не входит.
 
 ## Завершение
 
 Первая волна реализована, пять tickets resolved. [Коммиты, проверки и независимые review](review-wave-1.md).
-Standards 0, Spec 0; остальные 12 tickets не запускались. Следующая группа требует команды.
+Standards 0, Spec 0 первой волны. P03 впоследствии реализован, затем заменён общей формой;
+11 entity tickets не запускались. Следующая группа требует команды.
