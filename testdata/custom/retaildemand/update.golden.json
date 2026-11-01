@@ -1,0 +1,7 @@
+{
+  "description": "",
+  "agent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/55555555-5555-5555-5555-555555555555", "type": "counterparty"}},
+  "agentAccount": null,
+  "qrSum": 15000,
+  "positions": [{"id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "quantity": 1}]
+}
