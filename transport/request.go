@@ -124,11 +124,16 @@ func (c *Client) newRequest(ctx context.Context, method, endpoint string, query 
 	requestURL.ForceQuery = false
 
 	var payload io.Reader
+	var bodyLen int
 	if body != nil {
 		data, err := json.Marshal(body)
 		if err != nil {
 			return nil, fmt.Errorf("moysklad: encode request body: %w", err)
 		}
+		if err := c.checkBody(data); err != nil {
+			return nil, err
+		}
+		bodyLen = len(data)
 		payload = bytes.NewReader(data)
 	}
 
@@ -154,6 +159,9 @@ func (c *Client) newRequest(ctx context.Context, method, endpoint string, query 
 		if err := auth(req); err != nil {
 			return nil, fmt.Errorf("moysklad: authorize request: %w", err)
 		}
+	}
+	if err := checkHeaderSize(req, bodyLen, c.maxHeaderSize); err != nil {
+		return nil, err
 	}
 
 	return req, nil

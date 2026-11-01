@@ -35,6 +35,11 @@ type Config struct {
 	// Retry повторяет чтения при 429, 500, 502, 503, 504 и временном сбое соединения; nil — без повторов.
 	Retry *RetryPolicy
 
+	// Ограничения запроса до отправки: 0 — Default*, отрицательное значение отключает проверку.
+	MaxBodySize   int // байты закодированного тела
+	MaxHeaderSize int // байты request line, Host и всех заголовков, включая Authorization
+	MaxDepth      int // вложенность объектов JSON
+
 	// Header добавляется ко всем запросам клиента; RequestOption того же key его заменяет.
 	// Authorization, Accept, Accept-Encoding, Content-Type, Content-Length и Host задаёт transport.
 	Header http.Header
@@ -47,6 +52,8 @@ type Client struct {
 	header     http.Header
 	limiter    *Limiter
 	retry      *RetryPolicy
+
+	maxBodySize, maxHeaderSize, maxDepth int
 }
 
 // HTTPClient копируется поверхностно: Transport и Jar общие с исходным клиентом,
@@ -92,6 +99,10 @@ func NewClient(cfg Config) (*Client, error) {
 		header:     cfg.Header.Clone(),
 		limiter:    cfg.Limiter,
 		retry:      cfg.Retry,
+
+		maxBodySize:   effectiveLimit(cfg.MaxBodySize, DefaultMaxBodySize),
+		maxHeaderSize: effectiveLimit(cfg.MaxHeaderSize, DefaultMaxHeaderSize),
+		maxDepth:      effectiveLimit(cfg.MaxDepth, DefaultMaxDepth),
 	}, nil
 }
 
