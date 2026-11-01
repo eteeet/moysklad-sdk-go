@@ -69,3 +69,7 @@ BASE `7fb0c21`, code commit `cd465f9`.
 - Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
 - Review Spec/Standards: исправлены info после финального обрыва, async в endpoint, узкий список временных
   ошибок, кодировка на 5xx, потеря APIError при отмене, имя sendOnce, единый список статусов.
+
+## Comments
+
+Ревью 46e9d06 (Spec P1): `async=%74rue` и `%61sync=true` повторялись. Исправлено в `ebe0426`: признак async — по раскодированному итоговому query собранного запроса, неразбираемый query считается async.

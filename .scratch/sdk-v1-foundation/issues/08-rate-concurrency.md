@@ -69,3 +69,7 @@ BASE `de7248f`, code commit `7fb0c21`.
   clamp веса, путь с префиксом, WithAuth/WithLimiter.
 - Проверки: go test -race ./..., go vet ./... ./testdata, gofmt, diff --check — PASS.
 - Для docs-коммита: термины principal/Profile в meta/GLOSSARY.md. Для F01: stream держит слоты до Close.
+
+## Comments
+
+Ревью 46e9d06 (Standards P1): бюджет списывался до ожидания слота аккаунта. Исправлено в `6a07889`: окно проверяется без списания, единицы списываются после получения слота аккаунта; регрессия `TestLimiterBudgetChargedAtSend` (на старом коде падает).

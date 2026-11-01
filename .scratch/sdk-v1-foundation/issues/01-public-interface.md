@@ -64,3 +64,7 @@ BASE `7442803`, code commit `ba5d2bc`. Решение пользователя: 
 - Review Standards: стандарты не нарушены; по замечаниям unexported `newRequestOptions`,
   `NewRequest` снова без opts. Review Spec: исправлены ADR (Download не через Send,
   shared policy в Client, attempts в T09), добавлены тесты shared Client и дублей header.
+
+## Comments
+
+Ревью 46e9d06 (Standards P2 / Spec P2): локальная ошибка оставляла ResponseInfo прошлого вызова. Исправлено в `bc2dad4`: обнуление в `WithResponseInfo` при создании опции; ADR 0001 дополнен.
