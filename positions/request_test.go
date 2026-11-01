@@ -102,18 +102,28 @@ func TestItemRequestJSON(t *testing.T) {
 	}
 }
 
-func TestCommercialRequestJSON(t *testing.T) {
+func TestPositionRequestJSON(t *testing.T) {
 	for _, codec := range jsonCodecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name  string
-				value positions.CommercialRequest
+				value positions.PositionRequest
 				want  string
 			}{
-				{"unset", positions.CommercialRequest{}, `{}`},
+				{"unset", positions.PositionRequest{}, `{}`},
+				{
+					"source slot only",
+					positions.PositionRequest{SourceSlot: model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}})},
+					`{"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}}}`,
+				},
+				{
+					"target slot only",
+					positions.PositionRequest{TargetSlot: model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}})},
+					`{"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+				},
 				{
 					"all writable fields",
-					positions.CommercialRequest{
+					positions.PositionRequest{
 						ItemRequest: positions.ItemRequest{
 							CoreRequest: positions.CoreRequest{ID: model.Value("existing-row")},
 							Assortment: model.Value(model.Reference{Meta: model.Meta{
@@ -123,12 +133,14 @@ func TestCommercialRequestJSON(t *testing.T) {
 						},
 						Price: model.Value(12345.67), Discount: model.Value(-5.5),
 						VAT: model.Value(20), VATEnabled: model.Value(true),
+						SourceSlot: model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}}),
+						TargetSlot: model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}}),
 					},
-					`{"id":"existing-row","assortment":{"meta":{"href":"https://example.test/entity/product/product-1","type":"product","mediaType":"application/json"}},"quantity":1.25,"price":12345.67,"discount":-5.5,"vat":20,"vatEnabled":true}`,
+					`{"id":"existing-row","assortment":{"meta":{"href":"https://example.test/entity/product/product-1","type":"product","mediaType":"application/json"}},"quantity":1.25,"price":12345.67,"discount":-5.5,"vat":20,"vatEnabled":true,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
 				},
 				{
 					"minimal new row",
-					positions.CommercialRequest{ItemRequest: positions.ItemRequest{
+					positions.PositionRequest{ItemRequest: positions.ItemRequest{
 						Assortment: model.Value(model.Reference{Meta: model.Meta{
 							Href: "https://example.test/entity/service/service-1", Type: "service", MediaType: "application/json",
 						}}),
@@ -138,14 +150,14 @@ func TestCommercialRequestJSON(t *testing.T) {
 				},
 				{
 					"ID only",
-					positions.CommercialRequest{ItemRequest: positions.ItemRequest{
+					positions.PositionRequest{ItemRequest: positions.ItemRequest{
 						CoreRequest: positions.CoreRequest{ID: model.Value("existing-row")},
 					}},
 					`{"id":"existing-row"}`,
 				},
 				{
 					"sparse quantity update",
-					positions.CommercialRequest{ItemRequest: positions.ItemRequest{
+					positions.PositionRequest{ItemRequest: positions.ItemRequest{
 						CoreRequest: positions.CoreRequest{ID: model.Value("existing-row")},
 						Quantity:    model.Value(0.125),
 					}},
@@ -153,7 +165,7 @@ func TestCommercialRequestJSON(t *testing.T) {
 				},
 				{
 					"explicit zero and false",
-					positions.CommercialRequest{
+					positions.PositionRequest{
 						ItemRequest: positions.ItemRequest{Quantity: model.Value(0.0)},
 						Price:       model.Value(0.0), Discount: model.Value(0.0),
 						VAT: model.Value(0), VATEnabled: model.Value(false),
@@ -162,20 +174,21 @@ func TestCommercialRequestJSON(t *testing.T) {
 				},
 				{
 					"zero VAT enabled",
-					positions.CommercialRequest{VAT: model.Value(0), VATEnabled: model.Value(true)},
+					positions.PositionRequest{VAT: model.Value(0), VATEnabled: model.Value(true)},
 					`{"vat":0,"vatEnabled":true}`,
 				},
 				{
 					"null fields",
-					positions.CommercialRequest{
+					positions.PositionRequest{
 						ItemRequest: positions.ItemRequest{
 							CoreRequest: positions.CoreRequest{ID: model.Null[string]()},
 							Assortment:  model.Null[model.Reference](), Quantity: model.Null[float64](),
 						},
 						Price: model.Null[float64](), Discount: model.Null[float64](),
 						VAT: model.Null[int](), VATEnabled: model.Null[bool](),
+						SourceSlot: model.Null[model.Reference](), TargetSlot: model.Null[model.Reference](),
 					},
-					`{"id":null,"assortment":null,"quantity":null,"price":null,"discount":null,"vat":null,"vatEnabled":null}`,
+					`{"id":null,"assortment":null,"quantity":null,"price":null,"discount":null,"vat":null,"vatEnabled":null,"sourceSlot":null,"targetSlot":null}`,
 				},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
@@ -184,22 +197,35 @@ func TestCommercialRequestJSON(t *testing.T) {
 						t.Fatal(err)
 					}
 					jsonAssertEqual(t, encoded, tc.want)
-					var got positions.CommercialRequest
+					var got positions.PositionRequest
 					if err := codec.unmarshal([]byte(tc.want), &got); err != nil {
 						t.Fatal(err)
 					}
 					if !reflect.DeepEqual(got, tc.value) {
-						t.Fatalf("commercial request = %+v, want %+v", got, tc.value)
+						t.Fatalf("position request = %+v, want %+v", got, tc.value)
 					}
 				})
 			}
+			var got positions.PositionRequest
+			if err := codec.unmarshal([]byte(`{
+				"id":"existing-row","quantity":1.5,"price":2.75,"discount":5,"vat":20,"vatEnabled":true,
+				"meta":{"href":"https://example.test/positions/existing-row"},"accountId":"account-1",
+				"overhead":12.5,"future":true
+			}`), &got); err != nil {
+				t.Fatal(err)
+			}
+			encoded, err := codec.marshal(got)
+			if err != nil {
+				t.Fatal(err)
+			}
+			jsonAssertEqual(t, encoded, `{"id":"existing-row","quantity":1.5,"price":2.75,"discount":5,"vat":20,"vatEnabled":true}`)
 		})
 	}
 }
 
 func TestEmbeddedPositionsJSON(t *testing.T) {
 	type jsonDocumentRequest struct {
-		Positions model.Field[[]positions.CommercialRequest] `json:"positions,omitzero"`
+		Positions model.Field[[]positions.PositionRequest] `json:"positions,omitzero"`
 	}
 	for _, codec := range jsonCodecs {
 		t.Run(codec.name, func(t *testing.T) {
@@ -209,12 +235,12 @@ func TestEmbeddedPositionsJSON(t *testing.T) {
 				want  string
 			}{
 				{"unset", jsonDocumentRequest{}, `{}`},
-				{"null", jsonDocumentRequest{Positions: model.Null[[]positions.CommercialRequest]()}, `{"positions":null}`},
-				{"empty slice", jsonDocumentRequest{Positions: model.Value([]positions.CommercialRequest{})}, `{"positions":[]}`},
-				{"nil slice", jsonDocumentRequest{Positions: model.Value[[]positions.CommercialRequest](nil)}, `{"positions":[]}`},
+				{"null", jsonDocumentRequest{Positions: model.Null[[]positions.PositionRequest]()}, `{"positions":null}`},
+				{"empty slice", jsonDocumentRequest{Positions: model.Value([]positions.PositionRequest{})}, `{"positions":[]}`},
+				{"nil slice", jsonDocumentRequest{Positions: model.Value[[]positions.PositionRequest](nil)}, `{"positions":[]}`},
 				{
 					"replacement array",
-					jsonDocumentRequest{Positions: model.Value([]positions.CommercialRequest{
+					jsonDocumentRequest{Positions: model.Value([]positions.PositionRequest{
 						{ItemRequest: positions.ItemRequest{
 							CoreRequest: positions.CoreRequest{ID: model.Value("existing-row")},
 							Quantity:    model.Value(0.5),
@@ -224,9 +250,10 @@ func TestEmbeddedPositionsJSON(t *testing.T) {
 								Href: "https://example.test/entity/product/product-2", Type: "product", MediaType: "application/json",
 							}}),
 							Quantity: model.Value(1.25),
-						}, Price: model.Value(99.75), VAT: model.Value(0), VATEnabled: model.Value(false)},
+						}, Price: model.Value(99.75), VAT: model.Value(0), VATEnabled: model.Value(false),
+							TargetSlot: model.Value(model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}})},
 					})},
-					`{"positions":[{"id":"existing-row","quantity":0.5},{"assortment":{"meta":{"href":"https://example.test/entity/product/product-2","type":"product","mediaType":"application/json"}},"quantity":1.25,"price":99.75,"vat":0,"vatEnabled":false}]}`,
+					`{"positions":[{"id":"existing-row","quantity":0.5},{"assortment":{"meta":{"href":"https://example.test/entity/product/product-2","type":"product","mediaType":"application/json"}},"quantity":1.25,"price":99.75,"vat":0,"vatEnabled":false,"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}]}`,
 				},
 			} {
 				t.Run(tc.name, func(t *testing.T) {

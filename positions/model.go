@@ -14,11 +14,14 @@ type Item struct {
 	Quantity   float64         `json:"quantity"`
 }
 
-// Price задаётся в копейках без масштабирования.
-type Commercial struct {
+// Price и Overhead задаются в копейках; Overhead доступен только для чтения.
+type Position struct {
 	Item
-	Price      float64 `json:"price"`
-	Discount   float64 `json:"discount"`
-	VAT        int     `json:"vat"`
-	VATEnabled bool    `json:"vatEnabled"`
+	Price      float64          `json:"price"`
+	Discount   float64          `json:"discount"`
+	VAT        int              `json:"vat"`
+	VATEnabled bool             `json:"vatEnabled"`
+	Overhead   float64          `json:"overhead"`
+	SourceSlot *model.Reference `json:"sourceSlot,omitzero"`
+	TargetSlot *model.Reference `json:"targetSlot,omitzero"`
 }

@@ -95,13 +95,13 @@ func TestItemJSON(t *testing.T) {
 	}
 }
 
-func TestCommercialJSON(t *testing.T) {
+func TestPositionJSON(t *testing.T) {
 	for _, codec := range jsonCodecs {
 		t.Run(codec.name, func(t *testing.T) {
 			for _, tc := range []struct {
 				name  string
 				input string
-				want  positions.Commercial
+				want  positions.Position
 			}{
 				{
 					"fractional values and markup",
@@ -111,7 +111,7 @@ func TestCommercialJSON(t *testing.T) {
 						"assortment":{"meta":{"href":"https://example.test/entity/service/service-1","type":"service","mediaType":"application/json"}},
 						"quantity":1.25,"price":12345.67,"discount":-5.5,"vat":20,"vatEnabled":true,"future":{"value":1}
 					}`,
-					positions.Commercial{
+					positions.Position{
 						Item: positions.Item{
 							Core: positions.Core{
 								Meta: model.Meta{
@@ -127,21 +127,21 @@ func TestCommercialJSON(t *testing.T) {
 						Price: 12345.67, Discount: -5.5, VAT: 20, VATEnabled: true,
 					},
 				},
-				{"absent fields", `{}`, positions.Commercial{}},
+				{"absent fields", `{}`, positions.Position{}},
 				{
 					"integer zero and disabled VAT",
 					`{"id":"","accountId":"","quantity":0,"price":0,"discount":0,"vat":0,"vatEnabled":false}`,
-					positions.Commercial{},
+					positions.Position{},
 				},
 				{
 					"decimal zero",
 					`{"quantity":0.0,"price":0.0,"discount":0.0,"vat":0,"vatEnabled":false,"future":true}`,
-					positions.Commercial{},
+					positions.Position{},
 				},
-				{"zero VAT enabled", `{"vat":0,"vatEnabled":true}`, positions.Commercial{VATEnabled: true}},
+				{"zero VAT enabled", `{"vat":0,"vatEnabled":true}`, positions.Position{VATEnabled: true}},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
-					var got positions.Commercial
+					var got positions.Position
 					if err := codec.unmarshal([]byte(tc.input), &got); err != nil {
 						t.Fatal(err)
 					}
@@ -150,13 +150,143 @@ func TestCommercialJSON(t *testing.T) {
 					}
 				})
 			}
-			encoded, err := codec.marshal(positions.Commercial{
+			encoded, err := codec.marshal(positions.Position{
 				Item: positions.Item{Quantity: 2.5}, Price: 101.25, Discount: -2.5, VATEnabled: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			jsonAssertEqual(t, encoded, `{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":2.5,"price":101.25,"discount":-2.5,"vat":0,"vatEnabled":true}`)
+			jsonAssertEqual(t, encoded, `{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":2.5,"price":101.25,"discount":-2.5,"vat":0,"vatEnabled":true,"overhead":0}`)
+		})
+	}
+}
+
+func TestPositionDocumentFieldsJSON(t *testing.T) {
+	const input = `{
+		"meta":{"href":"https://example.test/positions/row-1","type":"moveposition","mediaType":"application/json"},
+		"id":"row-1","accountId":"account-1",
+		"assortment":{"meta":{"href":"https://example.test/entity/product/product-1","type":"product"}},
+		"quantity":1.25,"price":12345.67,"overhead":12.5,
+		"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},
+		"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}},
+		"future":{"enabled":true}
+	}`
+	want := positions.Position{
+		Item: positions.Item{
+			Core: positions.Core{
+				Meta: model.Meta{Href: "https://example.test/positions/row-1", Type: "moveposition", MediaType: "application/json"},
+				ID:   "row-1", AccountID: "account-1",
+			},
+			Assortment: model.Reference{Meta: model.Meta{Href: "https://example.test/entity/product/product-1", Type: "product"}},
+			Quantity:   1.25,
+		},
+		Price: 12345.67, Overhead: 12.5,
+		SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}},
+		TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}},
+	}
+	for _, codec := range jsonCodecs {
+		t.Run(codec.name, func(t *testing.T) {
+			var got positions.Position
+			if err := codec.unmarshal([]byte(input), &got); err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(got, want) {
+				t.Fatalf("position = %+v, want %+v", got, want)
+			}
+			encoded, err := codec.marshal(got)
+			if err != nil {
+				t.Fatal(err)
+			}
+			jsonAssertEqual(t, encoded, `{
+				"meta":{"href":"https://example.test/positions/row-1","type":"moveposition","mediaType":"application/json"},
+				"id":"row-1","accountId":"account-1",
+				"assortment":{"meta":{"href":"https://example.test/entity/product/product-1","type":"product"}},
+				"quantity":1.25,"price":12345.67,"overhead":12.5,"discount":0,"vat":0,"vatEnabled":false,
+				"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},
+				"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}
+			}`)
+		})
+	}
+}
+
+func TestPositionOptionalFieldsJSON(t *testing.T) {
+	for _, codec := range jsonCodecs {
+		t.Run(codec.name, func(t *testing.T) {
+			for _, tc := range []struct {
+				name  string
+				input string
+				want  positions.Position
+			}{
+				{"absent fields", `{}`, positions.Position{}},
+				{"integer overhead zero", `{"overhead":0}`, positions.Position{}},
+				{"decimal overhead zero", `{"overhead":0.0}`, positions.Position{}},
+				{"fractional overhead", `{"overhead":0.125}`, positions.Position{Overhead: 0.125}},
+				{"null slots", `{"sourceSlot":null,"targetSlot":null}`, positions.Position{}},
+				{
+					"source slot only",
+					`{"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},"future":true}`,
+					positions.Position{SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}}},
+				},
+				{
+					"target slot only",
+					`{"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+					positions.Position{TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}}},
+				},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					var got positions.Position
+					if err := codec.unmarshal([]byte(tc.input), &got); err != nil {
+						t.Fatal(err)
+					}
+					if !reflect.DeepEqual(got, tc.want) {
+						t.Fatalf("position = %+v, want %+v", got, tc.want)
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestPositionOptionalFieldsEncoding(t *testing.T) {
+	for _, codec := range jsonCodecs {
+		t.Run(codec.name, func(t *testing.T) {
+			for _, tc := range []struct {
+				name  string
+				value positions.Position
+				want  string
+			}{
+				{
+					"nil slots",
+					positions.Position{},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false}`,
+				},
+				{
+					"source slot only",
+					positions.Position{SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}}},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}}}`,
+				},
+				{
+					"target slot only",
+					positions.Position{TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}}},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false,"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+				},
+				{
+					"both slots",
+					positions.Position{
+						SourceSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/source-1", Type: "slot"}},
+						TargetSlot: &model.Reference{Meta: model.Meta{Href: "https://example.test/slots/target-1", Type: "slot"}},
+					},
+					`{"meta":{},"id":"","accountId":"","assortment":{"meta":{}},"quantity":0,"price":0,"overhead":0,"discount":0,"vat":0,"vatEnabled":false,"sourceSlot":{"meta":{"href":"https://example.test/slots/source-1","type":"slot"}},"targetSlot":{"meta":{"href":"https://example.test/slots/target-1","type":"slot"}}}`,
+				},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					data, err := codec.marshal(tc.value)
+					if err != nil {
+						t.Fatal(err)
+					}
+					jsonAssertEqual(t, data, tc.want)
+				})
+			}
 		})
 	}
 }
