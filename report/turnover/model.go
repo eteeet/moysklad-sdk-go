@@ -1,4 +1,4 @@
-// Package turnover читает отчёт «Обороты»: report/turnover/all и /bystore.
+// Package turnover читает отчёт «Обороты»: report/turnover/all, /bystore и /byoperations.
 // Отчёт только для чтения; суммы себестоимости — копейки, количества — не деньги.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/reports/report-turnover
 package turnover
@@ -21,7 +21,7 @@ type Assortment struct {
 	UOM           *Named         `json:"uom,omitzero"`
 }
 
-// Named — ссылка с именем: группа товара, единица измерения, склад.
+// Named — ссылка с именем: группа товара, единица измерения, склад, контрагент.
 type Named struct {
 	Meta model.Meta `json:"meta"`
 	Name string     `json:"name"`
@@ -56,4 +56,27 @@ type StoreTurnover struct {
 	OnPeriodEnd   Metrics `json:"onPeriodEnd"`
 	Income        Metrics `json:"income"`
 	Outcome       Metrics `json:"outcome"`
+}
+
+// OperationRow — строка отчёта по товару с детализацией по документам: одна операция с товаром
+// на складе. Quantity — количество, Cost — себестоимость единицы в копейках, Sum — сумма
+// себестоимостей в копейках.
+type OperationRow struct {
+	Assortment Assortment `json:"assortment"`
+	Store      Named      `json:"store"`
+	Operation  Operation  `json:"operation"`
+	Quantity   float64    `json:"quantity"`
+	Cost       float64    `json:"cost"`
+	Sum        float64    `json:"sum"`
+}
+
+// Operation — документ оборота; тип открыт (Meta.Type: supply, demand, retaildemand …) и не
+// требует пакета SDK для этого документа. Таблица называет moment объектом, ответы содержат
+// дату — SDK читает DateTime.
+type Operation struct {
+	Meta        model.Meta     `json:"meta"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Moment      model.DateTime `json:"moment,omitzero"`
+	Agent       *Named         `json:"agent,omitzero"`
 }

@@ -34,7 +34,7 @@ type AllOptions struct {
 	Extra      url.Values
 }
 
-// DetailOptions — параметры отчётов по одному товару или модификации (ByStore). Assortment
+// DetailOptions — параметры отчётов по одному товару или модификации (ByStore, ByOperations). Assortment
 // обязателен: meta.type product или variant выбирает фильтр product=… или variant=…. Filter —
 // остальные условия через query.Filter (agent, agentTag, contract, organization, project,
 // retailStore, store, type). Период — как у AllOptions; limit, offset и groupBy источник для этих
@@ -129,4 +129,19 @@ func (s *Service) ByStore(ctx context.Context, options DetailOptions, opts ...tr
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 	return list.Page[StoreRow](ctx, s.client, operation, "report/turnover/bystore", params, opts...)
+}
+
+// ByOperations читает отчёт по товару или модификации с детализацией по документам — один
+// запрос, без сборки из All. Таблица метода называет momentFrom и momentTo обязательными, но
+// текст и пример допускают период по умолчанию — противоречие; SDK их не требует, явный период
+// надёжнее. Каждый фильтр — одно непустое значение (проверяет сервер).
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/reports/report-turnover#3-poluchit-oboroty-po-tovaru-s-detalizaciej-po-dokumentam
+func (s *Service) ByOperations(ctx context.Context, options DetailOptions, opts ...transport.RequestOption) (*model.Collection[OperationRow], error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "get turnover byoperations"
+	params, err := options.values()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return list.Page[OperationRow](ctx, s.client, operation, "report/turnover/byoperations", params, opts...)
 }
