@@ -1,4 +1,4 @@
-Status: needs-info
+Status: resolved
 Stage: APPROVED
 Blocked by: нет
 
@@ -14,7 +14,7 @@ read-only audit, без удаления branches и без --force.
 - [x] SyncID Update обеих сущностей, JSON/HTTP-тесты, без скрытого Get/retry.
 - [x] validID rename без изменения поведения.
 - [x] Обновлены публичные описания SyncID и закрыт coverage TODO.
-- [ ] Вспомогательные worktree удалены безопасно; основной worktree сохранён.
+- [x] Вспомогательные worktree удалены безопасно; основной worktree сохранён.
 - [x] Полные проверки и независимые Standards/Spec review пройдены.
 
 ## Comments
@@ -32,3 +32,7 @@ Worktree cleanup: 3 clean временных worktree удалены, branches �
 пять worktree содержат local modified/untracked файлы, поэтому не удалены и не сброшены.
 Пользователю предложено stash -u с отдельными метками либо сохранение worktree до
 отдельного разбора. Ответ не получен, resolved не установлен.
+
+Cleanup 2026-11-01 по выбору пользователя «stash -u и удалить»: для каждого из пяти
+core-* worktree выполнен `git stash push -u` с меткой `worktree-cleanup core-<name> 2026-11-01`,
+затем `git worktree remove` без --force. Branches feat/core-* и stash@{0..4} сохранены.

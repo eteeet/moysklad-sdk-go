@@ -1,4 +1,4 @@
-Status: needs-info
+Status: resolved
 
 # Worktree audit 2026-11-01
 
@@ -39,3 +39,8 @@ issues/05-organization.md}. Их содержимое не сбрасывало�
 Пользователю задан выбор: сохранить каждый worktree через git stash -u
 с отдельной меткой и затем удалить clean worktree либо оставить пять worktree
 до отдельного разбора. Ответ ещё не получен. Без ответа dirty worktree не удаляются.
+
+## Решение 2026-11-01
+
+Пользователь выбрал stash -u и удаление. Все пять worktree сохранены в stash
+(метки `worktree-cleanup core-<name> 2026-11-01`) и удалены без --force; branches остались.
