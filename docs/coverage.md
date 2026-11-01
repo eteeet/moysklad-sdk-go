@@ -29,7 +29,8 @@ integer за пределами 2^53. Это не относится к ID, сч
 - [x] Общие `positions.Core`, `Item`, `Position` и отдельные request-формы:
   плоский JSON, matching ID embedded Update, Field с unset/null/value и пустыми/nil slice как [].
 - [x] Одна `positions.Position`/`PositionRequest` для всех товарных документов:
-  Price/Discount/Overhead float64 в копейках, VAT/VATEnabled, optional SourceSlot/TargetSlot;
+  Price/Overhead float64 в копейках, Discount float64 — процент скидки/наценки,
+  VAT/VATEnabled, optional SourceSlot/TargetSlot;
   Overhead только чтение. Допустимость заданных request-полей проверяет сервер.
   Nil-ссылки ячеек пропускаются при кодировании модели чтения через omitzero.
   Read/request/consumer container проверены обоими JSON codecs, включая 0/0.0/дроби и omission/null/[].

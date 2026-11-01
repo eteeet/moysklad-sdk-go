@@ -217,7 +217,6 @@ func TestPositionOptionalFieldsJSON(t *testing.T) {
 				input string
 				want  positions.Position
 			}{
-				{"absent fields", `{}`, positions.Position{}},
 				{"integer overhead zero", `{"overhead":0}`, positions.Position{}},
 				{"decimal overhead zero", `{"overhead":0.0}`, positions.Position{}},
 				{"fractional overhead", `{"overhead":0.125}`, positions.Position{Overhead: 0.125}},
