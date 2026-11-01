@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -72,6 +73,25 @@ func TestSendHeaderPrecedence(t *testing.T) {
 	}
 	if got.Get("Accept-Language") != "en" || got.Get("X-Lognex-Webhook-Disablebyprefix") != "" {
 		t.Fatalf("options leaked into next call: %v", got)
+	}
+}
+
+func TestHeaderValues(t *testing.T) {
+	c, err := transport.NewClient(transport.Config{Header: http.Header{"x-lognex-remap-beta-feature": {"a"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, tc := range map[string]struct {
+		opts []transport.RequestOption
+		want []string
+	}{
+		"config":   {nil, []string{"a"}},
+		"per call": {[]transport.RequestOption{transport.WithBetaFeature("b"), nil}, []string{"b"}},
+		"other":    {[]transport.RequestOption{transport.WithAcceptLanguage("en")}, []string{"a"}},
+	} {
+		if got := c.HeaderValues(transport.HeaderBetaFeature, tc.opts...); !slices.Equal(got, tc.want) {
+			t.Errorf("%s: values = %q, want %q", name, got, tc.want)
+		}
 	}
 }
 

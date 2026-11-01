@@ -128,6 +128,15 @@ func checkHeaders(header http.Header) error {
 }
 
 // Значения одного key из src заменяют значения dst целиком.
+// HeaderValues возвращает значения key, которые получит вызов с opts: Config.Header с заменой
+// опциями вызова, как при отправке. Запрос не строится и не отправляется.
+func (c *Client) HeaderValues(key string, opts ...RequestOption) []string {
+	header := make(http.Header)
+	overrideHeaders(header, c.header)
+	overrideHeaders(header, newRequestOptions(opts...).Header)
+	return header.Values(key)
+}
+
 func overrideHeaders(dst, src http.Header) {
 	for key, values := range src {
 		dst[http.CanonicalHeaderKey(key)] = append([]string(nil), values...)

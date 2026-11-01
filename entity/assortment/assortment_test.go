@@ -185,6 +185,45 @@ func TestListModes(t *testing.T) {
 	}
 }
 
+// Регрессия ревью 2b91a89: beta-тег нового режима из настроек клиента или опций вызова
+// не переключает ListLegacy молча — ошибка до запроса; другой тег проходит.
+func TestListLegacyRejectsBetaMode(t *testing.T) {
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		if r.Header.Get(transport.HeaderBetaFeature) == assortment.BetaFeature {
+			t.Errorf("legacy request with %s", assortment.BetaFeature)
+		}
+		w.Write([]byte(`{"meta":{"href":"h"},"rows":[]}`))
+	}))
+	defer server.Close()
+	for name, tc := range map[string]struct {
+		config http.Header
+		opts   []transport.RequestOption
+		calls  int32
+	}{
+		"config header":   {http.Header{transport.HeaderBetaFeature: {assortment.BetaFeature}}, nil, 0},
+		"config csv":      {http.Header{transport.HeaderBetaFeature: {"other, " + assortment.BetaFeature}}, nil, 0},
+		"WithBetaFeature": {nil, []transport.RequestOption{transport.WithBetaFeature(assortment.BetaFeature)}, 0},
+		"WithHeader":      {nil, []transport.RequestOption{transport.WithHeader(transport.HeaderBetaFeature, assortment.BetaFeature)}, 0},
+		"call replaces":   {http.Header{transport.HeaderBetaFeature: {assortment.BetaFeature}}, []transport.RequestOption{transport.WithBetaFeature("other")}, 1},
+		"other tag":       {http.Header{transport.HeaderBetaFeature: {"other"}}, nil, 1},
+	} {
+		t.Run(name, func(t *testing.T) {
+			calls.Store(0)
+			c, err := transport.NewClient(transport.Config{BaseURL: server.URL, Header: tc.config})
+			if err != nil {
+				t.Fatal(err)
+			}
+			info := transport.ResponseInfo{StatusCode: 503}
+			_, err = service(c).ListLegacy(t.Context(), assortment.Options{}, append(tc.opts, transport.WithResponseInfo(&info))...)
+			if calls.Load() != tc.calls || (tc.calls == 0) != (err != nil) || tc.calls == 0 && info.StatusCode != 0 {
+				t.Fatalf("calls = %d, err = %v, info = %+v", calls.Load(), err, info)
+			}
+		})
+	}
+}
+
 func TestListRejects(t *testing.T) {
 	var calls atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))

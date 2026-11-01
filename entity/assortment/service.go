@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -65,7 +66,8 @@ func (s *Service) List(ctx context.Context, options Options, opts ...transport.R
 	return s.list(ctx, "list assortment", options, append(slices.Clip(opts), transport.WithBetaFeature(BetaFeature)))
 }
 
-// ListLegacy читает одну страницу старого endpoint без beta-заголовка: строки товаров и
+// ListLegacy читает одну страницу старого endpoint без beta-заголовка; если assortmentWithoutStock
+// задан в Config.Header или опциях вызова, возвращает ошибку до запроса. Строки товаров и
 // модификаций содержат остатки, фильтры stockMode, quantityMode (по умолчанию all), stockStore,
 // stockMoment, article, owner, shared, weighed и др. работают по разделу Deprecated. Поиск
 // источник описывает только как фильтр search=… (одно значение, оператор =); параметр Search
@@ -76,7 +78,16 @@ func (s *Service) List(ctx context.Context, options Options, opts ...transport.R
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/assortment-legacy
 func (s *Service) ListLegacy(ctx context.Context, options Options, opts ...transport.RequestOption) (*model.Collection[Row], error) {
 	transport.ResetResponseInfo(opts)
-	return s.list(ctx, "list legacy assortment", options, opts)
+	const operation = "list legacy assortment"
+	// Тег из Config.Header или опций вызова молча переключил бы сервер на новый endpoint без остатков.
+	for _, value := range s.client.HeaderValues(transport.HeaderBetaFeature, opts...) {
+		for tag := range strings.SplitSeq(value, ",") {
+			if strings.TrimSpace(tag) == BetaFeature {
+				return nil, fmt.Errorf("moysklad: %s: %s %s selects the new endpoint; use List", operation, transport.HeaderBetaFeature, BetaFeature)
+			}
+		}
+	}
+	return s.list(ctx, operation, options, opts)
 }
 
 func (s *Service) list(ctx context.Context, operation string, options Options, opts []transport.RequestOption) (*model.Collection[Row], error) {
