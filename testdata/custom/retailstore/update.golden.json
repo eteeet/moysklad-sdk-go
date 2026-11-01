@@ -1,0 +1,8 @@
+{
+  "name": "Касса 2",
+  "archived": true,
+  "acquire": null,
+  "productFolders": [],
+  "minionToMasterType": "CHOSEN",
+  "discountMaxPercent": 0
+}
