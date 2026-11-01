@@ -1,0 +1,15 @@
+{
+  "name": "Бонусы",
+  "active": false,
+  "allProducts": true,
+  "allAgents": false,
+  "earnRateRoublesToPoint": 0,
+  "spendRatePointsToRouble": 1,
+  "maxPaidRatePercents": 0,
+  "agentTags": ["vip"],
+  "earnWhileRedeeming": false,
+  "welcomeBonusesEnabled": true,
+  "welcomeBonusesMode": "FIRST_PURCHASE",
+  "welcomeBonusesValue": 0,
+  "postponedBonusesDelayDays": 14
+}
