@@ -251,3 +251,15 @@ func TestSendRetryConcurrent(t *testing.T) {
 	}
 	wg.Wait()
 }
+
+// Регрессия ревью 46e9d06: async-запрос не повторяется при любом кодировании параметра.
+func TestSendRetryAsyncEncoded(t *testing.T) {
+	for _, endpoint := range []string{"report/stock/all?async=true", "report/stock/all?async=%74rue", "report/stock/all?%61sync=true"} {
+		clock := &recordClock{}
+		client, calls := retryClient(t, clock, step{status: 429, body: apiError}, step{status: 200, body: `{}`})
+		_, err := client.Send(t.Context(), "GET", endpoint, nil, nil, nil, transport.WithHeader("X-Call", "1"))
+		if sdkerrors.StatusCode(err) != 429 || calls.Load() != 1 {
+			t.Errorf("%s: err = %v, calls = %d", endpoint, err, calls.Load())
+		}
+	}
+}

@@ -68,13 +68,30 @@ var retryStatuses = map[int]bool{
 	http.StatusGatewayTimeout:      true,
 }
 
-// async=true создаёт задачу даже у GET; он может прийти и в query, и в строке endpoint.
-func retryableCall(method, endpoint string, query url.Values, options RequestOptions) bool {
-	if method != http.MethodGet && method != http.MethodHead || options.NoRetry || query.Get("async") == "true" {
-		return false
+// retryableRequest решает по собранному запросу: его query уже объединяет endpoint и параметры.
+func retryableRequest(req *http.Request, options RequestOptions) bool {
+	return (req.Method == http.MethodGet || req.Method == http.MethodHead) && !options.NoRetry && !asyncRequested(req.URL.RawQuery)
+}
+
+// async=true создаёт задачу даже у GET. Ключ и значение раскодируются (%61sync=%74rue тоже
+// async), повторный параметр учитывается по любому значению; неразбираемый query считается
+// async: лучше не повторить чтение, чем создать задачу дважды.
+func asyncRequested(rawQuery string) bool {
+	for part := range strings.SplitSeq(rawQuery, "&") {
+		key, value, _ := strings.Cut(part, "=")
+		name, err := url.QueryUnescape(key)
+		if err != nil {
+			return true
+		}
+		decoded, err := url.QueryUnescape(value)
+		if err != nil {
+			return true
+		}
+		if name == "async" && strings.EqualFold(strings.TrimSpace(decoded), "true") {
+			return true
+		}
 	}
-	u, err := url.Parse(endpoint)
-	return err == nil && !strings.Contains(strings.ToLower(u.RawQuery), "async=true")
+	return false
 }
 
 // retryDelay решает, повторять ли попытку attempt (с 1), и возвращает паузу.

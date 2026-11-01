@@ -23,16 +23,16 @@ func (c *Client) Send(ctx context.Context, method, endpoint string, query url.Va
 		*info = ResponseInfo{}
 	}
 	var policy RetryPolicy
-	retry := c.retry != nil && retryableCall(method, endpoint, query, options)
-	if retry {
-		policy = c.retry.withDefaults()
-	}
+	var retry bool
 	var lastResp *http.Response
 	var lastErr error
 	for attempt := 1; ; attempt++ {
 		req, err := c.newRequest(ctx, method, endpoint, query, body, options)
 		if err != nil {
 			return nil, err
+		}
+		if attempt == 1 && c.retry != nil && retryableRequest(req, options) {
+			retry, policy = true, c.retry.withDefaults()
 		}
 		resp, err, sent := c.sendOnce(ctx, req, dst, options)
 		if !sent {

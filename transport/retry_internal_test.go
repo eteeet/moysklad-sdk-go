@@ -17,7 +17,11 @@ import (
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 )
 
-func TestRetryableCall(t *testing.T) {
+func TestRetryableRequest(t *testing.T) {
+	client, err := NewClient(Config{BaseURL: "https://api.example/api/remap/1.2"})
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, tc := range []struct {
 		method   string
 		endpoint string
@@ -28,16 +32,31 @@ func TestRetryableCall(t *testing.T) {
 		{http.MethodGet, "entity/product", nil, RequestOptions{}, true},
 		{http.MethodHead, "entity/product", nil, RequestOptions{}, true},
 		{http.MethodGet, "report/stock/all?async=false", nil, RequestOptions{}, true},
+		{http.MethodGet, "report/stock/all?asyncx=true&filter=a%3Dasync%3Dtrue", nil, RequestOptions{}, true},
 		{http.MethodPost, "entity/product", nil, RequestOptions{}, false},
 		{http.MethodPut, "entity/product", nil, RequestOptions{}, false},
 		{http.MethodDelete, "entity/product", nil, RequestOptions{}, false},
 		{http.MethodGet, "report/stock/all", url.Values{"async": {"true"}}, RequestOptions{}, false},
 		{http.MethodGet, "report/stock/all?limit=1&async=true", nil, RequestOptions{}, false},
+		// Регрессия ревью 46e9d06: закодированные ключ и значение — тоже async.
+		{http.MethodGet, "report/stock/all?async=%74rue", nil, RequestOptions{}, false},
+		{http.MethodGet, "report/stock/all?%61sync=true", nil, RequestOptions{}, false},
+		{http.MethodGet, "report/stock/all?async=TRUE", nil, RequestOptions{}, false},
+		{http.MethodGet, "report/stock/all", url.Values{"async": {"false", "true"}}, RequestOptions{}, false},
+		// Явный query заменяет одноимённый параметр endpoint: итоговый async=false.
+		{http.MethodGet, "report/stock/all?async=true", url.Values{"async": {"false"}}, RequestOptions{}, true},
 		{http.MethodGet, "entity/product", nil, RequestOptions{NoRetry: true}, false},
 	} {
-		if got := retryableCall(tc.method, tc.endpoint, tc.query, tc.opts); got != tc.want {
-			t.Errorf("%s %v %+v = %v", tc.method, tc.query, tc.opts, got)
+		req, err := client.NewRequest(t.Context(), tc.method, tc.endpoint, tc.query, nil)
+		if err != nil {
+			t.Fatal(err)
 		}
+		if got := retryableRequest(req, tc.opts); got != tc.want {
+			t.Errorf("%s %s %v %+v = %v", tc.method, tc.endpoint, tc.query, tc.opts, got)
+		}
+	}
+	if !asyncRequested("a=%zz") {
+		t.Error("unparsable query must be treated as async")
 	}
 }
 
