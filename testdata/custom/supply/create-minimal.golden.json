@@ -1,0 +1,20 @@
+{
+  "organization": {
+    "meta": {
+      "href": "https://example.test/organization",
+      "type": "organization"
+    }
+  },
+  "agent": {
+    "meta": {
+      "href": "https://example.test/agent",
+      "type": "agent"
+    }
+  },
+  "store": {
+    "meta": {
+      "href": "https://example.test/store",
+      "type": "store"
+    }
+  }
+}

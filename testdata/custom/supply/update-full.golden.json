@@ -1,0 +1,117 @@
+{
+  "name": "request-name",
+  "description": "",
+  "code": "",
+  "externalCode": "request-externalCode",
+  "syncId": "request-syncId",
+  "moment": "2026-11-01 12:34:56.000",
+  "applicable": false,
+  "shared": false,
+  "organization": {
+    "meta": {
+      "href": "https://example.test/organization",
+      "type": "organization"
+    }
+  },
+  "owner": {
+    "meta": {
+      "href": "https://example.test/owner",
+      "type": "owner"
+    }
+  },
+  "group": {
+    "meta": {
+      "href": "https://example.test/group",
+      "type": "group"
+    }
+  },
+  "project": {
+    "meta": {
+      "href": "https://example.test/project",
+      "type": "project"
+    }
+  },
+  "state": {
+    "meta": {
+      "href": "https://example.test/state",
+      "type": "state"
+    }
+  },
+  "attributes": [
+    {
+      "meta": {
+        "href": "https://example.test/attributes/long"
+      },
+      "type": "long",
+      "value": 9007199254740993
+    }
+  ],
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://example.test/currency",
+        "type": "currency"
+      }
+    }
+  },
+  "agent": {
+    "meta": {
+      "href": "https://example.test/agent",
+      "type": "agent"
+    }
+  },
+  "organizationAccount": {
+    "meta": {
+      "href": "https://example.test/organizationAccount",
+      "type": "organizationAccount"
+    }
+  },
+  "agentAccount": {
+    "meta": {
+      "href": "https://example.test/agentAccount",
+      "type": "agentAccount"
+    }
+  },
+  "contract": {
+    "meta": {
+      "href": "https://example.test/contract",
+      "type": "contract"
+    }
+  },
+  "positions": [
+    {
+      "assortment": {
+        "meta": {
+          "href": "https://example.test/assortment",
+          "type": "assortment"
+        }
+      },
+      "quantity": 1.25,
+      "price": 12345.67,
+      "discount": -5.5,
+      "vat": 0,
+      "vatEnabled": false,
+      "id": "existing-row"
+    }
+  ],
+  "vatEnabled": false,
+  "vatIncluded": false,
+  "store": {
+    "meta": {
+      "href": "https://example.test/store",
+      "type": "store"
+    }
+  },
+  "incomingDate": "2026-11-01 12:34:56.000",
+  "incomingNumber": "00007",
+  "purchaseOrder": {
+    "meta": {
+      "href": "https://example.test/purchaseOrder",
+      "type": "purchaseOrder"
+    }
+  },
+  "overhead": {
+    "sum": 12.25,
+    "distribution": "weight"
+  }
+}
