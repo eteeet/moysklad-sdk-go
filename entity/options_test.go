@@ -4,6 +4,7 @@ package entity_test
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -49,9 +50,11 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/files"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/query"
+	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -242,6 +245,26 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 			_, err := s.GetComponents(ctx, testID, query.PageOptions{}, opts...)
 			return err
 		}),
+		catalogCase("files list", "entity/product/"+testID+"/files?limit=1000&offset=0", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := files.NewService(c)
+			_, err := s.List(ctx, "product", testID, query.PageOptions{}, opts...)
+			return err
+		}),
+		catalogCase("turnover all", "report/turnover/all?limit=1000&offset=0", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := turnover.NewService(c)
+			_, err := s.All(ctx, turnover.AllOptions{}, opts...)
+			return err
+		}),
+		catalogCase("turnover bystore", "report/turnover/bystore?filter=product%3Dhttps%3A%2F%2Fapi.moysklad.ru%2Fapi%2Fremap%2F1.2%2Fentity%2Fproduct%2Fx", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := turnover.NewService(c)
+			_, err := s.ByStore(ctx, turnover.DetailOptions{Assortment: model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/api/remap/1.2/entity/product/x", Type: "product"}}}, opts...)
+			return err
+		}),
+		catalogCase("turnover byoperations", "report/turnover/byoperations?filter=product%3Dhttps%3A%2F%2Fapi.moysklad.ru%2Fapi%2Fremap%2F1.2%2Fentity%2Fproduct%2Fx", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := turnover.NewService(c)
+			_, err := s.ByOperations(ctx, turnover.DetailOptions{Assortment: model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/api/remap/1.2/entity/product/x", Type: "product"}}}, opts...)
+			return err
+		}),
 		catalogCase("assortment list", "entity/assortment", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
 			s, _ := assortment.NewService(c)
 			_, err := s.List(ctx, assortment.Options{}, opts...)
@@ -321,7 +344,8 @@ func testServiceOptions(t *testing.T, tc optionsCase, unauthorized bool) {
 			w.Write([]byte(`{"errors":[{"error":"auth","code":1056}]}`))
 			return
 		}
-		if strings.HasSuffix(r.URL.Path, "/positions") || strings.HasSuffix(r.URL.Path, "/components") || strings.HasSuffix(r.URL.Path, "/assortment") {
+		if strings.HasSuffix(r.URL.Path, "/positions") || strings.HasSuffix(r.URL.Path, "/components") || strings.HasSuffix(r.URL.Path, "/assortment") ||
+			strings.HasSuffix(r.URL.Path, "/files") || strings.HasPrefix(r.URL.Path, "/report/") {
 			w.Write([]byte(`{"meta":{"href":"https://api.moysklad.ru/x"},"rows":[]}`))
 			return
 		}
@@ -532,6 +556,36 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			_, err := s.ListLegacy(ctx, assortment.Options{ListOptions: query.ListOptions{Limit: 1001}}, opts...)
 			return err
 		}},
+		localCase{"files list invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := files.NewService(c)
+			_, err := s.List(ctx, "product", "bad", query.PageOptions{}, opts...)
+			return err
+		}},
+		localCase{"files upload empty", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := files.NewService(c)
+			_, err := s.Upload(ctx, "product", testID, nil, opts...)
+			return err
+		}},
+		localCase{"files download no href", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := files.NewService(c)
+			_, err := s.Download(ctx, files.File{}, io.Discard, opts...)
+			return err
+		}},
+		localCase{"turnover all limit", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := turnover.NewService(c)
+			_, err := s.All(ctx, turnover.AllOptions{Limit: -1}, opts...)
+			return err
+		}},
+		localCase{"turnover bystore no assortment", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := turnover.NewService(c)
+			_, err := s.ByStore(ctx, turnover.DetailOptions{}, opts...)
+			return err
+		}},
+		localCase{"turnover byoperations no assortment", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
+			s, _ := turnover.NewService(c)
+			_, err := s.ByOperations(ctx, turnover.DetailOptions{}, opts...)
+			return err
+		}},
 		localCase{"transport download nil writer", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
 			_, err := c.Download(ctx, "download/1", nil, opts...)
 			return err
@@ -560,7 +614,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 34*4+13+3+8+1 {
+	if len(cases) != 34*4+13+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
