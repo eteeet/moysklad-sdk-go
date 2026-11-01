@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant",
+    "mediaType": "application/json"
+  },
+  "characteristics": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata/characteristics/4f70c518-60a1-11e7-6adb-ede500000003",
+        "type": "attributemetadata",
+        "mediaType": "application/json"
+      },
+      "id": "4f70c518-60a1-11e7-6adb-ede500000003",
+      "name": "Размер",
+      "type": "string",
+      "required": false
+    },
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata/characteristics/3b6eb61a-60c5-11e7-6adb-ede500000001",
+        "type": "attributemetadata",
+        "mediaType": "application/json"
+      },
+      "id": "3b6eb61a-60c5-11e7-6adb-ede500000001",
+      "name": "Цвет",
+      "type": "string",
+      "required": false
+    }
+  ]
+}
