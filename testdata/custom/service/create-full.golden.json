@@ -1,0 +1,21 @@
+{
+  "name": "Доставка",
+  "code": "DLV",
+  "externalCode": "dlv-1",
+  "description": "",
+  "archived": false,
+  "shared": true,
+  "vat": 0,
+  "vatEnabled": true,
+  "useParentVat": false,
+  "discountProhibited": false,
+  "paymentItemType": "SERVICE",
+  "taxSystem": "GENERAL_TAX_SYSTEM",
+  "uom": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/uom/19f1edc0-fc42-4001-94cb-c9ec9c62ec10", "type": "uom", "mediaType": "application/json"}},
+  "buyPrice": {"value": 10000, "currency": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/22222222-2222-2222-2222-222222222222", "type": "currency", "mediaType": "application/json"}}},
+  "salePrices": [{"value": 15050.5, "priceType": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/88888888-8888-8888-8888-888888888888", "type": "pricetype", "mediaType": "application/json"}}}],
+  "barcodes": [{"ean13": "4600000000001"}, {"code128": "CODE128-001"}],
+  "attributes": [],
+  "mod__tasnif__uz": {"ikpu": "10199001001000000", "packCode": "1505953"},
+  "syncId": "66666666-6666-6666-6666-666666666666"
+}
