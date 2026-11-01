@@ -35,12 +35,12 @@ func (c *Client) Do(req *http.Request, dst any) (*http.Response, error) {
 		case "gzip":
 			compressed, err := gzip.NewReader(resp.Body)
 			if err != nil {
-				return resp, responseError(resp.StatusCode, fmt.Errorf("moysklad: open gzip response: %w", err))
+				return resp, responseError(resp.StatusCode, fmt.Errorf("open gzip response: %w", err))
 			}
 			defer compressed.Close()
 			reader = compressed
 		default:
-			return resp, responseError(resp.StatusCode, fmt.Errorf("moysklad: unsupported content encoding %q", encoding))
+			return resp, responseError(resp.StatusCode, fmt.Errorf("unsupported content encoding %q", encoding))
 		}
 	}
 
@@ -48,10 +48,10 @@ func (c *Client) Do(req *http.Request, dst any) (*http.Response, error) {
 		apiErr := &sdkerrors.APIError{StatusCode: resp.StatusCode}
 		data, err := io.ReadAll(io.LimitReader(reader, maxErrorBodySize+1))
 		if err != nil {
-			return resp, errors.Join(apiErr, fmt.Errorf("moysklad: read error response: %w", err))
+			return resp, errors.Join(apiErr, fmt.Errorf("read error response: %w", err))
 		}
 		if len(data) > maxErrorBodySize {
-			return resp, errors.Join(apiErr, fmt.Errorf("moysklad: error response exceeds %d bytes", maxErrorBodySize))
+			return resp, errors.Join(apiErr, fmt.Errorf("error response exceeds %d bytes", maxErrorBodySize))
 		}
 
 		// Пустой или невалидный JSON не должен скрывать HTTP-статус.
@@ -75,9 +75,10 @@ func (c *Client) Do(req *http.Request, dst any) (*http.Response, error) {
 	return resp, nil
 }
 
+// Префикс moysklad: даёт APIError; без него err получает префикс сам.
 func responseError(statusCode int, err error) error {
 	if statusCode < http.StatusOK || statusCode >= http.StatusMultipleChoices {
 		return errors.Join(&sdkerrors.APIError{StatusCode: statusCode}, err)
 	}
-	return err
+	return fmt.Errorf("moysklad: %w", err)
 }
