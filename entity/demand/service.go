@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
+	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -93,4 +95,12 @@ func (s *Service) GetPositions(ctx context.Context, id string, page positions.Pa
 		return nil, err
 	}
 	return reader.GetPage(ctx, id, page, opts...)
+}
+
+// List читает одну страницу без expand и автообхода; следующие страницы — pages.All.
+// Удалённые в корзину документы сервер по умолчанию не отдаёт: см. filter isDeleted.
+// Позиции в строках — только то, что вернул сервер; строки позиций читает GetPositions.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/demand
+func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Demand], error) {
+	return list.Entity[Demand](ctx, s.client, "demand", options, nil, opts...)
 }
