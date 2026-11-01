@@ -1,0 +1,2 @@
+# Примеры источника скопированы байт в байт (SHA-256 в README): пробелы в конце строк не правим.
+testdata/custom/assortment/*.json -whitespace
