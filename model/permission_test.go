@@ -71,3 +71,39 @@ func TestPermissionsFixture(t *testing.T) {
 		}
 	}
 }
+
+// Регрессия ревью 3306518: объект права с нестроковым значением целиком сохраняется в Raw,
+// а не превращает null в "".
+func TestPermissionsNonStringActions(t *testing.T) {
+	for _, data := range []string{
+		`{"future":{"view":null}}`,
+		`{"supply":{"view":"ALL","update":null}}`,
+		`{"supply":{"view":"ALL","limit":5}}`,
+		`{"supply":{"view":{"scope":"ALL"}}}`,
+	} {
+		for _, codec := range codecs {
+			t.Run(codec.name+"/"+data, func(t *testing.T) {
+				var got model.Permissions
+				if err := codec.unmarshal([]byte(data), &got); err != nil {
+					t.Fatal(err)
+				}
+				for name, p := range got {
+					if p.Raw == nil || p.Actions != nil || p.Flag != nil {
+						t.Fatalf("%s = %+v, want Raw only", name, p)
+					}
+				}
+				out, err := codec.marshal(got)
+				if err != nil {
+					t.Fatal(err)
+				}
+				assertJSONEqual(t, out, data)
+			})
+		}
+	}
+	// Объект из одних строк по-прежнему типизируется, пустой объект — пустые Actions.
+	var got model.Permissions
+	if err := codecs[1].unmarshal([]byte(`{"supply":{"view":"ALL"},"empty":{}}`), &got); err != nil ||
+		got["supply"].Actions["view"] != model.ScopeAll || got["empty"].Actions == nil || got["empty"].Raw != nil {
+		t.Fatalf("permissions = %+v, err = %v", got, err)
+	}
+}

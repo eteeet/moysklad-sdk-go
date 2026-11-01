@@ -65,11 +65,26 @@ func (p *Permission) UnmarshalJSON(data []byte) error {
 		p.Flag = &flag
 		return nil
 	case '{':
-		var actions map[string]PermissionScope
-		if err := json.Unmarshal(value, &actions); err == nil {
-			p.Actions = actions
-			return nil
+		// Типизируем только объект из одних строк: null, число или вложенный объект внутри
+		// при декодировании в строку исказились бы, поэтому такой объект целиком идёт в Raw.
+		var raw map[string]jsontext.Value
+		if err := json.Unmarshal(value, &raw); err != nil {
+			return err
 		}
+		actions := make(map[string]PermissionScope, len(raw))
+		for action, scope := range raw {
+			if scope.Kind() != '"' {
+				p.Raw = value
+				return nil
+			}
+			var text string
+			if err := json.Unmarshal(scope, &text); err != nil {
+				return err
+			}
+			actions[action] = PermissionScope(text)
+		}
+		p.Actions = actions
+		return nil
 	case 'n':
 		return nil
 	}
