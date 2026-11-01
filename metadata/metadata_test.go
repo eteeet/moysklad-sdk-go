@@ -242,3 +242,77 @@ func TestValidation(t *testing.T) {
 		t.Fatal("nil client accepted")
 	}
 }
+
+// Регрессия ревью 3306518: AttributeList записывается в той же форме, в какой читается,
+// и строки не теряются при сохранении и повторном чтении.
+func TestAttributeListRoundTrip(t *testing.T) {
+	const row = `{"meta":{"href":"https://x/attributes/1"},"id":"1","name":"Цвет","type":"string","required":false,"show":true,"description":""}`
+	for _, tc := range []struct {
+		name, data string
+		rows       int
+	}{
+		{"array", `[` + row + `]`, 1},
+		{"empty array", `[]`, 0},
+		{"collection meta only", `{"meta":{"href":"https://x/attributes","size":3,"limit":0,"offset":0}}`, 0},
+		{"collection with rows", `{"meta":{"href":"https://x/attributes","size":1,"limit":0,"offset":0},"rows":[` + row + `]}`, 1},
+	} {
+		for _, codec := range documenttest.Codecs {
+			t.Run(tc.name+"/"+codec.Name, func(t *testing.T) {
+				var list metadata.AttributeList
+				if err := codec.Unmarshal([]byte(tc.data), &list); err != nil {
+					t.Fatal(err)
+				}
+				out, err := codec.Marshal(list)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var again metadata.AttributeList
+				if err := codec.Unmarshal(out, &again); err != nil {
+					t.Fatal(err)
+				}
+				if len(again.Rows) != tc.rows || (again.Meta == nil) != (list.Meta == nil) {
+					t.Fatalf("round trip = %s, rows = %d", out, len(again.Rows))
+				}
+				if tc.rows > 0 {
+					documenttest.JSONEqual(t, out, []byte(tc.data))
+				}
+			})
+		}
+	}
+}
+
+// Сохранённые Entity и CompanySettings читаются обратно с теми же описаниями доп. полей.
+func TestMetadataRoundTrip(t *testing.T) {
+	entityRows := func(e metadata.Entity) int { return len(e.Attributes.Rows) }
+	settingsRows := func(c metadata.CompanySettings) int {
+		n := 0
+		for _, ce := range c.CustomEntities {
+			if ce.Attributes != nil {
+				n += 1 + len(ce.Attributes.Rows)
+			}
+		}
+		return n
+	}
+	roundTrip(t, readFile(t, "upstream/product_metadata_expanded.json"), entityRows)
+	roundTrip(t, readFile(t, "upstream/company_settings_metadata.json"), settingsRows)
+}
+
+func roundTrip[T any](t *testing.T, data []byte, rows func(T) int) {
+	t.Helper()
+	for _, codec := range documenttest.Codecs {
+		var first, second T
+		if err := codec.Unmarshal(data, &first); err != nil {
+			t.Fatal(err)
+		}
+		out, err := codec.Marshal(first)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := codec.Unmarshal(out, &second); err != nil {
+			t.Fatal(err)
+		}
+		if rows(first) == 0 || rows(second) != rows(first) {
+			t.Fatalf("%s: rows before = %d, after = %d: %s", codec.Name, rows(first), rows(second), out)
+		}
+	}
+}

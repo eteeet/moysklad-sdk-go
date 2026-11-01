@@ -46,10 +46,23 @@ func (e *Entity) UnmarshalJSON(data []byte) error {
 
 // AttributeList — описания доп. полей в метаданных. Большинство примеров источника отдаёт
 // массив, часть (product, upstream-фикстуры) — коллекцию {meta[, rows]}, где без expand есть
-// только meta. Meta заполнен только у формы коллекции.
+// только meta. Meta заполнен только у формы коллекции; запись возвращает ту же форму.
 type AttributeList struct {
 	Meta *model.CollectionMeta
 	Rows []Attribute
+}
+
+func (l AttributeList) MarshalJSON() ([]byte, error) {
+	if l.Meta == nil {
+		if l.Rows == nil {
+			return []byte("[]"), nil
+		}
+		return json.Marshal(l.Rows)
+	}
+	return json.Marshal(struct {
+		Meta model.CollectionMeta `json:"meta"`
+		Rows []Attribute          `json:"rows,omitempty"`
+	}{*l.Meta, l.Rows})
 }
 
 func (l *AttributeList) UnmarshalJSON(data []byte) error {
