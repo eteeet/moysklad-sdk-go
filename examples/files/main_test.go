@@ -7,14 +7,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync/atomic"
 	"testing"
 
-	"github.com/eteeet/moysklad-sdk-go/examples/internal/env"
+	"github.com/eteeet/moysklad-sdk-go/examples/internal/exampletest"
 )
 
 const productID = "7944ef04-f831-11e5-7a69-971500188b19"
@@ -34,14 +33,13 @@ func TestRunRequiresWritePermissionForUpload(t *testing.T) {
 // Список, скачивание первого файла в dir и загрузка; существующий файл не перезаписывается,
 // при ошибке скачивания частичный файл удаляется.
 func TestListDownloadUpload(t *testing.T) {
-	var server *httptest.Server
 	var broken atomic.Bool
-	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	c := exampletest.Client(t, func(w http.ResponseWriter, r *http.Request) {
 		files := "/api/remap/1.2/entity/product/" + productID + "/files"
 		switch {
 		case r.Method == http.MethodGet && r.URL.Path == files:
 			fmt.Fprintf(w, `{"meta":{"href":%q},"rows":[{"meta":{"downloadHref":%q},"filename":"../price.txt","size":5}]}`,
-				server.URL+files, server.URL+"/api/remap/1.2/download/f1")
+				"http://"+r.Host+files, "http://"+r.Host+"/api/remap/1.2/download/f1")
 		case r.Method == http.MethodGet && r.URL.Path == "/api/remap/1.2/download/f1":
 			if broken.Load() {
 				w.Header().Set("Content-Length", "10")
@@ -60,12 +58,7 @@ func TestListDownloadUpload(t *testing.T) {
 			t.Errorf("request = %s %s", r.Method, r.URL)
 			w.WriteHeader(http.StatusNotFound)
 		}
-	}))
-	defer server.Close()
-	c, err := env.ClientFor(server.URL+"/api/remap/1.2", "token")
-	if err != nil {
-		t.Fatal(err)
-	}
+	})
 	dir := t.TempDir()
 	var out bytes.Buffer
 	saved := filepath.Join(dir, "price.txt")
