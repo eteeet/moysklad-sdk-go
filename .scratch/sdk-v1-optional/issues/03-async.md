@@ -12,8 +12,9 @@ Blocked by: ../../sdk-v1-foundation/issues/02-headers.md; ../../sdk-v1-foundatio
 ## What to build
 
 Только documented async-enabled endpoints; Submit даже для GET является side effect. Own task
-model, statuses и poll/result/cancel endpoint. ≤4 queued account tasks policy отдельно от HTTP
-semaphore. async=true нельзя сочетать limit/offset.
+model, statuses и poll/result/cancel endpoint. ≤4 queued account tasks — серверный лимит аккаунта:
+SDK его документирует и возвращает ошибку 61002, локальной policy очереди нет (решение пользователя
+2026-11-02, review-0fafaaa P1). async=true нельзя сочетать limit/offset.
 
 ## Специальные проверки
 
@@ -75,3 +76,5 @@ Get, List, Wait, Result(w), Cancel. Async-отчёты в SDK нет — вне 
   endpoint). Review Spec: оговорки неизвестного исхода и бесконечного Wait, Cancel только 204,
   проверка Location, тесты 61006 и миллисекунд, коды 61000–61008 в godoc.
 - Не проверено: живой API, async ассортимента с beta-тегом, вебхуки задач (не входят).
+- Пользовательское review 0fafaaa: P1 — лимит очереди решением пользователя серверный, spec и
+  ticket приведены к нему; P2 — `Result` требует итоговый HTTP 200 (`6b1bc33`), 202/204 — ошибка.

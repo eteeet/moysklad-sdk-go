@@ -165,6 +165,8 @@ Type: wayfinder:map
   раздельными методами. Перед ней — fix `assortment.Service.All` (beta-тег на каждой странице).
   X01 (`c0c5d1c`), X02 (`6a3bbbc`), X03 (`791490f`) resolved; независимые Standards/Spec review
   каждого ticket исправлены в коммитах tickets. Guide — docs/write-async.md.
+- Review 0fafaaa: S1 и P2 исправлены (`0294292`, `6b1bc33`); P1 — пользователь закрепил серверный
+  лимит очереди async без локальной policy.
 
 - Пользователь запросил план/spec/tickets для перечисленного профиля v1.
   Это авторизация planning, не запуска реализации или commit planning.

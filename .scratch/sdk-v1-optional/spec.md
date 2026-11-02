@@ -58,8 +58,9 @@ metadata, не повторять неизвестный результат; bat
 ### X03: Async submit/status/result/cancel
 
 Только documented async-enabled endpoints; Submit даже для GET является side effect. Own task
-model, statuses и poll/result/cancel endpoint. ≤4 queued account tasks policy отдельно от HTTP
-semaphore. async=true нельзя сочетать limit/offset.
+model, statuses и poll/result/cancel endpoint. ≤4 queued account tasks — серверный лимит аккаунта:
+SDK его документирует и возвращает ошибку 61002, локальной policy очереди нет (решение пользователя
+2026-11-02, review-0fafaaa P1). async=true нельзя сочетать limit/offset.
 
 Проверки и особенности: Submit не retry; poll bounded/context; result download origin/auth rules
 F01 при ссылочном result; 202/Location/response shape из _async.md, cancel нельзя выдавать за
@@ -93,6 +94,9 @@ rollback. Distributed account queue полностью одним Client не к
 - 2026-11-02, пользователь: X01–X03 входят в v1, объём — всё, что источник описывает для сервисов
   SDK; batch — раздельные CreateMany/UpdateMany/DeleteMany. Итоги — Answer tickets,
   [docs/write-async.md](../../docs/write-async.md).
+- 2026-11-02, пользователь (review-0fafaaa P1): лимит 4 задач в очереди — серверный. Локальная
+  policy не делается: учесть задачи других процессов и завершённые без опроса можно только скрытым
+  GET async перед каждым ListAsync, а он запрещён общим контрактом.
 
 ## Out of Scope
 
