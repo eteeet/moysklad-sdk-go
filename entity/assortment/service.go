@@ -49,7 +49,8 @@ func NewService(client *transport.Client) (*Service, error) {
 // assortmentWithoutStock последним, поверх опций вызова (исключение из порядка ADR 0001:
 // чужой beta-тег вызова заменяется, иначе List молча ушёл бы в legacy или чужой режим). Остатков stock, reserve, inTransit,
 // quantity в строках нет, и SDK не запрашивает их скрыто: они — в отчёте report/stock/all/current
-// по id строки.
+// по id строки. Следующие страницы через pages.All требуют той же опции
+// transport.WithBetaFeature(BetaFeature): без неё GET по nextHref уходит в legacy endpoint.
 //
 // Фильтры по источнику: archived (по умолчанию только неархивные; true и false вместе — все),
 // barcode (=, ~, ~=, =~; без !=), code, description, externalCode, name, pathName, id, group,
