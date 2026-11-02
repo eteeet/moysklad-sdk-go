@@ -138,6 +138,19 @@ func TestDownloadErrors(t *testing.T) {
 	if sdkerrors.StatusCode(err) != http.StatusNotFound || !strings.Contains(err.Error(), "download file") || strings.Count(err.Error(), "moysklad:") != 1 {
 		t.Fatalf("err = %v", err)
 	}
+	redirect := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Location", "https://storage.invalid/%zz?signature=top-secret")
+		w.WriteHeader(http.StatusFound)
+	}))
+	defer redirect.Close()
+	c, err = transport.NewClient(transport.Config{BaseURL: redirect.URL + "/api/remap/1.2"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = service(c).Download(t.Context(), file(redirect.URL), io.Discard)
+	if err == nil || strings.Contains(err.Error(), "top-secret") || !strings.Contains(err.Error(), "download file") {
+		t.Fatalf("redirect: err = %v", err)
+	}
 	documenttest.LocalErrors(t, func(ctx context.Context, c *transport.Client) (*int64, error) {
 		n, err := service(c).Download(ctx, file("https://api.moysklad.ru"), io.Discard)
 		if err != nil {

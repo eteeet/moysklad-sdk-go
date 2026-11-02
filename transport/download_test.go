@@ -6,8 +6,10 @@ import (
 	"context"
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -115,6 +117,82 @@ func TestDownloadRedirectAndOrigin(t *testing.T) {
 	_, err := downloadClient(t, leak.URL, transport.Config{}).Download(t.Context(), "download/1", &out)
 	if err == nil || strings.Contains(err.Error(), "top-secret") {
 		t.Fatalf("err = %v", err)
+	}
+}
+
+// Неразбираемый Location: подписи нет и во вложенной ошибке, даже после пробела или кавычки в query;
+// url.Error доступна. Отказ CheckRedirect: ResponseInfo хранит полученный 302, повтора нет.
+func TestDownloadRedirectErrors(t *testing.T) {
+	malformed := map[string]string{
+		"/api/remap/1.2/download/plain": "https://storage.invalid/%zz?signature=top-secret",
+		"/api/remap/1.2/download/space": "https://storage.invalid/%zz?pad=x signature=top-secret",
+		"/api/remap/1.2/download/quote": `https://storage.invalid/%zz?pad="&signature=top-secret`,
+	}
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		w.Header().Set("X-Source", "api")
+		location, ok := malformed[r.URL.Path]
+		if !ok {
+			location = "/api/remap/1.2/download/2?signature=top-secret"
+		}
+		w.Header().Set("Location", location)
+		w.WriteHeader(http.StatusFound)
+	}))
+	defer server.Close()
+	rejected := errors.New("redirect rejected")
+	c := downloadClient(t, server.URL, transport.Config{
+		Retry: &transport.RetryPolicy{BaseDelay: time.Millisecond},
+		HTTPClient: &http.Client{CheckRedirect: func(*http.Request, []*http.Request) error {
+			return rejected
+		}},
+	})
+	for path := range malformed {
+		info := transport.ResponseInfo{StatusCode: 200}
+		_, err := c.Download(t.Context(), strings.TrimPrefix(path, "/api/remap/1.2/"), io.Discard, transport.WithResponseInfo(&info))
+		var urlErr *url.Error
+		if err == nil || strings.Contains(err.Error(), "top-secret") || !errors.As(err, &urlErr) ||
+			info.StatusCode != 0 || info.Attempts != 1 {
+			t.Fatalf("%s: err = %v, info = %+v", path, err, info)
+		}
+	}
+	calls.Store(0)
+	var info transport.ResponseInfo
+	_, err := c.Download(t.Context(), "download/1", io.Discard, transport.WithResponseInfo(&info))
+	if !errors.Is(err, rejected) || strings.Contains(err.Error(), "top-secret") || calls.Load() != 1 ||
+		info.StatusCode != http.StatusFound || info.Attempts != 1 || info.Header.Get("X-Source") != "api" {
+		t.Fatalf("rejected: err = %v, calls = %d, info = %+v", err, calls.Load(), info)
+	}
+}
+
+type timeoutError struct{}
+
+func (timeoutError) Error() string {
+	return "timeout reading https://storage.invalid/f?signature=top-secret"
+}
+func (timeoutError) Timeout() bool   { return true }
+func (timeoutError) Temporary() bool { return true }
+
+type timeoutTransport struct{ calls *atomic.Int32 }
+
+func (rt timeoutTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	rt.calls.Add(1)
+	return nil, timeoutError{}
+}
+
+// Скрытие подписи не меняет классификацию: таймаут со ссылкой в тексте повторяется по Config.Retry.
+func TestDownloadRedactedTimeoutRetries(t *testing.T) {
+	var calls atomic.Int32
+	c := downloadClient(t, "https://api.invalid", transport.Config{
+		Retry:      &transport.RetryPolicy{MaxAttempts: 2, BaseDelay: time.Millisecond},
+		HTTPClient: &http.Client{Transport: timeoutTransport{&calls}},
+	})
+	var info transport.ResponseInfo
+	_, err := c.Download(t.Context(), "download/1", io.Discard, transport.WithResponseInfo(&info))
+	var netErr net.Error
+	if !errors.As(err, &netErr) || !netErr.Timeout() || !errors.Is(err, timeoutError{}) ||
+		strings.Contains(err.Error(), "top-secret") || calls.Load() != 2 || info.Attempts != 2 {
+		t.Fatalf("err = %v, calls = %d, info = %+v", err, calls.Load(), info)
 	}
 }
 

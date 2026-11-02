@@ -7,13 +7,15 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // Download выполняет GET href и копирует тело успешного ответа в w. Возвращает число записанных
 // байт — и при ошибке. href — относительный endpoint или абсолютный URL того же origin, что
 // BaseURL (meta.downloadHref); чужой origin отклоняется до отправки. Redirect на подписанный URL
 // другого origin разрешён, Authorization на нём удаляется; query подписанного URL в текст ошибки
-// не попадает. ResponseInfo описывает последний ответ цепочки redirect.
+// не попадает. ResponseInfo описывает последний ответ цепочки redirect, в том числе отклонённого
+// CheckRedirect; при неразбираемом Location net/http ответ не возвращает, и StatusCode равен 0.
 //
 // Размер ответа не ограничивается, и общий Config.Timeout к чтению тела не применяется: срок
 // загрузки задаёт ctx. Тело закрывается до возврата, слоты Limiter держатся до конца копирования.
@@ -79,8 +81,13 @@ func (c *Client) downloadOnce(ctx context.Context, client *http.Client, req *htt
 				u.RawQuery, u.Fragment = "", ""
 				urlErr.URL = u.String()
 			}
+			// Неразбираемый Location попадает целиком в текст вложенной ошибки.
+			if strings.Contains(urlErr.Err.Error(), "?") {
+				urlErr.Err = redactedError{urlErr.Err}
+			}
 		}
-		return 0, nil, fmt.Errorf("moysklad: send request: %w", err), true
+		// При отказе CheckRedirect Do возвращает и полученный ответ (body закрыт) — для ResponseInfo.
+		return 0, resp, fmt.Errorf("moysklad: send request: %w", err), true
 	}
 	defer resp.Body.Close()
 	body, err := decodedBody(resp)
@@ -98,4 +105,26 @@ func (c *Client) downloadOnce(ctx context.Context, client *http.Client, req *htt
 		return n, resp, fmt.Errorf("moysklad: download: %w", err), true
 	}
 	return n, resp, nil, true
+}
+
+// redactedError обрезает текст на первом "?": граница query в тексте неизвестна, в ней бывают
+// пробелы и кавычки. Unwrap сохраняет errors.Is/As, Timeout/Temporary — классификацию повторов:
+// url.Error проверяет их у Err без Unwrap.
+type redactedError struct{ err error }
+
+func (e redactedError) Error() string {
+	text, _, _ := strings.Cut(e.err.Error(), "?")
+	return text + "?…"
+}
+
+func (e redactedError) Unwrap() error { return e.err }
+
+func (e redactedError) Timeout() bool {
+	t, ok := e.err.(interface{ Timeout() bool })
+	return ok && t.Timeout()
+}
+
+func (e redactedError) Temporary() bool {
+	t, ok := e.err.(interface{ Temporary() bool })
+	return ok && t.Temporary()
 }
