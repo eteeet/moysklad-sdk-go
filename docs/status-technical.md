@@ -74,7 +74,7 @@
 - [x] Get/Create/Update: 16 справочников, 18 документов
 - [x] GetPositions: generic GetPage и typed в 13 документах
 - [x] List: 16 справочников со страницами, assortment, pricetype и характеристики (массив целиком), 18 документов
-- [x] Beta-режим: assortment List с assortmentWithoutStock, ListLegacy без него
+- [x] Beta-режим: assortment List и All с assortmentWithoutStock на каждой странице, ListLegacy без него
 - [x] Вложенные коллекции справочников: компоненты комплекта (одна страница, без мутаций)
 - [ ] Delete и массовое удаление (POST …/delete)
 - [ ] Удаление в корзину

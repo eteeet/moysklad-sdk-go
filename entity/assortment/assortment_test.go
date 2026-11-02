@@ -3,6 +3,7 @@ package assortment_test
 import (
 	"context"
 	"encoding/json/jsontext"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -11,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
+	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -182,6 +184,72 @@ func TestListModes(t *testing.T) {
 				t.Fatalf("err = %v, calls = %d", err, calls.Load())
 			}
 		})
+	}
+}
+
+// All: каждая страница — с assortmentWithoutStock поверх чужого beta-тега вызова, следующая — GET
+// по nextHref; ResponseInfo — последней страницы. Ошибка первой страницы — один элемент, обход
+// не начинается; break после первой страницы не делает второй запрос.
+func TestAll(t *testing.T) {
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		if got := r.Header.Values(transport.HeaderBetaFeature); len(got) != 1 || got[0] != assortment.BetaFeature {
+			t.Errorf("beta = %q", got)
+		}
+		href := "http://" + r.Host + "/entity/assortment?limit=1&search=tea&offset="
+		switch r.URL.RawQuery {
+		case "limit=1&search=tea":
+			w.Header().Set("X-Page", "1")
+			fmt.Fprintf(w, `{"meta":{"href":%q,"nextHref":%q},"rows":[{"meta":{"type":"product"},"id":"p1"}]}`, href+"0", href+"1")
+		case "limit=1&search=tea&offset=1":
+			w.Header().Set("X-Page", "2")
+			fmt.Fprintf(w, `{"meta":{"href":%q},"rows":[{"meta":{"type":"service"},"id":"s1"}]}`, href+"1")
+		default:
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte(`{"errors":[{"error":"auth","code":1056}]}`))
+		}
+	}))
+	defer server.Close()
+	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := service(c)
+	options := assortment.Options{ListOptions: query.ListOptions{Limit: 1, Search: "tea"}}
+
+	var ids []string
+	var info transport.ResponseInfo
+	for page, err := range s.All(t.Context(), options, transport.WithBetaFeature("other"), transport.WithResponseInfo(&info)) {
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, row := range page.Rows {
+			ids = append(ids, string(row.Type))
+		}
+	}
+	if fmt.Sprint(ids) != "[product service]" || calls.Load() != 2 || info.Header.Get("X-Page") != "2" {
+		t.Fatalf("ids = %v, calls = %d, info = %+v", ids, calls.Load(), info)
+	}
+
+	calls.Store(0)
+	for range s.All(t.Context(), options) {
+		break
+	}
+	if calls.Load() != 1 {
+		t.Fatalf("break: calls = %d", calls.Load())
+	}
+
+	calls.Store(0)
+	var errs int
+	for page, err := range s.All(t.Context(), assortment.Options{}) {
+		if page != nil || sdkerrors.StatusCode(err) != http.StatusUnauthorized {
+			t.Fatalf("page = %v, err = %v", page, err)
+		}
+		errs++
+	}
+	if errs != 1 || calls.Load() != 1 {
+		t.Fatalf("first page error: errs = %d, calls = %d", errs, calls.Load())
 	}
 }
 

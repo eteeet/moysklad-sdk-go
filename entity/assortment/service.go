@@ -3,11 +3,13 @@ package assortment
 import (
 	"context"
 	"fmt"
+	"iter"
 	"slices"
 	"strings"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/pages"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -49,8 +51,8 @@ func NewService(client *transport.Client) (*Service, error) {
 // assortmentWithoutStock последним, поверх опций вызова (исключение из порядка ADR 0001:
 // чужой beta-тег вызова заменяется, иначе List молча ушёл бы в legacy или чужой режим). Остатков stock, reserve, inTransit,
 // quantity в строках нет, и SDK не запрашивает их скрыто: они — в отчёте report/stock/all/current
-// по id строки. Следующие страницы через pages.All требуют той же опции
-// transport.WithBetaFeature(BetaFeature): без неё GET по nextHref уходит в legacy endpoint.
+// по id строки. Все страницы — All: прямой pages.All по странице List без опции
+// transport.WithBetaFeature(BetaFeature) уводит GET по nextHref в legacy endpoint.
 //
 // Фильтры по источнику: archived (по умолчанию только неархивные; true и false вместе — все),
 // barcode (=, ~, ~=, =~; без !=), code, description, externalCode, name, pathName, id, group,
@@ -65,6 +67,25 @@ func NewService(client *transport.Client) (*Service, error) {
 func (s *Service) List(ctx context.Context, options Options, opts ...transport.RequestOption) (*model.Collection[Row], error) {
 	transport.ResetResponseInfo(opts)
 	return s.list(ctx, "list assortment", options, append(slices.Clip(opts), transport.WithBetaFeature(BetaFeature)))
+}
+
+// All — List и обход следующих страниц через pages.All: beta-тег BetaFeature добавляется к каждому
+// GET по nextHref, поверх опций вызова, как в List. Запросы начинаются при обходе; ошибка первой
+// страницы — единственный элемент. opts применяются к каждому запросу; ResponseInfo описывает
+// последнюю загруженную страницу. Страницы ListLegacy обходятся pages.All без beta-опции.
+func (s *Service) All(ctx context.Context, options Options, opts ...transport.RequestOption) iter.Seq2[*model.Collection[Row], error] {
+	return func(yield func(*model.Collection[Row], error) bool) {
+		first, err := s.List(ctx, options, opts...)
+		if err != nil {
+			yield(nil, err)
+			return
+		}
+		for page, err := range pages.All(ctx, s.client, first, append(slices.Clip(opts), transport.WithBetaFeature(BetaFeature))...) {
+			if !yield(page, err) {
+				return
+			}
+		}
+	}
 }
 
 // ListLegacy читает одну страницу старого endpoint без beta-заголовка; если assortmentWithoutStock

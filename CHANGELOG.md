@@ -13,7 +13,8 @@ JSON API 1.2. Покрытие по методам: [status-entities](docs/statu
 - Transport: per-call `RequestOption` и `ResponseInfo`, заголовки МойСклад, лимиты запроса,
   общий Limiter, повторы чтений по `Config.Retry`, `Download` в `io.Writer`, коды ошибок API,
   выпуск токена `security/token`.
-- Query: filter/order/search/fields, страницы `query.PageOptions`, явный обход `pages.All`.
+- Query: filter/order/search/fields, страницы `query.PageOptions`, явный обход `pages.All`;
+  у ассортимента — `Assortment().All` с beta-тегом на каждой странице.
 - List у справочников и документов; новые справочники Currency, PriceType, TaxRate, Service,
   характеристики, Bundle, Variant, Assortment, Employee, Role, RetailStore, BonusProgram,
   BonusTransaction.

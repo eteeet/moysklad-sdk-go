@@ -13,7 +13,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] accumulationdiscount — накопительная скидка
 - [ ] aggregatepack — транспортная упаковка
 - [ ] application — серверные решения
-- [x] assortment — ассортимент: List (assortmentWithoutStock) и ListLegacy
+- [x] assortment — ассортимент: List и All (assortmentWithoutStock на каждой странице) и ListLegacy
 - [x] bonusprogram — бонусная программа
 - [x] bonustransaction — бонусная операция
 - [x] bundle — комплект: Get/List/Create/Update, GetComponents/GetComponent

@@ -1,4 +1,4 @@
-// Поиск по ассортименту: одна страница List и явный обход следующих через pages.All.
+// Поиск по ассортименту: явный обход всех страниц через Assortment().All.
 package main
 
 import (
@@ -11,9 +11,7 @@ import (
 	moysklad "github.com/eteeet/moysklad-sdk-go"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/examples/internal/env"
-	"github.com/eteeet/moysklad-sdk-go/pages"
 	"github.com/eteeet/moysklad-sdk-go/query"
-	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
 func main() { env.Main(run) }
@@ -34,14 +32,9 @@ func run() error {
 
 // find печатает тип и имя каждой строки; Limit — размер страницы, каждая следующая — отдельный GET.
 func find(ctx context.Context, c *moysklad.Client, search string, w io.Writer) error {
-	first, err := c.Entity().Assortment().List(ctx, assortment.Options{
-		ListOptions: query.ListOptions{Limit: 100, Search: search},
-	})
-	if err != nil {
-		return err
-	}
-	// Beta-тег нужен каждой странице: без него nextHref вернёт legacy-режим с остатками.
-	for page, err := range pages.All(ctx, c.Transport(), first, transport.WithBetaFeature(assortment.BetaFeature)) {
+	options := assortment.Options{ListOptions: query.ListOptions{Limit: 100, Search: search}}
+	// All передаёт beta-тег каждой странице: без него nextHref вернул бы legacy-режим с остатками.
+	for page, err := range c.Entity().Assortment().All(ctx, options) {
 		if err != nil {
 			return err
 		}

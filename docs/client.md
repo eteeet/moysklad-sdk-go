@@ -48,7 +48,7 @@ Client создаётся только через NewClient. У нулевого
 | Пример | Переменные | Что показывает |
 | --- | --- | --- |
 | [getting_started](../examples/getting_started/main.go) | `MOYSKLAD_TOKEN`, `MOYSKLAD_APP=1` для токена решения | клиент по токену, context/employee или context/application |
-| [assortment_search](../examples/assortment_search/main.go) | `MOYSKLAD_SEARCH` | List с поиском и обход страниц с beta-тегом |
+| [assortment_search](../examples/assortment_search/main.go) | `MOYSKLAD_SEARCH` | поиск и обход всех страниц через `Assortment().All` |
 | [customerorder_positions](../examples/customerorder_positions/main.go) | `MOYSKLAD_ORDER_ID` | Get заказа и страницы GetPositions |
 | [audit_events](../examples/audit_events/main.go) | — | страница контекстов аудита и события каждого контекста |
 | [turnover](../examples/turnover/main.go) | — | «Обороты» за явный период, все страницы |
@@ -59,9 +59,8 @@ Client создаётся только через NewClient. У нулевого
 не входит. Запуск: `go run ./examples/<пример>`; Ctrl+C отменяет запрос.
 
 Обход страниц — `pages.All(ctx, c.Transport(), first, opts...)`: каждая следующая страница —
-отдельный GET по nextHref. Опции первой страницы на следующие не переносятся: у
-`assortment.List` передавай `transport.WithBetaFeature(assortment.BetaFeature)`, иначе
-nextHref вернёт legacy-режим с остатками.
+отдельный GET по nextHref. Опции первой страницы на следующие не переносятся. Ассортимент
+обходи через `c.Entity().Assortment().All(ctx, options)`: он сам передаёт beta-тег каждой странице.
 
 ## Проверки выпуска
 
