@@ -155,7 +155,9 @@ func (s *Service) Result(ctx context.Context, id string, w io.Writer, opts ...tr
 	// Статус нужен и без WithResponseInfo вызывающего кода; его указатель, если есть, сохраняем.
 	var options transport.RequestOptions
 	for _, opt := range opts {
-		opt(&options)
+		if opt != nil {
+			opt(&options)
+		}
 	}
 	if options.ResponseInfo == nil {
 		options.ResponseInfo = new(transport.ResponseInfo)

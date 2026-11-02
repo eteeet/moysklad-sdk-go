@@ -206,6 +206,19 @@ func TestResultRequiresOK(t *testing.T) {
 	}
 }
 
+// nil-опция игнорируется, как у остальных операций: ни одна, ни рядом с WithResponseInfo.
+func TestResultNilOption(t *testing.T) {
+	s := newService(t, func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("{}")) }, transport.Config{})
+	var body bytes.Buffer
+	if n, err := s.Result(t.Context(), taskID, &body, nil); err != nil || n != 2 || body.String() != "{}" {
+		t.Fatalf("nil: n = %d, err = %v, body = %q", n, err, body.String())
+	}
+	var info transport.ResponseInfo
+	if n, err := s.Result(t.Context(), taskID, &bytes.Buffer{}, nil, transport.WithResponseInfo(&info), nil); err != nil || n != 2 || info.StatusCode != http.StatusOK {
+		t.Fatalf("nil with info: n = %d, err = %v, info = %+v", n, err, info)
+	}
+}
+
 // Cancel: PUT без тела, 204 — успех, другой статус — ошибка; 503 при включённых повторах не
 // повторяется.
 func TestCancel(t *testing.T) {
