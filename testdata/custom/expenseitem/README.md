@@ -19,3 +19,7 @@ Upstream `testdata/upstream/expense_item.json` не менялся. Он не с
 В Create проверяются `archived=true` и `operatingExpenses=false`, в Update —
 `archived=false`, `operatingExpenses=true` и пустое `description`.
 Минимальные/частичные запросы и `null` проверяются отдельными JSON-литералами.
+
+| File | SHA-256 |
+| --- | --- |
+| `predefined.json` | `f3514c57bea922b3da073c867e31a1170696651934ded8df48154ef245495ebb` |
