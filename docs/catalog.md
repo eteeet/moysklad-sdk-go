@@ -41,6 +41,8 @@
 
 - `List` — новый endpoint, всегда с `X-Lognex-Remap-Beta-Feature: assortmentWithoutStock` (поверх
   опций вызова). Остатков в строках нет, SDK их не догружает: используйте отчёт об остатках по id.
+  Следующие страницы через `pages.All` требуют той же опции
+  `transport.WithBetaFeature(assortment.BetaFeature)`: без неё GET по nextHref уходит в legacy endpoint.
 - `ListLegacy` — старый endpoint с stock, reserve, inTransit, quantity (`Row.Balances`); источник
   выводит его из эксплуатации в 2027 году.
 - `assortment.Options{ListOptions, GroupBy}`; фильтры, умолчания и недоступные параметры каждого

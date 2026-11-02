@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 
 # 7. Фасад, примеры и готовность v1
 

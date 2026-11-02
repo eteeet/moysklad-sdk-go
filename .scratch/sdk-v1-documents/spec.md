@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 
 # 4. Заказ покупателя, складские операции и возврат
 

@@ -1,7 +1,22 @@
 # moysklad-sdk-go
 
 SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
-Поддерживаемые возможности и план работ: [docs/coverage.md](docs/coverage.md).
+Поддерживаемые возможности и план работ: [docs/coverage.md](docs/coverage.md), статус по методам —
+[сущности](docs/status-entities.md) и [технические возможности](docs/status-technical.md),
+изменения версии — [CHANGELOG](CHANGELOG.md).
+
+```go
+auth, err := transport.BearerToken(os.Getenv("MOYSKLAD_TOKEN"))
+c, err := moysklad.NewClient(moysklad.Config{Auth: auth})
+order, err := c.Entity().CustomerOrder().Get(ctx, id)
+me, err := c.Context().Employee(ctx)
+rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from, MomentTo: to})
+```
+
+Фасад `moysklad.Client` собирает сервисы в группы по пути API (`Entity`, `Report`, `Context`,
+`Audit`, `Security`) над одним transport и не делает HTTP при создании. Прежние
+`<пакет>.NewService(c.Transport())` работают на том же transport. Фасад и примеры сценариев:
+[docs/client.md](docs/client.md).
 
 Опции вызова и метаданные ответа, коды ошибок, выпуск токена, List с filter/order и обход
 страниц, rate limiter, повторы и ограничения размера запроса: [docs/transport.md](docs/transport.md).
@@ -102,6 +117,10 @@ SDK не повторяет запись автоматически. После 
 Запросы используют отдельные модели: эти дополнительные поля в них не включены.
 
 ## Примеры
+
+Сценарии на фасаде — контекст по токену сотрудника или решения, поиск по ассортименту, позиции
+заказа, аудит, «Обороты», файлы — описаны в [docs/client.md](docs/client.md#примеры).
+Ниже — примеры Product на standalone сервисе.
 
 `.env` не загружается библиотекой. Makefile загружает его только для запуска примеров.
 Храни в нём `MOYSKLAD_TOKEN`, а для GET — `MOYSKLAD_PRODUCT_ID`. Не коммить `.env`.
@@ -260,9 +279,11 @@ SDK не выполняет локальное слияние: возвраща�
 ## Тесты и ограничения
 
 ```sh
-go test -race -count=1 ./...
-go vet ./... ./testdata
+make check
 ```
+
+`make check` запускает gofmt, `go vet ./... ./testdata`, race-тесты с примерами и проверкой SHA-256
+фикстур и `git diff --check`; сеть и токены не нужны ([подробнее](docs/client.md#проверки-выпуска)).
 
 Официальные ответы лежат в `testdata/upstream`; версия и хеши — в [docs/upstream.md](docs/upstream.md).
 `make fixtures` обновляет снимок, `make fixtures-commit` обновляет и коммитит только снимок и его описание.
@@ -271,5 +292,5 @@ Golden-тела запросов лежат в `testdata/custom/product`; они
 
 Срез проверен локальными HTTP-тестами, не реальной записью в аккаунт.
 List, обход страниц, повторы и лимиты — общие механизмы ([docs/transport.md](docs/transport.md)).
-Для Product пока нет expand, Delete, полного фасада и специальных операций товара; fields=minimumStock
+Для Product пока нет expand, Delete и специальных операций товара; fields=minimumStock
 отложен. Штрихкоды, алкоголь, упаковки, отслеживание и остальные неподдерживаемые поля остаются в TODO.

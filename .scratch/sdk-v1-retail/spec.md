@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 
 # 5. Розница и штатные бонусы
 

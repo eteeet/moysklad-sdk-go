@@ -73,7 +73,7 @@
 
 - [x] Get/Create/Update: 16 справочников, 18 документов
 - [x] GetPositions: generic GetPage и typed в 13 документах
-- [x] List: 16 справочников и assortment, 18 документов
+- [x] List: 16 справочников со страницами, assortment, pricetype и характеристики (массив целиком), 18 документов
 - [x] Beta-режим: assortment List с assortmentWithoutStock, ListLegacy без него
 - [x] Вложенные коллекции справочников: компоненты комплекта (одна страница, без мутаций)
 - [ ] Delete и массовое удаление (POST …/delete)
@@ -96,17 +96,21 @@
 - [x] HTTP-тесты: httptest и настоящий transport
 - [x] go vet, `go test -race`
 - [ ] Live read-only проверка на тестовом аккаунте (только с согласия)
-- [ ] Примеры для документов (сейчас только product)
-- [ ] Фасад SDK: единая точка входа
-- [ ] CI, проверки безопасности
-- [ ] Версионирование, CHANGELOG, релиз
+- [x] Примеры сценариев на фасаде: контекст, ассортимент, позиции заказа, аудит, обороты, файлы
+- [x] Фасад SDK: `moysklad.NewClient`, группы Entity/Report/Context/Audit/Security
+- [x] `make check`: gofmt, vet, race-тесты, SHA-256 фикстур, статус сущностей, diff --check
+- [ ] CI workflow (для v1 не делается: только `make check`), проверки безопасности
+- [x] CHANGELOG: предложение v1.0.0 и совместимость с 7442803
+- [ ] Тег и релиз — отдельной командой
 - [ ] Vendor API: отдельный контур
 
-## Открытые замечания последнего ревью
+## Замечания ревью до sdk-v1
+
+Закрыты коммитами dbe1e01…acbe294 (см. `.scratch/sdk-v1/coverage.md`).
 
 - [x] Закоммитить 11 документов по тикетам
-- [ ] Дубли codecs_test.go → internal/documenttest
-- [ ] PositionRequest: Cost/InTransit после VATEnabled, комментарий Cost в model.go
-- [ ] Docs: условие валюты paymentin/paymentout, лишние write-формы, TODO purchaseorder
-- [ ] Docs: правило «пометка read-only важнее примеров»
+- [x] Дубли codecs_test.go → internal/documenttest
+- [x] PositionRequest: Cost/InTransit после VATEnabled, комментарий Cost в model.go
+- [x] Docs: условие валюты paymentin/paymentout, лишние write-формы, TODO purchaseorder
+- [x] Docs: правило «пометка read-only важнее примеров»
 - [x] Удалить устаревшие worktree core-* (stash -u, branches сохранены)

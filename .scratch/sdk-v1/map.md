@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 Type: wayfinder:map
 
 # SDK v1 — карта захваток и тикетов
@@ -120,10 +120,10 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| R01 | [Единая точка входа SDK](../sdk-v1-release/issues/01-facade.md) | T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, A01, A02, A03, A04, A05, A06, A07, A08, C01, C02, C03, C04, C05, C06, C07, C08, D01, D02, D03, D04, D05, E01, E02, E03, E04, E05, E06, F01, F02, F03, F04, F05 | needs-triage |
-| R02 | [Примеры основных сценариев](../sdk-v1-release/issues/02-examples.md) | R01 | needs-triage |
-| R03 | [CI и проверки выпуска](../sdk-v1-release/issues/03-ci-release.md) | R01 | needs-triage |
-| R04 | [Приёмка и статус v1](../sdk-v1-release/issues/04-acceptance.md) | R02, R03 | needs-triage |
+| R01 | [Единая точка входа SDK](../sdk-v1-release/issues/01-facade.md) | T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, A01, A02, A03, A04, A05, A06, A07, A08, C01, C02, C03, C04, C05, C06, C07, C08, D01, D02, D03, D04, D05, E01, E02, E03, E04, E05, E06, F01, F02, F03, F04, F05 | resolved |
+| R02 | [Примеры основных сценариев](../sdk-v1-release/issues/02-examples.md) | R01 | resolved |
+| R03 | [CI и проверки выпуска](../sdk-v1-release/issues/03-ci-release.md) | R01 | resolved |
+| R04 | [Приёмка и статус v1](../sdk-v1-release/issues/04-acceptance.md) | R02, R03 | resolved |
 
 ### Опциональное расширение: Delete, batch и async
 
@@ -144,6 +144,21 @@ Type: wayfinder:map
 - Захватка 2 (A01–A08) resolved. JSON-контракт прав записан в model.Permissions (A02/A03);
   противоречия источника (events/info аудита, attributes массивом/объектом, id описаний полей,
   stateType по умолчанию) записаны в godoc и Answer.
+- Захватка 3 (C01–C08) resolved. Решения пользователя: C08 — два явных метода `List` (beta
+  assortmentWithoutStock) и `ListLegacy`; запись quantity компонента комплекта — одобренное
+  исключение из readonly-маркера (contracts.md). Ревью 2b91a89 исправлено, повторное — 0 замечаний.
+- Захватка 4 (D01–D05) resolved: общая форма позиций D01; ревью 34882fb исправлено, 2f21bcf — 0.
+- Захватка 5 (E01–E06) resolved; ревью 5a703f2 — 0 замечаний.
+- Захватка 6 (F01–F05) resolved: Download в io.Writer (ADR 0001), повтор только до первой записи,
+  подпись ссылки скрыта и во вложенной ошибке. Ревью daadf36 и d6a4b6c исправлены (f2e2bf8),
+  5b9723c — 0 замечаний.
+- 2026-11-02, пользователь: фасад через группы, включая сущности (`c.Entity().Product()`), без
+  отдельного States; CI — только `make check`; CHANGELOG предлагает v1.0.0 без тега; исследование
+  избыточности кода — после всех захваток (`.scratch/code-simplification`).
+- Захватка 7 (R01–R04) resolved: фасад `moysklad.NewClient`, сценарии в `examples/`, `make check`,
+  CHANGELOG, приёмка coverage. Находка R02: обход `assortment.List` через pages.All требует той же
+  beta-опции (godoc, docs/catalog.md). R04 исправил status-entities (security/token,
+  context/application) и закрепил тестом.
 
 - Пользователь запросил план/spec/tickets для перечисленного профиля v1.
   Это авторизация planning, не запуска реализации или commit planning.
@@ -173,3 +188,6 @@ T01 фиксирует точный публичный interface response metada
 существуют; номера tickets уникальны, DAG без циклов; исходные требования покрыты.
 Изменений Go-кода и новых коммитов нет. Specs остаются DRAFT, main tickets needs-triage,
 optional tickets needs-info. Runtime tests SDK для Markdown planning не запускались.
+
+Итог реализации 2026-11-02: 49 main tickets resolved, optional X01–X03 needs-info (вне v1);
+приёмка — `coverage.md`, раздел «Приёмка v1».

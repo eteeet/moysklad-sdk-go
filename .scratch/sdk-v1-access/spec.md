@@ -1,5 +1,5 @@
-Status: needs-triage
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 
 # 2. Сотрудники, права, metadata и Audit
 
