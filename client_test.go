@@ -93,7 +93,7 @@ func TestClientHandles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"Context", "Audit", "Security", "Report.Turnover", "Entity.Metadata", "Entity.Files"}
+	want := []string{"Context", "Audit", "Async", "Security", "Report.Turnover", "Entity.Metadata", "Entity.Files"}
 	for _, dir := range dirs {
 		if !dir.IsDir() {
 			continue

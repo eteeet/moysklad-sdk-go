@@ -22,6 +22,7 @@ var statusHandles = map[string]string{
 	"context/application": "Context",
 	"turnover":            "Report.Turnover",
 	"audit":               "Audit",
+	"async":               "Async",
 	"security/token":      "Security",
 	"download":            "Transport",
 }

@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/async/498b8673-0308-11e6-9464-e4de00000089",
+    "type": "async",
+    "mediaType": "application/json"
+  },
+  "id": "498b8673-0308-11e6-9464-e4de00000089",
+  "accountId": "84e60e93-f504-11e5-8a84-bae500000008",
+  "owner": {
+      "meta": {
+          "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/98fa7086-8aa1-11e8-7210-075e0000002c",
+          "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+          "type": "employee",
+          "mediaType": "application/json",
+          "uuidHref": "https://online.moysklad.ru/app/#employee/edit?id=98fa7086-8aa1-11e8-7210-075e0000002c"
+      }
+  },
+  "state" : "DONE",
+  "request": "https://api.moysklad.ru/api/remap/1.2/report/stock/bystore?async=true",
+  "resultUrl": "https://api.moysklad.ru/api/remap/1.2/async/f97aa1fb-2e58-11e6-8a84-bae500000002/result",
+  "deletionDate": "2021-02-16 16:21:09" 
+}

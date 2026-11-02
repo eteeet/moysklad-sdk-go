@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"iter"
+	"net/url"
 	"slices"
 	"strings"
 
+	"github.com/eteeet/moysklad-sdk-go/async"
 	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/internal/write"
@@ -68,7 +70,7 @@ func NewService(client *transport.Client) (*Service, error) {
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/assortment
 func (s *Service) List(ctx context.Context, options Options, opts ...transport.RequestOption) (*model.Collection[Row], error) {
 	transport.ResetResponseInfo(opts)
-	return s.list(ctx, "list assortment", options, append(slices.Clip(opts), transport.WithBetaFeature(BetaFeature)))
+	return s.list(ctx, "list assortment", options, withBeta(opts))
 }
 
 // All — List и обход следующих страниц через pages.All: beta-тег BetaFeature добавляется к каждому
@@ -82,7 +84,7 @@ func (s *Service) All(ctx context.Context, options Options, opts ...transport.Re
 			yield(nil, err)
 			return
 		}
-		for page, err := range pages.All(ctx, s.client, first, append(slices.Clip(opts), transport.WithBetaFeature(BetaFeature))...) {
+		for page, err := range pages.All(ctx, s.client, first, withBeta(opts)...) {
 			if !yield(page, err) {
 				return
 			}
@@ -124,7 +126,36 @@ func (s *Service) DeleteMany(ctx context.Context, metas []model.Meta, opts ...tr
 	return write.DeleteMetas(ctx, s.client, "assortment", metas, opts)
 }
 
+// ListAsync создаёт асинхронную задачу «Получение Ассортимента» нового endpoint: GET
+// entity/assortment с async=true, фильтрами и groupBy, с beta-тегом BetaFeature, как List. Limit и
+// Offset источник у async запрещает. Источник ссылается на раздел нового endpoint, но не
+// подтверждает отдельно async с beta-тегом. Ответ — созданная задача; все строки — через
+// async.Service.Result. Повторов нет; исход после сбоя — по правилам пакета async.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) ListAsync(ctx context.Context, options Options, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "list assortment async"
+	params, err := values(operation, options)
+	if err != nil {
+		return nil, err
+	}
+	return write.Submit(ctx, s.client, operation, "entity/assortment", params, withBeta(opts))
+}
+
 func (s *Service) list(ctx context.Context, operation string, options Options, opts []transport.RequestOption) (*model.Collection[Row], error) {
+	params, err := values(operation, options)
+	if err != nil {
+		return nil, err
+	}
+	return list.Page[Row](ctx, s.client, operation, "entity/assortment", params, opts...)
+}
+
+// withBeta — опции вызова и beta-тег нового endpoint последним, поверх чужого тега вызова.
+func withBeta(opts []transport.RequestOption) []transport.RequestOption {
+	return append(slices.Clip(opts), transport.WithBetaFeature(BetaFeature))
+}
+
+func values(operation string, options Options) (url.Values, error) {
 	if options.Fields != "" {
 		return nil, fmt.Errorf("moysklad: %s: fields is not supported", operation)
 	}
@@ -138,5 +169,5 @@ func (s *Service) list(ctx context.Context, operation string, options Options, o
 	if options.GroupBy != "" {
 		params.Set("groupBy", string(options.GroupBy))
 	}
-	return list.Page[Row](ctx, s.client, operation, "entity/assortment", params, opts...)
+	return params, nil
 }

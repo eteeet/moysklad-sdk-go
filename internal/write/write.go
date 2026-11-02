@@ -1,4 +1,5 @@
-// Package write — общие запросы записи сервисов: удаление и массовые операции.
+// Package write — общие запросы сервисов с побочным эффектом: удаление, массовые операции
+// и создание асинхронной задачи.
 package write
 
 import (
@@ -8,8 +9,11 @@ import (
 	"encoding/json/v2"
 	"fmt"
 	"net/http"
+	"net/url"
+	"path"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/async"
 	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -154,6 +158,35 @@ func post[R any](ctx context.Context, client *transport.Client, operation, endpo
 		return nil, fmt.Errorf("moysklad: %s: response has %d items for %d sent", operation, len(results), sent)
 	}
 	return results, nil
+}
+
+// Submit создаёт асинхронную задачу: GET endpoint с params и async=true, успех — 202 с
+// Content-Location (статус) и Location (результат). limit и offset источник с async запрещает —
+// ошибка до запроса. Создание задачи — побочный эффект: transport не повторяет запрос с async=true.
+func Submit(ctx context.Context, client *transport.Client, operation, endpoint string, params url.Values, opts []transport.RequestOption) (*async.Submitted, error) {
+	if params.Has("limit") || params.Has("offset") {
+		return nil, fmt.Errorf("moysklad: %s: limit and offset are not allowed with async", operation)
+	}
+	params.Set("async", "true")
+	resp, err := client.Send(ctx, http.MethodGet, endpoint, params, nil, nil, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
+	}
+	// Content-Location — …/async/{id}, Location — …/async/{id}/result.
+	status, result := resp.Header.Get("Content-Location"), resp.Header.Get("Location")
+	statusURL, err1 := url.Parse(status)
+	resultURL, err2 := url.Parse(result)
+	id := ""
+	if err1 == nil && err2 == nil {
+		id = path.Base(statusURL.Path)
+	}
+	if !validID(id) || path.Base(path.Dir(statusURL.Path)) != "async" || resultURL.Path != statusURL.Path+"/result" {
+		return nil, fmt.Errorf("moysklad: %s: response has no async task Content-Location and Location", operation)
+	}
+	return &async.Submitted{ID: id, StatusHref: status, ResultHref: result}, nil
 }
 
 // Проверяем форму UUID, не ограничивая его версию.

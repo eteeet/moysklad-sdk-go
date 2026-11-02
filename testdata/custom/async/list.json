@@ -1,0 +1,63 @@
+{
+  "context": {
+    "employee": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/context/employee",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+        "type": "employee",
+        "mediaType": "application/json"
+      }
+    }
+  },
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/async",
+    "type": "async",
+    "mediaType": "application/json",
+    "size": 2,
+    "limit": 1000,
+    "offset": 0
+  },
+  "rows": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/async/1f26ca08-a293-11eb-ac12-000a00000000",
+        "type": "async",
+        "mediaType": "application/json"
+      },
+      "id": "1f26ca08-a293-11eb-ac12-000a00000000",
+      "accountId": "4f811ce5-983a-11eb-0a80-1d0d00000002",
+      "owner": {
+        "meta": {
+          "href": "https://api.moysklad.ru/api/remap/1.2/entity/application/e715fb95-983a-11eb-0a80-321a00000004",
+          "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/application/metadata",
+          "type": "application",
+          "mediaType": "application/json"
+        }
+      },
+      "state": "PROCESSING",
+      "request": "https://api.moysklad.ru/api/remap/1.2/report/stock/bystore?async=true"
+    },
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/async/b3ff426e-a291-11eb-ac12-000a00000000",
+        "type": "async",
+        "mediaType": "application/json"
+      },
+      "id": "b3ff426e-a291-11eb-ac12-000a00000000",
+      "accountId": "4f811ce5-983a-11eb-0a80-1d0d00000002",
+      "owner": {
+        "meta": {
+          "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/acc59092-a291-11eb-ac12-000d00000014",
+          "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+          "type": "employee",
+          "mediaType": "application/json",
+          "uuidHref": "https://online.moysklad.ru/app/#employee/edit?id=acc59092-a291-11eb-ac12-000d00000014"
+        }
+      },
+      "state": "DONE",
+      "request": "https://api.moysklad.ru/api/remap/1.2/report/stock/bystore?async=true",
+      "resultUrl": "https://api.moysklad.ru/api/remap/1.2/async/b3ff426e-a291-11eb-ac12-000a00000000/result",
+      "deletionDate": "2021-04-21 15:07:05.996"
+    }
+  ]
+}

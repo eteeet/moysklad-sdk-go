@@ -1,0 +1,21 @@
+{
+  "id": "498b8673-0308-11e6-9464-e4de00000089",
+  "accountId": "84e60e93-f504-11e5-8a84-bae500000008",
+  "owner": {
+      "meta": {
+          "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/98fa7086-8aa1-11e8-7210-075e0000002c",
+          "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+          "type": "employee",
+          "mediaType": "application/json",
+          "uuidHref": "https://online.moysklad.ru/app/#employee/edit?id=98fa7086-8aa1-11e8-7210-075e0000002c"
+      }
+  },
+  "state" : "API_ERROR",
+  "request": "https://api.moysklad.ru/api/remap/1.2/report/sales/plotseries?momentFrom=2018-09-06&interval=hour&async=true",
+  "errors": [
+      {
+          "error": "Ошибка: не указан обязательный параметр для запроса показателей: momentTo.",
+          "code": 39000
+      }
+  ]
+}

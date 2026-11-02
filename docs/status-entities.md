@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 
-Итого: справочники 24/60, документы 18/37, отчёты 1/9, прочее 4/8.
+Итого: справочники 24/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -128,7 +128,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [x] audit — аудит: контексты, события, фильтры
 - [ ] notification — уведомления (лента, markasread)
 - [ ] notification/settings — настройки уведомлений
-- [ ] async — асинхронные задачи
+- [x] async — асинхронные задачи: Get, List, Wait, Result, Cancel; создание — ListAsync у counterparty и assortment
 - [x] security/token — получение токена: CreateToken (Basic на вызов, без повторов)
 - [x] download — скачивание файлов (transport.Client.Download)
 - [x] entity/metadata — общие метаданные, метаданные типа, описания доп. полей

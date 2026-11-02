@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/async"
 	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/internal/write"
@@ -86,6 +87,24 @@ func validID(id string) bool {
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/counterparty
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Counterparty], error) {
 	return list.Entity[Counterparty](ctx, s.client, "counterparty", options, nil, opts...)
+}
+
+// ListAsync создаёт асинхронную задачу «Получить список Контрагентов»: GET entity/counterparty
+// с async=true и фильтрами options. Limit и Offset источник у async запрещает, fields List не
+// принимает. Ответ — созданная задача; весь список — через async.Service.Result. Повторов нет;
+// исход после сбоя — по правилам пакета async.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) ListAsync(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "list counterparty async"
+	if options.Fields != "" {
+		return nil, fmt.Errorf("moysklad: %s: fields=%q is not supported", operation, options.Fields)
+	}
+	params, err := options.Values(query.MaxLimit)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return write.Submit(ctx, s.client, operation, "entity/counterparty", params, opts)
 }
 
 // Delete — «Удалить Контрагента»: DELETE entity/counterparty/{id}, не в корзину.

@@ -1,6 +1,7 @@
 package moysklad
 
 import (
+	"github.com/eteeet/moysklad-sdk-go/async"
 	"github.com/eteeet/moysklad-sdk-go/audit"
 	"github.com/eteeet/moysklad-sdk-go/contexts"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
@@ -81,6 +82,10 @@ func (c *Client) Context() *contexts.Service { return must(contexts.NewService(c
 
 // Audit — контексты и события аудита.
 func (c *Client) Audit() *audit.Service { return must(audit.NewService(c.transport)) }
+
+// Async — асинхронные задачи: статус, список, ожидание, результат и отмена. Создают задачи
+// ListAsync сервисов Entity().Counterparty() и Entity().Assortment().
+func (c *Client) Async() *async.Service { return must(async.NewService(c.transport)) }
 
 // Security — выпуск токена POST security/token.
 func (c *Client) Security() *security.Service { return must(security.NewService(c.transport)) }
