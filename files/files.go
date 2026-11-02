@@ -1,6 +1,6 @@
 // Package files работает с файлами, прикреплёнными к операции, номенклатуре, задаче или
-// контрагенту: entity/{type}/{id}/files. Отдельного ресурса файла нет; удаление и изображения
-// товаров в SDK v1 не входят.
+// контрагенту: entity/{type}/{id}/files. Отдельного ресурса файла нет; изображения товаров
+// в SDK не входят.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/files
 package files
 
@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -116,6 +117,21 @@ func (s *Service) Upload(ctx context.Context, typ, id string, uploads []Upload, 
 	return result, nil
 }
 
+// Delete удаляет файл fileID объекта typ/id. По источнику сервер удаляет первый найденный файл
+// с этим id у операции, номенклатуры, задачи или контрагента. Успех — 200 или 204; повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/files#3-udalit-fajl
+func (s *Service) Delete(ctx context.Context, typ, id, fileID string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	operation := "delete " + typ + " " + id + " file " + fileID
+	if err := owner(typ, id); err != nil {
+		return fmt.Errorf("moysklad: %s: %w", operation, err)
+	}
+	if !validID(fileID) {
+		return fmt.Errorf("moysklad: %s: file id must be a UUID", operation)
+	}
+	return write.Delete(ctx, s.client, operation, "entity/"+typ+"/"+id+"/files/"+fileID, opts)
+}
+
 // Download копирует содержимое файла в w по file.Meta.DownloadHref (transport.Client.Download):
 // один GET, redirect на подписанный адрес без Authorization, повтор только до первой записи.
 // Время жизни ссылки задаёт transport.WithDownloadExpiration. Скачивание миниатюр источник не
@@ -138,11 +154,17 @@ func owner(typ, id string) error {
 	if !entityType.MatchString(typ) {
 		return fmt.Errorf("entity type must match [a-z][a-z0-9]*")
 	}
-	if len(id) != 36 || id[8] != '-' || id[13] != '-' || id[18] != '-' || id[23] != '-' {
-		return fmt.Errorf("id must be a UUID")
-	}
-	if _, err := hex.DecodeString(id[:8] + id[9:13] + id[14:18] + id[19:23] + id[24:]); err != nil {
+	if !validID(id) {
 		return fmt.Errorf("id must be a UUID")
 	}
 	return nil
+}
+
+// Проверяем форму UUID, не ограничивая его версию.
+func validID(id string) bool {
+	if len(id) != 36 || id[8] != '-' || id[13] != '-' || id[18] != '-' || id[23] != '-' {
+		return false
+	}
+	_, err := hex.DecodeString(id[:8] + id[9:13] + id[14:18] + id[19:23] + id[24:])
+	return err == nil
 }

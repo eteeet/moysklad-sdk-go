@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/query"
@@ -110,4 +111,15 @@ func (s *Service) GetPositions(ctx context.Context, id string, page positions.Pa
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoicein
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[InvoiceIn], error) {
 	return list.Entity[InvoiceIn](ctx, s.client, "invoicein", options, nil, opts...)
+}
+
+// Delete — «Удалить Счет поставщика»: DELETE entity/invoicein/{id}, не в корзину.
+// Повторов нет; права и связанные объекты проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-udalit-schet-postavshika
+func (s *Service) Delete(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete invoicein: id must be a UUID")
+	}
+	return write.Delete(ctx, s.client, "delete invoicein "+id, "entity/invoicein/"+id, opts)
 }

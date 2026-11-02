@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -87,4 +88,15 @@ func validID(id string) bool {
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/currency
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Currency], error) {
 	return list.Entity[Currency](ctx, s.client, "currency", options, nil, opts...)
+}
+
+// Delete — «Удалить Валюту»: DELETE entity/currency/{id}, не в корзину.
+// Повторов нет; права и связанные объекты проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/currency#3-udalit-valyutu
+func (s *Service) Delete(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete currency: id must be a UUID")
+	}
+	return write.Delete(ctx, s.client, "delete currency "+id, "entity/currency/"+id, opts)
 }

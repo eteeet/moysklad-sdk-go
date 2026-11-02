@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -66,6 +67,20 @@ func (s *Service) UpdateState(ctx context.Context, entityType, id string, input 
 		return nil, fmt.Errorf("moysklad: %s: no fields specified", operation)
 	}
 	return s.state(ctx, operation, http.MethodPut, "entity/"+entityType+"/metadata/states/"+id, input, opts)
+}
+
+// DeleteState удаляет статус типа entityType: DELETE, успех — 200 или 204; повторов нет.
+// Права администратора проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/states#3-udalit-status
+func (s *Service) DeleteState(ctx context.Context, entityType, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !entityTypePattern.MatchString(entityType) {
+		return fmt.Errorf("moysklad: delete state: entity type %q must match [a-z][a-z0-9]*", entityType)
+	}
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete state: id %q must be a UUID", id)
+	}
+	return write.Delete(ctx, s.client, "delete "+entityType+" state "+id, "entity/"+entityType+"/metadata/states/"+id, opts)
 }
 
 // state — критерий успеха записи статуса: id.

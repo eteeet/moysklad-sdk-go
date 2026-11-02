@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/query"
@@ -110,4 +111,15 @@ func (s *Service) GetPositions(ctx context.Context, id string, page positions.Pa
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Supply], error) {
 	return list.Entity[Supply](ctx, s.client, "supply", options, nil, opts...)
+}
+
+// Delete — «Удалить Приемку»: DELETE entity/supply/{id}, не в корзину.
+// Повторов нет; права и связанные объекты проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply#3-udalit-priemku
+func (s *Service) Delete(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete supply: id must be a UUID")
+	}
+	return write.Delete(ctx, s.client, "delete supply "+id, "entity/supply/"+id, opts)
 }

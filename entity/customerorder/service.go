@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/query"
@@ -109,4 +110,15 @@ func validID(id string) bool {
 	}
 	_, err := hex.DecodeString(id[:8] + id[9:13] + id[14:18] + id[19:23] + id[24:])
 	return err == nil
+}
+
+// Delete — «Удалить Заказ покупателя»: DELETE entity/customerorder/{id}, не в корзину.
+// Повторов нет; права и связанные объекты проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/customerOrder#3-udalit-zakaz-pokupatelya
+func (s *Service) Delete(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete customerorder: id must be a UUID")
+	}
+	return write.Delete(ctx, s.client, "delete customerorder "+id, "entity/customerorder/"+id, opts)
 }

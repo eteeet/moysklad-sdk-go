@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -89,4 +90,15 @@ func validID(id string) bool {
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/paymentin
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[PaymentIn], error) {
 	return list.Entity[PaymentIn](ctx, s.client, "paymentin", options, nil, opts...)
+}
+
+// Delete — «Удалить Входящий платеж»: DELETE entity/paymentin/{id}, не в корзину.
+// Повторов нет; права и связанные объекты проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-in#3-udalit-vhodyashij-platezh
+func (s *Service) Delete(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete paymentin: id must be a UUID")
+	}
+	return write.Delete(ctx, s.client, "delete paymentin "+id, "entity/paymentin/"+id, opts)
 }

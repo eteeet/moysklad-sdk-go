@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -82,4 +83,15 @@ func validID(id string) bool {
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/employee
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Employee], error) {
 	return list.Entity[Employee](ctx, s.client, "employee", options, nil, opts...)
+}
+
+// Delete — «Удалить Сотрудника»: DELETE entity/employee/{id}, не в корзину.
+// Повторов нет; права и связанные объекты проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/employee#3-udalit-sotrudnika
+func (s *Service) Delete(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete employee: id must be a UUID")
+	}
+	return write.Delete(ctx, s.client, "delete employee "+id, "entity/employee/"+id, opts)
 }

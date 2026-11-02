@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/query"
@@ -110,4 +111,15 @@ func (s *Service) GetPositions(ctx context.Context, id string, page positions.Pa
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/move
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Move], error) {
 	return list.Entity[Move](ctx, s.client, "move", options, nil, opts...)
+}
+
+// Delete — «Удалить Перемещение»: DELETE entity/move/{id}, не в корзину.
+// Повторов нет; права и связанные объекты проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/move#3-udalit-peremeshenie
+func (s *Service) Delete(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return fmt.Errorf("moysklad: delete move: id must be a UUID")
+	}
+	return write.Delete(ctx, s.client, "delete move "+id, "entity/move/"+id, opts)
 }
