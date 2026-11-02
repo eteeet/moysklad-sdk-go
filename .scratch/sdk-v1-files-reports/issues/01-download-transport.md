@@ -63,7 +63,10 @@ BASE `5a703f2`, code commit `423de8d`; общий тест опций — `b6e81
   бы через 6 минут) — срок задаёт ctx. gzip распаковывается явно, независимо от DisableCompression.
 - Повторы по Config.Retry — только пока в w ничего не записано; после частичной записи — ошибка и число
   байт, решение за вызывающим кодом. WithoutRetry отключает. Ответ не 2xx — APIError (тело ≤ 1 МБ).
-- ResponseInfo — последний ответ цепочки redirect (заголовки хранилища), Attempts — число попыток.
+- ResponseInfo — последний ответ цепочки redirect (заголовки хранилища), в том числе отклонённого
+  CheckRedirect; Attempts — число попыток. При неразбираемом Location net/http ответа не отдаёт,
+  StatusCode 0 (review-daadf36). Текст вложенной ошибки такого Location обрезается
+  на первом `?` с сохранением Timeout/Temporary и errors.Is/As (review-d6a4b6c, f2e2bf8).
 - Тесты: 21 МБ без лимита, same-origin абсолютный href, цепочка redirect (auth внутри API, без auth на
   хранилище), ошибка хранилища, чужой href, утечка подписи, повтор 503 и отказ от повтора после
   частичной записи, обрыв тела, отмена, ошибка writer, gzip и gzip-ошибка при DisableCompression,
