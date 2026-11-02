@@ -72,5 +72,4 @@ Stage: APPROVED
 - `fields` в List справочников и документов не принимается; `fields=minimumStock` у Product/Variant
   ждёт модели неснижаемого остатка; изображения в files не поддержаны;
 - expand, Delete, batch, async, остальные сущности и отчёты, Vendor API — вне v1
-  (docs/status-entities.md, docs/status-technical.md);
-- исследование избыточности кода — `.scratch/code-simplification` после v1.
+  (docs/status-entities.md, docs/status-technical.md).

@@ -153,8 +153,8 @@ Type: wayfinder:map
   подпись ссылки скрыта и во вложенной ошибке. Ревью daadf36 и d6a4b6c исправлены (f2e2bf8),
   5b9723c — 0 замечаний.
 - 2026-11-02, пользователь: фасад через группы, включая сущности (`c.Entity().Product()`), без
-  отдельного States; CI — только `make check`; CHANGELOG предлагает v1.0.0 без тега; исследование
-  избыточности кода — после всех захваток (`.scratch/code-simplification`).
+  отдельного States; CI — только `make check`; CHANGELOG предлагает v1.0.0 без тега. Исследование
+  избыточности кода (`.scratch/code-simplification`) аннулировано пользователем — wontfix.
 - Захватка 7 (R01–R04) resolved: фасад `moysklad.NewClient`, сценарии в `examples/`, `make check`,
   CHANGELOG, приёмка coverage. Находка R02: обход `assortment.List` через pages.All требует той же
   beta-опции (godoc, docs/catalog.md). R04 исправил status-entities (security/token,
