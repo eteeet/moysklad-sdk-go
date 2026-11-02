@@ -1,11 +1,12 @@
 # Статус сущностей JSON API 1.2
 
 Источник: api-remap-1.2-doc, revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.
-[x] — есть пакет с Get/Create/Update (документы с позициями — ещё GetPositions);
-иной набор методов указан в строке.
+[x] — есть пакет с Get/Create/Update (документы с позициями — ещё GetPositions) и handle фасада
+`moysklad.Client` (у download — `Transport().Download`); иной набор методов указан в строке. `status_test.go` проверяет, что отметки и
+handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 
-Итого: справочники 23/59, документы 18/37, отчёты 1/9, прочее 3/8.
+Итого: справочники 24/60, документы 18/37, отчёты 1/9, прочее 4/8.
 
 ## Справочники
 
@@ -30,6 +31,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] discount — скидки (общий список)
 - [x] employee — сотрудник: Get/List/Create/Update, права GetSecurity/UpdateSecurity
 - [x] context/employee — контекст сотрудника
+- [x] context/application — контекст решения (токен решения)
 - [ ] eventfeed — лента событий (notes)
 - [x] expenseitem — статья расходов
 - [x] files — файлы: List/Upload/Download
@@ -127,7 +129,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md).
 - [ ] notification — уведомления (лента, markasread)
 - [ ] notification/settings — настройки уведомлений
 - [ ] async — асинхронные задачи
-- [ ] security/token — получение токена
+- [x] security/token — получение токена: CreateToken (Basic на вызов, без повторов)
 - [x] download — скачивание файлов (transport.Client.Download)
 - [x] entity/metadata — общие метаданные, метаданные типа, описания доп. полей
 - [ ] wizard — автозаполнение (demand, salesreturn)

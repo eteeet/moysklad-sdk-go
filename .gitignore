@@ -16,6 +16,7 @@
 coverage.*
 !coverage.go
 !docs/coverage.md
+!.scratch/sdk-v1/coverage.md
 *.coverprofile
 profile.cov
 
