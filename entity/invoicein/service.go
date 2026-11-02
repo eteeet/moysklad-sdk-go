@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -122,4 +123,33 @@ func (s *Service) Delete(ctx context.Context, id string, opts ...transport.Reque
 		return fmt.Errorf("moysklad: delete invoicein: id must be a UUID")
 	}
 	return write.Delete(ctx, s.client, "delete invoicein "+id, "entity/invoicein/"+id, opts)
+}
+
+// CreateMany создаёт объекты одним POST entity/invoicein: массив до batch.MaxItems элементов.
+// Источник: «Массовое создание и обновление Счетов поставщика».
+// Обязательные поля проверяет сервер у каждого элемента; ответ, ошибки элементов и неизвестный
+// исход при сбое — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-massovoe-sozdanie-i-obnovlenie-schetov-postavshika
+func (s *Service) CreateMany(ctx context.Context, items []CreateRequest, opts ...transport.RequestOption) ([]batch.Result[InvoiceIn], error) {
+	transport.ResetResponseInfo(opts)
+	return write.CreateMany[InvoiceIn](ctx, s.client, "invoicein", items, opts)
+}
+
+// UpdateMany изменяет объекты одним POST entity/invoicein: элемент — meta по ID и поля Request.
+// Источник: «Массовое создание и обновление Счетов поставщика».
+// До запроса проверяются только UUID и непустой Request, остальные проверки Update делает
+// сервер у каждого элемента. Ответ — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-massovoe-sozdanie-i-obnovlenie-schetov-postavshika
+func (s *Service) UpdateMany(ctx context.Context, items []batch.Update[UpdateRequest], opts ...transport.RequestOption) ([]batch.Result[InvoiceIn], error) {
+	transport.ResetResponseInfo(opts)
+	return write.UpdateMany[InvoiceIn](ctx, s.client, "invoicein", items, opts)
+}
+
+// DeleteMany удаляет объекты по ids одним POST entity/invoicein/delete, не в корзину; до
+// batch.MaxItems элементов. Источник: «Массовое удаление Счетов поставщиков».
+// Ответ — batch.Deleted по каждому элементу. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-massovoe-udalenie-schetov-postavshikov
+func (s *Service) DeleteMany(ctx context.Context, ids []string, opts ...transport.RequestOption) ([]batch.Deleted, error) {
+	transport.ResetResponseInfo(opts)
+	return write.DeleteMany(ctx, s.client, "invoicein", ids, opts)
 }

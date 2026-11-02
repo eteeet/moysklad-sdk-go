@@ -69,3 +69,20 @@ func TestWriteRedirectNotFollowed(t *testing.T) {
 		server.Close()
 	}
 }
+
+// Href — адрес от BaseURL как в meta.href; слэш в конце BaseURL не удваивается.
+func TestHref(t *testing.T) {
+	for base, want := range map[string]string{
+		"":                                       "https://api.moysklad.ru/api/remap/1.2/entity/product/x",
+		"https://api.moysklad.ru/api/remap/1.2/": "https://api.moysklad.ru/api/remap/1.2/entity/product/x",
+		"http://127.0.0.1:8080":                  "http://127.0.0.1:8080/entity/product/x",
+	} {
+		c, err := NewClient(Config{BaseURL: base})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := c.Href("entity/product/x"); got != want {
+			t.Errorf("%q: %s", base, got)
+		}
+	}
+}

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -96,4 +97,33 @@ func (s *Service) Delete(ctx context.Context, id string, opts ...transport.Reque
 		return fmt.Errorf("moysklad: delete uom: id must be a UUID")
 	}
 	return write.Delete(ctx, s.client, "delete uom "+id, "entity/uom/"+id, opts)
+}
+
+// CreateMany создаёт объекты одним POST entity/uom: массив до batch.MaxItems элементов.
+// Источник: «Массовое создание и обновление единиц измерения».
+// Обязательные поля проверяет сервер у каждого элемента; ответ, ошибки элементов и неизвестный
+// исход при сбое — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-massovoe-sozdanie-i-obnovlenie-edinic-izmereniya
+func (s *Service) CreateMany(ctx context.Context, items []CreateRequest, opts ...transport.RequestOption) ([]batch.Result[UOM], error) {
+	transport.ResetResponseInfo(opts)
+	return write.CreateMany[UOM](ctx, s.client, "uom", items, opts)
+}
+
+// UpdateMany изменяет объекты одним POST entity/uom: элемент — meta по ID и поля Request.
+// Источник: «Массовое создание и обновление единиц измерения».
+// До запроса проверяются только UUID и непустой Request, остальные проверки Update делает
+// сервер у каждого элемента. Ответ — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-massovoe-sozdanie-i-obnovlenie-edinic-izmereniya
+func (s *Service) UpdateMany(ctx context.Context, items []batch.Update[UpdateRequest], opts ...transport.RequestOption) ([]batch.Result[UOM], error) {
+	transport.ResetResponseInfo(opts)
+	return write.UpdateMany[UOM](ctx, s.client, "uom", items, opts)
+}
+
+// DeleteMany удаляет объекты по ids одним POST entity/uom/delete, не в корзину; до
+// batch.MaxItems элементов. Источник: «Массовое удаление Единиц измерения».
+// Ответ — batch.Deleted по каждому элементу. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom#3-massovoe-udalenie-edinic-izmereniya
+func (s *Service) DeleteMany(ctx context.Context, ids []string, opts ...transport.RequestOption) ([]batch.Deleted, error) {
+	transport.ResetResponseInfo(opts)
+	return write.DeleteMany(ctx, s.client, "uom", ids, opts)
 }

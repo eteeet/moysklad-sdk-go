@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -99,4 +100,33 @@ func (s *Service) Delete(ctx context.Context, id string, opts ...transport.Reque
 		return fmt.Errorf("moysklad: delete currency: id must be a UUID")
 	}
 	return write.Delete(ctx, s.client, "delete currency "+id, "entity/currency/"+id, opts)
+}
+
+// CreateMany создаёт объекты одним POST entity/currency: массив до batch.MaxItems элементов.
+// Источник: «Массовое создание и обновление Валют».
+// Обязательные поля проверяет сервер у каждого элемента; ответ, ошибки элементов и неизвестный
+// исход при сбое — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/currency#3-massovoe-sozdanie-i-obnovlenie-valyut
+func (s *Service) CreateMany(ctx context.Context, items []CreateRequest, opts ...transport.RequestOption) ([]batch.Result[Currency], error) {
+	transport.ResetResponseInfo(opts)
+	return write.CreateMany[Currency](ctx, s.client, "currency", items, opts)
+}
+
+// UpdateMany изменяет объекты одним POST entity/currency: элемент — meta по ID и поля Request.
+// Источник: «Массовое создание и обновление Валют».
+// До запроса проверяются только UUID и непустой Request, остальные проверки Update делает
+// сервер у каждого элемента. Ответ — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/currency#3-massovoe-sozdanie-i-obnovlenie-valyut
+func (s *Service) UpdateMany(ctx context.Context, items []batch.Update[UpdateRequest], opts ...transport.RequestOption) ([]batch.Result[Currency], error) {
+	transport.ResetResponseInfo(opts)
+	return write.UpdateMany[Currency](ctx, s.client, "currency", items, opts)
+}
+
+// DeleteMany удаляет объекты по ids одним POST entity/currency/delete, не в корзину; до
+// batch.MaxItems элементов. Источник: «Массовое удаление Валют».
+// Ответ — batch.Deleted по каждому элементу. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/currency#3-massovoe-udalenie-valyut
+func (s *Service) DeleteMany(ctx context.Context, ids []string, opts ...transport.RequestOption) ([]batch.Deleted, error) {
+	transport.ResetResponseInfo(opts)
+	return write.DeleteMany(ctx, s.client, "currency", ids, opts)
 }

@@ -147,3 +147,9 @@ func effectivePort(u *url.URL) string {
 	}
 	return ""
 }
+
+// Href — абсолютный адрес endpoint от BaseURL, в форме meta.href ответов: нужен там, где
+// запрос ссылается на объект по meta (массовые операции).
+func (c *Client) Href(endpoint string) string {
+	return c.baseURL.JoinPath(endpoint).String()
+}

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -104,4 +105,33 @@ func (s *Service) Delete(ctx context.Context, id string, opts ...transport.Reque
 		return fmt.Errorf("moysklad: delete paymentout: id must be a UUID")
 	}
 	return write.Delete(ctx, s.client, "delete paymentout "+id, "entity/paymentout/"+id, opts)
+}
+
+// CreateMany создаёт объекты одним POST entity/paymentout: массив до batch.MaxItems элементов.
+// Источник: «Массовое создание и обновление Исходящих платежей».
+// Обязательные поля проверяет сервер у каждого элемента; ответ, ошибки элементов и неизвестный
+// исход при сбое — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-out#3-massovoe-sozdanie-i-obnovlenie-ishodyashih-platezhej
+func (s *Service) CreateMany(ctx context.Context, items []CreateRequest, opts ...transport.RequestOption) ([]batch.Result[PaymentOut], error) {
+	transport.ResetResponseInfo(opts)
+	return write.CreateMany[PaymentOut](ctx, s.client, "paymentout", items, opts)
+}
+
+// UpdateMany изменяет объекты одним POST entity/paymentout: элемент — meta по ID и поля Request.
+// Источник: «Массовое создание и обновление Исходящих платежей».
+// До запроса проверяются только UUID и непустой Request, остальные проверки Update делает
+// сервер у каждого элемента. Ответ — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-out#3-massovoe-sozdanie-i-obnovlenie-ishodyashih-platezhej
+func (s *Service) UpdateMany(ctx context.Context, items []batch.Update[UpdateRequest], opts ...transport.RequestOption) ([]batch.Result[PaymentOut], error) {
+	transport.ResetResponseInfo(opts)
+	return write.UpdateMany[PaymentOut](ctx, s.client, "paymentout", items, opts)
+}
+
+// DeleteMany удаляет объекты по ids одним POST entity/paymentout/delete, не в корзину; до
+// batch.MaxItems элементов. Источник: «Массовое удаление Исходящих платежей».
+// Ответ — batch.Deleted по каждому элементу. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/payment-out#3-massovoe-udalenie-ishodyashih-platezhej
+func (s *Service) DeleteMany(ctx context.Context, ids []string, opts ...transport.RequestOption) ([]batch.Deleted, error) {
+	transport.ResetResponseInfo(opts)
+	return write.DeleteMany(ctx, s.client, "paymentout", ids, opts)
 }

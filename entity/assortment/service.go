@@ -7,7 +7,9 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/pages"
 	"github.com/eteeet/moysklad-sdk-go/query"
@@ -110,6 +112,16 @@ func (s *Service) ListLegacy(ctx context.Context, options Options, opts ...trans
 		}
 	}
 	return s.list(ctx, operation, options, opts)
+}
+
+// DeleteMany удаляет позиции ассортимента разных типов одним POST entity/assortment/delete,
+// не в корзину; до batch.MaxItems элементов. Источник: «Массовое удаление позиций в Ассортименте».
+// metas — meta объектов (товар, услуга, комплект, модификация) с href и type, например
+// row.Product.Meta. Ответ — batch.Deleted по каждому элементу. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/assortment#3-massovoe-udalenie-pozicij-v-assortimente
+func (s *Service) DeleteMany(ctx context.Context, metas []model.Meta, opts ...transport.RequestOption) ([]batch.Deleted, error) {
+	transport.ResetResponseInfo(opts)
+	return write.DeleteMetas(ctx, s.client, "assortment", metas, opts)
 }
 
 func (s *Service) list(ctx context.Context, operation string, options Options, opts []transport.RequestOption) (*model.Collection[Row], error) {
