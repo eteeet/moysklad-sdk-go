@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"time"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
@@ -143,15 +144,29 @@ func (s *Service) Wait(ctx context.Context, id string, interval time.Duration, o
 // redirect на ссылку загрузки (действует 5 минут) без Authorization. Результат — JSON того же
 // вида, что ответ синхронного запроса. Ошибки — APIError: у API_ERROR — ошибка исходного запроса,
 // иначе 61003 (результат удалён после DeletionDate), 61004, 61005, 61006 (ещё не готов).
+// Успех — только итоговый HTTP 200, как в источнике: другой 2xx — ошибка (тело такого ответа
+// могло уже попасть в w, n это показывает).
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-poluchenie-rezultata-vypolneniya-asinhronnoj-zadachi
 func (s *Service) Result(ctx context.Context, id string, w io.Writer, opts ...transport.RequestOption) (int64, error) {
 	transport.ResetResponseInfo(opts)
 	if !validID(id) {
 		return 0, fmt.Errorf("moysklad: get async task result: id must be a UUID")
 	}
+	// Статус нужен и без WithResponseInfo вызывающего кода; его указатель, если есть, сохраняем.
+	var options transport.RequestOptions
+	for _, opt := range opts {
+		opt(&options)
+	}
+	if options.ResponseInfo == nil {
+		options.ResponseInfo = new(transport.ResponseInfo)
+		opts = append(slices.Clip(opts), transport.WithResponseInfo(options.ResponseInfo))
+	}
 	n, err := s.client.Download(ctx, "async/"+id+"/result", w, opts...)
 	if err != nil {
 		return n, fmt.Errorf("get async task %s result: %w", id, err)
+	}
+	if status := options.ResponseInfo.StatusCode; status != http.StatusOK {
+		return n, fmt.Errorf("moysklad: get async task %s result: unexpected HTTP status %d", id, status)
 	}
 	return n, nil
 }

@@ -186,6 +186,26 @@ func TestResult(t *testing.T) {
 	}
 }
 
+// Итоговый статус Result — только 200: 202 и 204 — ошибка, а не пустой результат; ResponseInfo
+// вызывающего кода заполняется и без него статус проверяется (review 0fafaaa P2).
+func TestResultRequiresOK(t *testing.T) {
+	for _, status := range []int{http.StatusAccepted, http.StatusNoContent} {
+		s := newService(t, func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(status) }, transport.Config{})
+		if _, err := s.Result(t.Context(), taskID, &bytes.Buffer{}); err == nil {
+			t.Fatalf("%d without info: no error", status)
+		}
+		var info transport.ResponseInfo
+		if n, err := s.Result(t.Context(), taskID, &bytes.Buffer{}, transport.WithResponseInfo(&info)); err == nil || n != 0 || info.StatusCode != status {
+			t.Fatalf("%d: n = %d, err = %v, info = %+v", status, n, err, info)
+		}
+	}
+	ok := newService(t, func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("{}")) }, transport.Config{})
+	var info transport.ResponseInfo
+	if n, err := ok.Result(t.Context(), taskID, &bytes.Buffer{}, transport.WithResponseInfo(&info)); err != nil || n != 2 || info.StatusCode != http.StatusOK {
+		t.Fatalf("200: n = %d, err = %v, info = %+v", n, err, info)
+	}
+}
+
 // Cancel: PUT без тела, 204 — успех, другой статус — ошибка; 503 при включённых повторах не
 // повторяется.
 func TestCancel(t *testing.T) {
