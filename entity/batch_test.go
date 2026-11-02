@@ -288,7 +288,7 @@ func TestBatchRequests(t *testing.T) {
 }
 
 // Ошибка всего запроса: APIError (фикстура batch_global_error), другой статус, ответ не той
-// длины, null. 503 при включённых повторах не повторяется: POST — запись.
+// длины, null, null-элементы. 503 при включённых повторах не повторяется: POST — запись.
 func TestBatchRequestErrors(t *testing.T) {
 	global, err := os.ReadFile("../testdata/upstream/batch/batch_global_error.json")
 	if err != nil {
@@ -299,12 +299,13 @@ func TestBatchRequestErrors(t *testing.T) {
 		body   string
 		check  func(error) bool
 	}{
-		"api error": {http.StatusUnauthorized, string(global), func(err error) bool { return sdkerrors.HasCode(err, 1056) }},
-		"503":       {http.StatusServiceUnavailable, "", func(err error) bool { return sdkerrors.StatusCode(err) == http.StatusServiceUnavailable }},
-		"201":       {http.StatusCreated, "[{},{}]", func(err error) bool { return err != nil }},
-		"short":     {http.StatusOK, "[{}]", func(err error) bool { return err != nil }},
-		"null":      {http.StatusOK, "null", func(err error) bool { return err != nil }},
-		"not array": {http.StatusOK, "{}", func(err error) bool { return err != nil }},
+		"api error":  {http.StatusUnauthorized, string(global), func(err error) bool { return sdkerrors.HasCode(err, 1056) }},
+		"503":        {http.StatusServiceUnavailable, "", func(err error) bool { return sdkerrors.StatusCode(err) == http.StatusServiceUnavailable }},
+		"201":        {http.StatusCreated, "[{},{}]", func(err error) bool { return err != nil }},
+		"short":      {http.StatusOK, "[{}]", func(err error) bool { return err != nil }},
+		"null":       {http.StatusOK, "null", func(err error) bool { return err != nil }},
+		"not array":  {http.StatusOK, "{}", func(err error) bool { return err != nil }},
+		"null items": {http.StatusOK, "[null,null]", func(err error) bool { return err != nil }},
 	} {
 		t.Run(name, func(t *testing.T) {
 			for _, bc := range batchCases() {

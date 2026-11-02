@@ -47,12 +47,20 @@ func TestDeleted(t *testing.T) {
 	}
 }
 
-// Не объект в элементе — ошибка разбора, а не пустой Result.
-func TestResultRejectsNonObject(t *testing.T) {
+// null, не объект и пустое удаление — ошибка разбора, а не успешный элемент (review 0fafaaa S1).
+func TestRejectsUnknownItems(t *testing.T) {
 	for _, codec := range documenttest.Codecs {
-		var res []batch.Result[product.Product]
-		if err := codec.Unmarshal([]byte(`["x"]`), &res); err == nil {
-			t.Fatalf("%s: res = %+v", codec.Name, res)
+		for _, data := range []string{`["x"]`, `[null]`, `[[]]`, `[{"id":"x"},null]`} {
+			var res []batch.Result[product.Product]
+			if err := codec.Unmarshal([]byte(data), &res); err == nil {
+				t.Fatalf("%s %s: res = %+v", codec.Name, data, res)
+			}
+		}
+		for _, data := range []string{`["x"]`, `[null]`, `[{}]`, `[{"info":""}]`} {
+			var res []batch.Deleted
+			if err := codec.Unmarshal([]byte(data), &res); err == nil {
+				t.Fatalf("%s %s: res = %+v", codec.Name, data, res)
+			}
 		}
 	}
 }
