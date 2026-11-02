@@ -14,7 +14,7 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 ```
 
 Фасад `moysklad.Client` собирает сервисы в группы по пути API (`Entity`, `Report`, `Context`,
-`Audit`, `Security`) над одним transport и не делает HTTP при создании. Прежние
+`Audit`, `Async`, `Security`) над одним transport и не делает HTTP при создании. Прежние
 `<пакет>.NewService(c.Transport())` работают на том же transport. Фасад и примеры сценариев:
 [docs/client.md](docs/client.md).
 
@@ -34,6 +34,9 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 
 Скачивание файлов (`transport.Client.Download`), файлы объектов (`files`) и отчёт «Обороты»
 (`report/turnover`): [docs/files-reports.md](docs/files-reports.md).
+
+Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) и асинхронные задачи
+(`async`, `ListAsync` контрагентов и ассортимента): [docs/write-async.md](docs/write-async.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
 
 ## Справочники
@@ -48,8 +51,8 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 | `entity/organization` | `Get`, `Create`, `Update` | [Organization](docs/organization.md) |
 
 Общие `model.Address`, `AddressRequest` и открытый `CompanyType` описаны в
-[документации реквизитов](docs/requisites.md). Счета и другие отложенные подресурсы,
-Delete, expand и массовые операции в эти срезы не входят.
+[документации реквизитов](docs/requisites.md). Счета и другие отложенные подресурсы
+и expand в эти срезы не входят; Delete и массовые операции — [docs/write-async.md](docs/write-async.md).
 
 ## Общие контракты документов и positions
 
@@ -92,7 +95,8 @@ Get/Create/Update документов и типизированные entity.Ge
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,
 строки — отдельным GetPositions. Embedded positions ограничены 1000 и полностью
-заменяют набор при Update. Expand, Delete/batch и отдельные mutations строк отложены.
+заменяют набор при Update. Expand и отдельные mutations строк отложены;
+Delete и массовые операции — [docs/write-async.md](docs/write-async.md).
 
 ## Product
 
@@ -177,7 +181,7 @@ Update требует хотя бы одно заданное поле и отп
 Предварительного Get и локального слияния нет. Изменять разрешено только пользовательские UOM;
 при отказе сервера, в том числе для предустановленной UOM, доступен `*sdkerrors.APIError`.
 
-Пока нет Delete, expand и массовых операций UOM.
+Delete и массовые операции UOM — [docs/write-async.md](docs/write-async.md); expand нет.
 Проверки Get/Create/Update используют локальный HTTP-сервер, без обращения к живому аккаунту.
 
 [Документация UOM](https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/uom).
@@ -292,5 +296,5 @@ Golden-тела запросов лежат в `testdata/custom/product`; они
 
 Срез проверен локальными HTTP-тестами, не реальной записью в аккаунт.
 List, обход страниц, повторы и лимиты — общие механизмы ([docs/transport.md](docs/transport.md)).
-Для Product пока нет expand, Delete и специальных операций товара; fields=minimumStock
+Для Product пока нет expand и специальных операций товара (Delete и массовые — общие); fields=minimumStock
 отложен. Штрихкоды, алкоголь, упаковки, отслеживание и остальные неподдерживаемые поля остаются в TODO.

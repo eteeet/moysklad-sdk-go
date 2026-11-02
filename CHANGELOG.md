@@ -22,6 +22,10 @@ JSON API 1.2. Покрытие по методам: [status-entities](docs/statu
   общая форма позиций с pack, things, gtd, trackingCodes, stock и declaration.
 - Контексты сотрудника и решения, метаданные сущностей и статусы, аудит (контексты и события),
   файлы (List/Upload/Download), отчёт «Обороты» (All/ByStore/ByOperations).
+- Delete у сервисов `entity/*` (кроме assortment и pricetype), `metadata.DeleteState`,
+  `files.Delete`; массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`, до 1000 элементов,
+  без разбиения и повторов); асинхронные задачи — пакет `async`, `c.Async()` и `ListAsync`
+  контрагентов и ассортимента; `transport.Client.Href`.
 - Примеры сценариев в `examples/`, `make check`, проверка SHA-256 фикстур.
 
 ### Изменено — совместимость с 7442803
@@ -38,5 +42,6 @@ JSON API 1.2. Покрытие по методам: [status-entities](docs/statu
 
 ### Не входит в v1
 
-Delete, batch, async, expand, остальные сущности и отчёты, полный Vendor API. Проверки идут
+Expand, корзина документов, операции позиций, async-отчёты, остальные сущности и отчёты, полный
+Vendor API. Проверки идут
 на httptest и примерах из документации; прогона на живом API нет.

@@ -106,8 +106,8 @@ Readonly-поля и отложенные поля отсутствуют в о�
 `mod__requisites__uz`/`mod__requisites__kz`, `companyVat__ru`, `advancePaymentVat`,
 `chiefAccountSign`, `directorSign`, `stamp`, `fsrarId`, `utmUrl`.
 Последние два поля встречаются в официальных примерах, но отсутствуют в таблицах
-атрибутов и намеренно игнорируются. Также не поддержаны List, Delete, expand,
-query-параметры, массовые операции и отдельные подресурсы.
+атрибутов и намеренно игнорируются. Также не поддержаны expand и отдельные
+подресурсы; List — [transport.md](transport.md), Delete и массовые операции — [write-async.md](write-async.md).
 
 Локальные тесты проверяют JSON обоими кодеками и HTTP с настоящим transport.
 Upstream Organization используется без изменений; дополнительные случаи

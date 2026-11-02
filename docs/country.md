@@ -35,8 +35,8 @@ Get и Update проверяют форму UUID (Universally Unique Identifier)
 Документация запрещает изменение предустановленных Country; SDK передаёт
 ошибку сервера без локальной классификации Country.
 
-TODO: List, поиск, фильтрация, сортировка, пагинация, Delete, expand и массовые
-операции. Модель и три метода не означают поддержку этих возможностей.
+List — [transport.md](transport.md), Delete и массовые операции — [write-async.md](write-async.md);
+expand нет.
 
 Контракт сверён с [официальной документацией Country на revision
 9a811cef3dc4a3f3a46f070e60452361a06bf7cd](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/dictionaries/_country.md).

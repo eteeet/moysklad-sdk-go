@@ -41,7 +41,8 @@ Update отклоняет полностью незаданный request. Яв�
 ExpenseItem не устанавливает запрет Update предустановленных статей;
 SDK не классифицирует их локально и передаёт ошибки API.
 
-TODO: List, поиск, фильтрация, сортировка, пагинация, Delete, expand и массовые операции.
+List — [transport.md](transport.md), Delete и массовые операции — [write-async.md](write-async.md);
+expand нет.
 Поддержка ссылок не означает поддержку раскрытых объектов.
 
 JSON проверен через `encoding/json` и `encoding/json/v2`, HTTP — с настоящим

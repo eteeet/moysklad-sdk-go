@@ -21,9 +21,10 @@ Type: wayfinder:map
 | 5 | [Розница и штатные бонусы](../sdk-v1-retail/spec.md) | 6 | Розничный сценарий E01→E02→E03/E04; references не требуют services |
 | 6 | [Файлы и семейство отчётов Turnover](../sdk-v1-files-reports/spec.md) | 5 | F01→F02; F03→F04/F05 независимо документов |
 | 7 | [Фасад, примеры и готовность v1](../sdk-v1-release/spec.md) | 4 | После основных capabilities; naming/consumer examples проектируются раньше |
-| 8 | [Опциональное расширение: Delete, batch и async](../sdk-v1-optional/spec.md) | 3 | Только после явного включения в scope |
+| 8 | [Опциональное расширение: Delete, batch и async](../sdk-v1-optional/spec.md) | 3 | Включена пользователем 2026-11-02 |
 
-В основной v1 — 49 tickets в 7 захватках; optional — ещё 3 tickets в восьмой spec.
+В основной v1 — 49 tickets в 7 захватках; optional — ещё 3 tickets в восьмой spec, включённой в v1
+2026-11-02.
 Для реализации «крупная захватка» означает один согласованный пакет работ,
 а не один большой code commit. Коммит остаётся по ticket.
 
@@ -129,9 +130,9 @@ Type: wayfinder:map
 
 | ID | Ticket | Blocked by | Status |
 | --- | --- | --- | --- |
-| X01 | [Delete выбранных ресурсов](../sdk-v1-optional/issues/01-delete.md) | T02, T03 | needs-info |
-| X02 | [Batch create/update/delete](../sdk-v1-optional/issues/02-batch.md) | T02, T03, T08, T10 | needs-info |
-| X03 | [Async submit/status/result/cancel](../sdk-v1-optional/issues/03-async.md) | T02, T03, T08, T09, F01 | needs-info |
+| X01 | [Delete выбранных ресурсов](../sdk-v1-optional/issues/01-delete.md) | T02, T03 | resolved |
+| X02 | [Batch create/update/delete](../sdk-v1-optional/issues/02-batch.md) | T02, T03, T08, T10 | resolved |
+| X03 | [Async submit/status/result/cancel](../sdk-v1-optional/issues/03-async.md) | T02, T03, T08, T09, F01 | resolved |
 
 ## Decisions so far
 
@@ -159,6 +160,11 @@ Type: wayfinder:map
   CHANGELOG, приёмка coverage. Находка R02: обход `assortment.List` через pages.All требует той же
   beta-опции (godoc, docs/catalog.md). R04 исправил status-entities (security/token,
   context/application) и закрепил тестом.
+
+- 2026-11-02, пользователь: захватка 8 входит в v1 — всё по источнику для сервисов SDK, batch
+  раздельными методами. Перед ней — fix `assortment.Service.All` (beta-тег на каждой странице).
+  X01 (`c0c5d1c`), X02 (`6a3bbbc`), X03 (`791490f`) resolved; независимые Standards/Spec review
+  каждого ticket исправлены в коммитах tickets. Guide — docs/write-async.md.
 
 - Пользователь запросил план/spec/tickets для перечисленного профиля v1.
   Это авторизация planning, не запуска реализации или commit planning.
@@ -189,5 +195,5 @@ T01 фиксирует точный публичный interface response metada
 Изменений Go-кода и новых коммитов нет. Specs остаются DRAFT, main tickets needs-triage,
 optional tickets needs-info. Runtime tests SDK для Markdown planning не запускались.
 
-Итог реализации 2026-11-02: 49 main tickets resolved, optional X01–X03 needs-info (вне v1);
-приёмка — `coverage.md`, раздел «Приёмка v1».
+Итог реализации 2026-11-02: 49 main tickets и X01–X03 resolved; приёмка — `coverage.md`,
+раздел «Приёмка v1».

@@ -1,5 +1,5 @@
-Status: needs-info
-Stage: DRAFT
+Status: resolved
+Stage: APPROVED
 
 # 8. Опциональное расширение: Delete, batch и async
 
@@ -90,9 +90,9 @@ rollback. Distributed account queue полностью одним Client не к
 
 ## Open Decisions
 
-- По умолчанию X01–X03 НЕ входят в v1. Ответ на вопрос о scope ещё не получен.
-- Если пользователь включает их, R01/R04 readiness пересчитывается с X01–X03; никакого
-  статусного «все лимиты реализованы» до этого.
+- 2026-11-02, пользователь: X01–X03 входят в v1, объём — всё, что источник описывает для сервисов
+  SDK; batch — раздельные CreateMany/UpdateMany/DeleteMany. Итоги — Answer tickets,
+  [docs/write-async.md](../../docs/write-async.md).
 
 ## Out of Scope
 

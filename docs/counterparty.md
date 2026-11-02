@@ -117,8 +117,8 @@ plain/gzip, серверные ответы, context и ошибки. Живой
 
 Не реализованы accounts (включая модели и metadata), contactpersons, notes,
 files, discounts, региональные `mod__requisites__uz`/`mod__requisites__kz`,
-их metadata и операции. Также отсутствуют List/search/filter/sort/pagination,
-Delete, expand, batch и управление типами цен. Наличие Reference не означает
+их metadata и операции. Также отсутствуют expand и управление типами цен;
+List — [transport.md](transport.md), Delete, массовые операции и ListAsync — [write-async.md](write-async.md). Наличие Reference не означает
 поддержку операций связанной сущности.
 
 Контракт сверён с официальной документацией на revision

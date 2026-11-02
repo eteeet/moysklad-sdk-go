@@ -53,6 +53,7 @@
 
 ## Не входит
 
-Delete, batch, expand, изображения и файлы (только метаданные коллекций), `minimumStock` у Product и
+Expand, изображения и файлы (только метаданные коллекций), `minimumStock` у Product и
 Variant, отдельные мутации компонентов комплекта, массовое создание характеристик, склады остатков
-(storebalances). Противоречия источника записаны в godoc и Answer tickets C01–C08.
+(storebalances). Delete, массовые операции и `ListAsync` ассортимента —
+[write-async.md](write-async.md). Противоречия источника записаны в godoc и Answer tickets C01–C08.

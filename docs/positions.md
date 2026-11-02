@@ -116,7 +116,7 @@ Embedded write имеет предел API 1000 строк. SDK не долже�
 Обычный Get заголовка документа возвращает positions metadata; наличие meta не означает,
 что Rows прочитаны. Для строк нужна явная страница. Этот модуль не добавляет List
 документов,
-отдельные HTTP Get/Create/Update/Delete строк, batch, templates, walker, stock enrichment
+отдельные HTTP Get/Create/Update/Delete строк, массовые операции строк, templates, walker, stock enrichment
 или expand. Expand отложен до конца разработки всего остального SDK, если понадобится.
 
 Первичные источники на revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`:

@@ -82,7 +82,8 @@ context, auth/transport/APIError, malformed/null/empty ответы и ошиб�
 Реализованы: List одной страницы с filter/search/order ([transport](transport.md)), явный обход
 страниц через `pages.All`, поля строк общей формы (pack, things, gtd, trackingCodes, declaration,
 stock — [positions](positions.md)) и `fields=stock`/`declaration` у GetPositions.
-Delete, batch, templates/new, wizard, expand (в том числе stock в Get/List через expand=positions),
+Templates/new, wizard, expand (в том числе stock в Get/List через expand=positions),
 отдельные mutations позиций, файлы и их операции, автоматический обход страниц и финансовые
-вычисления остаются вне этих срезов.
+вычисления остаются вне этих срезов. Delete и массовые операции документов —
+[write-async.md](write-async.md).
 Точный scope полей и исключений каждого документа указан в его документации.

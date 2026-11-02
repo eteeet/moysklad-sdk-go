@@ -36,7 +36,7 @@ Stage: APPROVED
 | context/application | [A04](../sdk-v1-access/issues/04-application-context.md) | не Vendor API и не entity/application по installationId |
 | Фасад SDK | [T01](../sdk-v1-foundation/issues/01-public-interface.md), [R01](../sdk-v1-release/issues/01-facade.md) | shared transport и typed handles без HTTP в constructor |
 | Готовность первого выпуска | [R02](../sdk-v1-release/issues/02-examples.md), [R03](../sdk-v1-release/issues/03-ci-release.md), [R04](../sdk-v1-release/issues/04-acceptance.md) | examples/CI/CHANGELOG и method-specific status вместо единого CRUD чекбокса |
-| Опциональные Delete/batch/async | [X01](../sdk-v1-optional/issues/01-delete.md), [X02](../sdk-v1-optional/issues/02-batch.md), [X03](../sdk-v1-optional/issues/03-async.md) | решение пользователя; needs-info; пока вне основной v1 |
+| Опциональные Delete/batch/async | [X01](../sdk-v1-optional/issues/01-delete.md), [X02](../sdk-v1-optional/issues/02-batch.md), [X03](../sdk-v1-optional/issues/03-async.md) | включены пользователем 2026-11-02; matrix по разделам источника, docs/write-async.md |
 
 Прежние первые пять «открытых замечаний последнего ревью» status-technical.md
 уже закрыты кодом/14 коммитами dbe1e01…acbe294. Они не создаются повторно.
@@ -45,10 +45,10 @@ Stage: APPROVED
 
 ## Приёмка v1 (R04, 2026-11-02)
 
-Все строки, кроме «Опциональные Delete/batch/async», закрыты: каждый перечисленный ticket — resolved,
+Все строки закрыты: каждый перечисленный ticket — resolved,
 в его Answer записаны BASE, коммит, тесты и независимые Standards/Spec review; волны прошли
-пользовательские review в `.scratch/sdk-v1-*/review-*.md`. X01–X03 вынесены из v1 решением
-пользователя (2026-11-01) и остаются needs-info.
+пользовательские review в `.scratch/sdk-v1-*/review-*.md`. X01–X03 сначала были вынесены из v1
+(2026-11-01), затем включены пользователем (2026-11-02) и закрыты захваткой 8.
 
 Проверяемые доказательства в коде:
 - `client_test.go`: каждый пакет `entity/*`, metadata, files, contexts, audit, security и
@@ -69,5 +69,8 @@ Stage: APPROVED
   только в пределах процесса;
 - `fields` в List справочников и документов не принимается; `fields=minimumStock` у Product/Variant
   ждёт модели неснижаемого остатка; изображения в files не поддержаны;
-- expand, Delete, batch, async, остальные сущности и отчёты, Vendor API — вне v1
+- batch: статус ответа с ошибками отдельных элементов и порядок элементов ответа источник не
+  описывает; после сбоя исход массовой записи и создания async-задачи неизвестен;
+- expand, корзина документов, операции позиций, async-отчёты, остальные сущности и отчёты,
+  Vendor API — вне v1
   (docs/status-entities.md, docs/status-technical.md).

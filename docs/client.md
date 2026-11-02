@@ -21,11 +21,12 @@ report, err := c.Report().Turnover().All(ctx, turnover.AllOptions{...})
 | Вызов | Что возвращает |
 | --- | --- |
 | `c.Entity().<Сущность>()` | сервис пакета `entity/<сущность>`: Product, CustomerOrder, Assortment, … UOM; `Service()` возвращает `*service.Client` |
-| `c.Entity().Metadata()` | `metadata.Service`: метаданные сущностей и статусы (CreateState/UpdateState) |
+| `c.Entity().Metadata()` | `metadata.Service`: метаданные сущностей и статусы (CreateState/UpdateState/DeleteState) |
 | `c.Entity().Files()` | `files.Service`: файлы объектов |
 | `c.Report().Turnover()` | `turnover.Service` |
 | `c.Context()` | `contexts.Service`: `Employee(ctx)`, `Application(ctx)` |
 | `c.Audit()`, `c.Security()` | `audit.Service`, `security.Service` |
+| `c.Async()` | `async.Service`: асинхронные задачи ([write-async.md](write-async.md)) |
 | `c.Transport()` | общий `transport.Client`: Download, HeaderValues, standalone сервисы |
 
 Все handles работают через один transport: общие HTTPClient, Auth, Header, Limiter и Retry.

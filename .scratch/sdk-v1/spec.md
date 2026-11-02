@@ -50,10 +50,8 @@ Get/List/Create/Update там, где они действительно подд
 GetPositions — у товарных документов; files upload/download, PriceType ReplaceAll,
 Employee security и metadata states — явно описанные специальные методы, не generic CRUD.
 
-Вопрос о включении Delete/batch/async задан пользователю; явного ответа нет.
-Принято рабочее предположение: они не входят в основной v1. Для них всё равно
-созданы X01–X03 и отдельная spec. Если включить — readiness R01/R04 и critical path
-пересчитываются; код optional не запускается просто по готовности зависимостей.
+Вопрос о включении Delete/batch/async решён 2026-11-02: пользователь включил X01–X03 в v1
+(захватка 8, после R01–R04).
 
 «Все лимиты» означает поддержку применимых ограничений реализованных операций.
 Квота очереди async и batch processing timeout имеют реализацию в X02/X03;
@@ -163,7 +161,7 @@ Images/cashier lifecycle/employee password activation и metadata definition mut
 
 ## Open Decisions до реализации
 
-1. Включаются ли X01–X03 Delete/batch/async? Пока рекомендованный основной scope — без них.
+1. Включаются ли X01–X03 Delete/batch/async? Решено 2026-11-02: да.
 2. T01: per-call options/ResponseInfo и совместимость public method types; R01: naming фасада.
 3. C08: default legacy mode или явно выбранный beta; никакого автоматического переключения.
 4. Источники: Role.permissions Array vs Object; Turnover.ByOperations даты required
