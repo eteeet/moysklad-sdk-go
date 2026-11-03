@@ -89,8 +89,8 @@ type UpdateRequest struct {
 	Attributes model.Field[[]model.Attribute] `json:"attributes,omitzero"`
 	// Barcodes заменяет список целиком: отсутствующие штрихкоды удаляются, пустой список — все.
 	Barcodes model.Field[[]model.Barcode] `json:"barcodes,omitzero"`
-	// Packs заменяет коллекцию упаковок целиком; id упаковки только читается, поэтому прежние
-	// упаковки сервер пересоздаёт.
+	// Packs заменяет коллекцию упаковок целиком: упаковка с ID — существующая (пример изменения
+	// товара сохраняет её id), без ID — новая; не переданные удаляются.
 	Packs             model.Field[[]PackRequest]             `json:"packs,omitzero"`
 	IsSerialTrackable model.Field[bool]                      `json:"isSerialTrackable,omitzero"`
 	Alcoholic         model.Field[AlcoholicRequest]          `json:"alcoholic,omitzero"`
@@ -111,9 +111,12 @@ type UpdateRequest struct {
 }
 
 // PackRequest — упаковка в запросе: uom и quantity необходимы, штрихкодов не больше одного;
-// переданный список штрихкодов заменяет прежний.
+// переданный список штрихкодов заменяет прежний. ID адресует существующую упаковку (id таблица
+// помечает «только для чтения»: значение не меняется, им выбирается упаковка, как в примере
+// изменения товара); пустой ID — новая упаковка.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-upakovki-tovara
 type PackRequest struct {
+	ID       string                       `json:"id,omitempty"`
 	UOM      model.Reference              `json:"uom"`
 	Quantity float64                      `json:"quantity"`
 	Barcodes model.Field[[]model.Barcode] `json:"barcodes,omitzero"`

@@ -56,9 +56,9 @@ type MinimumStockRequest struct {
 	StoreBalances Field[[]StoreBalanceRequest] `json:"storebalances,omitzero"`
 }
 
-// StoreBalanceRequest — неснижаемый остаток склада: store и quantity. Meta таблица помечает «только
-// для чтения», но пример изменения товара определяет ею существующую строку storebalances — SDK её
-// передаёт; в CreateStoreBalance и UpdateStoreBalance Meta не нужна.
+// StoreBalanceRequest — неснижаемый остаток склада: store и quantity. Meta адресует существующую
+// строку storebalances в теле товара (так в примере изменения): readonly-маркер запрещает менять
+// значение, а не выбирать по нему строку. В CreateStoreBalance и UpdateStoreBalance Meta не нужна.
 type StoreBalanceRequest struct {
 	Meta     Field[Meta]      `json:"meta,omitzero"`
 	Store    Field[Reference] `json:"store,omitzero"`

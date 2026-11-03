@@ -2,12 +2,13 @@ package consignment
 
 import "github.com/eteeet/moysklad-sdk-go/model"
 
-// CreateRequest: label и assortment обязательны по тексту метода. Таблица помечает «необходимо при
-// создании» и expiryDate, но метод и пример его не требуют — SDK его не проверяет.
-// Barcodes — model.Barcode, как у товара.
+// CreateRequest: assortment обязателен. Источник даёт три версии: таблица помечает необходимыми
+// label и expiryDate, текст метода создания — label и assortment, вводный текст — label или
+// expiryDate. SDK проверяет до запроса assortment и хотя бы одно из label и expiryDate; остальное
+// решает сервер (реальное поведение не проверено). Barcodes — model.Barcode, как у товара.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/consignment#3-sozdat-partiyu
 type CreateRequest struct {
-	Label        string                         `json:"label"`
+	Label        model.Field[string]            `json:"label,omitzero"`
 	Assortment   model.Reference                `json:"assortment"`
 	ExpiryDate   model.Field[model.DateTime]    `json:"expiryDate,omitzero"`
 	Description  model.Field[string]            `json:"description,omitzero"`

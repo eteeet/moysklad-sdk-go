@@ -157,7 +157,7 @@ func fillRequest[I any]() I {
 			field.Set(reflect.ValueOf(model.PriceType{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
 		case field.Type() == reflect.TypeFor[model.Reference]():
 			field.Set(reflect.ValueOf(model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
-		case slices.Contains([]string{"Description", "Name", "Code", "ISOCode"}, v.Type().Field(i).Name) && field.Type() == reflect.TypeFor[model.Field[string]]():
+		case slices.Contains([]string{"Description", "Name", "Code", "ISOCode", "Label"}, v.Type().Field(i).Name) && field.Type() == reflect.TypeFor[model.Field[string]]():
 			field.Set(reflect.ValueOf(model.Value("x")))
 		case field.Type() == reflect.TypeFor[*float64]():
 			field.Set(reflect.ValueOf(new(1.0)))

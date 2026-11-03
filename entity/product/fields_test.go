@@ -46,6 +46,9 @@ func TestBarcodesAndPacks(t *testing.T) {
 			{"update clear", product.UpdateRequest{Barcodes: model.Value([]model.Barcode{}), Packs: model.Value([]product.PackRequest{})}, `{"barcodes":[],"packs":[]}`},
 			{"update pack without barcode", product.UpdateRequest{Packs: model.Value([]product.PackRequest{{UOM: uom, Quantity: 0.5}})},
 				`{"packs":[{"uom":{"meta":{"href":"` + uom.Meta.Href + `","type":"uom"}},"quantity":0.5}]}`},
+			// Пример изменения товара источника: существующая упаковка по id.
+			{"update existing pack", product.UpdateRequest{Packs: model.Value([]product.PackRequest{{ID: "354ba98c-2cb9-11e6-8a84-bae5000000e3", UOM: uom, Quantity: 2}})},
+				`{"packs":[{"id":"354ba98c-2cb9-11e6-8a84-bae5000000e3","uom":{"meta":{"href":"` + uom.Meta.Href + `","type":"uom"}},"quantity":2}]}`},
 		} {
 			data, err := codec.Marshal(tc.input)
 			if err != nil {

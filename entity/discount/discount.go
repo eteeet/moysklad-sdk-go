@@ -77,7 +77,8 @@ type SpecialPrice struct {
 }
 
 // SpecialPriceRequest — спеццена в запросе по таблице: priceType и value (копейки). Пример создания
-// источника передаёт вместо этого meta типа цены — SDK следует таблице.
+// источника передаёт вместо этого meta типа цены — SDK следует таблице; сервером эта форма записи
+// не проверена.
 type SpecialPriceRequest struct {
 	PriceType model.Field[model.Reference] `json:"priceType,omitzero"`
 	Value     model.Field[float64]         `json:"value,omitzero"`

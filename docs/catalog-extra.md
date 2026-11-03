@@ -8,8 +8,8 @@
 ## Product
 
 - Штрихкоды — `model.Barcode`; упаковки — `Pack` (uom, quantity, не больше одного штрихкода).
-  В Update barcodes и packs заменяют коллекцию целиком; id упаковки только читается, поэтому прежние
-  упаковки сервер пересоздаёт. Без barcodes в Create сервер создаёт один случайный EAN13.
+  В Update barcodes и packs заменяют коллекцию целиком: упаковка с `ID` — существующая (id только
+  адресует её), без — новая. Без barcodes в Create сервер создаёт один случайный EAN13.
 - Поля: alcoholic, minimumBalance, partialDisposal, paymentItemType, ppeType, taxSystem, trackingType,
   tnved, things, weighed, onTap, isSerialTrackable; variantsCount, images и files — только чтение
   (изображения — пакет `images`, файлы — `files`). Модули `mod__tasnif__uz`, `mod__marking__uz`,
@@ -21,6 +21,8 @@
   в ответе Create/Update, где поле передано (Product и Variant):
   ALL_WAREHOUSE_SUM и ALL_WAREHOUSE_SAME — quantity, WAREHOUSE_VARIED — метаданные storebalances.
   Источник пишет коллекцию то `storebalances`, то `storeBalances` — читаются оба ключа.
+- Meta строки storebalances и id кода маркировки или упаковки в запросах только адресуют
+  существующий объект: readonly-маркер таблицы запрещает менять значение, а не выбирать по нему.
 - Запись — `MinimumStockRequest` в Create/Update; ALL_WAREHOUSE_SAME только читается.
 - `ListStoreBalances`, `GetStoreBalance`, `CreateStoreBalance`, `UpdateStoreBalance`,
   `DeleteStoreBalance`, `DeleteManyStoreBalances` — `entity/{product,variant}/{id}/storebalances`.
@@ -43,8 +45,9 @@
 
 - `entity/contentcard`: Create требует name, description, cardContentName, assortment, salePlatform и
   непустой salesChannels; assortment после создания не меняется.
-- `entity/consignment`: Create требует label и assortment по тексту метода; таблица помечает
-  «необходимо при создании» и expiryDate, но метод и пример его не требуют. name и images — чтение.
+- `entity/consignment`: источник противоречит себе (таблица — label и expiryDate, метод — label и
+  assortment, вводный текст — label или expiryDate); SDK требует assortment и хотя бы одно из label и
+  expiryDate, остальное решает сервер. name и images — чтение.
 - `entity/aggregatepack`: Create требует непустой barcodes; childrenList — только с
   `transport.WithBetaFeature(aggregatepack.BetaChildrenList)`. Позиции можно передать в теле
   Create/Update (маркера readonly нет; как Update сочетает их с прежними, источник не описывает)
@@ -61,9 +64,9 @@
   списка у вида нет — общий `discount.List`. name, active, allProducts, allAgents (и usePriceType у
   спеццены) обязательны и передаются всегда, false — тоже. В Update пустой массив или null удаляет
   значение.
-- Таблица называет коллекцию групп `productfolders`, примеры и фикстуры — `productFolders`: SDK
-  следует данным, а общий список читает оба ключа. specialPrice в запросе — по таблице (priceType, value); пример создания передаёт
-  meta типа цены.
+- Таблица называет коллекцию групп `productfolders`, примеры и фикстуры — `productFolders`: SDK пишет
+  productFolders, а читает оба ключа во всех типах скидок. specialPrice в запросе — по таблице
+  (priceType, value); пример создания передаёт meta типа цены, сервером форма записи не проверена.
 
 ## Коды маркировки — пакет `trackingcode`, `c.Entity().TrackingCode()`
 

@@ -34,7 +34,7 @@ func ref(path, typ string) model.Reference {
 }
 
 var (
-	full   = consignment.CreateRequest{Label: "Метка", Assortment: ref("entity/variant/7a83c422-3c64-11e6-8a84-bae500000012", "variant"), ExpiryDate: model.Value(model.DateTime(time.Date(2017, 12, 30, 21, 0, 0, 0, time.UTC))), Description: model.Value(""), Code: model.Value("c-1"), ExternalCode: model.Value("ext"), Archived: model.Value(false), Barcodes: model.Value([]model.Barcode{{"ean8": "20000000"}, {"ean13": "2000000000000"}, {"code128": "code128 barcode"}}), Attributes: model.Value([]model.Attribute{})}
+	full   = consignment.CreateRequest{Label: model.Value("Метка"), Assortment: ref("entity/variant/7a83c422-3c64-11e6-8a84-bae500000012", "variant"), ExpiryDate: model.Value(model.DateTime(time.Date(2017, 12, 30, 21, 0, 0, 0, time.UTC))), Description: model.Value(""), Code: model.Value("c-1"), ExternalCode: model.Value("ext"), Archived: model.Value(false), Barcodes: model.Value([]model.Barcode{{"ean8": "20000000"}, {"ean13": "2000000000000"}, {"code128": "code128 barcode"}}), Attributes: model.Value([]model.Attribute{})}
 	update = consignment.UpdateRequest{Label: model.Value("Метка 2"), ExpiryDate: model.Null[model.DateTime](), Barcodes: model.Value([]model.Barcode{})}
 )
 
@@ -67,7 +67,8 @@ func TestRequestJSON(t *testing.T) {
 		}{
 			{"create full", full, read(t, "custom/consignment/create-full.golden.json")},
 			{"update", update, read(t, "custom/consignment/update.golden.json")},
-			{"create minimal", consignment.CreateRequest{Label: "L", Assortment: ref("entity/product/1", "product")}, []byte(`{"label":"L","assortment":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/product/1","type":"product","mediaType":"application/json"}}}`)},
+			{"create minimal", consignment.CreateRequest{Label: model.Value("L"), Assortment: ref("entity/product/1", "product")}, []byte(`{"label":"L","assortment":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/product/1","type":"product","mediaType":"application/json"}}}`)},
+			{"create expiry only", consignment.CreateRequest{ExpiryDate: model.Value(model.DateTime(time.Date(2017, 12, 30, 21, 0, 0, 0, time.UTC))), Assortment: ref("entity/product/1", "product")}, []byte(`{"expiryDate":"2017-12-31 00:00:00.000","assortment":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/product/1","type":"product","mediaType":"application/json"}}}`)},
 		} {
 			t.Run(codec.Name+"/"+tc.name, func(t *testing.T) {
 				got, err := codec.Marshal(tc.input)
@@ -138,12 +139,16 @@ func TestServiceValidation(t *testing.T) {
 	for name, invoke := range map[string]func(...transport.RequestOption) error{
 		"get bad id": func(o ...transport.RequestOption) error { _, err := s.Get(ctx, "bad", o...); return err },
 		"get path":   func(o ...transport.RequestOption) error { _, err := s.Get(ctx, testID+"/x", o...); return err },
+		"create null expiry": func(o ...transport.RequestOption) error {
+			_, err := s.Create(ctx, consignment.CreateRequest{ExpiryDate: model.Null[model.DateTime](), Assortment: ref("entity/product/1", "product")}, o...)
+			return err
+		},
 		"create no label": func(o ...transport.RequestOption) error {
 			_, err := s.Create(ctx, consignment.CreateRequest{Assortment: ref("entity/product/1", "product")}, o...)
 			return err
 		},
 		"create no assortment": func(o ...transport.RequestOption) error {
-			_, err := s.Create(ctx, consignment.CreateRequest{Label: "L"}, o...)
+			_, err := s.Create(ctx, consignment.CreateRequest{Label: model.Value("L")}, o...)
 			return err
 		},
 		"update empty": func(o ...transport.RequestOption) error {

@@ -39,8 +39,8 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Consignment, error) {
 	transport.ResetResponseInfo(opts)
-	if input.Label == "" {
-		return nil, fmt.Errorf("moysklad: create consignment: label must not be empty")
+	if label, _ := input.Label.Get(); label == "" && !hasDate(input.ExpiryDate) {
+		return nil, fmt.Errorf("moysklad: create consignment: label or expiryDate must be set")
 	}
 	if input.Assortment.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create consignment: assortment meta.href must not be empty")
@@ -120,4 +120,9 @@ func (s *Service) UpdateMany(ctx context.Context, items []batch.Update[UpdateReq
 func (s *Service) DeleteMany(ctx context.Context, ids []string, opts ...transport.RequestOption) ([]batch.Deleted, error) {
 	transport.ResetResponseInfo(opts)
 	return write.DeleteMany(ctx, s.client, "consignment", ids, opts)
+}
+
+func hasDate(f model.Field[model.DateTime]) bool {
+	date, ok := f.Get()
+	return ok && !date.IsZero()
 }
