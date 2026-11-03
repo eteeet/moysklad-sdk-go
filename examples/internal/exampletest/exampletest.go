@@ -3,18 +3,18 @@ package exampletest
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	moysklad "github.com/eteeet/moysklad-sdk-go"
 	"github.com/eteeet/moysklad-sdk-go/examples/internal/env"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 )
 
 // Client — клиент примеров с токеном "token" на httptest-сервер с handler h. Адрес сервера
 // для href в ответах — "http://" + r.Host; сервер закрывается в t.Cleanup.
 func Client(t *testing.T, h http.HandlerFunc) *moysklad.Client {
 	t.Helper()
-	server := httptest.NewServer(h)
+	server := memnet.NewServer(h)
 	t.Cleanup(server.Close)
 	c, err := env.ClientFor(server.URL+"/api/remap/1.2", "token")
 	if err != nil {

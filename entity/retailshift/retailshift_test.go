@@ -3,7 +3,6 @@ package retailshift_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"reflect"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -148,7 +148,7 @@ func TestRetailShiftHTTP(t *testing.T) {
 
 func TestRetailShiftValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"reflect"
 	"slices"
 	"strings"
@@ -81,6 +80,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/files"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/query"
@@ -458,7 +458,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 func testServiceOptions(t *testing.T, tc optionsCase, unauthorized bool) {
 	t.Helper()
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if r.Method != tc.method || r.URL.RequestURI() != "/"+tc.path || r.Header.Get("Accept-Language") != "en" ||
 			r.Header.Get("X-Lognex-Accept-Region") != "kz" {
@@ -569,7 +569,7 @@ func composed(info *transport.ResponseInfo) transport.RequestOption {
 // Регрессия ревью 46e9d06 и 35078b4: локальная ошибка (валидация до запроса) не оставляет
 // в ResponseInfo метаданных предыдущего вызова, и при составной опции тоже.
 func TestLocalErrorResetsResponseInfo(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Lognex-Content-Region", "kz")
 		w.WriteHeader(http.StatusServiceUnavailable)
 		w.Write([]byte(`{"errors":[{"error":"x","code":1074}]}`))

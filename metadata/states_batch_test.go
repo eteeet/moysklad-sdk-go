@@ -3,11 +3,11 @@ package metadata_test
 import (
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/batch"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -17,7 +17,7 @@ import (
 func TestStatesBatch(t *testing.T) {
 	const stateID = "b56215dc-60c3-11e7-6adb-ede500000013"
 	var got []string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
 		got = append(got, r.Method+" "+r.URL.RequestURI()+" "+string(body))
 		io.WriteString(w, `[{"meta":{"type":"state"},"id":"`+stateID+`","name":"На подписании","color":34617,"stateType":"Regular"}]`)

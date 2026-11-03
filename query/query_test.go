@@ -2,11 +2,11 @@ package query_test
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -96,7 +96,7 @@ func TestFilterEncodedOnce(t *testing.T) {
 	}
 	var got url.Values
 	var raw string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got, raw = r.URL.Query(), r.URL.RawQuery
 		w.Write([]byte(`{}`))
 	}))

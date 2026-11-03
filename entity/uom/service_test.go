@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strings"
 	"sync/atomic"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -567,7 +567,7 @@ func writeUOMResponse(t *testing.T, w http.ResponseWriter, fixture []byte, compr
 
 func newUOMService(t *testing.T, handler http.Handler) *uom.Service {
 	t.Helper()
-	server := httptest.NewServer(handler)
+	server := memnet.NewServer(handler)
 	t.Cleanup(server.Close)
 	auth, err := transport.BearerToken("test-token")
 	if err != nil {

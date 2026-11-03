@@ -3,13 +3,13 @@ package turnover_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
@@ -50,7 +50,7 @@ func TestStoreRowJSON(t *testing.T) {
 
 // Зона расчёта периода уходит заголовком и у отчёта по складам.
 func TestByStoreTimezone(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Lognex-Accept-Timezone") != "Sun, 01 Nov 2026 12:00:00 +0700" {
 			t.Errorf("timezone = %q", r.Header.Get("X-Lognex-Accept-Timezone"))
 		}
@@ -102,7 +102,7 @@ func TestByStoreHTTP(t *testing.T) {
 // Без товара или модификации запрос не уходит: сервер его не выполнит.
 func TestByStoreValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

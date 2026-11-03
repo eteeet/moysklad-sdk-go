@@ -4,13 +4,13 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -54,7 +54,7 @@ func TestCashierHTTP(t *testing.T) {
 
 func TestListCashiers(t *testing.T) {
 	var uri string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		uri = r.Method + " " + r.URL.RequestURI()
 		io.WriteString(w, `{"meta":{"href":"x","size":1},"rows":[{"id":"`+cashierID+`"}]}`)
 	}))

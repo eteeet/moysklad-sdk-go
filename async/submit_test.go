@@ -3,7 +3,6 @@ package async_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"sync/atomic"
 	"testing"
@@ -11,6 +10,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/async"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/entity/counterparty"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -37,7 +37,7 @@ func TestListAsync(t *testing.T) {
 			var calls atomic.Int32
 			var status atomic.Int32
 			status.Store(http.StatusAccepted)
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				q := r.URL.Query()
 				if r.Method != http.MethodGet || r.URL.Path != "/entity/"+entity || q.Get("async") != "true" || q.Get("filter") != "name=x" ||
@@ -88,7 +88,7 @@ func TestListAsyncRequiresTaskHeaders(t *testing.T) {
 		"not async":    {"Content-Location": "https://api.moysklad.ru/api/remap/1.2/entity/" + taskID, "Location": "https://api.moysklad.ru/api/remap/1.2/entity/" + taskID + "/result"},
 		"no status":    {"Location": "https://api.moysklad.ru/api/remap/1.2/async/" + taskID + "/result"},
 	} {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			for k, v := range headers {
 				w.Header().Set(k, v)
 			}
@@ -106,7 +106,7 @@ func TestListAsyncRequiresTaskHeaders(t *testing.T) {
 // Limit, Offset, fields и async в Extra — ошибка до запроса.
 func TestListAsyncRejects(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, _ := transport.NewClient(transport.Config{BaseURL: server.URL})
 	for entity, submit := range submits {

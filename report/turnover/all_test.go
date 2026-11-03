@@ -3,7 +3,6 @@ package turnover_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"os"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
@@ -108,7 +108,7 @@ func TestAllHTTP(t *testing.T) {
 
 // Зона расчёта периода уходит заголовком X-Lognex-Accept-Timezone, ответная — в ResponseInfo.
 func TestAllTimezone(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Lognex-Accept-Timezone") != "Sun, 01 Nov 2026 12:00:00 +0300" {
 			t.Errorf("timezone = %q", r.Header.Get("X-Lognex-Accept-Timezone"))
 		}
@@ -132,7 +132,7 @@ func TestAllTimezone(t *testing.T) {
 
 func TestAllValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

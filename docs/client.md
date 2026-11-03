@@ -68,6 +68,8 @@ Client создаётся только через NewClient. У нулевого
 
 `make check`: gofmt, `go vet ./... ./testdata`, `go test -race -count=1 -p 2 ./...` (примеры,
 SHA-256 фикстур, статус сущностей) и `git diff --check` всего дерева и незакоммиченных изменений.
-Сеть и токены не нужны. При локальных сбоях TCP допустим `make check CHECK_P=1` — укажи это в
-отчёте. CI workflow не настроен (решение для v1); тег и публикация — отдельной командой.
+Сеть и токены не нужны. Тестовые HTTP-серверы — `internal/memnet.NewServer`: тот же
+`*httptest.Server`, но соединения в памяти. Поток loopback TCP-соединений на macOS изредка давал
+«connect: operation timed out»; `httptest.NewServer` допустим только с пометкой `// TCP:` строкой
+выше (проверяет `TestNoTCPServers`). CI workflow не настроен (решение для v1); тег и публикация — отдельной командой.
 Изменения версии — [CHANGELOG](../CHANGELOG.md).

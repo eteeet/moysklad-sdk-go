@@ -5,7 +5,6 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -41,6 +40,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -181,7 +181,7 @@ func TestDocumentTrash(t *testing.T) {
 				ok     bool
 			}{{200, "", true}, {204, "", true}, {403, `{"errors":[{"error":"forbidden","code":1016}]}`, false}, {202, "", false}} {
 				var calls atomic.Int32
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					calls.Add(1)
 					b, _ := io.ReadAll(r.Body)
 					if r.Method != http.MethodPost || r.URL.Path != "/entity/"+tc.document+"/"+testID+"/trash" || len(b) != 0 {

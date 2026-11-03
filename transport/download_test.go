@@ -18,6 +18,7 @@ import (
 	"time"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -38,7 +39,7 @@ func downloadClient(t *testing.T, base string, cfg transport.Config) *transport.
 // Тело копируется целиком без лимита 20 МБ, файл не принимается за JSON, ResponseInfo заполнен.
 func TestDownload(t *testing.T) {
 	payload := bytes.Repeat([]byte{0, 1, 2, 0xff}, 21_000_000/4)
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet || r.URL.Path != "/api/remap/1.2/download/abc" || r.URL.RawQuery != "miniature=true" ||
 			r.Header.Get("Authorization") != "Bearer secret-token" || r.Header.Get("Accept") != "*/*" {
 			t.Errorf("request = %s %s %v", r.Method, r.URL, r.Header)
@@ -67,7 +68,7 @@ func TestDownload(t *testing.T) {
 // попадает в текст ошибки.
 func TestDownloadRedirectAndOrigin(t *testing.T) {
 	var storageCalls atomic.Int32
-	storage := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	storage := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		storageCalls.Add(1)
 		if r.Header.Get("Authorization") != "" || r.URL.Query().Get("signature") != "s" {
 			t.Errorf("storage request = %s %v", r.URL, r.Header)
@@ -80,7 +81,7 @@ func TestDownloadRedirectAndOrigin(t *testing.T) {
 		w.Write([]byte("file"))
 	}))
 	defer storage.Close()
-	api := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	api := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "Bearer secret-token" {
 			t.Errorf("api authorization = %q", r.Header.Get("Authorization"))
 		}
@@ -107,10 +108,10 @@ func TestDownloadRedirectAndOrigin(t *testing.T) {
 	if _, err := c.Download(t.Context(), storage.URL+"/files/1", &out); err == nil || storageCalls.Load() != 2 {
 		t.Fatalf("foreign href: err = %v, calls = %d", err, storageCalls.Load())
 	}
-	closed := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	closed := memnet.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
 	closedURL := closed.URL
 	closed.Close()
-	leak := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	leak := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, closedURL+"/files/1?signature=top-secret", http.StatusFound)
 	}))
 	defer leak.Close()
@@ -129,7 +130,7 @@ func TestDownloadRedirectErrors(t *testing.T) {
 		"/api/remap/1.2/download/quote": `https://storage.invalid/%zz?pad="&signature=top-secret`,
 	}
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		w.Header().Set("X-Source", "api")
 		location, ok := malformed[r.URL.Path]
@@ -200,7 +201,7 @@ func TestDownloadRedactedTimeoutRetries(t *testing.T) {
 func TestDownloadErrors(t *testing.T) {
 	var calls atomic.Int32
 	var partial atomic.Bool
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if partial.Load() {
 			w.Header().Set("Content-Length", "10")
@@ -244,6 +245,7 @@ func TestDownloadGzip(t *testing.T) {
 		zw.Close()
 		return b.Bytes()
 	}
+	// TCP: свой http.Transport в HTTPClient не знает memnet.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Accept-Encoding") != "gzip" {
 			t.Errorf("accept-encoding = %q", r.Header.Get("Accept-Encoding"))
@@ -269,7 +271,7 @@ func TestDownloadGzip(t *testing.T) {
 
 // Ошибка writer прерывает загрузку и возвращается с числом записанных байт.
 func TestDownloadWriterError(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("data")) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("data")) }))
 	defer server.Close()
 	c := downloadClient(t, server.URL, transport.Config{})
 	sentinel := errors.New("disk full")
@@ -285,7 +287,7 @@ func (f failWriter) Write([]byte) (int, error) { return 0, f.err }
 // Обрыв тела и отмена контекста возвращают ошибку и число уже записанных байт.
 func TestDownloadShortReadAndCancel(t *testing.T) {
 	release := make(chan struct{})
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Length", "10")
 		w.Write([]byte("abcd"))
 		w.(http.Flusher).Flush()
@@ -317,7 +319,7 @@ func TestDownloadShortReadAndCancel(t *testing.T) {
 // Слоты Limiter освобождаются после успеха и после ошибки: следующая загрузка не ждёт.
 func TestDownloadReleasesLimiter(t *testing.T) {
 	var fail atomic.Bool
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if fail.Load() {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

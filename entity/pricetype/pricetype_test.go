@@ -5,7 +5,6 @@ import (
 	"compress/gzip"
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strings"
 	"sync/atomic"
@@ -14,6 +13,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -146,7 +146,7 @@ func TestHTTP(t *testing.T) {
 		} {
 			t.Run(op.name+"/"+tc.name, func(t *testing.T) {
 				var n atomic.Int32
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					n.Add(1)
 					body := new(bytes.Buffer)
 					body.ReadFrom(r.Body)
@@ -204,7 +204,7 @@ func TestHTTP(t *testing.T) {
 // Пустой и слишком длинный список, новый тип без имени — ошибки до запроса.
 func TestReplaceAllValidation(t *testing.T) {
 	var n atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { n.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { n.Add(1) }))
 	defer server.Close()
 	s := newService(t, server.URL)
 	tooMany := make([]pricetype.ReplaceItem, pricetype.MaxPriceTypes+1)

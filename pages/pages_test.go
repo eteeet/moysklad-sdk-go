@@ -5,11 +5,11 @@ import (
 	"encoding/json/v2"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/pages"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -31,7 +31,7 @@ func newServer(t *testing.T, bodies map[string]string) (*transport.Client, strin
 	t.Helper()
 	var calls atomic.Int32
 	var base string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := calls.Add(1)
 		body, ok := bodies[r.URL.RequestURI()]
 		if !ok || r.Method != http.MethodGet || r.Header.Get("X-Call") != "walk" {

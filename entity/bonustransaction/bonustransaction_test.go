@@ -3,7 +3,6 @@ package bonustransaction_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"reflect"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -151,7 +151,7 @@ func TestBonusTransactionHTTP(t *testing.T) {
 // SDK не повторяет запрос с токеном клиента.
 func TestBonusTransactionSolutionTokenDenied(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if r.Header.Get("Authorization") != "Bearer solution-token" {
 			t.Errorf("authorization = %q", r.Header.Get("Authorization"))
@@ -180,7 +180,7 @@ func TestBonusTransactionSolutionTokenDenied(t *testing.T) {
 
 func TestBonusTransactionValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

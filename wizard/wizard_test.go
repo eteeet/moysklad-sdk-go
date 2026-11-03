@@ -5,12 +5,12 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 	"github.com/eteeet/moysklad-sdk-go/wizard"
@@ -75,7 +75,7 @@ func TestFill(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var calls atomic.Int32
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				b, _ := io.ReadAll(r.Body)
 				if r.Method != http.MethodPost || r.URL.Path != "/api/remap/1.2/wizard/demand" || r.URL.RawQuery != "action=evaluate_price%2Cevaluate_vat" {
@@ -106,7 +106,7 @@ func TestFill(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			c, err := transport.NewClient(transport.Config{BaseURL: server.URL + "/api/remap/1.2", HTTPClient: server.Client(), Auth: auth})
+			c, err := transport.NewClient(transport.Config{BaseURL: server.URL + "/api/remap/1.2", Auth: auth})
 			if err != nil {
 				t.Fatal(err)
 			}

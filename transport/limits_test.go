@@ -3,11 +3,11 @@ package transport_test
 import (
 	"encoding/base64"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -93,7 +93,7 @@ func TestHeaderSizeLimit(t *testing.T) {
 		t.Fatalf("long Authorization: err = %v", err)
 	}
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	client := limitsClient(t, transport.Config{BaseURL: server.URL})
 	var opts []transport.RequestOption
@@ -131,7 +131,7 @@ func TestBodyDepthLimit(t *testing.T) {
 // Успешный ответ больше лимита запроса читается целиком.
 func TestNoResponseSizeLimit(t *testing.T) {
 	payload := `{"content":"` + strings.Repeat("a", transport.DefaultMaxBodySize+1) + `"}`
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte(payload)) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte(payload)) }))
 	defer server.Close()
 	var dst struct {
 		Content string `json:"content"`

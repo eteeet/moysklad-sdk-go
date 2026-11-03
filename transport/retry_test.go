@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"strconv"
 	"sync"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -47,7 +47,7 @@ type step struct {
 func retryClient(t *testing.T, clock *recordClock, steps ...step) (*transport.Client, *atomic.Int32) {
 	t.Helper()
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := int(calls.Add(1))
 		// Каждая попытка собрана заново: заголовок вызова ровно один, не накоплен.
 		if v := r.Header.Values("X-Call"); len(v) != 1 || v[0] != "1" {
@@ -175,7 +175,7 @@ func TestSendRetryLimiterPerAttempt(t *testing.T) {
 		t.Fatal(err)
 	}
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if calls.Add(1) == 1 {
 			w.WriteHeader(503)
 		}
@@ -202,7 +202,7 @@ func TestSendRetryCanceledInLimiter(t *testing.T) {
 		t.Fatal(err)
 	}
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		w.WriteHeader(503)
 	}))
@@ -224,7 +224,7 @@ func TestSendRetryCanceledInLimiter(t *testing.T) {
 func TestSendRetryConcurrent(t *testing.T) {
 	var mu sync.Mutex
 	seen := map[string]bool{}
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		first := !seen[r.Header.Get("X-Id")]
 		seen[r.Header.Get("X-Id")] = true

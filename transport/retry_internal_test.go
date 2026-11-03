@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"sync/atomic"
 	"syscall"
@@ -15,6 +14,7 @@ import (
 	"time"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 )
 
 func TestRetryableRequest(t *testing.T) {
@@ -132,7 +132,7 @@ func TestRetryReleasesSlotDuringPause(t *testing.T) {
 	var held []int
 	clock := &hookClock{after: func() { held = append(held, len(limiter.slots), len(limiter.cfg.Account.slots)) }}
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if calls.Add(1) == 1 {
 			w.WriteHeader(503)
 		}

@@ -7,12 +7,12 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -50,7 +50,7 @@ func HTTP[T any](t *testing.T, tc ResponseCase, method, path string, body []byte
 	invoke func(context.Context, *transport.Client) (*T, error), check func(*T)) {
 	t.Helper()
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if r.Method != method || r.URL.Path != "/api/remap/1.2/"+strings.Split(path, "?")[0] {
 			t.Errorf("request = %s %s", r.Method, r.URL)
@@ -104,7 +104,7 @@ func HTTP[T any](t *testing.T, tc ResponseCase, method, path string, body []byte
 	if err != nil {
 		t.Fatal(err)
 	}
-	client, err := transport.NewClient(transport.Config{BaseURL: server.URL + "/api/remap/1.2", HTTPClient: server.Client(), Auth: auth})
+	client, err := transport.NewClient(transport.Config{BaseURL: server.URL + "/api/remap/1.2", Auth: auth})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -5,7 +5,6 @@ import (
 	"compress/gzip"
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -13,6 +12,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/audit"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -123,7 +123,7 @@ func TestEventsEndpoints(t *testing.T) {
 		}{{200, false}, {200, true}, {403, false}} {
 			status := tc.status
 			var calls atomic.Int32
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				if r.Method != http.MethodGet || r.URL.RequestURI() != op.path {
 					t.Errorf("request = %s %s", r.Method, r.URL.RequestURI())
@@ -167,7 +167,7 @@ func TestEventsEndpoints(t *testing.T) {
 // Небезопасный тип и не-UUID не отправляются; метаданные прошлого вызова сбрасываются.
 func TestEventsValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	s := newService(t, server.URL)
 	info := transport.ResponseInfo{StatusCode: 503}

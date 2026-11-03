@@ -4,7 +4,6 @@ package entity_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"reflect"
 	"sync/atomic"
 	"testing"
@@ -79,6 +78,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/files"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -197,7 +197,7 @@ func TestDeleteStatuses(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			for status, ok := range map[int]bool{http.StatusOK: true, http.StatusNoContent: true, http.StatusCreated: false, http.StatusForbidden: false, http.StatusServiceUnavailable: false} {
 				var calls atomic.Int32
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					calls.Add(1)
 					if r.ContentLength > 0 || r.Header.Get("Content-Type") != "" {
 						t.Errorf("body: length %d, type %q", r.ContentLength, r.Header.Get("Content-Type"))
@@ -224,7 +224,7 @@ func TestDeleteStatuses(t *testing.T) {
 // Неверный id каждого Delete — ошибка до запроса; ResponseInfo сброшен.
 func TestDeleteRejectsInvalidID(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

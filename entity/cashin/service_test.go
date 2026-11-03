@@ -3,13 +3,13 @@ package cashin_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"sync/atomic"
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -145,7 +145,7 @@ func TestServiceValidation(t *testing.T) {
 		t.Fatal("nil client accepted")
 	}
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		_, _ = w.Write([]byte(`{"id":"response"}`))
 	}))

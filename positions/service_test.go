@@ -6,13 +6,13 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -32,7 +32,7 @@ func TestNewServiceRequiresClient(t *testing.T) {
 
 func TestNewServiceDocumentTypeValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		w.WriteHeader(http.StatusInternalServerError)
 	}))
@@ -430,7 +430,7 @@ func readerWriteResponse(t *testing.T, w http.ResponseWriter, body string, compr
 
 func readerNewService(t *testing.T, documentType string, handler http.Handler) *positions.Service[readerRow] {
 	t.Helper()
-	server := httptest.NewServer(handler)
+	server := memnet.NewServer(handler)
 	t.Cleanup(server.Close)
 	auth, err := transport.BearerToken("test-token")
 	if err != nil {

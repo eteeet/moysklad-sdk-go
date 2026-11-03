@@ -8,13 +8,13 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync/atomic"
 	"testing"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -73,7 +73,7 @@ func Run[T any](t *testing.T, entity string, row []byte, fields, both string,
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var calls atomic.Int32
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				if r.Method != http.MethodGet || r.URL.Path != "/api/remap/1.2/entity/"+entity || r.URL.RawQuery != tc.query {
 					t.Errorf("request = %s %s", r.Method, r.URL.RequestURI())
@@ -130,7 +130,7 @@ func Run[T any](t *testing.T, entity string, row []byte, fields, both string,
 		rejected = append(rejected, query.ListOptions{Fields: fields + "x"})
 	}
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	list := newList(newClient(t, server.URL))
 	for _, options := range rejected {

@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strings"
 	"sync/atomic"
@@ -15,6 +14,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/async"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -35,7 +35,7 @@ func read(t *testing.T, name string) []byte {
 
 func newService(t *testing.T, h http.HandlerFunc, cfg transport.Config) *async.Service {
 	t.Helper()
-	server := httptest.NewServer(h)
+	server := memnet.NewServer(h)
 	t.Cleanup(server.Close)
 	cfg.BaseURL = server.URL
 	c, err := transport.NewClient(cfg)
@@ -150,7 +150,7 @@ func TestWait(t *testing.T) {
 // Result: GET async/{id}/result, redirect на ссылку другого origin без Authorization; ошибка
 // API_ERROR — APIError, w не тронут.
 func TestResult(t *testing.T) {
-	file := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	file := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "" {
 			t.Errorf("authorization on result link")
 		}

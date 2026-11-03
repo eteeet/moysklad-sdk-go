@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"slices"
 	"strings"
 	"sync"
@@ -12,12 +11,13 @@ import (
 	"testing"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
 func newOptionsClient(t *testing.T, header http.Header, handler http.HandlerFunc) *transport.Client {
 	t.Helper()
-	server := httptest.NewServer(handler)
+	server := memnet.NewServer(handler)
 	t.Cleanup(server.Close)
 	auth, err := transport.BearerToken("secret")
 	if err != nil {
@@ -178,7 +178,7 @@ func TestSendResponseInfo(t *testing.T) {
 	})
 
 	t.Run("no response resets info", func(t *testing.T) {
-		server := httptest.NewServer(http.NotFoundHandler())
+		server := memnet.NewServer(http.NotFoundHandler())
 		client, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 		if err != nil {
 			t.Fatal(err)

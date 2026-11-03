@@ -3,7 +3,6 @@ package variant_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"reflect"
 	"strings"
 	"sync/atomic"
@@ -13,6 +12,7 @@ import (
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -138,7 +138,7 @@ func TestVariantHTTP(t *testing.T) {
 // Без обязательных product и characteristics запрос не отправляется; товар не загружается скрыто.
 func TestVariantValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {
@@ -170,7 +170,7 @@ func TestVariantValidation(t *testing.T) {
 // один запрос и возвращает APIError, описание не создаётся.
 func TestVariantUnknownCharacteristic(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		w.WriteHeader(http.StatusPreconditionFailed)
 		w.Write([]byte(`{"errors":[{"error":"characteristic not found","code":3006}]}`))
@@ -188,7 +188,7 @@ func TestVariantUnknownCharacteristic(t *testing.T) {
 
 // Модификации товара отбираются фильтром productid; значение уходит без изменений.
 func TestVariantListByProduct(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("filter") != "productid=d6877ac4-26ae-11f1-0a83-1f2500000149" {
 			t.Errorf("query = %s", r.URL.RawQuery)
 		}

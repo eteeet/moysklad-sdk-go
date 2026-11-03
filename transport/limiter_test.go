@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -25,7 +25,7 @@ func (c stuckClock) After(d time.Duration) <-chan time.Time {
 // Слот занят, пока ответ читается: в полёте не больше Concurrency запросов.
 func TestSendLimiterConcurrency(t *testing.T) {
 	var inFlight, peak atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		n := inFlight.Add(1)
 		for p := peak.Load(); n > p && !peak.CompareAndSwap(p, n); p = peak.Load() {
 		}
@@ -60,7 +60,7 @@ func TestSendLimiterConcurrency(t *testing.T) {
 
 // Вес считается по пути относительно BaseURL, включая префикс /api/remap/1.2.
 func TestSendLimiterPath(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	defer server.Close()
 	var paths []string
 	limiter, err := transport.NewLimiter(transport.LimiterConfig{Profile: transport.ProfileApp,
@@ -95,7 +95,7 @@ func TestSendLimiterPath(t *testing.T) {
 // Вызов с WithAuth не расходует бюджет клиента; WithLimiter учитывает его в бюджете своего principal.
 func TestSendLimiterWithAuth(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	clock := stuckClock{waits: make(chan time.Duration, 10)}
 	newLimiter := func() *transport.Limiter {

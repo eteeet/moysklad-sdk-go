@@ -5,7 +5,6 @@ import (
 	"compress/gzip"
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"os"
 	"strings"
@@ -16,6 +15,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/audit"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -158,7 +158,7 @@ func TestListContexts(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var calls atomic.Int32
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				if r.Method != http.MethodGet || r.URL.Path != "/audit" || r.URL.RawQuery != tc.query {
 					t.Errorf("request = %s %s", r.Method, r.URL.RequestURI())
@@ -200,7 +200,7 @@ func TestListContexts(t *testing.T) {
 // Лимит контекстов — 100, не 1000; неверные опции не отправляются.
 func TestListContextsRejects(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	s := newService(t, server.URL)
 	for _, options := range []audit.ContextsOptions{{Limit: 101}, {Limit: -1}, {Offset: -1}} {
@@ -227,7 +227,7 @@ func TestGetFilters(t *testing.T) {
 		body   []byte
 	}{{200, fixture}, {403, []byte(`{"errors":[{"error":"denied","code":1016}]}`)}, {200, []byte(`null`)}, {200, []byte(`{}`)}} {
 		var calls atomic.Int32
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			calls.Add(1)
 			if r.Method != http.MethodGet || r.URL.RequestURI() != "/audit/metadata/filters" {
 				t.Errorf("request = %s %s", r.Method, r.URL.RequestURI())

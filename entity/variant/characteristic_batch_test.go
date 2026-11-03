@@ -3,18 +3,18 @@ package variant_test
 import (
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
 // Пример источника: создание характеристик «Размер» и «Цвет» одним POST.
 func TestCreateManyCharacteristics(t *testing.T) {
 	var got []string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
 		got = append(got, r.Method+" "+r.URL.RequestURI()+" "+string(body))
 		io.WriteString(w, `[{"id":"b55d2ddf-60c3-11e7-6adb-ede500000010","name":"Размер","type":"string"},{"id":"b55d2ddf-60c3-11e7-6adb-ede500000011","name":"Цвет","type":"string"}]`)

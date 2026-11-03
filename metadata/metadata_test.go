@@ -3,7 +3,6 @@ package metadata_test
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strconv"
 	"strings"
@@ -12,6 +11,7 @@ import (
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -170,7 +170,7 @@ func nilIfErr[T any](v *T, err error) (any, error) {
 // Фильтр каталога — type=a;type=b одним параметром filter.
 func TestCatalogQuery(t *testing.T) {
 	var uri string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		uri = r.URL.RequestURI()
 		w.Write([]byte(`{"service":{"meta":{"href":"h1"}},"demand":{"meta":{"href":"h2"}}}`))
 	}))
@@ -190,7 +190,7 @@ func TestServerErrors(t *testing.T) {
 	for _, tc := range []struct {
 		status, code int
 	}{{401, 1056}, {403, 1016}, {404, 1003}} {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(tc.status)
 			w.Write([]byte(`{"errors":[{"error":"x","code":` + strconv.Itoa(tc.code) + `}]}`))
 		}))
@@ -209,7 +209,7 @@ func TestServerErrors(t *testing.T) {
 
 func TestValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	client, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

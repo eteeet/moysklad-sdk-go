@@ -5,7 +5,6 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strings"
 	"sync/atomic"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/eteeet/moysklad-sdk-go/images"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -35,7 +35,7 @@ func fixture(t *testing.T) []byte {
 
 func service(t *testing.T, handler http.HandlerFunc) *images.Service {
 	t.Helper()
-	server := httptest.NewServer(handler)
+	server := memnet.NewServer(handler)
 	t.Cleanup(server.Close)
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"reflect"
 	"strings"
@@ -83,6 +82,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -327,7 +327,7 @@ func TestBatchRequests(t *testing.T) {
 	for _, tc := range batchCases() {
 		t.Run(tc.name, func(t *testing.T) {
 			var calls atomic.Int32
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				var body []map[string]jsontext.Value
 				if err := json.UnmarshalRead(r.Body, &body); err != nil || r.Method != http.MethodPost || r.URL.RequestURI() != "/"+tc.path ||
@@ -401,7 +401,7 @@ func TestBatchRequestErrors(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			for _, bc := range batchCases() {
 				var calls atomic.Int32
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					calls.Add(1)
 					w.WriteHeader(tc.status)
 					w.Write([]byte(tc.body))
@@ -426,7 +426,7 @@ func TestBatchAmbiguousOutcome(t *testing.T) {
 	for _, bc := range batchCases() {
 		var calls atomic.Int32
 		received, done := make(chan struct{}, 1), make(chan struct{})
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			calls.Add(1)
 			if r.Header.Get("X-Case") == "cancel" {
 				// Тело не дочитано: сервер не заметит обрыв сам, ждём конца вызова.
@@ -461,7 +461,7 @@ func TestBatchAmbiguousOutcome(t *testing.T) {
 // Отмена ctx до отправки: ошибка context.Canceled, запроса нет.
 func TestBatchCanceled(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {
@@ -484,7 +484,7 @@ func TestBatchCanceled(t *testing.T) {
 func TestBatchLocalChecks(t *testing.T) {
 	var calls atomic.Int32
 	var items atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		var body []jsontext.Value
 		json.UnmarshalRead(r.Body, &body)
@@ -633,7 +633,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 // до запроса.
 func TestAssortmentDeleteMany(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		var body []struct {
 			Meta model.Meta `json:"meta"`

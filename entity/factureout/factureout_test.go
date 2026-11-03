@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"reflect"
 	"strings"
@@ -15,6 +14,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/factureout"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -189,7 +189,7 @@ func TestFactureOutHTTP(t *testing.T) {
 func exchange(t *testing.T, method, path, want string, status int, response string, invoke func(context.Context, *transport.Client) error) error {
 	t.Helper()
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		body, _ := io.ReadAll(r.Body)
 		if r.Method != method || r.URL.Path != "/"+path || r.URL.RawQuery != "" {
@@ -307,7 +307,7 @@ func TestFactureOutWrites(t *testing.T) {
 // Ошибки входа — до HTTP; ResponseInfo прошлого вызова сброшен.
 func TestFactureOutValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	client, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

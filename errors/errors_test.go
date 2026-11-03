@@ -9,7 +9,6 @@ import (
 	"go/parser"
 	"go/token"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strconv"
 	"strings"
@@ -17,6 +16,7 @@ import (
 	"testing"
 
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -96,7 +96,7 @@ func TestHasCodeAndStatus(t *testing.T) {
 // 413 возвращается как APIError с деталями и заголовками за один запрос, без разбиения и повтора.
 func TestPayloadTooLarge(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		w.Header().Set("X-Lognex-Content-Region", "ru")
 		w.WriteHeader(http.StatusRequestEntityTooLarge)

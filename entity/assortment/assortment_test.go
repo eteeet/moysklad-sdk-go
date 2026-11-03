@@ -5,7 +5,6 @@ import (
 	"encoding/json/jsontext"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"os"
 	"sync/atomic"
@@ -15,6 +14,7 @@ import (
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -165,7 +165,7 @@ func TestListModes(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var calls atomic.Int32
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				if got := r.Header.Values(transport.HeaderBetaFeature); tc.beta == "" && len(got) != 0 || tc.beta != "" && (len(got) != 1 || got[0] != tc.beta) {
 					t.Errorf("beta = %q", got)
@@ -192,7 +192,7 @@ func TestListModes(t *testing.T) {
 // не начинается; break после первой страницы не делает второй запрос.
 func TestAll(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if got := r.Header.Values(transport.HeaderBetaFeature); len(got) != 1 || got[0] != assortment.BetaFeature {
 			t.Errorf("beta = %q", got)
@@ -257,7 +257,7 @@ func TestAll(t *testing.T) {
 // не переключает ListLegacy молча — ошибка до запроса; другой тег проходит.
 func TestListLegacyRejectsBetaMode(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if r.Header.Get(transport.HeaderBetaFeature) == assortment.BetaFeature {
 			t.Errorf("legacy request with %s", assortment.BetaFeature)
@@ -294,7 +294,7 @@ func TestListLegacyRejectsBetaMode(t *testing.T) {
 
 func TestListRejects(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

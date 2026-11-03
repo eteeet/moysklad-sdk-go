@@ -3,12 +3,12 @@ package demand_test
 import (
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -61,7 +61,7 @@ func TestTransportFields(t *testing.T) {
 	}
 
 	const id = "0ee24723-f640-11e5-8a84-bae500000065"
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, _ := io.ReadAll(r.Body)
 		if r.Method != http.MethodPut || r.URL.Path != "/entity/demand/"+id {
 			t.Errorf("request = %s %s", r.Method, r.URL.Path)

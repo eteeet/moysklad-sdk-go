@@ -16,6 +16,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/internalorder"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/internal/listtest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/positions"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -295,7 +296,7 @@ func TestInternalOrderWrites(t *testing.T) {
 			}{{200, op.response, true}, {400, `{"errors":[{"error":"bad","code":3000}]}`, false}, {202, op.response, false}} {
 				var calls atomic.Int32
 				var server *httptest.Server
-				server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server = memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					calls.Add(1)
 					b, _ := io.ReadAll(r.Body)
 					want := strings.ReplaceAll(op.body, "{base}", server.URL)
@@ -336,7 +337,7 @@ func TestInternalOrderWrites(t *testing.T) {
 // Неверный вход отклоняется до HTTP: ResponseInfo сброшен, запросов нет.
 func TestInternalOrderValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
 	if err != nil {

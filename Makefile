@@ -1,5 +1,5 @@
 FIXTURES_REF ?= HEAD
-# Параллельность пакетов в тестах; при локальных сбоях TCP допустим CHECK_P=1 (указывать в отчёте).
+# Параллельность пакетов в тестах. HTTP-тесты идут через internal/memnet, без loopback TCP.
 CHECK_P ?= 2
 
 .PHONY: check fixtures fixtures-commit example example-create example-update

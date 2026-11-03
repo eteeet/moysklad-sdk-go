@@ -3,7 +3,6 @@ package moysklad_test
 import (
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"reflect"
 	"slices"
@@ -15,6 +14,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/audit"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -68,7 +68,7 @@ func usesTransport(handle reflect.Value, shared *transport.Client) bool {
 func TestClientHandles(t *testing.T) {
 	var mu sync.Mutex
 	var requests []string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		requests = append(requests, r.URL.Path)
 		mu.Unlock()
@@ -128,7 +128,7 @@ func TestClientHandles(t *testing.T) {
 func TestClientRequests(t *testing.T) {
 	var mu sync.Mutex
 	var auths []string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet || r.URL.Path != "/api/remap/1.2/entity/product/"+productID {
 			t.Errorf("request = %s %s", r.Method, r.URL)
 		}
@@ -181,7 +181,7 @@ func TestNewClientError(t *testing.T) {
 func TestClientGroupsSendThroughTransport(t *testing.T) {
 	var mu sync.Mutex
 	seen := map[string]string{}
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		seen[r.URL.Path] = r.Header.Get("Authorization")
 		mu.Unlock()

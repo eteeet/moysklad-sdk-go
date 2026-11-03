@@ -2,19 +2,20 @@ package transport
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"sync/atomic"
 	"testing"
+
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 )
 
 func TestRedirectToOtherOriginDropsAuthorization(t *testing.T) {
 	var got string
-	foreign := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	foreign := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got = r.Header.Get("Authorization")
 	}))
 	defer foreign.Close()
 
-	origin := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	origin := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, foreign.URL, http.StatusFound)
 	}))
 	defer origin.Close()
@@ -53,7 +54,7 @@ func TestWriteRedirectNotFollowed(t *testing.T) {
 		{http.MethodGet, http.StatusPermanentRedirect, 2},
 	} {
 		var calls atomic.Int32
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if calls.Add(1) == 1 {
 				http.Redirect(w, r, "/moved", tc.status)
 			}

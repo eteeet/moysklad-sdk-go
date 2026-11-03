@@ -5,7 +5,6 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strings"
 	"sync/atomic"
@@ -15,6 +14,7 @@ import (
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/files"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -105,7 +105,7 @@ func TestUploadHTTP(t *testing.T) {
 // Содержимое читается по meta.downloadHref одним GET; файл без ссылки не запрашивается.
 // Пустое содержимое уходит строкой "" обоими codecs, в том числе nil.
 func TestUploadNilContent(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
 		documenttest.JSONEqual(t, data, []byte(`[{"filename":"empty.txt","content":""}]`))
 		w.Write([]byte(`[]`))
@@ -125,7 +125,7 @@ func TestDownloadErrors(t *testing.T) {
 	file := func(base string) files.File {
 		return files.File{Meta: model.Meta{DownloadHref: base + "/api/remap/1.2/download/f1"}}
 	}
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(`{"errors":[{"error":"missing","code":1001}]}`))
 	}))
@@ -138,7 +138,7 @@ func TestDownloadErrors(t *testing.T) {
 	if sdkerrors.StatusCode(err) != http.StatusNotFound || !strings.Contains(err.Error(), "download file") || strings.Count(err.Error(), "moysklad:") != 1 {
 		t.Fatalf("err = %v", err)
 	}
-	redirect := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	redirect := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Location", "https://storage.invalid/%zz?signature=top-secret")
 		w.WriteHeader(http.StatusFound)
 	}))
@@ -161,7 +161,7 @@ func TestDownloadErrors(t *testing.T) {
 }
 
 func TestDownload(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/api/remap/1.2/download/f2728180" || r.Header.Get("X-Lognex-Download-Expiration-Seconds") != "300" {
 			t.Errorf("request = %s %v", r.URL, r.Header)
 		}
@@ -186,7 +186,7 @@ func TestDownload(t *testing.T) {
 // объекта (до 100) SDK заранее не проверяет.
 func TestValidation(t *testing.T) {
 	var calls atomic.Int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		w.Write([]byte(`[]`))
 	}))
