@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 26/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 27/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -35,7 +35,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [ ] eventfeed — лента событий (notes)
 - [x] expenseitem — статья расходов
 - [x] files — файлы: List/Upload/Download
-- [ ] group — отдел
+- [x] group — отдел (массовых операций нет)
 - [ ] gtd — ГТД (объект без endpoint)
 - [ ] images — изображения
 - [ ] labels — этикетки и ценники
