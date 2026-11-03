@@ -1,6 +1,6 @@
 {
   "name": "12345", "description": "", "code": "c", "externalCode": "ext", "archived": false,
-  "moment": "2016-07-06 15:53:22.000", "sum": 0, "contractType": "Commission", "rewardType": "PercentOfSales", "rewardPercent": 12.5,
+  "moment": "2016-07-06 15:53:22.000", "sum": 0, "contractType": "Commission", "rewardType": "PercentOfSales", "rewardPercent": 12,
   "ownAgent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/fae3561a-2e58-11e6-8a84-bae50000004e", "type": "organization", "mediaType": "application/json"}},
   "agent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/12a8b923-2e58-11e6-8a84-bae500000057", "type": "counterparty", "mediaType": "application/json"}},
   "organizationAccount": null,

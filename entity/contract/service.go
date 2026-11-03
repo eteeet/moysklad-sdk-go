@@ -39,6 +39,9 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*Contract, error) {
 	transport.ResetResponseInfo(opts)
+	if input.Name == "" {
+		return nil, fmt.Errorf("moysklad: create contract: name must not be empty")
+	}
 	if input.OwnAgent.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create contract: ownAgent meta.href must not be empty")
 	}

@@ -44,11 +44,13 @@ type CreateRequest struct {
 	TrackingContractNumber model.Field[string]         `json:"trackingContractNumber,omitzero"`
 	TrackingContractDate   model.Field[model.DateTime] `json:"trackingContractDate,omitzero"`
 
-	CompanyVat        model.Field[CompanyVatRequest] `json:"companyVat__ru,omitzero"`
-	AdvancePaymentVat model.Field[float64]           `json:"advancePaymentVat,omitzero"`
-	DirectorSign      model.Field[ImageRequest]      `json:"directorSign,omitzero"`
-	ChiefAccountSign  model.Field[ImageRequest]      `json:"chiefAccountSign,omitzero"`
-	Stamp             model.Field[ImageRequest]      `json:"stamp,omitzero"`
+	CompanyVat        model.Field[CompanyVatRequest]         `json:"companyVat__ru,omitzero"`
+	AdvancePaymentVat model.Field[float64]                   `json:"advancePaymentVat,omitzero"`
+	DirectorSign      model.Field[ImageRequest]              `json:"directorSign,omitzero"`
+	ChiefAccountSign  model.Field[ImageRequest]              `json:"chiefAccountSign,omitzero"`
+	Stamp             model.Field[ImageRequest]              `json:"stamp,omitzero"`
+	RequisitesUZ      model.Field[model.RequisitesUZRequest] `json:"mod__requisites__uz,omitzero"`
+	RequisitesKZ      model.Field[model.RequisitesKZRequest] `json:"mod__requisites__kz,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/organization#3-izmenit-yurlico
@@ -93,9 +95,11 @@ type UpdateRequest struct {
 	TrackingContractNumber model.Field[string]         `json:"trackingContractNumber,omitzero"`
 	TrackingContractDate   model.Field[model.DateTime] `json:"trackingContractDate,omitzero"`
 
-	CompanyVat        model.Field[CompanyVatRequest] `json:"companyVat__ru,omitzero"`
-	AdvancePaymentVat model.Field[float64]           `json:"advancePaymentVat,omitzero"`
-	DirectorSign      model.Field[ImageRequest]      `json:"directorSign,omitzero"`
-	ChiefAccountSign  model.Field[ImageRequest]      `json:"chiefAccountSign,omitzero"`
-	Stamp             model.Field[ImageRequest]      `json:"stamp,omitzero"`
+	CompanyVat        model.Field[CompanyVatRequest]         `json:"companyVat__ru,omitzero"`
+	AdvancePaymentVat model.Field[float64]                   `json:"advancePaymentVat,omitzero"`
+	DirectorSign      model.Field[ImageRequest]              `json:"directorSign,omitzero"`
+	ChiefAccountSign  model.Field[ImageRequest]              `json:"chiefAccountSign,omitzero"`
+	Stamp             model.Field[ImageRequest]              `json:"stamp,omitzero"`
+	RequisitesUZ      model.Field[model.RequisitesUZRequest] `json:"mod__requisites__uz,omitzero"`
+	RequisitesKZ      model.Field[model.RequisitesKZRequest] `json:"mod__requisites__kz,omitzero"`
 }

@@ -11,7 +11,8 @@ import (
 )
 
 // ContactPerson — контактное лицо контрагента (meta.type contactperson). Agent — ссылка на
-// контрагента, только чтение.
+// контрагента: маркера «только для чтения» нет, но родителя задаёт путь запроса, поэтому SDK
+// agent не пишет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/counterparty#3-kontaktnye-lica-kontragenta
 type ContactPerson struct {
 	Meta         model.Meta       `json:"meta"`

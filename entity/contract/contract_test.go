@@ -34,7 +34,7 @@ func ref(path, typ string) model.Reference {
 }
 
 var (
-	full   = contract.CreateRequest{Name: model.Value("12345"), Description: model.Value(""), Code: model.Value("c"), ExternalCode: model.Value("ext"), Archived: model.Value(false), Moment: model.Value(model.DateTime(time.Date(2016, 7, 6, 12, 53, 22, 0, time.UTC))), Sum: model.Value(0.0), ContractType: model.Value("Commission"), RewardType: model.Value("PercentOfSales"), RewardPercent: model.Value(12.5), OwnAgent: ref("entity/organization/fae3561a-2e58-11e6-8a84-bae50000004e", "organization"), Agent: ref("entity/counterparty/12a8b923-2e58-11e6-8a84-bae500000057", "counterparty"), OrganizationAccount: model.Null[model.Reference](), Rate: model.Value(model.DocumentRateRequest{Currency: model.Value(ref("entity/currency/baac25f0-50ac-11e5-300d-c79b00000055", "currency"))}), Attributes: model.Value([]model.Attribute{}), Shared: model.Value(true), Owner: model.Value(ref("entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "employee"))}
+	full   = contract.CreateRequest{Name: "12345", Description: model.Value(""), Code: model.Value("c"), ExternalCode: model.Value("ext"), Archived: model.Value(false), Moment: model.Value(model.DateTime(time.Date(2016, 7, 6, 12, 53, 22, 0, time.UTC))), Sum: model.Value(0.0), ContractType: model.Value("Commission"), RewardType: model.Value("PercentOfSales"), RewardPercent: model.Value(12), OwnAgent: ref("entity/organization/fae3561a-2e58-11e6-8a84-bae50000004e", "organization"), Agent: ref("entity/counterparty/12a8b923-2e58-11e6-8a84-bae500000057", "counterparty"), OrganizationAccount: model.Null[model.Reference](), Rate: model.Value(model.DocumentRateRequest{Currency: model.Value(ref("entity/currency/baac25f0-50ac-11e5-300d-c79b00000055", "currency"))}), Attributes: model.Value([]model.Attribute{}), Shared: model.Value(true), Owner: model.Value(ref("entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "employee"))}
 	update = contract.UpdateRequest{Sum: model.Value(1050.5), State: model.Null[model.Reference](), RewardType: model.Value("None")}
 )
 
@@ -67,8 +67,8 @@ func TestRequestJSON(t *testing.T) {
 		}{
 			{"create full", full, read(t, "custom/contract/create-full.golden.json")},
 			{"update", update, read(t, "custom/contract/update.golden.json")},
-			{"create minimal", contract.CreateRequest{OwnAgent: ref("entity/organization/1", "organization"), Agent: ref("entity/counterparty/2", "counterparty")}, []byte(`{"ownAgent":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/organization/1","type":"organization","mediaType":"application/json"}},"agent":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/counterparty/2","type":"counterparty","mediaType":"application/json"}}}`)},
-			{"update sum 0", contract.UpdateRequest{Sum: model.Value(0.0), RewardPercent: model.Value(0.0)}, []byte(`{"sum":0,"rewardPercent":0}`)},
+			{"create minimal", contract.CreateRequest{Name: "1", OwnAgent: ref("entity/organization/1", "organization"), Agent: ref("entity/counterparty/2", "counterparty")}, []byte(`{"name":"1","ownAgent":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/organization/1","type":"organization","mediaType":"application/json"}},"agent":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/counterparty/2","type":"counterparty","mediaType":"application/json"}}}`)},
+			{"update sum 0", contract.UpdateRequest{Sum: model.Value(0.0), RewardPercent: model.Value(0)}, []byte(`{"sum":0,"rewardPercent":0}`)},
 		} {
 			t.Run(codec.Name+"/"+tc.name, func(t *testing.T) {
 				got, err := codec.Marshal(tc.input)
@@ -139,12 +139,16 @@ func TestServiceValidation(t *testing.T) {
 	for name, invoke := range map[string]func(...transport.RequestOption) error{
 		"get bad id": func(o ...transport.RequestOption) error { _, err := s.Get(ctx, "bad", o...); return err },
 		"get path":   func(o ...transport.RequestOption) error { _, err := s.Get(ctx, testID+"/x", o...); return err },
+		"create no name": func(o ...transport.RequestOption) error {
+			_, err := s.Create(ctx, contract.CreateRequest{OwnAgent: ref("entity/organization/1", "organization"), Agent: ref("entity/counterparty/2", "counterparty")}, o...)
+			return err
+		},
 		"create no own agent": func(o ...transport.RequestOption) error {
-			_, err := s.Create(ctx, contract.CreateRequest{Agent: ref("entity/counterparty/2", "counterparty")}, o...)
+			_, err := s.Create(ctx, contract.CreateRequest{Name: "1", Agent: ref("entity/counterparty/2", "counterparty")}, o...)
 			return err
 		},
 		"create no agent": func(o ...transport.RequestOption) error {
-			_, err := s.Create(ctx, contract.CreateRequest{OwnAgent: ref("entity/organization/1", "organization")}, o...)
+			_, err := s.Create(ctx, contract.CreateRequest{Name: "1", OwnAgent: ref("entity/organization/1", "organization")}, o...)
 			return err
 		},
 		"update empty": func(o ...transport.RequestOption) error {

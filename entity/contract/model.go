@@ -2,7 +2,7 @@ package contract
 
 import "github.com/eteeet/moysklad-sdk-go/model"
 
-// Contract — договор. Name — номер договора; Sum — копейки; RewardPercent — процент (0–100), не деньги.
+// Contract — договор. Name — номер договора; Sum — копейки; RewardPercent — целый процент (0–100), не деньги.
 // ContractType (Commission, Sales) и RewardType (PercentOfSales, None) — открытые enum.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/contract
 type Contract struct {
@@ -19,7 +19,7 @@ type Contract struct {
 	Sum                 float64             `json:"sum"`
 	ContractType        string              `json:"contractType"`
 	RewardType          string              `json:"rewardType"`
-	RewardPercent       float64             `json:"rewardPercent"`
+	RewardPercent       int                 `json:"rewardPercent"`
 	OwnAgent            *model.Reference    `json:"ownAgent,omitzero"`
 	Agent               *model.Reference    `json:"agent,omitzero"`
 	OrganizationAccount *model.Reference    `json:"organizationAccount,omitzero"`

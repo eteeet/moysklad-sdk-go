@@ -54,7 +54,7 @@ type ZoneUpdateRequest struct {
 
 // SlotCreateRequest: обязателен name; имена и штрихкоды ячеек уникальны в пределах склада.
 // Zone таблица помечает «только для чтения», но источник даёт отдельные примеры создания и
-// изменения ячейки с зоной — SDK поле передаёт (противоречие источника, решение в ticket S01).
+// изменения ячейки с зоной — SDK поле передаёт: без него ячейку нельзя привязать к зоне.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/store#3-sozdat-yachejku-sklada
 type SlotCreateRequest struct {
 	Name         string                       `json:"name"`

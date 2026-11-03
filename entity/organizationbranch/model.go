@@ -22,7 +22,7 @@ type OrganizationBranch struct {
 	Fax               string           `json:"fax"`
 	ActualAddress     string           `json:"actualAddress"`
 	ActualAddressFull *model.Address   `json:"actualAddressFull,omitzero"`
-	// Реквизиты РФ: так в 8 из 9 примеров источника; таблица и один пример ответа показывают kpp на верхнем уровне.
+	// Реквизиты РФ: так в таблице и 8 из 9 примеров; один пример ответа Update показывает kpp на верхнем уровне.
 	RequisitesRU *RequisitesRU    `json:"mod__requisites__ru,omitzero"`
 	SyncID       string           `json:"syncId"`
 	Shared       bool             `json:"shared"`

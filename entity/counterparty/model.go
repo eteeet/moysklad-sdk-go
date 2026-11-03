@@ -55,9 +55,10 @@ type Counterparty struct {
 }
 
 // Discount — скидка контрагента: персональная (PersonalDiscount, процент) или накопительная
-// (DemandSumCorrection — коррекция суммы накоплений, AccumulationDiscount — текущий процент).
+// (DemandSumCorrection — коррекция суммы накоплений, копейки; AccumulationDiscount — текущий процент).
 // Поля выводятся, только если значение задавалось; nil — поле не пришло. Тип скидки —
-// Discount.Meta.Type, неизвестный тип не отвергается.
+// Discount.Discount.Meta.Type, неизвестный тип не отвергается. Форма объекта — по фикстуре
+// testdata/upstream/counterparty.json: раздел источника её не приводит.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/counterparty#4-atributy-sushnosti
 type Discount struct {
 	Discount             model.Reference `json:"discount"`

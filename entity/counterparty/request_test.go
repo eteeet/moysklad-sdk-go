@@ -113,7 +113,7 @@ func fullUpdateRequest(t *testing.T) counterparty.UpdateRequest {
 
 func TestRequestExcludedFields(t *testing.T) {
 	for _, typ := range []reflect.Type{reflect.TypeFor[counterparty.CreateRequest](), reflect.TypeFor[counterparty.UpdateRequest]()} {
-		for _, name := range []string{"Meta", "ID", "AccountID", "Created", "Updated", "BonusPoints", "SalesAmount", "Accounts", "Contactpersons", "ContactPersons", "Notes", "Files", "Discounts", "ModRequisitesUZ", "ModRequisitesKZ"} {
+		for _, name := range []string{"Meta", "ID", "AccountID", "Created", "Updated", "BonusPoints", "SalesAmount", "Accounts", "Contactpersons", "ContactPersons", "Notes", "Files", "Discounts"} {
 			if _, exists := typ.FieldByName(name); exists {
 				t.Errorf("%s contains excluded %s", typ.Name(), name)
 			}

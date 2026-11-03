@@ -58,6 +58,9 @@ type Organization struct {
 	DirectorSign      *Image      `json:"directorSign,omitzero"`
 	ChiefAccountSign  *Image      `json:"chiefAccountSign,omitzero"`
 	Stamp             *Image      `json:"stamp,omitzero"`
+
+	RequisitesUZ *model.RequisitesUZ `json:"mod__requisites__uz,omitzero"`
+	RequisitesKZ *model.RequisitesKZ `json:"mod__requisites__kz,omitzero"`
 }
 
 // CompanyVat — настройки НДС юрлица (companyVat__ru). DefaultCompanyVat (процент) и

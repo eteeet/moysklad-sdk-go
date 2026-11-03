@@ -169,11 +169,13 @@ func TestRequestVatAndImages(t *testing.T) {
 				DirectorSign:      model.Value(organization.ImageRequest{Filename: "directorSignTest.png", Content: png}),
 				ChiefAccountSign:  model.Null[organization.ImageRequest](),
 				Stamp:             model.Value(organization.ImageRequest{Filename: "stampTest.png", Content: []byte{}}),
+				RequisitesUZ:      model.Value(model.RequisitesUZRequest{INN: model.Value("125152124")}),
+				RequisitesKZ:      model.Null[model.RequisitesKZRequest](),
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertJSONEqual(t, data, []byte(`{"companyVat__ru":{"useCompanyVat":true,"defaultCompanyVat":0,"defaultCompanyVatEnabled":false},"advancePaymentVat":20,"directorSign":{"filename":"directorSignTest.png","content":"iVBORw=="},"chiefAccountSign":null,"stamp":{"filename":"stampTest.png","content":""}}`))
+			assertJSONEqual(t, data, []byte(`{"companyVat__ru":{"useCompanyVat":true,"defaultCompanyVat":0,"defaultCompanyVatEnabled":false},"advancePaymentVat":20,"directorSign":{"filename":"directorSignTest.png","content":"iVBORw=="},"chiefAccountSign":null,"stamp":{"filename":"stampTest.png","content":""},"mod__requisites__uz":{"inn":"125152124"},"mod__requisites__kz":null}`))
 		})
 	}
 }
@@ -202,7 +204,7 @@ func TestRequestReadOnlyAndDeferredFields(t *testing.T) {
 	for _, typ := range []reflect.Type{reflect.TypeFor[organization.CreateRequest](), reflect.TypeFor[organization.UpdateRequest]()} {
 		for _, field := range reflect.VisibleFields(typ) {
 			tag := strings.Split(field.Tag.Get("json"), ",")[0]
-			for _, forbidden := range []string{"meta", "id", "accountId", "created", "updated", "bonusPoints", "isEgaisEnable", "accounts", "mod__requisites__uz", "mod__requisites__kz", "fsrarId", "utmUrl"} {
+			for _, forbidden := range []string{"meta", "id", "accountId", "created", "updated", "bonusPoints", "isEgaisEnable", "accounts", "fsrarId", "utmUrl"} {
 				if tag == forbidden {
 					t.Errorf("%s contains %s", typ.Name(), forbidden)
 				}

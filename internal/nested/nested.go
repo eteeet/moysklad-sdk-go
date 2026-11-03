@@ -56,6 +56,7 @@ func List[T any](ctx context.Context, c Collection, page query.PageOptions, opts
 	return list.Page[T](ctx, c.Client, operation, c.endpoint(), params, opts...)
 }
 
+// Get — GET элемента; ответ — объект.
 func Get[T any](ctx context.Context, c Collection, id string, opts []transport.RequestOption) (*T, error) {
 	transport.ResetResponseInfo(opts)
 	operation := "get " + c.prefix() + " " + id
@@ -100,6 +101,7 @@ func Delete(ctx context.Context, c Collection, id string, opts []transport.Reque
 	return write.Delete(ctx, c.Client, operation, c.endpoint()+"/"+id, opts)
 }
 
+// CreateMany — один POST коллекции с массивом новых элементов; правила ответа — пакет batch.
 func CreateMany[T, C any](ctx context.Context, c Collection, items []C, opts []transport.RequestOption) ([]batch.Result[T], error) {
 	transport.ResetResponseInfo(opts)
 	operation := "create many " + c.Parent + " " + c.ParentID + " " + c.Path
@@ -109,6 +111,7 @@ func CreateMany[T, C any](ctx context.Context, c Collection, items []C, opts []t
 	return write.CreateManyNested[T](ctx, c.Client, operation, c.endpoint(), items, opts)
 }
 
+// UpdateMany — один POST коллекции: элемент — meta по ID (тип MetaType) и поля запроса.
 func UpdateMany[T, U any](ctx context.Context, c Collection, items []batch.Update[U], opts []transport.RequestOption) ([]batch.Result[T], error) {
 	transport.ResetResponseInfo(opts)
 	operation := "update many " + c.Parent + " " + c.ParentID + " " + c.Path
@@ -118,6 +121,7 @@ func UpdateMany[T, U any](ctx context.Context, c Collection, items []batch.Updat
 	return write.UpdateManyNested[T](ctx, c.Client, operation, c.endpoint(), c.MetaType, items, opts)
 }
 
+// DeleteMany — один POST {коллекция}/delete с meta элементов по ids.
 func DeleteMany(ctx context.Context, c Collection, ids []string, opts []transport.RequestOption) ([]batch.Deleted, error) {
 	transport.ResetResponseInfo(opts)
 	operation := "delete many " + c.Parent + " " + c.ParentID + " " + c.Path
