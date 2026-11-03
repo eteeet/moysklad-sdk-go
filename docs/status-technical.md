@@ -83,7 +83,7 @@
 - [ ] Отдельные операции позиций: Get, Create, Update, Delete
 - [x] Позиции: pack, things, slot, trackingCodes, gtd, declaration, остатки (fields=stock)
 - [ ] Шаблон документа: PUT entity/{type}/new
-- [ ] Автозаполнение: wizard/demand, wizard/salesreturn
+- [x] Автозаполнение: POST wizard/{тип} — пакет wizard
 - [ ] Печать (export), публикации, шаблоны печатных форм
 - [x] Файлы: список, загрузка base64, скачивание по downloadHref; изображения — пакет images
 - [x] Metadata: entity/{type}/metadata, states (customtemplate/embeddedtemplate — нет)

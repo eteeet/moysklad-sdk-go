@@ -65,6 +65,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/security"
 	"github.com/eteeet/moysklad-sdk-go/trackingcode"
 	"github.com/eteeet/moysklad-sdk-go/transport"
+	"github.com/eteeet/moysklad-sdk-go/wizard"
 )
 
 // Config — настройки общего transport.Client.
@@ -106,6 +107,9 @@ func (c *Client) Audit() *audit.Service { return must(audit.NewService(c.transpo
 // Async — асинхронные задачи: статус, список, ожидание, результат и отмена. Создают задачи
 // ListAsync сервисов Entity().Counterparty() и Entity().Assortment().
 func (c *Client) Async() *async.Service { return must(async.NewService(c.transport)) }
+
+// Wizard — автозаполнение цен, НДС, скидок и себестоимости документа: POST wizard/{тип}.
+func (c *Client) Wizard() *wizard.Service { return must(wizard.NewService(c.transport)) }
 
 // Security — выпуск токена POST security/token.
 func (c *Client) Security() *security.Service { return must(security.NewService(c.transport)) }
