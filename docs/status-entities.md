@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 47/60, документы 23/37, отчёты 1/9, прочее 6/8.
+Итого: справочники 47/60, документы 24/37, отчёты 1/9, прочее 6/8.
 
 ## Справочники
 
@@ -75,7 +75,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 
 - [x] cashin — приходный ордер
 - [x] cashout — расходный ордер
-- [ ] commissionreportin — полученный отчёт комиссионера
+- [x] commissionreportin — полученный отчёт комиссионера
 - [ ] commissionreportout — выданный отчёт комиссионера
 - [x] counterpartyadjustment — корректировка взаиморасчётов
 - [x] customerorder — заказ покупателя

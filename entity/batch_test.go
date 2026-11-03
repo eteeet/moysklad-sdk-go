@@ -24,6 +24,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/bundle"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
+	"github.com/eteeet/moysklad-sdk-go/entity/commissionreportin"
 	"github.com/eteeet/moysklad-sdk-go/entity/consignment"
 	"github.com/eteeet/moysklad-sdk-go/entity/contentcard"
 	"github.com/eteeet/moysklad-sdk-go/entity/contract"
@@ -246,6 +247,9 @@ func batchCases() []batchCase {
 		createManyCase("uom", uom.NewService, (*uom.Service).CreateMany),
 		updateManyCase("uom", uom.NewService, (*uom.Service).UpdateMany),
 		deleteManyCase("uom", uom.NewService, (*uom.Service).DeleteMany),
+		createManyCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).CreateMany),
+		updateManyCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).UpdateMany),
+		deleteManyCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).DeleteMany),
 		createManyCase("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).CreateMany),
 		updateManyCase("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).UpdateMany),
 		deleteManyCase("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).DeleteMany),
@@ -557,6 +561,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                 "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                    "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*commissionreportin.Service]():     "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*counterpartyadjustment.Service](): "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*factureout.Service]():             "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*facturein.Service]():              "CreateMany UpdateMany DeleteMany",

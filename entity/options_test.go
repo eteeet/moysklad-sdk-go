@@ -22,6 +22,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/bundle"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
+	"github.com/eteeet/moysklad-sdk-go/entity/commissionreportin"
 	"github.com/eteeet/moysklad-sdk-go/entity/consignment"
 	"github.com/eteeet/moysklad-sdk-go/entity/contentcard"
 	"github.com/eteeet/moysklad-sdk-go/entity/contract"
@@ -204,6 +205,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).Get),
 		getCase("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).Get),
 		getCase("factureout", factureout.NewService, (*factureout.Service).Get),
 		getCase("facturein", facturein.NewService, (*facturein.Service).Get),
@@ -268,6 +270,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).Create),
+		updateCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).Update),
 		createCase("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).Create),
 		updateCase("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).Update),
 		createCase("factureout", factureout.NewService, (*factureout.Service).Create),
@@ -407,6 +411,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		positionsCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsCase("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).GetPositions),
 		positionsCase("inventory", inventory.NewService, (*inventory.Service).GetPositions),
 		positionsCase("internalorder", internalorder.NewService, (*internalorder.Service).GetPositions),
 	} {
@@ -562,6 +567,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).Get, (*commissionreportin.Service).Create, (*commissionreportin.Service).Update, (*commissionreportin.Service).List)...)
 	cases = append(cases, localCases("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).Get, (*counterpartyadjustment.Service).Create, (*counterpartyadjustment.Service).Update, (*counterpartyadjustment.Service).List)...)
 	cases = append(cases, localCases("factureout", factureout.NewService, (*factureout.Service).Get, (*factureout.Service).Create, (*factureout.Service).Update, (*factureout.Service).List)...)
 	cases = append(cases, localCases("facturein", facturein.NewService, (*facturein.Service).Get, (*facturein.Service).Create, (*facturein.Service).Update, (*facturein.Service).List)...)
@@ -606,6 +612,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsLocal("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).GetPositions),
 		positionsLocal("inventory", inventory.NewService, (*inventory.Service).GetPositions),
 		positionsLocal("internalorder", internalorder.NewService, (*internalorder.Service).GetPositions),
 		localCase{"employee get security invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
@@ -722,7 +729,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 49*4+15+3+8+1+6 {
+	if len(cases) != 50*4+16+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
