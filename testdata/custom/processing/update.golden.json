@@ -1,0 +1,12 @@
+{
+  "materialsStore": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/store/33333333-3333-3333-3333-333333333333", "type": "store"}},
+  "state": null,
+  "processingPlan": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/dddddddd-dddd-dddd-dddd-dddddddddddd", "type": "processingplan"}},
+  "processingSum": 0,
+  "quantity": 5,
+  "materials": [],
+  "products": [
+    {"id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "quantity": 400},
+    {"id": "ffffffff-ffff-ffff-ffff-ffffffffffff"}
+  ]
+}

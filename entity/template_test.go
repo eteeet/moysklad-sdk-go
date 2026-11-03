@@ -23,6 +23,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/move"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentin"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
+	"github.com/eteeet/moysklad-sdk-go/entity/processing"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
@@ -121,6 +122,11 @@ func TestDocumentTemplates(t *testing.T) {
 		}},
 		{"supply", func(c *transport.Client, basis map[string]any) (bool, error) {
 			s, _ := supply.NewService(c)
+			r, err := s.New(t.Context(), basis)
+			return r != nil, err
+		}},
+		{"processing", func(c *transport.Client, basis map[string]any) (bool, error) {
+			s, _ := processing.NewService(c)
 			r, err := s.New(t.Context(), basis)
 			return r != nil, err
 		}},

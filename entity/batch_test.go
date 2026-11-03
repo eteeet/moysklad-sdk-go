@@ -57,6 +57,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
+	"github.com/eteeet/moysklad-sdk-go/entity/processing"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingplanfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingprocess"
@@ -259,6 +260,9 @@ func batchCases() []batchCase {
 		createManyCase("uom", uom.NewService, (*uom.Service).CreateMany),
 		updateManyCase("uom", uom.NewService, (*uom.Service).UpdateMany),
 		deleteManyCase("uom", uom.NewService, (*uom.Service).DeleteMany),
+		createManyCase("processing", processing.NewService, (*processing.Service).CreateMany),
+		updateManyCase("processing", processing.NewService, (*processing.Service).UpdateMany),
+		deleteManyCase("processing", processing.NewService, (*processing.Service).DeleteMany),
 		createManyCase("productionstagecompletion", productionstagecompletion.NewService, (*productionstagecompletion.Service).CreateMany),
 		updateManyCase("productionstagecompletion", productionstagecompletion.NewService, (*productionstagecompletion.Service).UpdateMany),
 		deleteManyCase("productionstagecompletion", productionstagecompletion.NewService, (*productionstagecompletion.Service).DeleteMany),
@@ -603,6 +607,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                    "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                   "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                       "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*processing.Service]():                "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*productionstagecompletion.Service](): "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*processingorder.Service]():           "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*processingprocess.Service]():         "CreateMany UpdateMany DeleteMany",
