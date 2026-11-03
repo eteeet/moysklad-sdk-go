@@ -1,0 +1,8 @@
+{
+  "label": "Метка",
+  "assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/7a83c422-3c64-11e6-8a84-bae500000012", "type": "variant", "mediaType": "application/json"}},
+  "expiryDate": "2017-12-31 00:00:00.000",
+  "description": "", "code": "c-1", "externalCode": "ext", "archived": false,
+  "barcodes": [{"ean8": "20000000"}, {"ean13": "2000000000000"}, {"code128": "code128 barcode"}],
+  "attributes": []
+}

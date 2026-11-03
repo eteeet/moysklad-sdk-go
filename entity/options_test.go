@@ -19,6 +19,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/bundle"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
+	"github.com/eteeet/moysklad-sdk-go/entity/consignment"
 	"github.com/eteeet/moysklad-sdk-go/entity/contract"
 	"github.com/eteeet/moysklad-sdk-go/entity/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/entity/country"
@@ -135,7 +136,7 @@ func fillRequest[I any]() I {
 	for i := range v.NumField() {
 		field := v.Field(i)
 		switch {
-		case (v.Type().Field(i).Name == "Name" || v.Type().Field(i).Name == "LastName") && field.Kind() == reflect.String:
+		case (v.Type().Field(i).Name == "Name" || v.Type().Field(i).Name == "LastName" || v.Type().Field(i).Name == "Label") && field.Kind() == reflect.String:
 			field.SetString("x")
 		case v.Type().Field(i).Name == "TransactionType" && field.Kind() == reflect.String:
 			field.SetString("EARNING")
@@ -184,6 +185,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("consignment", consignment.NewService, (*consignment.Service).Get),
 		getCase("thing", thing.NewService, (*thing.Service).Get),
 		getCase("organizationbranch", organizationbranch.NewService, (*organizationbranch.Service).Get),
 		getCase("saleplatform", saleplatform.NewService, (*saleplatform.Service).Get),
@@ -237,6 +239,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("consignment", consignment.NewService, (*consignment.Service).Create),
+		updateCase("consignment", consignment.NewService, (*consignment.Service).Update),
 		createCase("organizationbranch", organizationbranch.NewService, (*organizationbranch.Service).Create),
 		updateCase("organizationbranch", organizationbranch.NewService, (*organizationbranch.Service).Update),
 		createCase("saleschannel", saleschannel.NewService, (*saleschannel.Service).Create),
@@ -507,6 +511,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("consignment", consignment.NewService, (*consignment.Service).Get, (*consignment.Service).Create, (*consignment.Service).Update, (*consignment.Service).List)...)
 	cases = append(cases, localCases("organizationbranch", organizationbranch.NewService, (*organizationbranch.Service).Get, (*organizationbranch.Service).Create, (*organizationbranch.Service).Update, (*organizationbranch.Service).List)...)
 	cases = append(cases, localCases("saleschannel", saleschannel.NewService, (*saleschannel.Service).Get, (*saleschannel.Service).Create, (*saleschannel.Service).Update, (*saleschannel.Service).List)...)
 	cases = append(cases, localCases("contract", contract.NewService, (*contract.Service).Get, (*contract.Service).Create, (*contract.Service).Update, (*contract.Service).List)...)
@@ -657,7 +662,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 41*4+13+3+8+1+6 {
+	if len(cases) != 42*4+13+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
