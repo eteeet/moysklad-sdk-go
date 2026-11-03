@@ -84,6 +84,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/images"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/namedfilter"
+	"github.com/eteeet/moysklad-sdk-go/report/byoperations"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/security"
 	"github.com/eteeet/moysklad-sdk-go/trackingcode"
@@ -145,6 +146,11 @@ type ReportGroup struct{ transport *transport.Client }
 
 // Turnover — отчёт «Обороты».
 func (r ReportGroup) Turnover() *turnover.Service { return must(turnover.NewService(r.transport)) }
+
+// ByOperations — отчёт по документам stock/reserve/intransit.
+func (r ReportGroup) ByOperations() *byoperations.Service {
+	return must(byoperations.NewService(r.transport))
+}
 
 // Metadata — метаданные сущностей (entity/metadata, entity/<type>/metadata) и статусы.
 func (e EntityGroup) Metadata() *metadata.Service { return must(metadata.NewService(e.transport)) }
