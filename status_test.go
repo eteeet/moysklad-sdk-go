@@ -19,6 +19,7 @@ var statusHandles = map[string]string{
 	"states":              "Entity.Metadata",
 	"entity/metadata":     "Entity.Metadata",
 	"files":               "Entity.Files",
+	"images":              "Entity.Images",
 	"context/employee":    "Context",
 	"context/application": "Context",
 	"usersettings":        "Context",

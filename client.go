@@ -53,6 +53,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	"github.com/eteeet/moysklad-sdk-go/files"
+	"github.com/eteeet/moysklad-sdk-go/images"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/security"
@@ -116,6 +117,9 @@ func (e EntityGroup) Metadata() *metadata.Service { return must(metadata.NewServ
 
 // Files — файлы операций, документов и других сущностей (entity/<type>/<id>/files).
 func (e EntityGroup) Files() *files.Service { return must(files.NewService(e.transport)) }
+
+// Images — изображения товара, комплекта, модификации и карточки контента.
+func (e EntityGroup) Images() *images.Service { return must(images.NewService(e.transport)) }
 
 // Assortment — Ассортимент: товары, услуги, комплекты, модификации и серии (только чтение).
 func (e EntityGroup) Assortment() *assortment.Service {
