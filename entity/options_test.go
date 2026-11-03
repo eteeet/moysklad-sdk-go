@@ -57,6 +57,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
+	"github.com/eteeet/moysklad-sdk-go/entity/specialpricediscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/store"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
 	"github.com/eteeet/moysklad-sdk-go/entity/taxrate"
@@ -190,6 +191,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Get),
 		getCase("personaldiscount", personaldiscount.NewService, (*personaldiscount.Service).Get),
 		getCase("accumulationdiscount", accumulationdiscount.NewService, (*accumulationdiscount.Service).Get),
 		getCase("contentcard", contentcard.NewService, (*contentcard.Service).Get),
@@ -247,6 +249,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Create),
+		updateCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Update),
 		createCase("personaldiscount", personaldiscount.NewService, (*personaldiscount.Service).Create),
 		updateCase("personaldiscount", personaldiscount.NewService, (*personaldiscount.Service).Update),
 		createCase("accumulationdiscount", accumulationdiscount.NewService, (*accumulationdiscount.Service).Create),
