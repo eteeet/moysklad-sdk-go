@@ -9,7 +9,7 @@ import (
 
 // New — шаблон документа: PUT entity/invoiceout/new, документ не создаётся. basis — объект основания по
 // источнику (заказ покупателя, отгрузка), например {"customerOrder": model.Reference{…}}; nil — шаблон без
-// основания. Ответ — InvoiceOut без id: его можно доработать и передать в Create.
+// основания. Ответ — InvoiceOut без id: нужные поля переносятся в CreateRequest вручную.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-out#3-shablon-scheta-pokupatelyu
 func (s *Service) New(ctx context.Context, basis map[string]any, opts ...transport.RequestOption) (*InvoiceOut, error) {
 	transport.ResetResponseInfo(opts)

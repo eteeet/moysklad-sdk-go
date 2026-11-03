@@ -1,6 +1,7 @@
 package wizard_test
 
 import (
+	"compress/gzip"
 	"context"
 	"io"
 	"net/http"
@@ -63,39 +64,74 @@ func TestFill(t *testing.T) {
 	for _, tc := range []struct {
 		name, body string
 		status     int
-		ok         bool
+		gzip, ok   bool
 	}{
-		{"ok", response, 200, true},
-		{"null", `null`, 200, false},
-		{"array", `[]`, 200, false},
-		{"api error", `{"errors":[{"error":"agent required","code":3000}]}`, 412, false},
-		{"unexpected status", response, 201, false},
+		{"ok", response, 200, false, true},
+		{"gzip", response, 200, true, true},
+		{"null", `null`, 200, false, false},
+		{"array", `[]`, 200, false, false},
+		{"api error", `{"errors":[{"error":"agent required","code":3000}]}`, 412, false, false},
+		{"unexpected status", response, 201, false, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var calls atomic.Int32
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				calls.Add(1)
 				b, _ := io.ReadAll(r.Body)
-				if r.Method != http.MethodPost || r.URL.Path != "/wizard/demand" || r.URL.Query().Get("action") != "evaluate_price,evaluate_vat" {
+				if r.Method != http.MethodPost || r.URL.Path != "/api/remap/1.2/wizard/demand" || r.URL.RawQuery != "action=evaluate_price%2Cevaluate_vat" {
 					t.Errorf("request = %s %s", r.Method, r.URL)
 				}
+				for key, want := range map[string]string{"Authorization": "Bearer test-token", "Accept": "application/json;charset=utf-8",
+					"Accept-Encoding": "gzip", "User-Agent": "moysklad-sdk-go", "Content-Type": "application/json"} {
+					if r.Header.Get(key) != want {
+						t.Errorf("header %s = %q", key, r.Header.Get(key))
+					}
+				}
 				documenttest.JSONEqual(t, b, []byte(requestBody))
+				w.Header().Set("X-Test", "wizard")
+				if tc.gzip {
+					w.Header().Set("Content-Encoding", "gzip")
+				}
 				w.WriteHeader(tc.status)
+				if tc.gzip {
+					zw := gzip.NewWriter(w)
+					io.WriteString(zw, tc.body)
+					zw.Close()
+					return
+				}
 				io.WriteString(w, tc.body)
 			}))
 			defer server.Close()
-			c, err := transport.NewClient(transport.Config{BaseURL: server.URL})
+			auth, err := transport.BearerToken("test-token")
+			if err != nil {
+				t.Fatal(err)
+			}
+			c, err := transport.NewClient(transport.Config{BaseURL: server.URL + "/api/remap/1.2", HTTPClient: server.Client(), Auth: auth})
 			if err != nil {
 				t.Fatal(err)
 			}
 			s, _ := wizard.NewService(c)
-			got, err := s.Fill(t.Context(), "demand", []string{wizard.EvaluatePrice, wizard.EvaluateVAT}, template)
+			var info transport.ResponseInfo
+			got, err := s.Fill(t.Context(), "demand", []string{wizard.EvaluatePrice, wizard.EvaluateVAT}, template, transport.WithResponseInfo(&info))
 			if tc.ok != (err == nil) || tc.ok != (got != nil) || calls.Load() != 1 {
 				t.Fatalf("got = %+v, err = %v, calls = %d", got, err, calls.Load())
 			}
-			if err != nil && (strings.Count(err.Error(), "moysklad:") != 1 || !strings.Contains(err.Error(), "fill demand template")) {
-				t.Errorf("error = %v", err)
+			if info.StatusCode != tc.status || info.Attempts != 1 || info.Header.Get("X-Test") != "wizard" {
+				t.Errorf("response info = %+v", info)
 			}
+			if err != nil {
+				if strings.Count(err.Error(), "moysklad:") != 1 || !strings.Contains(err.Error(), "fill demand template") {
+					t.Errorf("error = %v", err)
+				}
+				return
+			}
+			// Результат — разобранный ответ сервера, а не эхо шаблона.
+			if got.Agent == nil || got.Agent.Meta.Href != agentHref || len(got.Positions) != 2 ||
+				got.Positions[0].Price != 3300 || got.Positions[0].Quantity != 12 || got.Positions[0].Sum != 39600 ||
+				got.Positions[1].DiscountedPrice != 2640 || got.Positions[1].Discount != 20 {
+				t.Errorf("result = %+v", got)
+			}
+			documenttest.JSONEqual(t, got.Raw, []byte(response))
 		})
 	}
 	documenttest.LocalErrors(t, func(ctx context.Context, c *transport.Client) (*wizard.Result, error) {

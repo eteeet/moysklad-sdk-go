@@ -10,7 +10,7 @@ import (
 // New — шаблон документа: PUT entity/facturein/new, документ не создаётся. Основания по источнику —
 // приёмка или исходящий платёж; пример раздела передаёт их массивом связей, например
 // {"supplies": []model.Reference{…}} или {"payments": […]}; nil — шаблон без основания. Ответ —
-// FactureIn без id: его можно доработать и передать в Create.
+// FactureIn без id: нужные поля переносятся в CreateRequest вручную.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/facturein#3-shablon-scheta-faktury-poluchennogo
 func (s *Service) New(ctx context.Context, basis map[string]any, opts ...transport.RequestOption) (*FactureIn, error) {
 	transport.ResetResponseInfo(opts)

@@ -9,7 +9,7 @@ import (
 
 // New — шаблон документа: PUT entity/enter/new, документ не создаётся. basis — объект основания по
 // источнику (инвентаризация (inventory; не больше 500 подходящих позиций)), например {"inventory": model.Reference{…}}; nil — шаблон без
-// основания. Ответ — Enter без id: его можно доработать и передать в Create.
+// основания. Ответ — Enter без id: нужные поля переносятся в CreateRequest вручную.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/enter
 func (s *Service) New(ctx context.Context, basis map[string]any, opts ...transport.RequestOption) (*Enter, error) {
 	transport.ResetResponseInfo(opts)

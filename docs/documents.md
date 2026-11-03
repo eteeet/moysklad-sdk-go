@@ -36,12 +36,14 @@ float64 в копейках, без округления, пересчётов �
 ## Позиции
 
 InvoiceIn, InvoiceOut, Supply, Demand, PurchaseOrder, Move, PurchaseReturn, CustomerOrder, Enter,
-Loss, SalesReturn, RetailDemand, RetailSalesReturn ([розница](retail.md)), InternalOrder, Prepayment и
-PrepaymentReturn используют общие `positions.Position`/`PositionRequest`. Каждый entity-пакет экспортирует aliases
+Loss, SalesReturn, RetailDemand, RetailSalesReturn ([розница](retail.md)) и InternalOrder используют
+общие `positions.Position`/`PositionRequest`. Каждый entity-пакет экспортирует aliases
 `Position` и `PositionRequest`, а Service предоставляет типизированный
 `GetPositions(ctx, id, positions.PageOptions) (*model.Collection[Position], error)`.
 Ресурс и форма строки фиксированы пакетом. Одна страница, Limit=0 означает 1000,
 допустимы 1…1000 и Offset>=0. Обход страниц выполняет вызывающий код.
+Prepayment и PrepaymentReturn строки только читают: экспортируют alias `Position` и тот же
+`GetPositions`, `PositionRequest` и операций записи строк у них нет.
 
 Get документа читает positions.meta, без обещания rows и без вызова reader.
 GetPositions делает отдельный GET `entity/<type>/{id}/positions?limit=...&offset=...`;

@@ -143,8 +143,9 @@ func HTTP[T any](t *testing.T, tc ResponseCase, method, path string, body []byte
 			t.Errorf("API details = %+v", apiErr)
 		}
 	}
+	// Сбой соединения тоже даёт ошибку и проходит проверки выше; текст ошибки отличает его.
 	if calls.Load() != 1 {
-		t.Errorf("calls = %d, want 1", calls.Load())
+		t.Errorf("calls = %d, want 1; error = %v", calls.Load(), err)
 	}
 }
 

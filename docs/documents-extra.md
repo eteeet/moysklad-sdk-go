@@ -28,11 +28,12 @@ meta.type строк — `{тип}position`, кроме invoicein/invoiceout (`i
 ## Шаблон документа — `New(ctx, basis)`
 
 `PUT entity/{type}/new`: без основания (`basis == nil`) — запрос без тела, с основанием — объект
-`{"customerOrder": {meta}}` и т.п. Документ не создаётся; ответ — модель документа, которую можно
-доработать и передать в Create. Есть у cashin, cashout, demand, enter, invoicein, invoiceout, loss,
-move, paymentin, paymentout, purchaseorder, purchasereturn, retaildemand, retailsalesreturn,
-salesreturn, supply, а также internalorder, inventory, facturein, factureout, retaildrawercashin,
-retaildrawercashout. Какие основания допустимы для типа, проверяет сервер.
+`{"customerOrder": {meta}}` и т.п. Документ не создаётся; ответ — модель чтения документа (без id),
+а не `CreateRequest`: прямого преобразования нет, нужные поля переносятся в `CreateRequest` вручную.
+Есть у cashin, cashout, demand, enter, invoicein, invoiceout, loss, move, paymentin, paymentout,
+purchaseorder, purchasereturn, retaildemand, retailsalesreturn, salesreturn, supply, а также
+internalorder, inventory, facturein, factureout, retaildrawercashin, retaildrawercashout. Какие
+основания допустимы для типа, проверяет сервер.
 
 ## Автозаполнение — пакет `wizard`, `c.Wizard()`
 
