@@ -49,6 +49,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/organizationbranch"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentin"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
+	"github.com/eteeet/moysklad-sdk-go/entity/payroll"
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
@@ -206,6 +207,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("payroll", payroll.NewService, (*payroll.Service).Get),
 		getCase("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).Get),
 		getCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).Get),
 		getCase("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).Get),
@@ -272,6 +274,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("payroll", payroll.NewService, (*payroll.Service).Create),
+		updateCase("payroll", payroll.NewService, (*payroll.Service).Update),
 		createCase("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).Create),
 		updateCase("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).Update),
 		createCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).Create),
@@ -415,6 +419,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		positionsCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsCase("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsCase("payroll", payroll.NewService, (*payroll.Service).GetPositions),
 		positionsCase("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).GetPositions),
 		positionsCase("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).GetPositions),
 		positionsCase("inventory", inventory.NewService, (*inventory.Service).GetPositions),
@@ -572,6 +577,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("payroll", payroll.NewService, (*payroll.Service).Get, (*payroll.Service).Create, (*payroll.Service).Update, (*payroll.Service).List)...)
 	cases = append(cases, localCases("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).Get, (*commissionreportout.Service).Create, (*commissionreportout.Service).Update, (*commissionreportout.Service).List)...)
 	cases = append(cases, localCases("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).Get, (*commissionreportin.Service).Create, (*commissionreportin.Service).Update, (*commissionreportin.Service).List)...)
 	cases = append(cases, localCases("counterpartyadjustment", counterpartyadjustment.NewService, (*counterpartyadjustment.Service).Get, (*counterpartyadjustment.Service).Create, (*counterpartyadjustment.Service).Update, (*counterpartyadjustment.Service).List)...)
@@ -618,6 +624,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsLocal("payroll", payroll.NewService, (*payroll.Service).GetPositions),
 		positionsLocal("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).GetPositions),
 		positionsLocal("commissionreportin", commissionreportin.NewService, (*commissionreportin.Service).GetPositions),
 		positionsLocal("inventory", inventory.NewService, (*inventory.Service).GetPositions),
@@ -736,7 +743,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 51*4+17+3+8+1+6 {
+	if len(cases) != 52*4+18+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

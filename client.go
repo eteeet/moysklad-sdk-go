@@ -41,6 +41,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/organizationbranch"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentin"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
+	"github.com/eteeet/moysklad-sdk-go/entity/payroll"
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
@@ -280,6 +281,9 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// Payroll — начисления зарплаты.
+func (e EntityGroup) Payroll() *payroll.Service { return must(payroll.NewService(e.transport)) }
 
 // CommissionReportOut — выданные отчёты комиссионера.
 func (e EntityGroup) CommissionReportOut() *commissionreportout.Service {

@@ -1,0 +1,6 @@
+{
+  "endPayrollPeriod": "2026-03-26 23:59:59.000",
+  "name": "putSecond",
+  "group": null,
+  "positions": [{"employee": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/77777777-7777-7777-7777-777777777777", "type": "employee"}}, "baseSalary": 200, "pieceworkSalary": 300}]
+}
