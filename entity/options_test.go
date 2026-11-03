@@ -178,6 +178,9 @@ func fillRequest[I any]() I {
 			field.Set(reflect.ValueOf(model.Value(1.0)))
 		case field.Kind() == reflect.Slice && field.Type().Elem().Kind() == reflect.Struct:
 			field.Set(reflect.MakeSlice(field.Type(), 1, 1))
+			if name := field.Index(0).FieldByName("Name"); name.IsValid() && name.Kind() == reflect.String {
+				name.SetString("x")
+			}
 		case field.Type() == reflect.TypeFor[model.DateTime]():
 			field.Set(reflect.ValueOf(model.DateTime(time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC))))
 		}
