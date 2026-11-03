@@ -1,0 +1,22 @@
+{
+  "customerOrder": {
+    "enabled": false
+  },
+  "task": {
+    "channelsEnabled": {
+      "email": false,
+      "push": true
+    }
+  },
+  "followedEvents": {
+    "enabled": true,
+    "channelsEnabled": {
+      "interface": false
+    }
+  },
+  "futureGroup": {
+    "channelsEnabled": {
+      "sms": true
+    }
+  }
+}

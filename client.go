@@ -84,6 +84,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/images"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/namedfilter"
+	"github.com/eteeet/moysklad-sdk-go/notification"
 	"github.com/eteeet/moysklad-sdk-go/report/byoperations"
 	"github.com/eteeet/moysklad-sdk-go/report/dashboard"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
@@ -135,6 +136,11 @@ func (c *Client) Async() *async.Service { return must(async.NewService(c.transpo
 
 // Wizard — автозаполнение цен, НДС, скидок и себестоимости документа: POST wizard/{тип}.
 func (c *Client) Wizard() *wizard.Service { return must(wizard.NewService(c.transport)) }
+
+// Notification — лента уведомлений и настройки уведомлений (notification/*).
+func (c *Client) Notification() *notification.Service {
+	return must(notification.NewService(c.transport))
+}
 
 // Security — выпуск токена POST security/token.
 func (c *Client) Security() *security.Service { return must(security.NewService(c.transport)) }
