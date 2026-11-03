@@ -100,8 +100,10 @@ task, err := s.Create(ctx, productiontask.CreateRequest{
   `standardHourUnit` (нормо-часы) и количества этапа — не деньги.
 - Материал: `meta`, `id`, `accountId`, `assortment`, `planQuantity`. `CreateMaterial` — POST одним
   объектом; ответ — объект или массив из одного объекта (как в примере источника).
-- Пустой request в `Update*` отклоняется до запроса; обязательность полей нового продукта и
-  материала (`assortment`, `planQuantity`) проверяет сервер.
+- Пустой request в `Update*` отклоняется до запроса. `CreateMaterial` и `CreateProducts` требуют
+  у новой строки `assortment` с непустым meta.href и `planQuantity` (раздел «Создать»: «Для
+  успешного создания необходимо…») — без них отклоняется до запроса; положительность количества
+  проверяет сервер.
 
 ## Ограничения и противоречия источника
 

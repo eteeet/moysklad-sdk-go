@@ -2,6 +2,7 @@ package productiontask
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/nested"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -44,7 +45,18 @@ func (s *Service) GetMaterials(ctx context.Context, stageID string, page query.P
 // массив из одного объекта, принимается и объект. Не повторять после неоднозначного сбоя.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/productionTask#3-dobavit-material-k-proizvodstvennomu-etapu
 func (s *Service) CreateMaterial(ctx context.Context, stageID string, input MaterialRequest, opts ...transport.RequestOption) (*Material, error) {
+	transport.ResetResponseInfo(opts)
+	if !newRow(input.Assortment, input.PlanQuantity) {
+		return nil, fmt.Errorf("moysklad: create productionstage %s material: assortment meta.href and planQuantity must be set", stageID)
+	}
 	return nested.Create[Material](ctx, s.materials(stageID), input, opts)
+}
+
+// newRow — для новой строки источник требует assortment и planQuantity («Для успешного создания
+// необходимо…»); положительность количества проверяет сервер.
+func newRow(assortment model.Field[model.Reference], quantity model.Field[float64]) bool {
+	ref, ok := assortment.Get()
+	return ok && ref.Meta.Href != "" && !quantity.IsZero() && !quantity.IsNull()
 }
 
 // UpdateMaterial: пустой input отклоняется до запроса.

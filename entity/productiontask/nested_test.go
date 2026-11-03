@@ -238,6 +238,8 @@ func TestGetStages(t *testing.T) {
 
 // Ошибки входа — до HTTP, ResponseInfo сброшен; ровно 200 позиций и 1000 продуктов уходят.
 func TestValidation(t *testing.T) {
+	// Корректная новая строка: ошибки в случаях ниже вызывает только изменённая часть.
+	newRow := productiontask.ProductRequest{Assortment: model.Value(ref("product/57c9a841-99d8-11ee-0a83-0a2e00000773", "product")), PlanQuantity: model.Value(1.0)}
 	var calls atomic.Int32
 	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
@@ -355,7 +357,15 @@ func TestValidation(t *testing.T) {
 			return err
 		},
 		"create products bad id": func(o ...transport.RequestOption) error {
-			_, err := s.CreateProducts(ctx, "bad", []productiontask.ProductRequest{{}}, o...)
+			_, err := s.CreateProducts(ctx, "bad", []productiontask.ProductRequest{newRow}, o...)
+			return err
+		},
+		"create products no assortment": func(o ...transport.RequestOption) error {
+			_, err := s.CreateProducts(ctx, testID, []productiontask.ProductRequest{newRow, {PlanQuantity: model.Value(1.0)}}, o...)
+			return err
+		},
+		"create products no quantity": func(o ...transport.RequestOption) error {
+			_, err := s.CreateProducts(ctx, testID, []productiontask.ProductRequest{{Assortment: newRow.Assortment}}, o...)
 			return err
 		},
 		"update product empty": func(o ...transport.RequestOption) error {
@@ -387,7 +397,15 @@ func TestValidation(t *testing.T) {
 		"materials bad id": page(getMaterials, "bad", query.PageOptions{}),
 		"materials fields": page(getMaterials, stageID, query.PageOptions{Fields: "stock"}),
 		"create material bad id": func(o ...transport.RequestOption) error {
-			_, err := s.CreateMaterial(ctx, "bad", productiontask.MaterialRequest{}, o...)
+			_, err := s.CreateMaterial(ctx, "bad", productiontask.MaterialRequest(newRow), o...)
+			return err
+		},
+		"create material no assortment": func(o ...transport.RequestOption) error {
+			_, err := s.CreateMaterial(ctx, stageID, productiontask.MaterialRequest{PlanQuantity: model.Value(1.0)}, o...)
+			return err
+		},
+		"create material null quantity": func(o ...transport.RequestOption) error {
+			_, err := s.CreateMaterial(ctx, stageID, productiontask.MaterialRequest{Assortment: newRow.Assortment, PlanQuantity: model.Null[float64]()}, o...)
 			return err
 		},
 		"update material bad": func(o ...transport.RequestOption) error {

@@ -13,7 +13,8 @@ import (
 )
 
 // Позиции (этапы) — entity/processingprocess/{id}/positions, meta.type processingprocessposition.
-// Лимит — 100 позиций на техпроцесс (проверяет сервер). Повторов записи нет.
+// Лимит — 100 позиций на техпроцесс: Create/Update проверяют его до запроса, CreatePositions —
+// сервер (число уже существующих позиций SDK не знает). Повторов записи нет.
 
 func (s *Service) positions(id string) nested.Collection {
 	return nested.Collection{Client: s.client, Parent: "processingprocess", ParentID: id, Path: "positions", Item: "position", MetaType: "processingprocessposition"}

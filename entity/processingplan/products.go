@@ -51,7 +51,10 @@ func (s *Service) GetProduct(ctx context.Context, id, productID string, opts ...
 		raw = items[0]
 	}
 	var result Product
-	if err := json.Unmarshal(raw, &result); err != nil || result.ID == "" {
+	if err := json.Unmarshal(raw, &result); err != nil {
+		return nil, fmt.Errorf("moysklad: %s: decode response: %w", operation, err)
+	}
+	if result.ID == "" {
 		return nil, fmt.Errorf("moysklad: %s: response has no id", operation)
 	}
 	return &result, nil

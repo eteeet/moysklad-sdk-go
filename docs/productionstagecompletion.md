@@ -68,13 +68,13 @@ List: одна страница, `fields` не принимается. Исто�
 
 | Набор | Ресурс | meta.type | Методы |
 | --- | --- | --- | --- |
-| материалы | `…/{id}/materials` | `productionstagecompletionmaterial` | `GetMaterials`, `AddMaterial`, `UpdateMaterial` |
+| материалы | `…/{id}/materials` | `productionstagecompletionmaterial` | `GetMaterials`, `CreateMaterial`, `UpdateMaterial` |
 | продукты | `…/{id}/products` | `productionstagecompletionresult` | `GetProducts`, `UpdateProduct` |
 
 - `GetMaterials(ctx, id, query.PageOptions) (*model.Collection[Material], error)` и
   `GetProducts(ctx, id, query.PageOptions) (*model.Collection[Product], error)` — одна страница,
   только limit/offset (`fields` отклоняется до запроса).
-- `AddMaterial(ctx, id, MaterialAddRequest) (*Material, error)` — один POST объектом;
+- `CreateMaterial(ctx, id, MaterialCreateRequest) (*Material, error)` — один POST объектом;
   `assortment` обязателен (до запроса), `consumedQuantity` сервер игнорирует при `things`.
 - `UpdateMaterial(ctx, id, materialID, MaterialUpdateRequest)` и
   `UpdateProduct(ctx, id, productID, ProductUpdateRequest)` — PUT строки; пустой request

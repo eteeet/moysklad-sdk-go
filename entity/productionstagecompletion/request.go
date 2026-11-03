@@ -50,10 +50,10 @@ type UpdateRequest struct {
 	StandardHourUnit     model.Field[float64]         `json:"standardHourUnit,omitzero"`
 }
 
-// MaterialAddRequest — новый материал: assortment обязателен (проверяется до запроса);
+// MaterialCreateRequest — новый материал: assortment обязателен (проверяется до запроса);
 // consumedQuantity сервер игнорирует, если переданы things (только для серийного учёта).
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/productionStageCompletion#3-dobavit-material-vypolneniya-etapa-proizvodstva
-type MaterialAddRequest struct {
+type MaterialCreateRequest struct {
 	Assortment       model.Reference       `json:"assortment"`
 	ConsumedQuantity model.Field[float64]  `json:"consumedQuantity,omitzero"`
 	Things           model.Field[[]string] `json:"things,omitzero"`

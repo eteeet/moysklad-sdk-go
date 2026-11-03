@@ -2,6 +2,7 @@ package productiontask
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/nested"
@@ -53,6 +54,12 @@ func (s *Service) GetProduct(ctx context.Context, id, productID string, opts ...
 // отправляет на …/products. Не повторять после неоднозначного сбоя.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/productionTask#3-sozdat-produkt
 func (s *Service) CreateProducts(ctx context.Context, id string, items []ProductRequest, opts ...transport.RequestOption) ([]batch.Result[Product], error) {
+	transport.ResetResponseInfo(opts)
+	for i, item := range items {
+		if !newRow(item.Assortment, item.PlanQuantity) {
+			return nil, fmt.Errorf("moysklad: create productiontask %s products: items[%d]: assortment meta.href and planQuantity must be set", id, i)
+		}
+	}
 	return nested.CreateMany[Product](ctx, s.products(id), items, opts)
 }
 

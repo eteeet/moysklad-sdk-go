@@ -29,11 +29,11 @@ func (s *Service) GetMaterials(ctx context.Context, id string, page query.PageOp
 	return nested.List[Material](ctx, s.materials(id), page, opts)
 }
 
-// AddMaterial — POST …/{id}/materials одним объектом. Не повторять после неоднозначного сбоя:
+// CreateMaterial — POST …/{id}/materials одним объектом. Не повторять после неоднозначного сбоя:
 // возможен дубль материала. Серийные номера при создании выполнения этапа не поддерживаются,
 // но добавление материала их принимает.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/productionStageCompletion#3-dobavit-material-vypolneniya-etapa-proizvodstva
-func (s *Service) AddMaterial(ctx context.Context, id string, input MaterialAddRequest, opts ...transport.RequestOption) (*Material, error) {
+func (s *Service) CreateMaterial(ctx context.Context, id string, input MaterialCreateRequest, opts ...transport.RequestOption) (*Material, error) {
 	if input.Assortment.Meta.Href == "" {
 		transport.ResetResponseInfo(opts)
 		return nil, fmt.Errorf("moysklad: create productionstagecompletion %s material: assortment meta.href must not be empty", id)

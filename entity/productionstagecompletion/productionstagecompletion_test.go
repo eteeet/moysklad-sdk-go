@@ -168,8 +168,8 @@ func TestRequestJSON(t *testing.T) {
 			{"create zero volume", productionstagecompletion.CreateRequest{ProductionStage: stage}, []byte(`{"productionStage":{"meta":{"href":"` + stageHref + `","type":"productionstage"}},"productionVolume":0}`)},
 			{"update", fullUpdate, read(t, "custom/productionstagecompletion/update.golden.json")},
 			{"update false", productionstagecompletion.UpdateRequest{Shared: model.Value(false), LabourUnitCost: model.Value(0.0)}, []byte(`{"shared":false,"labourUnitCost":0}`)},
-			{"material add", productionstagecompletion.MaterialAddRequest{Assortment: product, ConsumedQuantity: model.Value(2.0)}, []byte(`{"assortment":` + productRaw + `,"consumedQuantity":2}`)},
-			{"material add things", productionstagecompletion.MaterialAddRequest{Assortment: product, Things: model.Value([]string{"F564X056", "F564X057"})}, []byte(`{"assortment":` + productRaw + `,"things":["F564X056","F564X057"]}`)},
+			{"material add", productionstagecompletion.MaterialCreateRequest{Assortment: product, ConsumedQuantity: model.Value(2.0)}, []byte(`{"assortment":` + productRaw + `,"consumedQuantity":2}`)},
+			{"material add things", productionstagecompletion.MaterialCreateRequest{Assortment: product, Things: model.Value([]string{"F564X056", "F564X057"})}, []byte(`{"assortment":` + productRaw + `,"things":["F564X056","F564X057"]}`)},
 			{"material update", productionstagecompletion.MaterialUpdateRequest{ConsumedQuantity: model.Value(0.0), Assortment: model.Value(product)}, []byte(`{"assortment":` + productRaw + `,"consumedQuantity":0}`)},
 			{"product update", productionstagecompletion.ProductUpdateRequest{ProducedQuantity: model.Value(2.7), Things: model.Value([]string{})}, []byte(`{"producedQuantity":2.7,"things":[]}`)},
 		} {
@@ -195,7 +195,7 @@ func TestRequestJSON(t *testing.T) {
 			t.Errorf("UpdateRequest contains create-only %s", name)
 		}
 	}
-	for _, typ := range []reflect.Type{reflect.TypeFor[productionstagecompletion.MaterialAddRequest](), reflect.TypeFor[productionstagecompletion.MaterialUpdateRequest](), reflect.TypeFor[productionstagecompletion.ProductUpdateRequest]()} {
+	for _, typ := range []reflect.Type{reflect.TypeFor[productionstagecompletion.MaterialCreateRequest](), reflect.TypeFor[productionstagecompletion.MaterialUpdateRequest](), reflect.TypeFor[productionstagecompletion.ProductUpdateRequest]()} {
 		for _, name := range []string{"ID", "Meta", "AccountID"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
@@ -257,7 +257,7 @@ func TestRowsHTTP(t *testing.T) {
 	t.Run("add material", func(t *testing.T) {
 		httpCases(t, "POST", docPath+"/materials", `{"assortment":`+productRaw+`,"consumedQuantity":2}`, material,
 			func(ctx context.Context, c *transport.Client) (*productionstagecompletion.Material, error) {
-				return service(c).AddMaterial(ctx, testID, productionstagecompletion.MaterialAddRequest{Assortment: product, ConsumedQuantity: model.Value(2.0)})
+				return service(c).CreateMaterial(ctx, testID, productionstagecompletion.MaterialCreateRequest{Assortment: product, ConsumedQuantity: model.Value(2.0)})
 			}, checkMaterial)
 	})
 	t.Run("update material", func(t *testing.T) {
@@ -503,11 +503,11 @@ func TestValidation(t *testing.T) {
 			return err
 		},
 		"add material no assortment": func(o ...transport.RequestOption) error {
-			_, err := s.AddMaterial(ctx, testID, productionstagecompletion.MaterialAddRequest{ConsumedQuantity: model.Value(1.0)}, o...)
+			_, err := s.CreateMaterial(ctx, testID, productionstagecompletion.MaterialCreateRequest{ConsumedQuantity: model.Value(1.0)}, o...)
 			return err
 		},
 		"add material bad id": func(o ...transport.RequestOption) error {
-			_, err := s.AddMaterial(ctx, "bad", productionstagecompletion.MaterialAddRequest{Assortment: product}, o...)
+			_, err := s.CreateMaterial(ctx, "bad", productionstagecompletion.MaterialCreateRequest{Assortment: product}, o...)
 			return err
 		},
 		"update material empty": func(o ...transport.RequestOption) error {
