@@ -53,6 +53,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/region"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
+	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
@@ -283,6 +284,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// RetailDrawerCashIn — внесения денег в кассу.
+func (e EntityGroup) RetailDrawerCashIn() *retaildrawercashin.Service {
+	return must(retaildrawercashin.NewService(e.transport))
+}
 
 // PrepaymentReturn — возвраты предоплаты (чтение, удаление, корзина).
 func (e EntityGroup) PrepaymentReturn() *prepaymentreturn.Service {

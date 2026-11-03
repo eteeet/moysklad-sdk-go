@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 47/60, документы 28/37, отчёты 1/9, прочее 6/8.
+Итого: справочники 47/60, документы 29/37, отчёты 1/9, прочее 6/8.
 
 ## Справочники
 
@@ -103,7 +103,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] purchaseorder — заказ поставщику
 - [x] purchasereturn — возврат поставщику
 - [x] retaildemand — розничная продажа
-- [ ] retaildrawercashin — внесение денег
+- [x] retaildrawercashin — внесение денег
 - [ ] retaildrawercashout — выплата денег
 - [x] retailsalesreturn — розничный возврат
 - [x] retailshift — розничная смена

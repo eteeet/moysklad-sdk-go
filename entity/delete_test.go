@@ -59,6 +59,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/region"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
+	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
@@ -138,6 +139,7 @@ func deleteCases() []optionsCase {
 		deleteCase("supply", supply.NewService, (*supply.Service).Delete),
 		deleteCase("taxrate", taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCase("uom", uom.NewService, (*uom.Service).Delete),
+		deleteCase("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Delete),
 		deleteCase("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).Delete),
 		deleteCase("prepayment", prepayment.NewService, (*prepayment.Service).Delete),
 		deleteCase("payroll", payroll.NewService, (*payroll.Service).Delete),
@@ -259,6 +261,7 @@ func TestDeleteRejectsInvalidID(t *testing.T) {
 		deleteCall(supply.NewService, (*supply.Service).Delete),
 		deleteCall(taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCall(uom.NewService, (*uom.Service).Delete),
+		deleteCall(retaildrawercashin.NewService, (*retaildrawercashin.Service).Delete),
 		deleteCall(prepaymentreturn.NewService, (*prepaymentreturn.Service).Delete),
 		deleteCall(prepayment.NewService, (*prepayment.Service).Delete),
 		deleteCall(payroll.NewService, (*payroll.Service).Delete),

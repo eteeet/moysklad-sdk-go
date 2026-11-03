@@ -1,0 +1,14 @@
+{
+  "organization": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/11111111-1111-1111-1111-111111111111", "type": "organization"}},
+  "agent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/22222222-2222-2222-2222-222222222222", "type": "employee"}},
+  "retailShift": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/retailshift/33333333-3333-3333-3333-333333333333", "type": "retailshift"}},
+  "organizationBranch": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organizationbranch/44444444-4444-4444-4444-444444444444", "type": "organizationbranch"}},
+  "name": "DOC-1",
+  "description": "",
+  "syncId": "55555555-5555-5555-5555-555555555555",
+  "moment": "2026-11-01 12:34:56.000",
+  "applicable": false,
+  "shared": true,
+  "rate": {"currency": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/66666666-6666-6666-6666-666666666666", "type": "currency"}}},
+  "attributes": []
+}
