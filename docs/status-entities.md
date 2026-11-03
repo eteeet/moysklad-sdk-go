@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 55/60, документы 35/37, отчёты 8/9, прочее 8/8.
+Итого: справочники 55/60, документы 35/37, отчёты 9/9, прочее 8/8.
 
 ## Справочники
 
@@ -120,7 +120,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] profit — byproduct/byvariant/byemployee/bycounterparty/bysaleschannel
 - [x] orders — plotseries
 - [x] sales — plotseries
-- [ ] stock — all, all/current, bystore, bystore/current, byoperation, byslot/current (пакет-заглушка)
+- [x] stock — all, all/current, bystore, bystore/current, byoperation, byslot/current
 - [x] turnover — all/bystore/byoperations
 
 ## Прочие ресурсы

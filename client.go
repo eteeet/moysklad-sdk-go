@@ -93,6 +93,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/report/money"
 	"github.com/eteeet/moysklad-sdk-go/report/profit"
 	"github.com/eteeet/moysklad-sdk-go/report/sales"
+	"github.com/eteeet/moysklad-sdk-go/report/stock"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/security"
 	"github.com/eteeet/moysklad-sdk-go/trackingcode"
@@ -159,6 +160,9 @@ type ReportGroup struct{ transport *transport.Client }
 
 // Turnover — отчёт «Обороты».
 func (r ReportGroup) Turnover() *turnover.Service { return must(turnover.NewService(r.transport)) }
+
+// Stock — отчёт «Остатки».
+func (r ReportGroup) Stock() *stock.Service { return must(stock.NewService(r.transport)) }
 
 // Money — деньги: plotseries и byaccount.
 func (r ReportGroup) Money() *money.Service { return must(money.NewService(r.transport)) }
