@@ -13,6 +13,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
 	"github.com/eteeet/moysklad-sdk-go/entity/commissionreportin"
+	"github.com/eteeet/moysklad-sdk-go/entity/commissionreportout"
 	"github.com/eteeet/moysklad-sdk-go/entity/consignment"
 	"github.com/eteeet/moysklad-sdk-go/entity/contentcard"
 	"github.com/eteeet/moysklad-sdk-go/entity/contract"
@@ -279,6 +280,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// CommissionReportOut — выданные отчёты комиссионера.
+func (e EntityGroup) CommissionReportOut() *commissionreportout.Service {
+	return must(commissionreportout.NewService(e.transport))
+}
 
 // CommissionReportIn — полученные отчёты комиссионера с двумя видами строк.
 func (e EntityGroup) CommissionReportIn() *commissionreportin.Service {

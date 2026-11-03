@@ -1,0 +1,9 @@
+{
+  "contract": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/contract/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "type": "contract"}},
+  "commissionPeriodEnd": "2016-12-29 10:07:00.000",
+  "name": "",
+  "project": null,
+  "rewardType": "None",
+  "rewardPercent": 0,
+  "payments": []
+}
