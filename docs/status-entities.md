@@ -6,11 +6,11 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 42/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 43/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
-- [ ] accumulationdiscount — накопительная скидка
+- [x] accumulationdiscount — накопительная скидка: Get/Create/Update/Delete (список — Discount().List)
 - [ ] aggregatepack — транспортная упаковка
 - [ ] application — серверные решения
 - [x] assortment — ассортимент: List и All (assortmentWithoutStock на каждой странице) и ListLegacy

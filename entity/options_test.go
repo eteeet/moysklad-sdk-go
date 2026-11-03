@@ -13,6 +13,7 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/eteeet/moysklad-sdk-go/entity/accumulationdiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonusprogram"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonustransaction"
@@ -188,6 +189,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("accumulationdiscount", accumulationdiscount.NewService, (*accumulationdiscount.Service).Get),
 		getCase("contentcard", contentcard.NewService, (*contentcard.Service).Get),
 		getCase("consignment", consignment.NewService, (*consignment.Service).Get),
 		getCase("thing", thing.NewService, (*thing.Service).Get),
@@ -243,6 +245,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("accumulationdiscount", accumulationdiscount.NewService, (*accumulationdiscount.Service).Create),
+		updateCase("accumulationdiscount", accumulationdiscount.NewService, (*accumulationdiscount.Service).Update),
 		createCase("contentcard", contentcard.NewService, (*contentcard.Service).Create),
 		updateCase("contentcard", contentcard.NewService, (*contentcard.Service).Update),
 		createCase("consignment", consignment.NewService, (*consignment.Service).Create),

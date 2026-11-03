@@ -11,6 +11,7 @@ import (
 
 	"github.com/eteeet/moysklad-sdk-go/audit"
 	"github.com/eteeet/moysklad-sdk-go/contexts"
+	"github.com/eteeet/moysklad-sdk-go/entity/accumulationdiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonusprogram"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonustransaction"
@@ -124,6 +125,7 @@ func deleteCases() []optionsCase {
 		deleteCase("supply", supply.NewService, (*supply.Service).Delete),
 		deleteCase("taxrate", taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCase("uom", uom.NewService, (*uom.Service).Delete),
+		deleteCase("accumulationdiscount", accumulationdiscount.NewService, (*accumulationdiscount.Service).Delete),
 		deleteCase("contentcard", contentcard.NewService, (*contentcard.Service).Delete),
 		deleteCase("consignment", consignment.NewService, (*consignment.Service).Delete),
 		deleteCase("customentity", customentity.NewService, (*customentity.Service).Delete),
@@ -231,6 +233,7 @@ func TestDeleteRejectsInvalidID(t *testing.T) {
 		deleteCall(supply.NewService, (*supply.Service).Delete),
 		deleteCall(taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCall(uom.NewService, (*uom.Service).Delete),
+		deleteCall(accumulationdiscount.NewService, (*accumulationdiscount.Service).Delete),
 		deleteCall(contentcard.NewService, (*contentcard.Service).Delete),
 		deleteCall(consignment.NewService, (*consignment.Service).Delete),
 		deleteCall(customentity.NewService, (*customentity.Service).Delete),
