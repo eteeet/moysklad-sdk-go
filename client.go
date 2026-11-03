@@ -47,6 +47,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
+	"github.com/eteeet/moysklad-sdk-go/entity/processingplanfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/project"
@@ -286,6 +287,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// ProcessingPlanFolder — группы техкарт.
+func (e EntityGroup) ProcessingPlanFolder() *processingplanfolder.Service {
+	return must(processingplanfolder.NewService(e.transport))
+}
 
 // PriceList — прайс-листы со строками.
 func (e EntityGroup) PriceList() *pricelist.Service { return must(pricelist.NewService(e.transport)) }

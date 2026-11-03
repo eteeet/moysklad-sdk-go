@@ -54,6 +54,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
+	"github.com/eteeet/moysklad-sdk-go/entity/processingplanfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/project"
@@ -215,6 +216,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Get),
 		getCase("pricelist", pricelist.NewService, (*pricelist.Service).Get),
 		getCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Get),
 		getCase("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Get),
@@ -287,6 +289,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Create),
+		updateCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Update),
 		createCase("pricelist", pricelist.NewService, (*pricelist.Service).Create),
 		updateCase("pricelist", pricelist.NewService, (*pricelist.Service).Update),
 		createCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Create),
@@ -599,6 +603,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Get, (*processingplanfolder.Service).Create, (*processingplanfolder.Service).Update, (*processingplanfolder.Service).List)...)
 	cases = append(cases, localCases("pricelist", pricelist.NewService, (*pricelist.Service).Get, (*pricelist.Service).Create, (*pricelist.Service).Update, (*pricelist.Service).List)...)
 	cases = append(cases, localCases("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Get, (*retaildrawercashout.Service).Create, (*retaildrawercashout.Service).Update, (*retaildrawercashout.Service).List)...)
 	cases = append(cases, localCases("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Get, (*retaildrawercashin.Service).Create, (*retaildrawercashin.Service).Update, (*retaildrawercashin.Service).List)...)
@@ -771,7 +776,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 55*4+21+3+8+1+6 {
+	if len(cases) != 56*4+21+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

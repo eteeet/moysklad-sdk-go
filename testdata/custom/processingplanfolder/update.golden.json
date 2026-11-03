@@ -1,0 +1,5 @@
+{
+  "name": "Группа 1", "description": "", "code": "groupCode", "externalCode": "extGroupCode",
+  "archived": true, "shared": false, "owner": null,
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/f97aa1fb-2e58-11e6-8a84-bae500000002", "type": "group", "mediaType": "application/json"}}
+}

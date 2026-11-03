@@ -1,0 +1,6 @@
+{
+  "name": "Группа 2", "description": "Техкарты мебели", "code": "13321", "externalCode": "extGroup",
+  "archived": false, "shared": true,
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "type": "employee", "mediaType": "application/json"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/f97aa1fb-2e58-11e6-8a84-bae500000002", "type": "group", "mediaType": "application/json"}}
+}
