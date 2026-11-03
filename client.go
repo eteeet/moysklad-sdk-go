@@ -44,6 +44,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/payroll"
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepayment"
+	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -282,6 +283,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// PrepaymentReturn — возвраты предоплаты (чтение, удаление, корзина).
+func (e EntityGroup) PrepaymentReturn() *prepaymentreturn.Service {
+	return must(prepaymentreturn.NewService(e.transport))
+}
 
 // Prepayment — предоплаты (чтение, удаление, корзина).
 func (e EntityGroup) Prepayment() *prepayment.Service {

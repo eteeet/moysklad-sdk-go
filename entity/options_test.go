@@ -52,6 +52,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/payroll"
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepayment"
+	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -208,6 +209,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).Get),
 		getCase("prepayment", prepayment.NewService, (*prepayment.Service).Get),
 		getCase("payroll", payroll.NewService, (*payroll.Service).Get),
 		getCase("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).Get),
@@ -421,6 +423,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		positionsCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsCase("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsCase("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).GetPositions),
 		positionsCase("prepayment", prepayment.NewService, (*prepayment.Service).GetPositions),
 		positionsCase("payroll", payroll.NewService, (*payroll.Service).GetPositions),
 		positionsCase("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).GetPositions),
@@ -627,6 +630,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsLocal("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).GetPositions),
 		positionsLocal("prepayment", prepayment.NewService, (*prepayment.Service).GetPositions),
 		positionsLocal("payroll", payroll.NewService, (*payroll.Service).GetPositions),
 		positionsLocal("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).GetPositions),
@@ -747,7 +751,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 52*4+19+3+8+1+6 {
+	if len(cases) != 52*4+20+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
