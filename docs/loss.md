@@ -39,13 +39,13 @@
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `salesReturn` | `*model.Reference` | Field | Field |
 | `expenseItem` | `*model.Reference` | — | — |
-| `inventory` | `*model.Reference` | — | — |
+| `inventory` | `*model.Reference` | Field | Field |
 
 ## Ограничения
 
 - Строки: reason, slot, pack, things; `GetPositions` с `fields=declaration` — прослеживаемость
   импортных товаров (readonly).
-- salesReturn пишется; expenseItem — readonly, inventory в примерах записи нет.
+- salesReturn и inventory пишутся (связи документов); expenseItem — readonly.
 - Пример Update источника передаёт sum, таблица помечает его readonly: SDK sum не пишет.
 - Шаблон `PUT /new` и wizard не входят.
 

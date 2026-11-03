@@ -45,16 +45,16 @@
 | `vatIncluded` | `bool` | Field | Field |
 | `payedSum` | `float64` | — | — |
 | `store` | `*model.Reference` | Field | Field |
-| `payments` | `[]model.Reference` | — | — |
+| `payments` | `[]model.Reference` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `salesChannel` | `*model.Reference` | Field | Field |
 | `customerOrder` | `*model.Reference` | Field | Field |
-| `factureOut` | `*model.Reference` | — | — |
+| `factureOut` | `*model.Reference` | Field | Field |
 | `shipmentAddress` | `string` | Field | Field |
 | `shipmentAddressFull` | `*model.Address` | Field | Field |
-| `returns` | `[]model.Reference` | — | — |
-| `productionTasks` | `[]model.Reference` | — | — |
-| `invoicesOut` | `[]model.Reference` | — | — |
+| `returns` | `[]model.Reference` | Field | Field |
+| `productionTasks` | `[]model.Reference` | Field | Field |
+| `invoicesOut` | `[]model.Reference` | Field | Field |
 | `overhead` | `*model.DocumentOverhead` | Field | Field |
 
 Required Reference передаются обычными значениями; остальные поля записи —
@@ -75,8 +75,8 @@ Address/AddressRequest, но FIASCodeRU у Demand не обещается. Cost 
 услуг; SDK передаёт Field без Get для определения
 типа assortment. Unset/0/дробь/null сохраняются, очистка null сервером не обещается.
 Overhead распределяет сервер, наличие позиций не проверяется скрытым Get.
-FactureOut, Returns, Payments, ProductionTasks, InvoicesOut — read-only в этом scope; запись
-TODO.
+FactureOut, Returns, Payments, ProductionTasks, InvoicesOut пишутся как связи документов
+([общее правило](documents-extra.md#связи-документов)).
 Transport fields cargoName/carrier/consignee/consigneeBranch/consignor/consignorBranch/
 goodPackQuantity/shippingInstructions/stateContractId/transportFacility/transportFacilityNumber/
 shippingDocumentNumber/shippingDocumentDate — TODO и read, и write.

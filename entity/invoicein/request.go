@@ -31,6 +31,7 @@ type CreateRequest struct {
 	IncomingDate         model.Field[model.DateTime]            `json:"incomingDate,omitzero"`
 	IncomingNumber       model.Field[string]                    `json:"incomingNumber,omitzero"`
 	PurchaseOrder        model.Field[model.Reference]           `json:"purchaseOrder,omitzero"`
+	Supplies             model.Field[[]model.Reference]         `json:"supplies,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
@@ -62,4 +63,5 @@ type UpdateRequest struct {
 	IncomingDate         model.Field[model.DateTime]            `json:"incomingDate,omitzero"`
 	IncomingNumber       model.Field[string]                    `json:"incomingNumber,omitzero"`
 	PurchaseOrder        model.Field[model.Reference]           `json:"purchaseOrder,omitzero"`
+	Supplies             model.Field[[]model.Reference]         `json:"supplies,omitzero"`
 }

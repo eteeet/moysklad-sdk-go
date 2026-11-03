@@ -42,7 +42,6 @@ type Enter struct {
 	Positions    *model.Collection[Position]        `json:"positions,omitzero"`
 	Files        *model.Collection[model.Reference] `json:"files,omitzero"`
 	Overhead     *model.DocumentOverhead            `json:"overhead,omitzero"`
-	// Inventory — связанная инвентаризация. Маркера readonly источник не даёт, но и в примерах
-	// записи её нет, поэтому SDK её не пишет.
+	// Inventory — связанная инвентаризация; пишется как связь документа.
 	Inventory *model.Reference `json:"inventory,omitzero"`
 }

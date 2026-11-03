@@ -28,6 +28,9 @@ type CreateRequest struct {
 	VATIncluded         model.Field[bool]                      `json:"vatIncluded,omitzero"`
 	Store               model.Reference                        `json:"store"`
 	Supply              model.Field[model.Reference]           `json:"supply,omitzero"`
+	FactureOut          model.Field[model.Reference]           `json:"factureOut,omitzero"`
+	FactureIn           model.Field[model.Reference]           `json:"factureIn,omitzero"`
+	Payments            model.Field[[]model.Reference]         `json:"payments,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return
@@ -53,4 +56,7 @@ type UpdateRequest struct {
 	VATEnabled          model.Field[bool]                      `json:"vatEnabled,omitzero"`
 	VATIncluded         model.Field[bool]                      `json:"vatIncluded,omitzero"`
 	Store               model.Field[model.Reference]           `json:"store,omitzero"`
+	FactureOut          model.Field[model.Reference]           `json:"factureOut,omitzero"`
+	FactureIn           model.Field[model.Reference]           `json:"factureIn,omitzero"`
+	Payments            model.Field[[]model.Reference]         `json:"payments,omitzero"`
 }

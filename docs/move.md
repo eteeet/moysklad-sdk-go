@@ -43,7 +43,7 @@
 | `customerOrder` | `*model.Reference` | Field | Field |
 | `demand` | `*model.Reference` | — | — |
 | `supply` | `*model.Reference` | — | — |
-| `productionTasks` | `[]model.Reference` | — | — |
+| `productionTasks` | `[]model.Reference` | Field | Field |
 | `overhead` | `*model.DocumentOverhead` | Field | Field |
 
 Required Reference передаются обычными значениями; остальные поля записи —

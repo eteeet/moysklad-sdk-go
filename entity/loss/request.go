@@ -24,6 +24,7 @@ type CreateRequest struct {
 	Rate         model.Field[model.DocumentRateRequest] `json:"rate,omitzero"`
 	Positions    model.Field[[]PositionRequest]         `json:"positions,omitzero"`
 	SalesReturn  model.Field[model.Reference]           `json:"salesReturn,omitzero"`
+	Inventory    model.Field[model.Reference]           `json:"inventory,omitzero"`
 }
 
 // UpdateRequest. Positions заменяют все строки: лишние удаляются, строки с ID меняются.
@@ -49,4 +50,5 @@ type UpdateRequest struct {
 	Rate         model.Field[model.DocumentRateRequest] `json:"rate,omitzero"`
 	Positions    model.Field[[]PositionRequest]         `json:"positions,omitzero"`
 	SalesReturn  model.Field[model.Reference]           `json:"salesReturn,omitzero"`
+	Inventory    model.Field[model.Reference]           `json:"inventory,omitzero"`
 }

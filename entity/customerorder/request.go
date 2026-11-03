@@ -35,6 +35,13 @@ type CreateRequest struct {
 	ShipmentAddress       model.Field[string]                    `json:"shipmentAddress,omitzero"`
 	ShipmentAddressFull   model.Field[model.AddressRequest]      `json:"shipmentAddressFull,omitzero"`
 	Positions             model.Field[[]PositionRequest]         `json:"positions,omitzero"`
+	PurchaseOrders        model.Field[[]model.Reference]         `json:"purchaseOrders,omitzero"`
+	Demands               model.Field[[]model.Reference]         `json:"demands,omitzero"`
+	Payments              model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	ProductionTasks       model.Field[[]model.Reference]         `json:"productionTasks,omitzero"`
+	InvoicesOut           model.Field[[]model.Reference]         `json:"invoicesOut,omitzero"`
+	Moves                 model.Field[[]model.Reference]         `json:"moves,omitzero"`
+	Prepayments           model.Field[[]model.Reference]         `json:"prepayments,omitzero"`
 }
 
 // UpdateRequest. Positions заменяют все строки заказа: лишние удаляются, строки с ID меняются.
@@ -71,4 +78,11 @@ type UpdateRequest struct {
 	ShipmentAddress       model.Field[string]                    `json:"shipmentAddress,omitzero"`
 	ShipmentAddressFull   model.Field[model.AddressRequest]      `json:"shipmentAddressFull,omitzero"`
 	Positions             model.Field[[]PositionRequest]         `json:"positions,omitzero"`
+	PurchaseOrders        model.Field[[]model.Reference]         `json:"purchaseOrders,omitzero"`
+	Demands               model.Field[[]model.Reference]         `json:"demands,omitzero"`
+	Payments              model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	ProductionTasks       model.Field[[]model.Reference]         `json:"productionTasks,omitzero"`
+	InvoicesOut           model.Field[[]model.Reference]         `json:"invoicesOut,omitzero"`
+	Moves                 model.Field[[]model.Reference]         `json:"moves,omitzero"`
+	Prepayments           model.Field[[]model.Reference]         `json:"prepayments,omitzero"`
 }

@@ -128,7 +128,7 @@ func TestCustomerOrderRequestJSON(t *testing.T) {
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[customerorder.CreateRequest](), reflect.TypeFor[customerorder.UpdateRequest]()} {
 		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "VATSum",
-			"PayedSum", "ShippedSum", "InvoicedSum", "ReservedSum", "Files", "Demands", "Payments", "InvoicesOut", "Moves", "PurchaseOrders", "Prepayments", "ProductionTasks"} {
+			"PayedSum", "ShippedSum", "InvoicedSum", "ReservedSum", "Files"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only or unsupported %s", typ.Name(), name)
 			}

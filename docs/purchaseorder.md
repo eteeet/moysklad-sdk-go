@@ -45,17 +45,17 @@
 | `vatIncluded` | `bool` | Field | Field |
 | `payedSum` | `float64` | — | — |
 | `store` | `*model.Reference` | Field | Field |
-| `payments` | `[]model.Reference` | — | — |
+| `payments` | `[]model.Reference` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `deliveryPlannedMoment` | `model.DateTime` | Field | Field |
 | `invoicedSum` | `float64` | — | — |
 | `shippedSum` | `float64` | — | — |
 | `waitSum` | `float64` | — | — |
 | `internalOrder` | `*model.Reference` | Field | Field |
-| `customerOrders` | `[]model.Reference` | — | — |
-| `invoicesIn` | `[]model.Reference` | — | — |
-| `productionTasks` | `[]model.Reference` | — | — |
-| `supplies` | `[]model.Reference` | — | — |
+| `customerOrders` | `[]model.Reference` | Field | Field |
+| `invoicesIn` | `[]model.Reference` | Field | Field |
+| `productionTasks` | `[]model.Reference` | Field | Field |
+| `supplies` | `[]model.Reference` | Field | Field |
 
 Required Reference передаются обычными значениями; остальные поля записи —
 `model.Field[T]`. Вложенные write-формы: `DocumentRateRequest`, `[]PositionRequest`.
@@ -69,7 +69,7 @@ Files представлены только metadata коллекции, без 
 Store необязателен в Create. InTransit записывается общим PositionRequest;
 Shipped позиции и WaitSum документа выбраны read-only в scope SDK, хотя в таблице API
 нет соответствующего readonly marker. CustomerOrders, InvoicesIn, ProductionTasks,
-Payments, Supplies — read-only в этом scope; запись TODO.
+Payments, Supplies пишутся как связи документов.
 Pack остаётся TODO.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchaseOrder),

@@ -45,15 +45,15 @@
 | `vatIncluded` | `bool` | Field | Field |
 | `payedSum` | `float64` | — | — |
 | `store` | `*model.Reference` | required | Field |
-| `payments` | `[]model.Reference` | — | — |
+| `payments` | `[]model.Reference` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `incomingDate` | `model.DateTime` | Field | Field |
 | `incomingNumber` | `string` | Field | Field |
 | `purchaseOrder` | `*model.Reference` | Field | Field |
-| `factureIn` | `*model.Reference` | — | — |
-| `productionTask` | `*model.Reference` | — | — |
-| `invoicesIn` | `[]model.Reference` | — | — |
-| `returns` | `[]model.Reference` | — | — |
+| `factureIn` | `*model.Reference` | Field | Field |
+| `productionTask` | `*model.Reference` | Field | Field |
+| `invoicesIn` | `[]model.Reference` | Field | Field |
+| `returns` | `[]model.Reference` | Field | Field |
 | `overhead` | `*model.DocumentOverhead` | Field | Field |
 
 Required Reference передаются обычными значениями; остальные поля записи —
@@ -67,8 +67,8 @@ Readonly поля в requests отсутствуют.
 передаёт organizationAccount/agentAccount без локального сравнения или скрытого Get.
 Files представлены только metadata коллекции, без обещания rows или файловых операций.
 Overhead распределяет сервер; без positions его задавать нельзя по API.
-FactureIn, ProductionTask, InvoicesIn, Payments, Returns — read-only в scope SDK; запись
-TODO.
+FactureIn, ProductionTask, InvoicesIn, Payments, Returns пишутся как связи документов
+([общее правило](documents-extra.md#связи-документов)).
 Pack, things, slot (кроме SourceSlot/TargetSlot общей формы), serial/tracking/stock
 и остальные не перечисленные поля позиций остаются TODO.
 

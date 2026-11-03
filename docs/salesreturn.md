@@ -47,9 +47,9 @@
 | `positions` | `*model.Collection[Position]` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `demand` | `*model.Reference` | Field | — |
-| `losses` | `[]model.Reference` | — | — |
-| `payments` | `[]model.Reference` | — | — |
-| `factureOut` | `*model.Reference` | — | — |
+| `losses` | `[]model.Reference` | Field | Field |
+| `payments` | `[]model.Reference` | Field | Field |
+| `factureOut` | `*model.Reference` | Field | Field |
 
 ## Ограничения
 
@@ -61,7 +61,7 @@
   источник формулирует только для Create по основанию.
 - Строки: cost (возврат без основания), country, gtd, slot, pack, things. `GetPositions` принимает
   `fields=stock`; у возврата без основания stock приходит без cost.
-- losses, payments, payedSum, factureOut — только для чтения. Шаблоны /new не входят.
+- losses, payments, factureOut пишутся как связи документов; payedSum — только для чтения. Шаблоны /new не входят.
 
 Источник: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/sales-return),
 revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.

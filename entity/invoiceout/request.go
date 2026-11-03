@@ -30,6 +30,7 @@ type CreateRequest struct {
 	PaymentPlannedMoment model.Field[model.DateTime]            `json:"paymentPlannedMoment,omitzero"`
 	CustomerOrder        model.Field[model.Reference]           `json:"customerOrder,omitzero"`
 	SalesChannel         model.Field[model.Reference]           `json:"salesChannel,omitzero"`
+	Demands              model.Field[[]model.Reference]         `json:"demands,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-out
@@ -60,4 +61,5 @@ type UpdateRequest struct {
 	PaymentPlannedMoment model.Field[model.DateTime]            `json:"paymentPlannedMoment,omitzero"`
 	CustomerOrder        model.Field[model.Reference]           `json:"customerOrder,omitzero"`
 	SalesChannel         model.Field[model.Reference]           `json:"salesChannel,omitzero"`
+	Demands              model.Field[[]model.Reference]         `json:"demands,omitzero"`
 }

@@ -50,7 +50,7 @@
 | `shippedSum` | `float64` | — | — |
 | `customerOrder` | `*model.Reference` | Field | Field |
 | `salesChannel` | `*model.Reference` | Field | Field |
-| `demands` | `[]model.Reference` | — | — |
+| `demands` | `[]model.Reference` | Field | Field |
 
 Required Reference передаются обычными значениями; остальные поля записи —
 `model.Field[T]`. Вложенные write-формы: `DocumentRateRequest`, `[]PositionRequest`.
@@ -60,7 +60,7 @@ Readonly поля в requests отсутствуют.
 
 При смене organization/agent API требует соответствующие счета сторон; SDK
 передаёт organizationAccount/agentAccount без локального сравнения или скрытого Get.
-Files исключены целиком. Payments и demands читаются как []Reference; запись отложена.
+Files исключены целиком. Demands пишутся как связи документов; payments источник помечает «Только для чтения».
 Pack, things, slot (кроме SourceSlot/TargetSlot общей формы), serial/tracking/stock
 и остальные не перечисленные поля позиций остаются TODO.
 

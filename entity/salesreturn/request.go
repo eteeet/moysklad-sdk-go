@@ -34,6 +34,9 @@ type CreateRequest struct {
 	VATEnabled          model.Field[bool]                      `json:"vatEnabled,omitzero"`
 	VATIncluded         model.Field[bool]                      `json:"vatIncluded,omitzero"`
 	Positions           model.Field[[]PositionRequest]         `json:"positions,omitzero"`
+	Losses              model.Field[[]model.Reference]         `json:"losses,omitzero"`
+	Payments            model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	FactureOut          model.Field[model.Reference]           `json:"factureOut,omitzero"`
 }
 
 // UpdateRequest. Источник запрещает менять agent, agentAccount и demand — их здесь нет.
@@ -63,4 +66,7 @@ type UpdateRequest struct {
 	VATEnabled          model.Field[bool]                      `json:"vatEnabled,omitzero"`
 	VATIncluded         model.Field[bool]                      `json:"vatIncluded,omitzero"`
 	Positions           model.Field[[]PositionRequest]         `json:"positions,omitzero"`
+	Losses              model.Field[[]model.Reference]         `json:"losses,omitzero"`
+	Payments            model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	FactureOut          model.Field[model.Reference]           `json:"factureOut,omitzero"`
 }

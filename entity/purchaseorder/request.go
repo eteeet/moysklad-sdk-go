@@ -29,6 +29,11 @@ type CreateRequest struct {
 	Store                 model.Field[model.Reference]           `json:"store,omitzero"`
 	DeliveryPlannedMoment model.Field[model.DateTime]            `json:"deliveryPlannedMoment,omitzero"`
 	InternalOrder         model.Field[model.Reference]           `json:"internalOrder,omitzero"`
+	CustomerOrders        model.Field[[]model.Reference]         `json:"customerOrders,omitzero"`
+	InvoicesIn            model.Field[[]model.Reference]         `json:"invoicesIn,omitzero"`
+	ProductionTasks       model.Field[[]model.Reference]         `json:"productionTasks,omitzero"`
+	Payments              model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	Supplies              model.Field[[]model.Reference]         `json:"supplies,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchaseOrder
@@ -58,4 +63,9 @@ type UpdateRequest struct {
 	Store                 model.Field[model.Reference]           `json:"store,omitzero"`
 	DeliveryPlannedMoment model.Field[model.DateTime]            `json:"deliveryPlannedMoment,omitzero"`
 	InternalOrder         model.Field[model.Reference]           `json:"internalOrder,omitzero"`
+	CustomerOrders        model.Field[[]model.Reference]         `json:"customerOrders,omitzero"`
+	InvoicesIn            model.Field[[]model.Reference]         `json:"invoicesIn,omitzero"`
+	ProductionTasks       model.Field[[]model.Reference]         `json:"productionTasks,omitzero"`
+	Payments              model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	Supplies              model.Field[[]model.Reference]         `json:"supplies,omitzero"`
 }

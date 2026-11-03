@@ -10,7 +10,8 @@ type Position = positions.Position
 type PositionRequest = positions.PositionRequest
 
 // CustomerOrder — заказ покупателя. Модель чтения без expand: суммы — копейки и только для
-// чтения; связанные документы (demands, payments …) — ссылки, строки позиций — GetPositions.
+// чтения; связанные документы (demands, payments …) — ссылки, пишутся в Create/Update; строки
+// позиций — GetPositions.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/customerOrder
 type CustomerOrder struct {
 	Meta                  model.Meta                         `json:"meta"`

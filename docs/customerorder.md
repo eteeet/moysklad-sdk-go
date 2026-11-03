@@ -53,13 +53,13 @@
 | `shipmentAddressFull` | `*model.Address` | Field | Field |
 | `positions` | `*model.Collection[Position]` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
-| `purchaseOrders` | `[]model.Reference` | — | — |
-| `demands` | `[]model.Reference` | — | — |
-| `payments` | `[]model.Reference` | — | — |
-| `productionTasks` | `[]model.Reference` | — | — |
-| `invoicesOut` | `[]model.Reference` | — | — |
-| `moves` | `[]model.Reference` | — | — |
-| `prepayments` | `[]model.Reference` | — | — |
+| `purchaseOrders` | `[]model.Reference` | Field | Field |
+| `demands` | `[]model.Reference` | Field | Field |
+| `payments` | `[]model.Reference` | Field | Field |
+| `productionTasks` | `[]model.Reference` | Field | Field |
+| `invoicesOut` | `[]model.Reference` | Field | Field |
+| `moves` | `[]model.Reference` | Field | Field |
+| `prepayments` | `[]model.Reference` | Field | Field |
 
 ## Ограничения
 
@@ -68,7 +68,8 @@
 - При смене organization/agent сервер требует и соответствующий счёт; SDK не сравнивает и не делает Get.
 - syncId после заполнения не меняется. Адресу null не поддерживается: удалить — `shipmentAddress: ""`.
 - Связанные документы (purchaseOrders, demands, payments, productionTasks, invoicesOut, moves,
-  prepayments) и суммы — только для чтения. Files — только metadata коллекции.
+  prepayments) пишутся массивом meta ([связи документов](documents-extra.md#связи-документов)); суммы —
+  только для чтения. Files — только metadata коллекции.
 
 Источник: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/customerOrder),
 revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.

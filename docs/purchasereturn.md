@@ -45,11 +45,11 @@
 | `vatIncluded` | `bool` | Field | Field |
 | `payedSum` | `float64` | — | — |
 | `store` | `*model.Reference` | required | Field |
-| `payments` | `[]model.Reference` | — | — |
+| `payments` | `[]model.Reference` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `supply` | `*model.Reference` | Field | — |
-| `factureIn` | `*model.Reference` | — | — |
-| `factureOut` | `*model.Reference` | — | — |
+| `factureIn` | `*model.Reference` | Field | Field |
+| `factureOut` | `*model.Reference` | Field | Field |
 
 Required Reference передаются обычными значениями; остальные поля записи —
 `model.Field[T]`. Вложенные write-формы: `DocumentRateRequest`, `[]PositionRequest`.
@@ -68,7 +68,7 @@ quantity не больше исходного; запрещает смену в�
 Discount помечен readonly в таблице, но встречается в write-примерах. Общий
 PositionRequest содержит Discount, это не обещание его изменения у возврата.
 Price/VAT доступны в embedded Update; правило «только quantity» относится к отдельному
-PUT позиции, который вне scope. FactureIn/FactureOut/Payments только читаются, запись TODO.
+PUT позиции, который вне scope. FactureIn/FactureOut/Payments пишутся как связи документов.
 Pack, things, slot (кроме SourceSlot/TargetSlot общей формы), serial/tracking/stock
 и остальные не перечисленные поля позиций остаются TODO.
 

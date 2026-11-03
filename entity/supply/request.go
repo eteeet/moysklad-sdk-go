@@ -31,6 +31,11 @@ type CreateRequest struct {
 	IncomingNumber      model.Field[string]                        `json:"incomingNumber,omitzero"`
 	PurchaseOrder       model.Field[model.Reference]               `json:"purchaseOrder,omitzero"`
 	Overhead            model.Field[model.DocumentOverheadRequest] `json:"overhead,omitzero"`
+	FactureIn           model.Field[model.Reference]               `json:"factureIn,omitzero"`
+	InvoicesIn          model.Field[[]model.Reference]             `json:"invoicesIn,omitzero"`
+	Payments            model.Field[[]model.Reference]             `json:"payments,omitzero"`
+	ProductionTask      model.Field[model.Reference]               `json:"productionTask,omitzero"`
+	Returns             model.Field[[]model.Reference]             `json:"returns,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
@@ -62,4 +67,9 @@ type UpdateRequest struct {
 	IncomingNumber      model.Field[string]                        `json:"incomingNumber,omitzero"`
 	PurchaseOrder       model.Field[model.Reference]               `json:"purchaseOrder,omitzero"`
 	Overhead            model.Field[model.DocumentOverheadRequest] `json:"overhead,omitzero"`
+	FactureIn           model.Field[model.Reference]               `json:"factureIn,omitzero"`
+	InvoicesIn          model.Field[[]model.Reference]             `json:"invoicesIn,omitzero"`
+	Payments            model.Field[[]model.Reference]             `json:"payments,omitzero"`
+	ProductionTask      model.Field[model.Reference]               `json:"productionTask,omitzero"`
+	Returns             model.Field[[]model.Reference]             `json:"returns,omitzero"`
 }

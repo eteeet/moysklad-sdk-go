@@ -368,7 +368,7 @@ func TestUpdateExcludesReadonlyFields(t *testing.T) {
 	for _, codec := range documenttest.Codecs {
 		t.Run(codec.Name, func(t *testing.T) {
 			var got purchaseorder.UpdateRequest
-			if err := codec.Unmarshal([]byte(`{"id":"server-value","accountId":"server-value","created":"2026-11-01 12:34:56.000","updated":"2026-11-01 12:34:56.000","deleted":"2026-11-01 12:34:56.000","printed":true,"published":true,"meta":{"href":"https://example.test/readonly"},"sum":123.25,"vatSum":123.25,"payedSum":123.25,"payments":[{"meta":{"href":"https://example.test/readonly"}}],"files":{"meta":{"href":"https://example.test/readonly"},"rows":[]},"invoicedSum":123.25,"shippedSum":123.25,"waitSum":123.25,"customerOrders":[{"meta":{"href":"https://example.test/readonly"}}],"invoicesIn":[{"meta":{"href":"https://example.test/readonly"}}],"productionTasks":[{"meta":{"href":"https://example.test/readonly"}}],"supplies":[{"meta":{"href":"https://example.test/readonly"}}]}`), &got); err != nil {
+			if err := codec.Unmarshal([]byte(`{"id":"server-value","accountId":"server-value","created":"2026-11-01 12:34:56.000","updated":"2026-11-01 12:34:56.000","deleted":"2026-11-01 12:34:56.000","printed":true,"published":true,"meta":{"href":"https://example.test/readonly"},"sum":123.25,"vatSum":123.25,"payedSum":123.25,"files":{"meta":{"href":"https://example.test/readonly"},"rows":[]},"invoicedSum":123.25,"shippedSum":123.25,"waitSum":123.25}`), &got); err != nil {
 				t.Fatal(err)
 			}
 			data, err := codec.Marshal(got)

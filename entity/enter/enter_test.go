@@ -118,7 +118,7 @@ func TestEnterRequestJSON(t *testing.T) {
 		}
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[enter.CreateRequest](), reflect.TypeFor[enter.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "Files", "Inventory", "Agent"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "Files", "Agent"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only, unsupported or foreign %s", typ.Name(), name)
 			}

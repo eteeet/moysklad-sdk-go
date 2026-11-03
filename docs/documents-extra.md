@@ -1,0 +1,75 @@
+# Документы: позиции, шаблоны, автозаполнение, корзина и связи
+
+Источник контрактов — `api-remap-1.2-doc` revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`.
+Все методы принимают `opts ...transport.RequestOption` ([ADR 0001](adr/0001-request-options.md)).
+Деньги — float64 в копейках; ссылки — `model.Reference` без expand. Записи не повторяются.
+
+## Отдельные операции позиций
+
+У customerorder, demand, enter, invoicein, invoiceout, loss, move, purchaseorder, purchasereturn,
+retaildemand, retailsalesreturn, salesreturn, supply (общая реализация — `positions.Service[T]`):
+
+| Метод | Маршрут |
+| --- | --- |
+| `GetPosition(ctx, id, positionID)` | `GET entity/{type}/{id}/positions/{positionID}` |
+| `CreatePositions(ctx, id, []PositionRequest)` — ответ по правилам batch | `POST …/positions` массивом |
+| `UpdatePosition(ctx, id, positionID, PositionRequest)` — пустой запрос отклоняется | `PUT …/positions/{positionID}` |
+| `DeletePosition(ctx, id, positionID)` | `DELETE …/positions/{positionID}` |
+| `DeleteManyPositions(ctx, id, []positionID)` — 1–1000, ответ без тела | `POST …/positions/delete` |
+
+meta.type строк — `{тип}position`, кроме invoicein/invoiceout (`invoiceposition`), retaildemand
+(`demandposition`) и retailsalesreturn (`salesreturnposition`): так в примерах источника. Список
+строк — прежний `GetPositions`.
+
+## Шаблон документа — `New(ctx, basis)`
+
+`PUT entity/{type}/new`: без основания (`basis == nil`) — запрос без тела, с основанием — объект
+`{"customerOrder": {meta}}` и т.п. Документ не создаётся; ответ — модель документа, которую можно
+доработать и передать в Create. Есть у cashin, cashout, demand, enter, invoicein, invoiceout, loss,
+move, paymentin, paymentout, purchaseorder, purchasereturn, retaildemand, retailsalesreturn,
+salesreturn, supply. Какие основания допустимы для типа, проверяет сервер.
+
+## Автозаполнение — пакет `wizard`, `c.Wizard()`
+
+`Fill(ctx, document, actions, Template)` — `POST wizard/{тип}?action=evaluate_price,…`. Документ не
+создаётся. Действия: `EvaluatePrice`, `EvaluateVat`, `EvaluateDiscount`, `EvaluateCost`; нужно хотя
+бы одно, запятые внутри значения отклоняются до запроса. `Template` — organization, agent, store,
+vatEnabled, vatIncluded, rate, moment и positions (assortment, quantity, price, discount, vat,
+vatEnabled); `Result` — те же поля и рассчитанные discountedPrice, sum, cost строк, исходный JSON —
+`Raw`.
+
+Ticket называет demand и salesreturn, источник — 17 типов документов и начисления зарплаты, поэтому
+тип передаётся строкой и не ограничивается списком. Какие действия поддерживает тип (скидки — не у
+inventory, move, internalorder, enter, loss, payroll; цены — не у inventory; себестоимость — только у
+возврата без основания), проверяет сервер.
+
+## Корзина — `Trash(ctx, id)`
+
+`POST entity/{type}/{id}/trash`, ответ 200 или 204 без тела. У cashin, cashout, customerorder,
+demand, enter, invoicein, invoiceout, loss, move, paymentin, paymentout, purchaseorder,
+purchasereturn, retaildemand, retailsalesreturn, retailshift, salesreturn, supply. Восстановление из
+корзины API не предоставляет; `Delete` удаляет безвозвратно.
+
+## Связи документов
+
+Общие сведения источника: поля раздела «Связи с другими документами» пишутся — в поле передаётся meta
+привязываемого документа (коллекция — массив meta, можно несколько). Поэтому они есть в Create и
+Update как `model.Field[model.Reference]` или `model.Field[[]model.Reference]`:
+
+| Документ | Поля записи |
+| --- | --- |
+| customerorder | purchaseOrders, demands, payments, productionTasks, invoicesOut, moves, prepayments |
+| demand | customerOrder, factureOut, returns, payments, productionTasks, invoicesOut |
+| enter, loss | inventory (у loss и salesReturn) |
+| invoicein, invoiceout | purchaseOrder и supplies; customerOrder и demands |
+| move | customerOrder, internalOrder, productionTasks |
+| purchaseorder | internalOrder, customerOrders, invoicesIn, productionTasks, payments, supplies |
+| purchasereturn, salesreturn | factureIn/factureOut, payments; losses — у salesreturn |
+| supply | purchaseOrder, factureIn, invoicesIn, payments, productionTask, returns |
+| paymentin/out, cashin/out | operations, factureOut/factureIn (раньше) |
+
+Только для чтения по маркеру основной таблицы: payments у invoicein и invoiceout, demand и supply у
+move. supply у purchasereturn и demand у salesreturn задаются только в Create (основание). payedSum
+в разделе связей — сумма, только чтение. Пустой массив уходит как `[]`, null — как `null`; что
+делает с ними сервер (отвязка), источник не описывает. Совместимость типа привязываемого документа
+и права проверяет сервер.

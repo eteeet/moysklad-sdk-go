@@ -129,7 +129,7 @@ func TestSalesReturnRequestJSON(t *testing.T) {
 	// Запреты Update выражены типом: эти поля менять нельзя или они только для чтения.
 	for _, typ := range []reflect.Type{reflect.TypeFor[salesreturn.CreateRequest](), reflect.TypeFor[salesreturn.UpdateRequest]()} {
 		names := []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "VATSum", "PayedSum",
-			"Files", "Losses", "Payments", "FactureOut"}
+			"Files"}
 		if typ.Name() == "UpdateRequest" {
 			names = append(names, "Agent", "AgentAccount", "Demand")
 		}

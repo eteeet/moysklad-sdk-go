@@ -118,7 +118,7 @@ func TestLossRequestJSON(t *testing.T) {
 		}
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[loss.CreateRequest](), reflect.TypeFor[loss.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "Files", "ExpenseItem", "Inventory", "Agent"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "Files", "ExpenseItem", "Agent"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only, unsupported or foreign %s", typ.Name(), name)
 			}

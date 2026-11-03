@@ -38,14 +38,15 @@
 | `positions` | `*model.Collection[Position]` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `overhead` | `*model.DocumentOverhead` | Field | Field |
-| `inventory` | `*model.Reference` | — | — |
+| `inventory` | `*model.Reference` | Field | Field |
 
 ## Ограничения
 
 - Строки: reason, country, gtd, things, slot, pack; overhead строки только читается.
   fields у позиций источник не документирует.
 - overhead документа `{sum, distribution}` распределяет сервер.
-- inventory — ссылка, маркера readonly нет, в примерах записи нет: SDK её не пишет.
+- inventory пишется как связь документа: источник разрешает запись полей раздела «Связи с другими
+  документами» (общие сведения), примеров записи этого поля нет.
 
 Источник: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/enter),
 revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.

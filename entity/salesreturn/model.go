@@ -12,7 +12,7 @@ type PositionRequest = positions.PositionRequest
 
 // SalesReturn — возврат покупателя. Модель чтения без expand: суммы — копейки и только для
 // чтения; Demand — основание (у возврата без основания nil), Losses, Payments, FactureOut —
-// связанные документы, только для чтения.
+// связанные документы, пишутся в Create/Update.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/sales-return
 type SalesReturn struct {
 	Meta                model.Meta                         `json:"meta"`
