@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -93,4 +94,26 @@ func (s *Service) state(ctx context.Context, operation, method, endpoint string,
 		return nil, fmt.Errorf("moysklad: %s: response has no id", operation)
 	}
 	return &result, nil
+}
+
+// CreateManyStates и UpdateManyStates — один POST entity/{type}/metadata/states с массивом:
+// элемент без meta создаёт статус, с meta (тип state) — изменяет. До запроса проверяются только
+// тип сущности, размер массива, UUID и непустой запрос; поля — сервер. Правила ответа — пакет
+// batch; повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/states#3-massovoe-sozdanie-i-obnovlenie-statusov
+func (s *Service) CreateManyStates(ctx context.Context, entityType string, items []StateCreateRequest, opts ...transport.RequestOption) ([]batch.Result[State], error) {
+	transport.ResetResponseInfo(opts)
+	if !entityTypePattern.MatchString(entityType) {
+		return nil, fmt.Errorf("moysklad: create many states: entity type %q must match [a-z][a-z0-9]*", entityType)
+	}
+	return write.CreateManyNested[State](ctx, s.client, "create many "+entityType+" states", "entity/"+entityType+"/metadata/states", items, opts)
+}
+
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/states#3-massovoe-sozdanie-i-obnovlenie-statusov
+func (s *Service) UpdateManyStates(ctx context.Context, entityType string, items []batch.Update[StateUpdateRequest], opts ...transport.RequestOption) ([]batch.Result[State], error) {
+	transport.ResetResponseInfo(opts)
+	if !entityTypePattern.MatchString(entityType) {
+		return nil, fmt.Errorf("moysklad: update many states: entity type %q must match [a-z][a-z0-9]*", entityType)
+	}
+	return write.UpdateManyNested[State](ctx, s.client, "update many "+entityType+" states", "entity/"+entityType+"/metadata/states", "state", items, opts)
 }

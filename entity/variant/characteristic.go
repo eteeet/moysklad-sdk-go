@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/eteeet/moysklad-sdk-go/batch"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -125,4 +127,24 @@ func validID(id string) bool {
 	}
 	_, err := hex.DecodeString(id[:8] + id[9:13] + id[14:18] + id[19:23] + id[24:])
 	return err == nil
+}
+
+// CreateManyCharacteristics создаёт описания характеристик одним POST
+// entity/variant/metadata/characteristics с массивом {name}; пустое имя — ошибка до запроса.
+// Массового изменения источник не описывает. Правила ответа — пакет batch; повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/characteristic#3-massovoe-sozdanie-harakteristik
+func (s *Service) CreateManyCharacteristics(ctx context.Context, names []string, opts ...transport.RequestOption) ([]batch.Result[CharacteristicDefinition], error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "create many variant characteristics"
+	type item struct {
+		Name string `json:"name"`
+	}
+	items := make([]item, len(names))
+	for i, name := range names {
+		if name == "" {
+			return nil, fmt.Errorf("moysklad: %s: names[%d] must not be empty", operation, i)
+		}
+		items[i] = item{name}
+	}
+	return write.CreateManyNested[CharacteristicDefinition](ctx, s.client, operation, characteristicsPath, items, opts)
 }
