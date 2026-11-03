@@ -1,0 +1,44 @@
+package invoicein
+
+import (
+	"context"
+
+	"github.com/eteeet/moysklad-sdk-go/batch"
+	"github.com/eteeet/moysklad-sdk-go/positions"
+	"github.com/eteeet/moysklad-sdk-go/transport"
+)
+
+// Отдельные операции со строками: entity/invoicein/{id}/positions[/{positionID}]. Повторов нет.
+
+func (s *Service) rows() *positions.Service[Position] {
+	// NewService падает только на nil client и неверном коде документа — здесь их нет.
+	reader, _ := positions.NewService[Position](s.client, "invoicein")
+	return reader
+}
+
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-poluchit-poziciyu
+func (s *Service) GetPosition(ctx context.Context, id, positionID string, opts ...transport.RequestOption) (*Position, error) {
+	return s.rows().GetPosition(ctx, id, positionID, opts...)
+}
+
+// CreatePositions добавляет строки к существующим одним POST массивом.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-sozdat-poziciyu
+func (s *Service) CreatePositions(ctx context.Context, id string, items []PositionRequest, opts ...transport.RequestOption) ([]batch.Result[Position], error) {
+	return s.rows().CreatePositions(ctx, id, items, opts...)
+}
+
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-izmenit-poziciyu
+func (s *Service) UpdatePosition(ctx context.Context, id, positionID string, input PositionRequest, opts ...transport.RequestOption) (*Position, error) {
+	return s.rows().UpdatePosition(ctx, id, positionID, input, opts...)
+}
+
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-udalit-poziciyu
+func (s *Service) DeletePosition(ctx context.Context, id, positionID string, opts ...transport.RequestOption) error {
+	return s.rows().DeletePosition(ctx, id, positionID, opts...)
+}
+
+// DeleteManyPositions — POST …/positions/delete; ответ без тела, результата по элементам нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-massovoe-udalenie-pozicij
+func (s *Service) DeleteManyPositions(ctx context.Context, id string, positionIDs []string, opts ...transport.RequestOption) error {
+	return s.rows().DeletePositions(ctx, id, positionIDs, opts...)
+}
