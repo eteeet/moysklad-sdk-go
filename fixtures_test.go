@@ -72,22 +72,33 @@ func TestUpstreamManifest(t *testing.T) {
 	}
 }
 
-// Файлы, скопированные из источника в testdata/custom, совпадают с SHA-256 своего README.
+// Файлы testdata/custom совпадают с SHA-256 своего README, и каждая фикстура ответа (*.json,
+// кроме самостоятельно составленных *.golden.json) в README есть: пропущенный manifest — ошибка.
 func TestCustomManifests(t *testing.T) {
 	readmes, err := filepath.Glob("testdata/custom/*/README.md")
 	if err != nil {
 		t.Fatal(err)
 	}
-	checked := 0
+	listed := map[string]bool{}
 	for _, readme := range readmes {
 		for name, sum := range manifest(t, readme) {
-			checked++
-			if got := fileSHA256(t, filepath.Join(filepath.Dir(readme), name)); got != sum {
-				t.Errorf("%s/%s: sha256 %s, README %s", filepath.Dir(readme), name, got, sum)
+			path := filepath.Join(filepath.Dir(readme), name)
+			listed[path] = true
+			if got := fileSHA256(t, path); got != sum {
+				t.Errorf("%s: sha256 %s, README %s", path, got, sum)
 			}
 		}
 	}
-	if checked == 0 {
+	fixtures, err := filepath.Glob("testdata/custom/*/*.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range fixtures {
+		if !strings.HasSuffix(path, ".golden.json") && !listed[path] {
+			t.Errorf("%s: нет строки SHA-256 в README.md каталога", path)
+		}
+	}
+	if len(listed) == 0 {
 		t.Fatal("no custom fixtures with SHA-256")
 	}
 }
