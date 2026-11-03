@@ -265,3 +265,21 @@ func Template[T any](ctx context.Context, client *transport.Client, entity strin
 	}
 	return result, nil
 }
+
+// Trash — POST entity/{entity}/{id}/trash: удаление документа в корзину (восстановление — только
+// в интерфейсе). Успех — 200 или 204, тело не читается; права и настройку корзины проверяет
+// сервер. POST не повторяется.
+func Trash(ctx context.Context, client *transport.Client, entity, id string, opts []transport.RequestOption) error {
+	operation := "trash " + entity + " " + id
+	if !validID(id) {
+		return fmt.Errorf("moysklad: %s: id must be a UUID", operation)
+	}
+	resp, err := client.Send(ctx, http.MethodPost, "entity/"+entity+"/"+id+"/trash", nil, nil, nil, opts...)
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
+	}
+	return nil
+}
