@@ -143,6 +143,8 @@ func fillRequest[I any]() I {
 		switch {
 		case slices.Contains([]string{"Name", "LastName", "Label", "Description", "CardContentName"}, v.Type().Field(i).Name) && field.Kind() == reflect.String:
 			field.SetString("x")
+		case field.Type() == reflect.TypeFor[model.Field[[]model.Barcode]]():
+			field.Set(reflect.ValueOf(model.Value([]model.Barcode{{"ean13": "4600000000001"}})))
 		case field.Type() == reflect.TypeFor[[]model.Barcode]():
 			field.Set(reflect.ValueOf([]model.Barcode{{"ean13": "4600000000001"}}))
 		case field.Type() == reflect.TypeFor[[]model.Reference]():
