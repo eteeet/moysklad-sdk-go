@@ -14,6 +14,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
+	"github.com/eteeet/moysklad-sdk-go/entity/internalorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoicein"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoiceout"
 	"github.com/eteeet/moysklad-sdk-go/entity/loss"
@@ -114,6 +115,11 @@ func TestDocumentTemplates(t *testing.T) {
 		}},
 		{"supply", func(c *transport.Client, basis map[string]any) (bool, error) {
 			s, _ := supply.NewService(c)
+			r, err := s.New(t.Context(), basis)
+			return r != nil, err
+		}},
+		{"internalorder", func(c *transport.Client, basis map[string]any) (bool, error) {
+			s, _ := internalorder.NewService(c)
 			r, err := s.New(t.Context(), basis)
 			return r != nil, err
 		}},

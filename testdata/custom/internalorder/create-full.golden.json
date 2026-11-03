@@ -1,0 +1,16 @@
+{
+  "organization": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/11111111-1111-1111-1111-111111111111", "type": "organization"}},
+  "name": "DOC-1",
+  "description": "",
+  "moment": "2026-11-01 12:34:56.000",
+  "deliveryPlannedMoment": "2026-11-05 10:00:00.000",
+  "applicable": false,
+  "store": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/store/33333333-3333-3333-3333-333333333333", "type": "store"}},
+  "attributes": [],
+  "rate": {"currency": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/66666666-6666-6666-6666-666666666666", "type": "currency"}}},
+  "vatEnabled": true,
+  "vatIncluded": false,
+  "moves": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/move/55555555-5555-5555-5555-555555555555", "type": "move"}}],
+  "purchaseOrders": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/purchaseorder/77777777-7777-7777-7777-777777777777", "type": "purchaseorder"}}],
+  "productionTasks": []
+}

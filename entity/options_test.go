@@ -33,6 +33,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
 	"github.com/eteeet/moysklad-sdk-go/entity/group"
+	"github.com/eteeet/moysklad-sdk-go/entity/internalorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoicein"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoiceout"
 	"github.com/eteeet/moysklad-sdk-go/entity/loss"
@@ -196,6 +197,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("internalorder", internalorder.NewService, (*internalorder.Service).Get),
 		getCase("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Get),
 		getCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Get),
 		getCase("personaldiscount", personaldiscount.NewService, (*personaldiscount.Service).Get),
@@ -255,6 +257,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("internalorder", internalorder.NewService, (*internalorder.Service).Create),
+		updateCase("internalorder", internalorder.NewService, (*internalorder.Service).Update),
 		createCase("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Create),
 		updateCase("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Update),
 		createCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Create),
@@ -384,6 +388,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		positionsCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsCase("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsCase("internalorder", internalorder.NewService, (*internalorder.Service).GetPositions),
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			testServiceOptions(t, tc, false)
@@ -537,6 +542,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("internalorder", internalorder.NewService, (*internalorder.Service).Get, (*internalorder.Service).Create, (*internalorder.Service).Update, (*internalorder.Service).List)...)
 	cases = append(cases, localCases("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Get, (*aggregatepack.Service).Create, (*aggregatepack.Service).Update, (*aggregatepack.Service).List)...)
 	cases = append(cases, localCases("contentcard", contentcard.NewService, (*contentcard.Service).Get, (*contentcard.Service).Create, (*contentcard.Service).Update, (*contentcard.Service).List)...)
 	cases = append(cases, localCases("consignment", consignment.NewService, (*consignment.Service).Get, (*consignment.Service).Create, (*consignment.Service).Update, (*consignment.Service).List)...)
@@ -576,6 +582,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsLocal("internalorder", internalorder.NewService, (*internalorder.Service).GetPositions),
 		localCase{"employee get security invalid id", func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
 			s, err := employee.NewService(c)
 			if err != nil {
@@ -690,7 +697,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 44*4+13+3+8+1+6 {
+	if len(cases) != 45*4+14+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
