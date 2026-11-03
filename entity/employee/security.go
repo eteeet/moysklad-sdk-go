@@ -43,7 +43,7 @@ type SecurityRoleRequest struct {
 
 // UpdateSecurityRequest: role, group и authorizedHosts — из примера изменения прав,
 // authorizedIpNetwork и authorizedIpNetmask — из таблицы атрибутов. login и isActive меняются
-// активацией и деактивацией (в SDK не входят), email — через Service.Update сотрудника.
+// активацией и деактивацией (Activate, Deactivate), email — через Service.Update сотрудника.
 // null для полей источник не описывает: Field позволяет его отправить, решает сервер.
 type UpdateSecurityRequest struct {
 	Role                model.Field[SecurityRoleRequest] `json:"role,omitzero"`
