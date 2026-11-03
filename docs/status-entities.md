@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 34/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 36/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -19,8 +19,8 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] bundle — комплект: Get/List/Create/Update, GetComponents/GetComponent
 - [ ] cashier — кассир (retailstore/{id}/cashiers)
 - [x] characteristic — характеристики модификаций: List/Get/Create
-- [x] companysettings — метаданные: пользовательские справочники (metadata.GetCompanySettings)
-- [ ] companysubscription — подписка компании (accountSettings)
+- [x] companysettings — настройки компании: Context().CompanySettings/UpdateCompanySettings; метаданные — metadata.GetCompanySettings
+- [x] companysubscription — подписка компании: Context().Subscription (только чтение)
 - [ ] consignment — партия
 - [ ] contentcard — карточка контента
 - [x] contract — договор
@@ -66,7 +66,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] thing — серийный номер: Get/List (только чтение)
 - [ ] trackingcode — коды маркировки
 - [x] uom — единица измерения
-- [ ] usersettings — настройки пользователя (context)
+- [x] usersettings — настройки пользователя: Context().UserSettings/UpdateUserSettings
 - [x] variant — модификация
 - [ ] webhook — вебхук
 - [ ] webhookstock — вебхук остатков

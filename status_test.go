@@ -20,6 +20,8 @@ var statusHandles = map[string]string{
 	"files":               "Entity.Files",
 	"context/employee":    "Context",
 	"context/application": "Context",
+	"usersettings":        "Context",
+	"companysubscription": "Context",
 	"turnover":            "Report.Turnover",
 	"audit":               "Audit",
 	"async":               "Async",
