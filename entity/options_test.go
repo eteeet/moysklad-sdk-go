@@ -48,6 +48,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
+	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
 	"github.com/eteeet/moysklad-sdk-go/entity/store"
@@ -135,6 +136,8 @@ func fillRequest[I any]() I {
 			field.SetString("x")
 		case v.Type().Field(i).Name == "TransactionType" && field.Kind() == reflect.String:
 			field.SetString("EARNING")
+		case v.Type().Field(i).Name == "Type" && field.Kind() == reflect.String:
+			field.SetString("OTHER")
 		case field.Type() == reflect.TypeFor[model.PriceType]():
 			field.Set(reflect.ValueOf(model.PriceType{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
 		case field.Type() == reflect.TypeFor[model.Reference]():
@@ -178,6 +181,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("saleschannel", saleschannel.NewService, (*saleschannel.Service).Get),
 		getCase("region", region.NewService, (*region.Service).Get),
 		getCase("contract", contract.NewService, (*contract.Service).Get),
 		getCase("project", project.NewService, (*project.Service).Get),
@@ -227,6 +231,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("saleschannel", saleschannel.NewService, (*saleschannel.Service).Create),
+		updateCase("saleschannel", saleschannel.NewService, (*saleschannel.Service).Update),
 		createCase("contract", contract.NewService, (*contract.Service).Create),
 		updateCase("contract", contract.NewService, (*contract.Service).Update),
 		createCase("project", project.NewService, (*project.Service).Create),
@@ -493,6 +499,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("saleschannel", saleschannel.NewService, (*saleschannel.Service).Get, (*saleschannel.Service).Create, (*saleschannel.Service).Update, (*saleschannel.Service).List)...)
 	cases = append(cases, localCases("contract", contract.NewService, (*contract.Service).Get, (*contract.Service).Create, (*contract.Service).Update, (*contract.Service).List)...)
 	cases = append(cases, localCases("project", project.NewService, (*project.Service).Get, (*project.Service).Create, (*project.Service).Update, (*project.Service).List)...)
 	cases = append(cases, localCases("group", group.NewService, (*group.Service).Get, (*group.Service).Create, (*group.Service).Update, (*group.Service).List)...)
@@ -641,7 +648,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 39*4+13+3+8+1+6 {
+	if len(cases) != 40*4+13+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

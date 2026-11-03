@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 30/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 31/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -55,7 +55,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] retailstore — точка продаж
 - [x] role — пользовательские роли и предустановленные (Preset)
 - [ ] saleplatform — площадка для продаж
-- [ ] saleschannel — канал продаж
+- [x] saleschannel — канал продаж
 - [x] service — услуга
 - [ ] specialpricediscount — скидка на спеццену
 - [x] states — статусы: чтение через metadata, Create/Update
