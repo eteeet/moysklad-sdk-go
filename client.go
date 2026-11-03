@@ -39,6 +39,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
+	"github.com/eteeet/moysklad-sdk-go/entity/saleplatform"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
@@ -248,6 +249,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// SalePlatform — Площадки для продаж (только чтение).
+func (e EntityGroup) SalePlatform() *saleplatform.Service {
+	return must(saleplatform.NewService(e.transport))
+}
 
 // SalesChannel — Каналы продаж.
 func (e EntityGroup) SalesChannel() *saleschannel.Service {

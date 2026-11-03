@@ -46,6 +46,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
+	"github.com/eteeet/moysklad-sdk-go/entity/saleplatform"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
@@ -265,6 +266,7 @@ func TestDeleteRejectsInvalidID(t *testing.T) {
 // Read-only ресурсы Delete не получают.
 func TestDeleteOnlyWhereDocumented(t *testing.T) {
 	for _, typ := range []reflect.Type{reflect.TypeFor[*assortment.Service](), reflect.TypeFor[*pricetype.Service](),
+		reflect.TypeFor[*saleplatform.Service](),
 		reflect.TypeFor[*region.Service](),
 		reflect.TypeFor[*contexts.Service](), reflect.TypeFor[*audit.Service](), reflect.TypeFor[*turnover.Service]()} {
 		if _, ok := typ.MethodByName("Delete"); ok {

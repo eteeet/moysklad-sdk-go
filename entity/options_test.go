@@ -48,6 +48,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
+	"github.com/eteeet/moysklad-sdk-go/entity/saleplatform"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
@@ -181,6 +182,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("saleplatform", saleplatform.NewService, (*saleplatform.Service).Get),
 		getCase("saleschannel", saleschannel.NewService, (*saleschannel.Service).Get),
 		getCase("region", region.NewService, (*region.Service).Get),
 		getCase("contract", contract.NewService, (*contract.Service).Get),

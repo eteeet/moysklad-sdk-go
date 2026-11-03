@@ -51,6 +51,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
+	"github.com/eteeet/moysklad-sdk-go/entity/saleplatform"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/service"
@@ -514,6 +515,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():            "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():           "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():               "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*saleplatform.Service]():      "",
 		reflect.TypeFor[*saleschannel.Service]():      "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*region.Service]():            "",
 		reflect.TypeFor[*contract.Service]():          "CreateMany UpdateMany DeleteMany",
