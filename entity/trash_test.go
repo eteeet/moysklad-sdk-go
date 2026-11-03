@@ -29,6 +29,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentin"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
 	"github.com/eteeet/moysklad-sdk-go/entity/payroll"
+	"github.com/eteeet/moysklad-sdk-go/entity/prepayment"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
@@ -114,6 +115,10 @@ func TestDocumentTrash(t *testing.T) {
 		}},
 		{"supply", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
 			s, _ := supply.NewService(c)
+			return s.Trash(ctx, id, o...)
+		}},
+		{"prepayment", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
+			s, _ := prepayment.NewService(c)
 			return s.Trash(ctx, id, o...)
 		}},
 		{"payroll", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {

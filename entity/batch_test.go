@@ -54,6 +54,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
 	"github.com/eteeet/moysklad-sdk-go/entity/payroll"
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
+	"github.com/eteeet/moysklad-sdk-go/entity/prepayment"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -569,6 +570,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                 "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                    "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*prepayment.Service]():             "",
 		reflect.TypeFor[*payroll.Service]():                "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*commissionreportout.Service]():    "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*commissionreportin.Service]():     "CreateMany UpdateMany DeleteMany",
