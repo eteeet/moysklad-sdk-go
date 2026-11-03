@@ -84,7 +84,7 @@
 - [x] Позиции: pack, things, slot, trackingCodes, gtd, declaration, остатки (fields=stock)
 - [x] Шаблон документа: PUT entity/{type}/new — New у 24 документов
 - [x] Автозаполнение: POST wizard/{тип} — пакет wizard
-- [ ] Печать (export), публикации, шаблоны печатных форм
+- [x] Печать (export без следования 303), публикации, шаблоны печатных форм ([print](print.md), [publication](publication.md))
 - [x] Файлы: список, загрузка base64, скачивание по downloadHref; изображения — пакет images
 - [x] Metadata: entity/{type}/metadata, states (customtemplate/embeddedtemplate — нет)
 - [x] Доп. поля: CRUD описаний и массовые операции, тип справочник (customEntityMeta)

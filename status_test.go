@@ -20,6 +20,7 @@ var statusHandles = map[string]string{
 	"entity/metadata":       "Entity.Metadata",
 	"template":              "Print",
 	"labels":                "Print",
+	"publication":           "Publication",
 	"eventfeed":             "Entity.EventFeed",
 	"namedfilter":           "Entity.NamedFilter",
 	"files":                 "Entity.Files",

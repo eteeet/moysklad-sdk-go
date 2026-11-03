@@ -92,6 +92,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/namedfilter"
 	"github.com/eteeet/moysklad-sdk-go/notification"
 	"github.com/eteeet/moysklad-sdk-go/print"
+	"github.com/eteeet/moysklad-sdk-go/publication"
 	"github.com/eteeet/moysklad-sdk-go/report/byoperations"
 	reportcounterparty "github.com/eteeet/moysklad-sdk-go/report/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/report/dashboard"
@@ -156,6 +157,9 @@ func (c *Client) Notification() *notification.Service {
 
 // Print — шаблоны печатных форм, печать документов, этикеток и ценников (export без следования 303).
 func (c *Client) Print() *print.Service { return must(print.NewService(c.transport)) }
+
+// Publication — публикации документов entity/<type>/<id>/publication.
+func (c *Client) Publication() *publication.Service { return must(publication.NewService(c.transport)) }
 
 // Security — выпуск токена POST security/token.
 func (c *Client) Security() *security.Service { return must(security.NewService(c.transport)) }
