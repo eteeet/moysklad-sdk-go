@@ -40,6 +40,9 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 контрагента, счета юрлица; настройки справочников, компании и пользователя; CRUD описаний доп.
 полей: [docs/dictionaries.md](docs/dictionaries.md).
 
+Поля товара, неснижаемый остаток, изображения (`images`), карточки контента, партии, транспортные
+упаковки, скидки и коды маркировки (`trackingcode`): [docs/catalog-extra.md](docs/catalog-extra.md).
+
 Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) и асинхронные задачи
 (`async`, `ListAsync` контрагентов и ассортимента): [docs/write-async.md](docs/write-async.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
@@ -120,6 +123,8 @@ SDK не повторяет запись автоматически. После 
 - `weight`, `volume`, `vat`, `vatEnabled`, `useParentVat`, `discountProhibited`.
 - `owner`, `group`, `productFolder`, `uom`, `supplier`, `country` — ссылки без expand.
 - `buyPrice`, `minPrice`, `salePrices`, `attributes`.
+- `barcodes`, `packs`, `alcoholic`, `trackingType` и остальные поля таблицы, `minimumStock` —
+  [docs/catalog-extra.md](docs/catalog-extra.md).
 
 В модели чтения дополнительно есть `meta`, `id`, `accountId`, `updated`, `syncId`, `pathName`,
 `effectiveVat`, `effectiveVatEnabled`, `isSerialTrackable`.
@@ -301,5 +306,5 @@ Golden-тела запросов лежат в `testdata/custom/product`; они
 
 Срез проверен локальными HTTP-тестами, не реальной записью в аккаунт.
 List, обход страниц, повторы и лимиты — общие механизмы ([docs/transport.md](docs/transport.md)).
-Для Product пока нет expand и специальных операций товара (Delete и массовые — общие); fields=minimumStock
-отложен. Штрихкоды, алкоголь, упаковки, отслеживание и остальные неподдерживаемые поля остаются в TODO.
+Для Product нет expand. Неснижаемый остаток, изображения и остальные поля —
+[docs/catalog-extra.md](docs/catalog-extra.md).

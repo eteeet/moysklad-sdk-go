@@ -14,6 +14,7 @@
 | `entity/productfolder`, `project`, `contract`, `saleschannel`, `organizationbranch`: `Get`, `List`, `Create`, `Update`, `Delete`, массовые | `entity/{тип}[/{id}]` |
 | `entity/group`: `Get`, `List`, `Create`, `Update`, `Delete` | `entity/group[/{id}]` |
 | `entity/region`, `saleplatform`, `thing`: `Get`, `List` (только чтение) | `entity/{тип}[/{id}]` |
+| `entity/consignment`: `Get`, `List`, `Create`, `Update`, `Delete`, массовые — [catalog-extra.md](catalog-extra.md) | `entity/consignment[/{id}]` |
 | `entity/customentity`: `Create`, `Update`, `Delete`; `ListElements`, `GetElement`, `CreateElement`, `UpdateElement`, `DeleteElement` | `entity/customentity/{id}[/{elementID}]` |
 
 - Store: parent и pathName записываются (маркера readonly нет, их передаёт пример PUT). Адрес — строкой
@@ -89,5 +90,5 @@
 
 ## Не входит
 
-Expand; партия (consignment) — ждёт модели штрихкодов G01; отдельный метод
+Expand; отдельный метод
 `context/usersettings/metadata` (источник не описывает); реквизиты юрлица `fsrarId`, `utmUrl`.

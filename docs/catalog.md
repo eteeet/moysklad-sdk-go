@@ -53,7 +53,7 @@
 
 ## Не входит
 
-Expand, изображения и файлы (только метаданные коллекций), `minimumStock` у Product и
-Variant, склады остатков (storebalances). Мутации компонентов комплекта и массовое создание
+Expand. Изображения, `minimumStock` и storebalances у Product и Variant —
+[catalog-extra.md](catalog-extra.md); файлы — пакет `files`. Мутации компонентов комплекта и массовое создание
 характеристик — [dictionaries.md](dictionaries.md). Delete, массовые операции и `ListAsync` ассортимента —
 [write-async.md](write-async.md). Противоречия источника записаны в godoc и Answer tickets C01–C08.

@@ -65,8 +65,9 @@ for _, r := range res {
 | retailsalesreturn | да | да | — |
 | role, pricetype | — | — | — |
 | assortment | — | — | да, по `model.Meta` разных типов |
-| group, customentity, region, saleplatform, thing | — | — | — |
-| остальные 35 сервисов `entity/*` | да | да | да |
+| discount | — | да (округление копеек) | — |
+| group, customentity, region, saleplatform, thing, accumulationdiscount, personaldiscount, specialpricediscount | — | — | — |
+| остальные 38 сервисов `entity/*` | да | да | да |
 
 Раздел «Массовое обновление Сотрудников» называет только обновление, хотя второй элемент его
 примера — без meta (создание); SDK следует заголовку. Массовые операции вложенных коллекций (зоны и ячейки склада, счета,

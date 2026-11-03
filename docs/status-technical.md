@@ -62,7 +62,7 @@
 - [x] search: контекстный поиск
 - [x] namedfilter: применение сохранённого фильтра
 - [x] fields: одно значение; в List справочников и документов пока не принимается
-- [ ] fields=minimumStock у Product и Variant: нужна модель неснижаемого остатка
+- [x] fields=minimumStock у Product и Variant (model.MinimumStock)
 - [x] fields=stock и fields=declaration у GetPositions — по документам источника
 - [x] Параметры отчётов: momentFrom/momentTo, groupBy, interval (query.ReportOptions)
 - [x] Обход страниц: pages.All по nextHref
@@ -85,7 +85,7 @@
 - [ ] Шаблон документа: PUT entity/{type}/new
 - [ ] Автозаполнение: wizard/demand, wizard/salesreturn
 - [ ] Печать (export), публикации, шаблоны печатных форм
-- [x] Файлы: список, загрузка base64, скачивание по downloadHref (изображения — нет)
+- [x] Файлы: список, загрузка base64, скачивание по downloadHref; изображения — пакет images
 - [x] Metadata: entity/{type}/metadata, states (customtemplate/embeddedtemplate — нет)
 - [x] Доп. поля: CRUD описаний и массовые операции, тип справочник (customEntityMeta)
 - [x] Настройки справочников, компании и пользователя (GET/частичный PUT)
