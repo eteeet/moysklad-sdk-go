@@ -1,6 +1,7 @@
 package product_test
 
 import (
+	"context"
 	"os"
 	"strings"
 	"testing"
@@ -8,6 +9,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
 	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
 func fullProduct(t *testing.T, codec documenttest.Codec) product.Product {
@@ -110,4 +112,23 @@ func TestMinimumStockField(t *testing.T) {
 		}
 		documenttest.JSONEqual(t, data, []byte(`{"name":"Картофель","minimumStock":{"type":"ALL_WAREHOUSE_SUM","quantity":10}}`))
 	}
+}
+
+// Регрессия review 2a76d13: Update с существующей упаковкой по id — точное тело PUT и одна отправка.
+func TestUpdateExistingPackHTTP(t *testing.T) {
+	const id = "7944ef04-f831-11e5-7a69-971500188b19"
+	uom := model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/api/remap/1.2/entity/uom/89f7fa51-2271-4b87-baf8-c3fc2a3f5119", Type: "uom"}}
+	input := product.UpdateRequest{Packs: model.Value([]product.PackRequest{{ID: "354ba98c-2cb9-11e6-8a84-bae5000000e3", UOM: uom, Quantity: 2}})}
+	body := []byte(`{"packs":[{"id":"354ba98c-2cb9-11e6-8a84-bae5000000e3","uom":{"meta":{"href":"` + uom.Meta.Href + `","type":"uom"}},"quantity":2}]}`)
+	invoke := func(ctx context.Context, c *transport.Client) (*product.Product, error) {
+		s, _ := product.NewService(c)
+		return s.Update(ctx, id, input)
+	}
+	response := `{"id":"` + id + `","packs":[{"id":"354ba98c-2cb9-11e6-8a84-bae5000000e3","quantity":2}]}`
+	documenttest.HTTP(t, documenttest.ResponseCase{Name: "plain", Status: 200, Body: response, Success: true}, "PUT", "entity/product/"+id, body, invoke,
+		func(got *product.Product) {
+			if len(got.Packs) != 1 || got.Packs[0].ID != "354ba98c-2cb9-11e6-8a84-bae5000000e3" {
+				t.Fatalf("packs = %+v", got.Packs)
+			}
+		})
 }

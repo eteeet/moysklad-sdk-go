@@ -177,3 +177,18 @@ func TestServiceList(t *testing.T) {
 		}
 	})
 }
+
+// Регрессия review 2a76d13: Create только с expiryDate (без label) уходит на сервер одним запросом.
+func TestCreateExpiryOnlyHTTP(t *testing.T) {
+	input := consignment.CreateRequest{ExpiryDate: model.Value(model.DateTime(time.Date(2017, 12, 30, 21, 0, 0, 0, time.UTC))), Assortment: ref("entity/product/1", "product")}
+	body := []byte(`{"expiryDate":"2017-12-31 00:00:00.000","assortment":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/product/1","type":"product","mediaType":"application/json"}}}`)
+	invoke := func(ctx context.Context, c *transport.Client) (*consignment.Consignment, error) {
+		return service(c).Create(ctx, input)
+	}
+	documenttest.HTTP(t, documenttest.ResponseCase{Name: "plain", Status: 200, Body: `{"id":"` + testID + `","expiryDate":"2017-12-31 00:00:00.000"}`, Success: true},
+		"POST", "entity/consignment", body, invoke, func(got *consignment.Consignment) {
+			if got.ID != testID || got.ExpiryDate.IsZero() || got.Label != "" {
+				t.Fatalf("consignment = %+v", got)
+			}
+		})
+}
