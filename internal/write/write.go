@@ -242,3 +242,26 @@ func validID(id string) bool {
 	_, err := hex.DecodeString(id[:8] + id[9:13] + id[14:18] + id[19:23] + id[24:])
 	return err == nil
 }
+
+// Template — PUT entity/{entity}/new: шаблон документа без сохранения. basis — объект основания
+// ({"customerOrder": {meta}} …); nil — пустое тело, шаблон только со стандартными полями. Ответ —
+// JSON-объект документа без id; null или не объект — ошибка. PUT не повторяется.
+func Template[T any](ctx context.Context, client *transport.Client, entity string, basis map[string]any, opts []transport.RequestOption) (*T, error) {
+	operation := "get " + entity + " template"
+	var body any
+	if basis != nil {
+		body = basis
+	}
+	var result *T
+	resp, err := client.Send(ctx, http.MethodPut, "entity/"+entity+"/new", nil, body, &result, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
+	}
+	if result == nil {
+		return nil, fmt.Errorf("moysklad: %s: response is not an object", operation)
+	}
+	return result, nil
+}
