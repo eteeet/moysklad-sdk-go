@@ -90,6 +90,8 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/thing"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
+	"github.com/eteeet/moysklad-sdk-go/entity/webhook"
+	"github.com/eteeet/moysklad-sdk-go/entity/webhookstock"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
 	"github.com/eteeet/moysklad-sdk-go/model"
@@ -263,6 +265,12 @@ func batchCases() []batchCase {
 		createManyCase("uom", uom.NewService, (*uom.Service).CreateMany),
 		updateManyCase("uom", uom.NewService, (*uom.Service).UpdateMany),
 		deleteManyCase("uom", uom.NewService, (*uom.Service).DeleteMany),
+		createManyCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).CreateMany),
+		updateManyCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).UpdateMany),
+		deleteManyCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).DeleteMany),
+		createManyCase("webhook", webhook.NewService, (*webhook.Service).CreateMany),
+		updateManyCase("webhook", webhook.NewService, (*webhook.Service).UpdateMany),
+		deleteManyCase("webhook", webhook.NewService, (*webhook.Service).DeleteMany),
 		createManyCase("processingplan", processingplan.NewService, (*processingplan.Service).CreateMany),
 		updateManyCase("processingplan", processingplan.NewService, (*processingplan.Service).UpdateMany),
 		deleteManyCase("processingplan", processingplan.NewService, (*processingplan.Service).DeleteMany),
@@ -616,6 +624,8 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                    "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                   "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                       "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*webhookstock.Service]():              "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*webhook.Service]():                   "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*application.Service]():               "",
 		reflect.TypeFor[*processingplan.Service]():            "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*productiontask.Service]():            "CreateMany UpdateMany DeleteMany",

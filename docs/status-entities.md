@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 53/60, документы 35/37, отчёты 3/9, прочее 8/8.
+Итого: справочники 55/60, документы 35/37, отчёты 3/9, прочее 8/8.
 
 ## Справочники
 
@@ -68,8 +68,8 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] uom — единица измерения
 - [x] usersettings — настройки пользователя: Context().UserSettings/UpdateUserSettings
 - [x] variant — модификация
-- [ ] webhook — вебхук
-- [ ] webhookstock — вебхук остатков
+- [x] webhook — вебхук
+- [x] webhookstock — вебхук остатков
 
 ## Документы
 

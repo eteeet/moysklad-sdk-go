@@ -87,6 +87,8 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/thing"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
+	"github.com/eteeet/moysklad-sdk-go/entity/webhook"
+	"github.com/eteeet/moysklad-sdk-go/entity/webhookstock"
 	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/files"
 	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
@@ -164,7 +166,7 @@ func fillRequest[I any]() I {
 	for i := range v.NumField() {
 		field := v.Field(i)
 		switch {
-		case slices.Contains([]string{"Name", "LastName", "Label", "Description", "CardContentName"}, v.Type().Field(i).Name) && field.Kind() == reflect.String:
+		case slices.Contains([]string{"Name", "LastName", "Label", "Description", "CardContentName", "URL", "Action", "EntityType", "StockType", "ReportType"}, v.Type().Field(i).Name) && field.Kind() == reflect.String:
 			field.SetString("x")
 		case field.Type() == reflect.TypeFor[model.Field[[]model.Barcode]]():
 			field.Set(reflect.ValueOf(model.Value([]model.Barcode{{"ean13": "4600000000001"}})))
@@ -180,7 +182,7 @@ func fillRequest[I any]() I {
 			field.Set(reflect.ValueOf(model.PriceType{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
 		case field.Type() == reflect.TypeFor[model.Reference]():
 			field.Set(reflect.ValueOf(model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
-		case slices.Contains([]string{"Description", "Name", "Code", "ISOCode", "Label"}, v.Type().Field(i).Name) && field.Type() == reflect.TypeFor[model.Field[string]]():
+		case slices.Contains([]string{"Description", "Name", "Code", "ISOCode", "Label", "URL"}, v.Type().Field(i).Name) && field.Type() == reflect.TypeFor[model.Field[string]]():
 			field.Set(reflect.ValueOf(model.Value("x")))
 		case field.Type() == reflect.TypeFor[*float64]():
 			field.Set(reflect.ValueOf(new(1.0)))
@@ -230,6 +232,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).Get),
+		getCase("webhook", webhook.NewService, (*webhook.Service).Get),
 		getCase("application", application.NewService, (*application.Service).Get),
 		getCase("processingplan", processingplan.NewService, (*processingplan.Service).Get),
 		getCase("productiontask", productiontask.NewService, (*productiontask.Service).Get),
@@ -311,6 +315,10 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).Create),
+		updateCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).Update),
+		createCase("webhook", webhook.NewService, (*webhook.Service).Create),
+		updateCase("webhook", webhook.NewService, (*webhook.Service).Update),
 		createCase("processingplan", processingplan.NewService, (*processingplan.Service).Create),
 		updateCase("processingplan", processingplan.NewService, (*processingplan.Service).Update),
 		createCase("productiontask", productiontask.NewService, (*productiontask.Service).Create),
@@ -640,6 +648,8 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("webhookstock", webhookstock.NewService, (*webhookstock.Service).Get, (*webhookstock.Service).Create, (*webhookstock.Service).Update, (*webhookstock.Service).List)...)
+	cases = append(cases, localCases("webhook", webhook.NewService, (*webhook.Service).Get, (*webhook.Service).Create, (*webhook.Service).Update, (*webhook.Service).List)...)
 	cases = append(cases, localCases("processingplan", processingplan.NewService, (*processingplan.Service).Get, (*processingplan.Service).Create, (*processingplan.Service).Update, (*processingplan.Service).List)...)
 	cases = append(cases, localCases("productiontask", productiontask.NewService, (*productiontask.Service).Get, (*productiontask.Service).Create, (*productiontask.Service).Update, (*productiontask.Service).List)...)
 	cases = append(cases, localCases("processing", processing.NewService, (*processing.Service).Get, (*processing.Service).Create, (*processing.Service).Update, (*processing.Service).List)...)
@@ -821,7 +831,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 63*4+22+3+8+1+6 {
+	if len(cases) != 65*4+22+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

@@ -80,6 +80,8 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/thing"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
+	"github.com/eteeet/moysklad-sdk-go/entity/webhook"
+	"github.com/eteeet/moysklad-sdk-go/entity/webhookstock"
 	"github.com/eteeet/moysklad-sdk-go/files"
 	"github.com/eteeet/moysklad-sdk-go/images"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
@@ -317,6 +319,14 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// WebhookStock — вебхуки на изменение остатков.
+func (e EntityGroup) WebhookStock() *webhookstock.Service {
+	return must(webhookstock.NewService(e.transport))
+}
+
+// Webhook — вебхуки.
+func (e EntityGroup) Webhook() *webhook.Service { return must(webhook.NewService(e.transport)) }
 
 // Application — серверные решения (только GET).
 func (e EntityGroup) Application() *application.Service {

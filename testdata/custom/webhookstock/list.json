@@ -1,0 +1,73 @@
+{
+  "context": {
+    "employee": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/context/employee",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+        "type": "employee",
+        "mediaType": "application/json"
+      }
+    }
+  },
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock/metadata",
+    "type": "webhookstock",
+    "mediaType": "application/json",
+    "size": 3,
+    "limit": 1000,
+    "offset": 0
+  },
+  "rows": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock/aec51463-bbd2-11e6-8a84-bae500000003",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock/metadata",
+        "type": "webhookstock",
+        "mediaType": "application/json"
+      },
+      "authorApplication" : {
+        "meta" : {
+          "href" : "https://api.moysklad.ru/api/remap/1.2/entity/application/9e1ad712-3e45-4679-8896-7159973a8ef5",
+          "metadataHref" : "https://api.moysklad.ru/api/remap/1.2/entity/application/metadata",
+          "type" : "application",
+          "mediaType" : "application/json"
+        }
+      },
+      "id": "aec51463-bbd2-11e6-8a84-bae500000003",
+      "accountId": "8afc8c88-38a5-11ed-ac14-000f00000001",
+      "stockType": "stock",
+      "reportType": "all",
+      "url": "https://www.example.com",
+      "enabled": true
+    },
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock/d08f9217-bbd2-11e6-8a84-bae500000004",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock/metadata",
+        "type": "webhookstock",
+        "mediaType": "application/json"
+      },
+      "id": "d08f9217-bbd2-11e6-8a84-bae500000004",
+      "accountId": "8afc8c88-38a5-11ed-ac14-000f00000001",
+      "stockType": "stock",
+      "reportType": "all",
+      "url": "https://www.example.com",
+      "enabled": true
+    },
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock/d946c7ff-bbd2-11e6-8a84-bae500000005",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/webhookstock/metadata",
+        "type": "webhookstock",
+        "mediaType": "application/json"
+      },
+      "id": "d946c7ff-bbd2-11e6-8a84-bae500000005",
+      "accountId": "8afc8c88-38a5-11ed-ac14-000f00000001",
+      "stockType": "stock",
+      "reportType": "all",
+      "url": "https://www.example.com",
+      "enabled": true
+    }
+  ]
+}
