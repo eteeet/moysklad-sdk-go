@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 50/60, документы 35/37, отчёты 1/9, прочее 6/8.
+Итого: справочники 51/60, документы 35/37, отчёты 1/9, прочее 6/8.
 
 ## Справочники
 
@@ -44,7 +44,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] organizationbranch — подразделение юрлица
 - [x] personaldiscount — персональная скидка: Get/Create/Update/Delete (список — Discount().List)
 - [x] pricetype — типы цен (context/companysettings): List/Get/GetDefault/ReplaceAll
-- [ ] processingplan — техкарта
+- [x] processingplan — техкарта
 - [x] processingplanfolder — группа техкарт
 - [x] processingprocess — техпроцесс
 - [x] processingstage — этап производства

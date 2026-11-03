@@ -1,0 +1,41 @@
+{
+  "name": "plan_name",
+  "products": [
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/3b89c8e1-6fae-11f1-c5b5-417f00000153", "type": "product"}}, "quantity": 1}
+  ],
+  "code": "c1",
+  "externalCode": "",
+  "archived": false,
+  "shared": true,
+  "cost": 1000,
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/d5ad957e-91f1-11e6-5bed-427b0000002a", "type": "employee"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/d55da707-91f1-11e6-5bed-427b00000001", "type": "group"}},
+  "parent": null,
+  "processingProcess": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingprocess/25980515-923e-11ed-c0a8-30040000002d", "type": "processingprocess"}},
+  "stages": [
+    {
+      "enableHourAccounting": false,
+      "labourCost": 100,
+      "standardHour": 2.5,
+      "processingProcessPosition": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingprocess/25980515-923e-11ed-c0a8-30040000002d/positions/d8da461d-bbf9-11ed-ac12-0010000000c1", "type": "processingprocessposition"}}
+    }
+  ],
+  "materials": [
+    {
+      "assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/4d2cdff9-6fae-11f1-c5b5-417f00000176", "type": "product"}},
+      "quantity": 1,
+      "processingProcessPosition": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingprocess/25980515-923e-11ed-c0a8-30040000002d/positions/d8da461d-bbf9-11ed-ac12-0010000000c1", "type": "processingprocessposition"}}
+    }
+  ],
+  "parametricMaterials": [
+    {
+      "paramFeatureCharacteristic": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata/characteristics/58fe2fba-6fae-11f1-c5b5-417f00000183", "type": "attributemetadata"}},
+      "paramFeatures": [
+        {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/48a9a623-6fae-11f1-c5b5-417f00000168", "type": "product"}}},
+        {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/4af31bf0-6fae-11f1-c5b5-417f0000016f", "type": "product"}}}
+      ],
+      "paramQuantityCharacteristic": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata/characteristics/58fe3a69-6fae-11f1-c5b5-417f00000184", "type": "attributemetadata"}},
+      "paramQuantities": [{"quantity": 2}, {"quantity": 1}]
+    }
+  ]
+}

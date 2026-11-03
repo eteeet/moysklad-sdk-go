@@ -1,0 +1,13 @@
+{
+  "name": "Техкарта",
+  "cost": 100000,
+  "archived": true,
+  "owner": null,
+  "products": [
+    {"id": "120b4591-b0bd-11e6-5bed-427b00000001", "quantity": 2},
+    {"product": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/0de151c1-acdc-11e6-5bed-427b00000080", "type": "product"}}, "quantity": 0.5}
+  ],
+  "stages": [{"id": "4ca1e0fe-c161-11ed-ac1c-000b00000006", "enableHourAccounting": true}],
+  "materials": [],
+  "parametricMaterials": [{"id": "d6f43c04-5504-11f1-3593-85de000001ad", "quantity": 3.5}]
+}

@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/120a488b-b0bd-11e6-5bed-427b00000000/materials/120b4591-b0bd-11e6-5bed-427b00000001",
+    "type": "processingplanmaterial",
+    "mediaType": "application/json"
+  },
+  "id": "120b4591-b0bd-11e6-5bed-427b00000001",
+  "accountId": "d55cbfba-91f1-11e6-5bed-427b00000000",
+  "product": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/product/0de151c1-acdc-11e6-5bed-427b00000080",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/product/metadata",
+      "type": "product",
+      "mediaType": "application/json"
+    }
+  },
+  "assortment": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/product/0de151c1-acdc-11e6-5bed-427b00000080",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/product/metadata",
+      "type": "product",
+      "mediaType": "application/json"
+    }
+  },
+  "quantity": 1,
+  "processingProcessPosition": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/processingprocess/d8da40e9-bbf9-11ed-ac12-0010000000bf/positions/d8da461d-bbf9-11ed-ac12-0010000000c0",
+      "type": "processingprocessposition",
+      "mediaType": "application/json"
+    }
+  }
+}

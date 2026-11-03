@@ -1,0 +1,66 @@
+{
+ "meta": {
+  "href": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/d6f4307a-5504-11f1-3593-85de000001ac/parametricmaterials/d6f43c04-5504-11f1-3593-85de000001ad",
+  "type": "processingplanparametricmaterial",
+  "mediaType": "application/json"
+ },
+ "id": "d6f43c04-5504-11f1-3593-85de000001ad",
+ "accountId": "976b7d32-5504-11f1-a690-207c00000001",
+ "paramFeatureCharacteristic": {
+  "meta": {
+   "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata/characteristics/c348958b-5504-11f1-3593-85de00000181",
+   "type": "attributemetadata",
+   "mediaType": "application/json"
+  }
+ },
+ "paramFeatures": [
+  {
+   "characteristicValue": "blue",
+   "assortment": {
+    "meta": {
+     "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/b2f3b991-5504-11f1-3593-85de0000016e",
+     "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata",
+     "type": "variant",
+     "mediaType": "application/json",
+     "uuidHref": "https://api.moysklad.ru/app/#feature/edit?id=b2f3b496-5504-11f1-3593-85de0000016d"
+    }
+   }
+  },
+  {
+   "characteristicValue": "red",
+   "assortment": {
+    "meta": {
+     "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/b6badef4-5504-11f1-3593-85de00000175",
+     "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata",
+     "type": "variant",
+     "mediaType": "application/json",
+     "uuidHref": "https://api.moysklad.ru/app/#feature/edit?id=b6bad6c2-5504-11f1-3593-85de00000174"
+    }
+   }
+  }
+ ],
+ "paramQuantityCharacteristic": {
+  "meta": {
+   "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata/characteristics/c348a010-5504-11f1-3593-85de00000182",
+   "type": "attributemetadata",
+   "mediaType": "application/json"
+  }
+ },
+ "paramQuantities": [
+  {
+   "characteristicValue": "L",
+   "quantity": 1.0
+  },
+  {
+   "characteristicValue": "M",
+   "quantity": 1.0
+  }
+ ],
+ "processingProcessPosition": {
+  "meta": {
+   "href": "https://api.moysklad.ru/api/remap/1.2/entity/processingprocess/9990d1d6-5504-11f1-3593-85de000000fd/positions/9990da42-5504-11f1-3593-85de000000fe",
+   "type": "processingprocessposition",
+   "mediaType": "application/json"
+  }
+ }
+}
