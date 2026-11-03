@@ -43,13 +43,15 @@ type TrackingCode struct {
 	TrackingCodes []TrackingCode `json:"trackingCodes"`
 }
 
-// Request — код в массовом запросе: без ID создаётся, с ID изменяется. cis и type необходимы при
-// создании; вложенные коды заменяют прежние целиком.
+// Request — код в массовом запросе: без ID создаётся, с ID изменяется. Таблица помечает id
+// «только для чтения», но метод массового изменения определяет изменяемые коды именно по id —
+// SDK его передаёт. cis и type необходимы только при создании (проверяется до запроса и у
+// вложенных кодов); вложенные коды заменяют прежние целиком.
 type Request struct {
-	ID            string    `json:"id,omitempty"`
-	CIS           string    `json:"cis"`
-	Type          string    `json:"type"`
-	TrackingCodes []Request `json:"trackingCodes,omitzero"`
+	ID            string              `json:"id,omitempty"`
+	CIS           model.Field[string] `json:"cis,omitzero"`
+	Type          model.Field[string] `json:"type,omitzero"`
+	TrackingCodes []Request           `json:"trackingCodes,omitzero"`
 }
 
 // Options — страница списка: Limit 0 — значение сервера (100), 1–100; CodeType — формат.
@@ -104,11 +106,8 @@ func (s *Service) Save(ctx context.Context, typ, id, positionID string, items []
 		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
 	}
 	for i, item := range items {
-		if item.ID != "" && !validID(item.ID) {
-			return nil, fmt.Errorf("moysklad: %s: items[%d]: id must be a UUID", operation, i)
-		}
-		if item.ID == "" && (item.CIS == "" || item.Type == "") {
-			return nil, fmt.Errorf("moysklad: %s: items[%d]: cis and type are required for a new code", operation, i)
+		if err := check(item); err != nil {
+			return nil, fmt.Errorf("moysklad: %s: items[%d]: %w", operation, i, err)
 		}
 	}
 	return write.CreateManyNested[TrackingCode](ctx, s.client, operation, endpoint(typ, id, positionID), items, opts)
@@ -123,6 +122,24 @@ func (s *Service) DeleteMany(ctx context.Context, typ, id, positionID string, id
 		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
 	}
 	return write.DeleteManyNested(ctx, s.client, operation, endpoint(typ, id, positionID), "trackingcode", ids, opts)
+}
+
+// check проверяет код и вложенные коды: UUID у изменяемых, непустые cis и type у новых.
+func check(item Request) error {
+	if item.ID != "" && !validID(item.ID) {
+		return fmt.Errorf("id must be a UUID")
+	}
+	cis, _ := item.CIS.Get()
+	typ, _ := item.Type.Get()
+	if item.ID == "" && (cis == "" || typ == "") {
+		return fmt.Errorf("cis and type are required for a new code")
+	}
+	for i, nested := range item.TrackingCodes {
+		if err := check(nested); err != nil {
+			return fmt.Errorf("trackingCodes[%d]: %w", i, err)
+		}
+	}
+	return nil
 }
 
 func endpoint(typ, id, positionID string) string {

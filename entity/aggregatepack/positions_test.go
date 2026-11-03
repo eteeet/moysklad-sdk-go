@@ -66,6 +66,19 @@ func TestPositionHTTP(t *testing.T) {
 }
 
 // Пример источника: создание позиции {assortment, quantity: 1.0}; список, удаление и массовое удаление.
+// Пример «насыщенного» создания: позиции в теле упаковки.
+func TestPositionsInBody(t *testing.T) {
+	product := model.Reference{Meta: model.Meta{Href: productHref, Type: "product"}}
+	for _, codec := range documenttest.Codecs {
+		data, err := codec.Marshal(aggregatepack.CreateRequest{Barcodes: []model.Barcode{{"ean8": "00000000"}},
+			Positions: model.Value([]aggregatepack.PositionRequest{{Assortment: product, Quantity: 1, Things: model.Value([]string{"SN"})}})})
+		if err != nil {
+			t.Fatal(err)
+		}
+		documenttest.JSONEqual(t, data, []byte(`{"barcodes":[{"ean8":"00000000"}],"positions":[{"assortment":{"meta":{"href":"`+productHref+`","type":"product"}},"quantity":1,"things":["SN"]}]}`))
+	}
+}
+
 func TestPositionCollection(t *testing.T) {
 	var got []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

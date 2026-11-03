@@ -17,7 +17,8 @@
 
 ## Неснижаемый остаток
 
-- `model.MinimumStock` приходит только в List с `fields=minimumStock` (Product и Variant):
+- `model.MinimumStock` приходит в List с `fields=minimumStock` (Get параметра fields не принимает) и
+  в ответе Create/Update, где поле передано (Product и Variant):
   ALL_WAREHOUSE_SUM и ALL_WAREHOUSE_SAME — quantity, WAREHOUSE_VARIED — метаданные storebalances.
   Источник пишет коллекцию то `storebalances`, то `storeBalances` — читаются оба ключа.
 - Запись — `MinimumStockRequest` в Create/Update; ALL_WAREHOUSE_SAME только читается.
@@ -35,7 +36,8 @@
 | `Delete`, `DeleteMany` | `DELETE …/images/{id}`, `POST …/images/delete` |
 | `Download(ctx, image, w)` — по `meta.downloadHref`; 302 на временную ссылку идёт transport | `GET download/{id}` |
 
-Типы владельцев — только product, bundle, variant, contentcard.
+Типы владельцев — только product, bundle, variant, contentcard. Пустые filename и content
+отклоняются до запроса (источник требует оба непустыми).
 
 ## Карточка контента, партия, транспортная упаковка
 
@@ -44,26 +46,30 @@
 - `entity/consignment`: Create требует label и assortment по тексту метода; таблица помечает
   «необходимо при создании» и expiryDate, но метод и пример его не требуют. name и images — чтение.
 - `entity/aggregatepack`: Create требует непустой barcodes; childrenList — только с
-  `transport.WithBetaFeature(aggregatepack.BetaChildrenList)`. Позиции — своя форма:
+  `transport.WithBetaFeature(aggregatepack.BetaChildrenList)`. Позиции можно передать в теле
+  Create/Update (маркера readonly нет; как Update сочетает их с прежними, источник не описывает)
+  или отдельными методами — своя форма:
   `ListPositions`, `GetPosition`, `CreatePositions` (POST массивом), `UpdatePosition`,
   `DeletePosition`, `DeleteManyPositions`.
 
 ## Скидки
 
-- `entity/discount`: `List` — все виды (общий тип по `Meta.Type`), `UpdateRoundOff` и `UpdateMany`
+- `entity/discount`: `List` — все виды (общий тип по `Meta.Type`, исходный JSON строки — `Raw`),
+  `UpdateRoundOff` и `UpdateMany`
   округления копеек (name, active).
 - `entity/accumulationdiscount`, `personaldiscount`, `specialpricediscount`: Get/Create/Update/Delete;
   списка у вида нет — общий `discount.List`. name, active, allProducts, allAgents (и usePriceType у
   спеццены) обязательны и передаются всегда, false — тоже. В Update пустой массив или null удаляет
   значение.
 - Таблица называет коллекцию групп `productfolders`, примеры и фикстуры — `productFolders`: SDK
-  следует данным. specialPrice в запросе — по таблице (priceType, value); пример создания передаёт
+  следует данным, а общий список читает оба ключа. specialPrice в запросе — по таблице (priceType, value); пример создания передаёт
   meta типа цены.
 
 ## Коды маркировки — пакет `trackingcode`, `c.Entity().TrackingCode()`
 
 `List` (limit до 100, codetype gs1/tag_1162/all), `Save` — один POST массивом (с id — изменение,
-без — создание; вложенные коды заменяются), `DeleteMany` (вложенные удаляются вместе) —
+без — создание; cis и type — Field, при изменении по id их можно не передавать; вложенные коды
+заменяются), `DeleteMany` (вложенные удаляются вместе) —
 `entity/{type}/{id}/positions/{positionID}/trackingCodes`.
 
 ## Не входит

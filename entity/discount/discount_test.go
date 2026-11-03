@@ -53,6 +53,14 @@ func TestFixtures(t *testing.T) {
 		if personal.Meta.Type != "personaldiscount" || !personal.AllProducts || personal.Levels != nil || personal.SpecialPrice != nil {
 			t.Fatalf("%s: personal = %+v", codec.Name, personal)
 		}
+		if !strings.Contains(string(acc.Raw), `"levels"`) {
+			t.Fatalf("%s: raw = %s", codec.Name, acc.Raw)
+		}
+		var future discount.Discount
+		if err := codec.Unmarshal([]byte(`{"meta":{"type":"futurediscount"},"id":"x","productfolders":[{"meta":{"type":"productfolder"}}],"bonus":5}`), &future); err != nil ||
+			future.Meta.Type != "futurediscount" || len(future.ProductFolders) != 1 || !strings.Contains(string(future.Raw), `"bonus":5`) {
+			t.Fatalf("%s: future = %+v, err = %v", codec.Name, future, err)
+		}
 		if special.Meta.Type != "specialpricediscount" || !special.UsePriceType || special.SpecialPrice == nil || special.SpecialPrice.Value != 15 ||
 			special.SpecialPrice.PriceType == nil || special.SpecialPrice.PriceType.Name != "Цена продажи" {
 			t.Fatalf("%s: special = %+v", codec.Name, special)

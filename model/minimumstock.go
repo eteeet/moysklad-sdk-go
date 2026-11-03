@@ -9,8 +9,9 @@ const (
 	MinimumStockWarehouseVaried  = "WAREHOUSE_VARIED"
 )
 
-// MinimumStock — неснижаемый остаток товара или модификации; выводится только по запросу с
-// fields=minimumStock. Quantity — у ALL_WAREHOUSE_SUM и ALL_WAREHOUSE_SAME, StoreBalances — у
+// MinimumStock — неснижаемый остаток товара или модификации; выводится с fields=minimumStock
+// (в SDK — только List: Get параметра fields не принимает) и в ответе Create/Update, где поле
+// передано. Quantity — у ALL_WAREHOUSE_SUM и ALL_WAREHOUSE_SAME, StoreBalances — у
 // WAREHOUSE_VARIED: без expand только метаданные коллекции, строки читает ListStoreBalances.
 // Источник пишет коллекцию то storebalances (таблица, большинство примеров), то storeBalances
 // (часть примеров, фикстура OpenAPI): читаются оба ключа.
@@ -55,7 +56,9 @@ type MinimumStockRequest struct {
 	StoreBalances Field[[]StoreBalanceRequest] `json:"storebalances,omitzero"`
 }
 
-// StoreBalanceRequest — неснижаемый остаток склада: store и quantity.
+// StoreBalanceRequest — неснижаемый остаток склада: store и quantity. Meta таблица помечает «только
+// для чтения», но пример изменения товара определяет ею существующую строку storebalances — SDK её
+// передаёт; в CreateStoreBalance и UpdateStoreBalance Meta не нужна.
 type StoreBalanceRequest struct {
 	Meta     Field[Meta]      `json:"meta,omitzero"`
 	Store    Field[Reference] `json:"store,omitzero"`

@@ -19,29 +19,38 @@ func (s *Service) storeBalances(id string) nested.Collection {
 	return nested.Collection{Client: s.client, Parent: "product", ParentID: id, Path: "storebalances", Item: "storebalance", MetaType: "minimumstock"}
 }
 
+// ListStoreBalances — неснижаемый остаток по складам.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-nesnizhaemyj-ostatok
 func (s *Service) ListStoreBalances(ctx context.Context, id string, page query.PageOptions, opts ...transport.RequestOption) (*model.Collection[model.StoreBalance], error) {
 	return nested.List[model.StoreBalance](ctx, s.storeBalances(id), page, opts)
 }
 
+// GetStoreBalance — неснижаемый остаток по складам.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-nesnizhaemyj-ostatok
 func (s *Service) GetStoreBalance(ctx context.Context, id, balanceID string, opts ...transport.RequestOption) (*model.StoreBalance, error) {
 	return nested.Get[model.StoreBalance](ctx, s.storeBalances(id), balanceID, opts)
 }
 
 // CreateStoreBalance — POST с store и quantity; повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-nesnizhaemyj-ostatok
 func (s *Service) CreateStoreBalance(ctx context.Context, id string, input model.StoreBalanceRequest, opts ...transport.RequestOption) (*model.StoreBalance, error) {
 	return nested.Create[model.StoreBalance](ctx, s.storeBalances(id), input, opts)
 }
 
+// UpdateStoreBalance — неснижаемый остаток по складам.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-nesnizhaemyj-ostatok
 func (s *Service) UpdateStoreBalance(ctx context.Context, id, balanceID string, input model.StoreBalanceRequest, opts ...transport.RequestOption) (*model.StoreBalance, error) {
 	return nested.Update[model.StoreBalance](ctx, s.storeBalances(id), balanceID, input, opts)
 }
 
 // DeleteStoreBalance — DELETE позиции. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-nesnizhaemyj-ostatok
 func (s *Service) DeleteStoreBalance(ctx context.Context, id, balanceID string, opts ...transport.RequestOption) error {
 	return nested.Delete(ctx, s.storeBalances(id), balanceID, opts)
 }
 
 // DeleteManyStoreBalances — POST …/storebalances/delete с meta позиций (тип minimumstock).
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-nesnizhaemyj-ostatok
 func (s *Service) DeleteManyStoreBalances(ctx context.Context, id string, ids []string, opts ...transport.RequestOption) ([]batch.Deleted, error) {
 	return nested.DeleteMany(ctx, s.storeBalances(id), ids, opts)
 }

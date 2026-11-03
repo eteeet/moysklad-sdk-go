@@ -22,6 +22,12 @@ func TestMinimumStockKeys(t *testing.T) {
 			}
 		}
 	}
+	// Оба ключа: приоритет у storebalances из таблицы.
+	var both model.MinimumStock
+	if err := jsonv2.Unmarshal([]byte(`{"type":"WAREHOUSE_VARIED","storebalances":{"meta":{"href":"a"}},"storeBalances":{"meta":{"href":"b"}}}`), &both); err != nil ||
+		both.StoreBalances == nil || both.StoreBalances.Meta.Href != "a" {
+		t.Fatalf("both = %+v, err = %v", both, err)
+	}
 	var sum model.MinimumStock
 	if err := jsonv2.Unmarshal([]byte(`{"type":"ALL_WAREHOUSE_SUM","quantity":10,"future":1}`), &sum); err != nil || sum.Quantity != 10 || sum.StoreBalances != nil {
 		t.Fatalf("sum = %+v, err = %v", sum, err)

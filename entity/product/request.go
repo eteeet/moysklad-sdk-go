@@ -1,6 +1,8 @@
 package product
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#3-sozdat-tovar
+// Изображения (images: filename и content) в теле товара SDK не пишет — их загружает пакет images
+// (Add, Replace).
 
 import "github.com/eteeet/moysklad-sdk-go/model"
 

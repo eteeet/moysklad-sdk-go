@@ -42,7 +42,8 @@ type Image struct {
 	Tiny      *model.Meta    `json:"tiny,omitzero"`
 }
 
-// Upload — новое изображение: имя файла с расширением и содержимое (JSON кодирует его в Base64).
+// Upload — новое изображение: имя файла с расширением и непустое содержимое (JSON кодирует его в
+// Base64); пустые filename и content источник не принимает — ошибка до запроса.
 type Upload struct {
 	Filename string `json:"filename"`
 	Content  []byte `json:"content"`
@@ -64,11 +65,7 @@ func Keep(image Image) Item {
 
 // New добавляет новое изображение в списке Replace.
 func New(upload Upload) Item {
-	content := upload.Content
-	if content == nil {
-		content = []byte{}
-	}
-	return Item{Filename: upload.Filename, Content: content}
+	return Item{Filename: upload.Filename, Content: upload.Content}
 }
 
 type Service struct {
@@ -112,8 +109,8 @@ func (s *Service) Add(ctx context.Context, typ, id string, upload Upload, opts .
 	if err := checkName(upload.Filename); err != nil {
 		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
 	}
-	if upload.Content == nil {
-		upload.Content = []byte{}
+	if len(upload.Content) == 0 {
+		return nil, fmt.Errorf("moysklad: %s: content must not be empty", operation)
 	}
 	return s.post(ctx, operation, "entity/"+typ+"/"+id+"/images", upload, opts)
 }
@@ -137,6 +134,9 @@ func (s *Service) Replace(ctx context.Context, typ, id string, items []Item, opt
 		if item.Meta == nil {
 			if err := checkName(item.Filename); err != nil {
 				return nil, fmt.Errorf("moysklad: %s: items[%d]: %w", operation, i, err)
+			}
+			if len(item.Content) == 0 {
+				return nil, fmt.Errorf("moysklad: %s: items[%d]: content must not be empty", operation, i)
 			}
 		} else if item.Meta.Href == "" {
 			return nil, fmt.Errorf("moysklad: %s: items[%d]: meta.href must not be empty", operation, i)

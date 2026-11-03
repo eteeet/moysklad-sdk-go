@@ -2,7 +2,6 @@ package accumulationdiscount
 
 import (
 	"github.com/eteeet/moysklad-sdk-go/entity/discount"
-
 	"github.com/eteeet/moysklad-sdk-go/model"
 )
 

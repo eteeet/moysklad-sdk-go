@@ -5,8 +5,11 @@
 package discount
 
 import (
+	"bytes"
 	"context"
 	"encoding/hex"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -21,9 +24,9 @@ import (
 
 // Discount — строка общего списка скидок. Вид — Meta.Type: discount (округление копеек),
 // accumulationdiscount, personaldiscount, specialpricediscount; неизвестный вид не отвергается,
-// его поля вне общего набора не сохраняются. Поля видов приходят только у своих скидок.
-// Таблица называет коллекцию групп productfolders, примеры и фикстуры — productFolders: SDK
-// следует данным.
+// его поля вне общего набора — в Raw (исходный JSON строки). Поля видов приходят только у своих
+// скидок. Таблица называет коллекцию групп productfolders, примеры и фикстуры — productFolders:
+// читаются оба ключа.
 type Discount struct {
 	Meta           model.Meta        `json:"meta"`
 	ID             string            `json:"id"`
@@ -39,6 +42,24 @@ type Discount struct {
 	Discount       float64           `json:"discount"`
 	UsePriceType   bool              `json:"usePriceType"`
 	SpecialPrice   *SpecialPrice     `json:"specialPrice,omitzero"`
+	Raw            jsontext.Value    `json:"-"`
+}
+
+func (d *Discount) UnmarshalJSON(data []byte) error {
+	type plain Discount
+	var v struct {
+		plain
+		Lower []model.Reference `json:"productfolders"`
+	}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	*d = Discount(v.plain)
+	if d.ProductFolders == nil {
+		d.ProductFolders = v.Lower
+	}
+	d.Raw = bytes.Clone(data)
+	return nil
 }
 
 // Level — уровень накопительной скидки: Amount — сумма накоплений в копейках, Discount — процент.
@@ -55,7 +76,7 @@ type SpecialPrice struct {
 	Value     float64          `json:"value"`
 }
 
-// SpecialPriceRequest — спеццена в запросе по таблице: priceType и value. Пример создания
+// SpecialPriceRequest — спеццена в запросе по таблице: priceType и value (копейки). Пример создания
 // источника передаёт вместо этого meta типа цены — SDK следует таблице.
 type SpecialPriceRequest struct {
 	PriceType model.Field[model.Reference] `json:"priceType,omitzero"`

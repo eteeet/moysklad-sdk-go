@@ -56,12 +56,12 @@ func TestImageFixture(t *testing.T) {
 			t.Fatalf("%s: image = %+v", codec.Name, got)
 		}
 		// Элементы Replace: существующее — только meta, новое — filename и content (Base64).
-		data, err := codec.Marshal([]images.Item{images.Keep(got), images.New(images.Upload{Filename: "a.png", Content: []byte{1, 2}}), images.New(images.Upload{Filename: "b.png"})})
+		data, err := codec.Marshal([]images.Item{images.Keep(got), images.New(images.Upload{Filename: "a.png", Content: []byte{1, 2}})})
 		if err != nil {
 			t.Fatal(err)
 		}
 		documenttest.JSONEqual(t, data, []byte(`[{"meta":{"href":"`+got.Meta.Href+`","type":"image","mediaType":"application/json","downloadHref":"`+got.Meta.DownloadHref+`"}},`+
-			`{"filename":"a.png","content":"AQI="},{"filename":"b.png","content":""}]`))
+			`{"filename":"a.png","content":"AQI="}]`))
 	}
 }
 
@@ -137,7 +137,7 @@ func TestOperations(t *testing.T) {
 func TestHTTPErrors(t *testing.T) {
 	invoke := func(ctx context.Context, c *transport.Client) (*[]images.Image, error) {
 		s, _ := images.NewService(c)
-		r, err := s.Add(ctx, "product", ownerID, images.Upload{Filename: "a.png", Content: []byte{}})
+		r, err := s.Add(ctx, "product", ownerID, images.Upload{Filename: "a.png", Content: []byte{1}})
 		if err != nil {
 			return nil, err
 		}
@@ -161,7 +161,14 @@ func TestHTTPErrors(t *testing.T) {
 				w.WriteHeader(tc.status)
 				io.WriteString(w, tc.body)
 			})
-			r, err := s.Add(t.Context(), "product", ownerID, images.Upload{Filename: "a.png"})
+			r, err := s.Add(t.Context(), "product", ownerID, images.Upload{Filename: "a.png", Content: []byte{1}})
+			if tc.ok {
+				// Replace идёт тем же POST и разбирает ответ так же.
+				if rr, err := s.Replace(t.Context(), "product", ownerID, []images.Item{images.New(images.Upload{Filename: "b.png", Content: []byte{2}})}); err != nil || rr == nil {
+					t.Fatalf("replace = %+v, err = %v", rr, err)
+				}
+				calls.Add(-1)
+			}
 			if tc.ok != (err == nil) || calls.Load() != 1 || (tc.ok && r == nil) {
 				t.Fatalf("r = %+v, err = %v, calls = %d", r, err, calls.Load())
 			}
@@ -192,6 +199,18 @@ func TestValidation(t *testing.T) {
 		},
 		"add no name": func(o ...transport.RequestOption) error {
 			_, err := s.Add(ctx, "product", ownerID, images.Upload{}, o...)
+			return err
+		},
+		"add no content": func(o ...transport.RequestOption) error {
+			_, err := s.Add(ctx, "product", ownerID, images.Upload{Filename: "a.png"}, o...)
+			return err
+		},
+		"replace path name": func(o ...transport.RequestOption) error {
+			_, err := s.Replace(ctx, "product", ownerID, []images.Item{images.New(images.Upload{Filename: "../a", Content: []byte{1}})}, o...)
+			return err
+		},
+		"replace no content": func(o ...transport.RequestOption) error {
+			_, err := s.Replace(ctx, "product", ownerID, []images.Item{images.New(images.Upload{Filename: "a.png"})}, o...)
 			return err
 		},
 		"add path name": func(o ...transport.RequestOption) error {

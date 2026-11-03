@@ -11,6 +11,10 @@ type CreateRequest struct {
 	Shared       model.Field[bool]              `json:"shared,omitzero"`
 	Owner        model.Field[model.Reference]   `json:"owner,omitzero"`
 	Group        model.Field[model.Reference]   `json:"group,omitzero"`
+	// Positions — позиции в теле упаковки (пример «насыщенного» создания источника); маркера
+	// «только для чтения» в таблице нет. Как сервер сочетает их с существующими при Update,
+	// источник не описывает: отдельные позиции — CreatePositions и UpdatePosition.
+	Positions model.Field[[]PositionRequest] `json:"positions,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/handling-unit#3-izmenit-transportnuyu-upakovku
@@ -21,4 +25,8 @@ type UpdateRequest struct {
 	Shared       model.Field[bool]              `json:"shared,omitzero"`
 	Owner        model.Field[model.Reference]   `json:"owner,omitzero"`
 	Group        model.Field[model.Reference]   `json:"group,omitzero"`
+	// Positions — позиции в теле упаковки (пример «насыщенного» создания источника); маркера
+	// «только для чтения» в таблице нет. Как сервер сочетает их с существующими при Update,
+	// источник не описывает: отдельные позиции — CreatePositions и UpdatePosition.
+	Positions model.Field[[]PositionRequest] `json:"positions,omitzero"`
 }

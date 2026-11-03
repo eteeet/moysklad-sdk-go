@@ -1,6 +1,10 @@
 package trackingcode_test
 
 import (
+	"bytes"
+	"compress/gzip"
+	"context"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -8,7 +12,9 @@ import (
 	"sync/atomic"
 	"testing"
 
+	sdkerrors "github.com/eteeet/moysklad-sdk-go/errors"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
+	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/trackingcode"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
@@ -28,13 +34,18 @@ func TestJSON(t *testing.T) {
 			got.ID != codeID || got.CIS1162 != "x" || got.Type != "transportpack" || len(got.TrackingCodes) != 1 || got.TrackingCodes[0].Type != "trackingcode" {
 			t.Fatalf("%s: code = %+v, err = %v", codec.Name, got, err)
 		}
-		data, err := codec.Marshal([]trackingcode.Request{{ID: codeID, CIS: "012345678912345576", Type: "transportpack",
-			TrackingCodes: []trackingcode.Request{{CIS: "c", Type: "trackingcode"}}}, {CIS: "010463003759026521LjJfNII5aXL-B", Type: "trackingcode"}})
+		// Пример источника; изменение по id без cis и type их не отправляет.
+		data, err := codec.Marshal([]trackingcode.Request{
+			{ID: codeID, CIS: model.Value("012345678912345576"), Type: model.Value("transportpack"),
+				TrackingCodes: []trackingcode.Request{{CIS: model.Value("c"), Type: model.Value("trackingcode")}}},
+			{CIS: model.Value("010463003759026521LjJfNII5aXL-B"), Type: model.Value("trackingcode")},
+			{ID: codeID, TrackingCodes: []trackingcode.Request{}},
+		})
 		if err != nil {
 			t.Fatal(err)
 		}
 		documenttest.JSONEqual(t, data, []byte(`[{"id":"`+codeID+`","cis":"012345678912345576","type":"transportpack","trackingCodes":[{"cis":"c","type":"trackingcode"}]},`+
-			`{"cis":"010463003759026521LjJfNII5aXL-B","type":"trackingcode"}]`))
+			`{"cis":"010463003759026521LjJfNII5aXL-B","type":"trackingcode"},{"id":"`+codeID+`","trackingCodes":[]}]`))
 	}
 }
 
@@ -65,7 +76,7 @@ func TestHTTP(t *testing.T) {
 	if _, err := s.List(ctx, "supply", docID, posID, trackingcode.Options{}); err != nil {
 		t.Fatal(err)
 	}
-	if r, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{CIS: "c", Type: "trackingcode"}}); err != nil || r[0].Value.ID != codeID {
+	if r, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{CIS: model.Value("c"), Type: model.Value("trackingcode")}}); err != nil || r[0].Value.ID != codeID {
 		t.Fatalf("save = %+v, err = %v", r, err)
 	}
 	if r, err := s.DeleteMany(ctx, "supply", docID, posID, []string{codeID}); err != nil || r[0].Info != "ok" {
@@ -82,6 +93,92 @@ func TestHTTP(t *testing.T) {
 	}
 }
 
+// Ответы сервера для каждого метода: plain и gzip, ошибки API, неожиданный статус и тело;
+// одна отправка, errors.As и единый префикс moysklad:.
+func TestResponses(t *testing.T) {
+	type call func(context.Context, *trackingcode.Service) error
+	for _, op := range []struct {
+		name, ok string
+		invoke   call
+	}{
+		{"list", `{"meta":{"href":"x"},"rows":[]}`, func(ctx context.Context, s *trackingcode.Service) error {
+			_, err := s.List(ctx, "supply", docID, posID, trackingcode.Options{})
+			return err
+		}},
+		{"save", `[{"id":"` + codeID + `"}]`, func(ctx context.Context, s *trackingcode.Service) error {
+			_, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{ID: codeID, CIS: model.Value("c")}})
+			return err
+		}},
+		{"delete many", `[{"info":"ok"}]`, func(ctx context.Context, s *trackingcode.Service) error {
+			_, err := s.DeleteMany(ctx, "supply", docID, posID, []string{codeID})
+			return err
+		}},
+	} {
+		for _, tc := range []struct {
+			name, body string
+			status     int
+			gzip, ok   bool
+			api        bool
+		}{
+			{"plain", op.ok, 200, false, true, false},
+			{"gzip", op.ok, 200, true, true, false},
+			{"api error", `{"errors":[{"error":"bad","code":3000}]}`, 400, false, false, true},
+			{"rate limit", `{"errors":[{"error":"slow","code":1073}]}`, 429, false, false, true},
+			{"unexpected status", op.ok, 201, false, false, false},
+			{"null", `null`, 200, false, false, false},
+			{"malformed", `{"meta":`, 200, false, false, false},
+		} {
+			t.Run(op.name+"/"+tc.name, func(t *testing.T) {
+				var calls atomic.Int32
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					calls.Add(1)
+					body := []byte(tc.body)
+					if tc.gzip {
+						var buf bytes.Buffer
+						zw := gzip.NewWriter(&buf)
+						zw.Write(body)
+						zw.Close()
+						body = buf.Bytes()
+						w.Header().Set("Content-Encoding", "gzip")
+					}
+					w.WriteHeader(tc.status)
+					w.Write(body)
+				}))
+				defer server.Close()
+				c, err := transport.NewClient(transport.Config{BaseURL: server.URL, Retry: &transport.RetryPolicy{MaxAttempts: 3}})
+				if err != nil {
+					t.Fatal(err)
+				}
+				s, _ := trackingcode.NewService(c)
+				err = op.invoke(t.Context(), s)
+				if (err == nil) != tc.ok {
+					t.Fatalf("err = %v", err)
+				}
+				var apiErr *sdkerrors.APIError
+				if err != nil && (errors.As(err, &apiErr) != tc.api || strings.Count(err.Error(), "moysklad:") != 1 || !strings.Contains(err.Error(), "supply "+docID)) {
+					t.Fatalf("error = %v", err)
+				}
+				// GET повторяет только 429 и 5xx по политике; остальные ответы — одна отправка.
+				if want := map[bool]int32{true: 3, false: 1}[op.name == "list" && tc.status == 429]; calls.Load() != want {
+					t.Fatalf("calls = %d, want %d", calls.Load(), want)
+				}
+			})
+		}
+		t.Run(op.name+"/cancelled", func(t *testing.T) {
+			c, err := transport.NewClient(transport.Config{BaseURL: "http://127.0.0.1:1"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			s, _ := trackingcode.NewService(c)
+			ctx, cancel := context.WithCancel(t.Context())
+			cancel()
+			if err := op.invoke(ctx, s); !errors.Is(err, context.Canceled) {
+				t.Fatalf("err = %v", err)
+			}
+		})
+	}
+}
+
 func TestValidation(t *testing.T) {
 	var calls atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
@@ -92,6 +189,7 @@ func TestValidation(t *testing.T) {
 	}
 	s, _ := trackingcode.NewService(c)
 	ctx := t.Context()
+	newCode := trackingcode.Request{CIS: model.Value("c"), Type: model.Value("t")}
 	for name, invoke := range map[string]func(...transport.RequestOption) error{
 		"list type": func(o ...transport.RequestOption) error {
 			_, err := s.List(ctx, "../x", docID, posID, trackingcode.Options{}, o...)
@@ -106,15 +204,23 @@ func TestValidation(t *testing.T) {
 			return err
 		},
 		"save pos": func(o ...transport.RequestOption) error {
-			_, err := s.Save(ctx, "supply", docID, "x", []trackingcode.Request{{CIS: "c", Type: "t"}}, o...)
+			_, err := s.Save(ctx, "supply", docID, "x", []trackingcode.Request{newCode}, o...)
 			return err
 		},
 		"save new cis": func(o ...transport.RequestOption) error {
-			_, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{Type: "t"}}, o...)
+			_, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{Type: model.Value("t")}}, o...)
+			return err
+		},
+		"save empty cis": func(o ...transport.RequestOption) error {
+			_, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{CIS: model.Value(""), Type: model.Value("t")}}, o...)
 			return err
 		},
 		"save bad id": func(o ...transport.RequestOption) error {
 			_, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{ID: "x"}}, o...)
+			return err
+		},
+		"save nested": func(o ...transport.RequestOption) error {
+			_, err := s.Save(ctx, "supply", docID, posID, []trackingcode.Request{{ID: codeID, TrackingCodes: []trackingcode.Request{{CIS: model.Value("c")}}}}, o...)
 			return err
 		},
 		"save empty": func(o ...transport.RequestOption) error {

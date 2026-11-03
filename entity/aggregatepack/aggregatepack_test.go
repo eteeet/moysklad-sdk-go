@@ -77,7 +77,7 @@ func TestRequestJSON(t *testing.T) {
 		}
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[aggregatepack.CreateRequest](), reflect.TypeFor[aggregatepack.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Updated", "Level", "Positions"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Updated", "Level"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}

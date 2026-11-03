@@ -7,7 +7,7 @@ import (
 )
 
 // AggregatePack — транспортная упаковка. Level — максимальный уровень вложенности, только чтение;
-// Positions — метаданные коллекции позиций (ListPositions). ChildrenList — вложенные упаковки: приходит и
+// Positions — метаданные коллекции позиций (ListPositions); записать позиции можно в Create/Update. ChildrenList — вложенные упаковки: приходит и
 // обрабатывается сервером только с transport.WithBetaFeature(BetaChildrenList).
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/handling-unit
 type AggregatePack struct {
