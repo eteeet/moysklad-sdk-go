@@ -56,6 +56,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepayment"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
+	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -253,6 +254,9 @@ func batchCases() []batchCase {
 		createManyCase("uom", uom.NewService, (*uom.Service).CreateMany),
 		updateManyCase("uom", uom.NewService, (*uom.Service).UpdateMany),
 		deleteManyCase("uom", uom.NewService, (*uom.Service).DeleteMany),
+		createManyCase("pricelist", pricelist.NewService, (*pricelist.Service).CreateMany),
+		updateManyCase("pricelist", pricelist.NewService, (*pricelist.Service).UpdateMany),
+		deleteManyCase("pricelist", pricelist.NewService, (*pricelist.Service).DeleteMany),
 		createManyCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).CreateMany),
 		updateManyCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).UpdateMany),
 		deleteManyCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).DeleteMany),
@@ -579,6 +583,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                 "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                    "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*pricelist.Service]():              "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*retaildrawercashout.Service]():    "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*retaildrawercashin.Service]():     "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*prepaymentreturn.Service]():       "",

@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/pricelist/312cc207-afe9-11e6-8af5-581e0000002c",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/pricelist/metadata",
+    "type": "pricelist",
+    "mediaType": "application/json"
+  },
+  "id": "312cc207-afe9-11e6-8af5-581e0000002c",
+  "accountId": "9560e3e3-9609-11e6-8af5-581e00000008",
+  "owner": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/9575ba6d-9609-11e6-8af5-581e000000ad",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+      "type": "employee",
+      "mediaType": "application/json"
+    }
+  },
+  "shared": false,
+  "group": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/group/956169fa-9609-11e6-8af5-581e00000009",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/group/metadata",
+      "type": "group",
+      "mediaType": "application/json"
+    }
+  },
+  "updated": "2016-11-21 15:51:16",
+  "name": "Прайс-лист от 21.21.2016 (5)",
+  "description": "test",
+  "externalCode": "m-9OZzfBiAjolWhnBjTff0",
+  "moment": "2016-11-21 15:51:16",
+  "applicable": true,
+  "printed": true,
+  "published": true,
+  "organization": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/95920812-9609-11e6-8af5-581e000000d4",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organization/metadata",
+      "type": "organization",
+      "mediaType": "application/json"
+    }
+  },
+  "positions": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/pricelist/312cc207-afe9-11e6-8af5-581e0000002c/positions",
+      "type": "pricelistrow",
+      "mediaType": "application/json",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "priceType": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/672559f1-cbf3-11e1-9eb9-889ffa6f49fd",
+      "type": "pricetype",
+      "mediaType": "application/json"
+    },
+    "id": "672559f1-cbf3-11e1-9eb9-889ffa6f49fd",
+    "name": "Цена продажи",
+    "externalCode": "cbcf493b-55bc-11d9-848a-00112f43529a"
+  },
+  "columns": [
+    {
+      "name": "a"
+    },
+    {
+      "name": "b",
+      "percentageDiscount": 1000
+    }
+  ]
+}

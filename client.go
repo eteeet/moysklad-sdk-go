@@ -45,6 +45,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepayment"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
+	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -285,6 +286,9 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// PriceList — прайс-листы со строками.
+func (e EntityGroup) PriceList() *pricelist.Service { return must(pricelist.NewService(e.transport)) }
 
 // RetailDrawerCashOut — выплаты денег из кассы.
 func (e EntityGroup) RetailDrawerCashOut() *retaildrawercashout.Service {

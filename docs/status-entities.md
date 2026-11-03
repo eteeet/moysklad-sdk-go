@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 47/60, документы 30/37, отчёты 1/9, прочее 6/8.
+Итого: справочники 47/60, документы 31/37, отчёты 1/9, прочее 6/8.
 
 ## Справочники
 
@@ -95,7 +95,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] payroll — начисление зарплаты
 - [x] prepayment — предоплата
 - [x] prepaymentreturn — возврат предоплаты
-- [ ] pricelist — прайс-лист
+- [x] pricelist — прайс-лист
 - [ ] processing — техоперация
 - [ ] processingorder — заказ на производство
 - [ ] productionstagecompletion — выполнение этапа производства

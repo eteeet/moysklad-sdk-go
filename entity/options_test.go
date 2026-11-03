@@ -53,6 +53,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepayment"
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
+	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -214,6 +215,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("pricelist", pricelist.NewService, (*pricelist.Service).Get),
 		getCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Get),
 		getCase("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Get),
 		getCase("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).Get),
@@ -285,6 +287,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("pricelist", pricelist.NewService, (*pricelist.Service).Create),
+		updateCase("pricelist", pricelist.NewService, (*pricelist.Service).Update),
 		createCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Create),
 		updateCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Update),
 		createCase("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Create),
@@ -434,6 +438,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		positionsCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsCase("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsCase("pricelist", pricelist.NewService, (*pricelist.Service).GetPositions),
 		positionsCase("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).GetPositions),
 		positionsCase("prepayment", prepayment.NewService, (*prepayment.Service).GetPositions),
 		positionsCase("payroll", payroll.NewService, (*payroll.Service).GetPositions),
@@ -594,6 +599,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("pricelist", pricelist.NewService, (*pricelist.Service).Get, (*pricelist.Service).Create, (*pricelist.Service).Update, (*pricelist.Service).List)...)
 	cases = append(cases, localCases("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Get, (*retaildrawercashout.Service).Create, (*retaildrawercashout.Service).Update, (*retaildrawercashout.Service).List)...)
 	cases = append(cases, localCases("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Get, (*retaildrawercashin.Service).Create, (*retaildrawercashin.Service).Update, (*retaildrawercashin.Service).List)...)
 	cases = append(cases, localCases("payroll", payroll.NewService, (*payroll.Service).Get, (*payroll.Service).Create, (*payroll.Service).Update, (*payroll.Service).List)...)
@@ -643,6 +649,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsLocal("pricelist", pricelist.NewService, (*pricelist.Service).GetPositions),
 		positionsLocal("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).GetPositions),
 		positionsLocal("prepayment", prepayment.NewService, (*prepayment.Service).GetPositions),
 		positionsLocal("payroll", payroll.NewService, (*payroll.Service).GetPositions),
@@ -764,7 +771,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 54*4+20+3+8+1+6 {
+	if len(cases) != 55*4+21+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

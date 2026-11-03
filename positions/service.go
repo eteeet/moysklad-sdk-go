@@ -77,6 +77,7 @@ func validID(id string) bool {
 var positionMetaTypes = map[string]model.MetaType{
 	"invoicein": "invoiceposition", "invoiceout": "invoiceposition",
 	"retaildemand": "demandposition", "retailsalesreturn": "salesreturnposition",
+	"pricelist": "pricelistrow",
 }
 
 func (s *Service[T]) rows(documentID string) nested.Collection {
