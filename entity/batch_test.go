@@ -58,6 +58,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingplanfolder"
+	"github.com/eteeet/moysklad-sdk-go/entity/processingstage"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/project"
@@ -255,6 +256,9 @@ func batchCases() []batchCase {
 		createManyCase("uom", uom.NewService, (*uom.Service).CreateMany),
 		updateManyCase("uom", uom.NewService, (*uom.Service).UpdateMany),
 		deleteManyCase("uom", uom.NewService, (*uom.Service).DeleteMany),
+		createManyCase("processingstage", processingstage.NewService, (*processingstage.Service).CreateMany),
+		updateManyCase("processingstage", processingstage.NewService, (*processingstage.Service).UpdateMany),
+		deleteManyCase("processingstage", processingstage.NewService, (*processingstage.Service).DeleteMany),
 		createManyCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).CreateMany),
 		updateManyCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).UpdateMany),
 		deleteManyCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).DeleteMany),
@@ -587,6 +591,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                 "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                    "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*processingstage.Service]():        "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*processingplanfolder.Service]():   "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*pricelist.Service]():              "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*retaildrawercashout.Service]():    "CreateMany UpdateMany DeleteMany",
