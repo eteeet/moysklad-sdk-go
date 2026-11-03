@@ -10,6 +10,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/bundle"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
+	"github.com/eteeet/moysklad-sdk-go/entity/contract"
 	"github.com/eteeet/moysklad-sdk-go/entity/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/entity/country"
 	"github.com/eteeet/moysklad-sdk-go/entity/currency"
@@ -245,6 +246,9 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// Contract — Договоры.
+func (e EntityGroup) Contract() *contract.Service { return must(contract.NewService(e.transport)) }
 
 // Project — Проекты.
 func (e EntityGroup) Project() *project.Service { return must(project.NewService(e.transport)) }
