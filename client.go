@@ -90,6 +90,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/report/byoperations"
 	reportcounterparty "github.com/eteeet/moysklad-sdk-go/report/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/report/dashboard"
+	"github.com/eteeet/moysklad-sdk-go/report/money"
 	"github.com/eteeet/moysklad-sdk-go/report/profit"
 	"github.com/eteeet/moysklad-sdk-go/report/sales"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
@@ -158,6 +159,9 @@ type ReportGroup struct{ transport *transport.Client }
 
 // Turnover — отчёт «Обороты».
 func (r ReportGroup) Turnover() *turnover.Service { return must(turnover.NewService(r.transport)) }
+
+// Money — деньги: plotseries и byaccount.
+func (r ReportGroup) Money() *money.Service { return must(money.NewService(r.transport)) }
 
 // Counterparty — показатели контрагентов report/counterparty.
 func (r ReportGroup) Counterparty() *reportcounterparty.Service {
