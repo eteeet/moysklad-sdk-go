@@ -52,6 +52,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
+	"github.com/eteeet/moysklad-sdk-go/entity/processingorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingplanfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingprocess"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingstage"
@@ -144,6 +145,7 @@ func deleteCases() []optionsCase {
 		deleteCase("supply", supply.NewService, (*supply.Service).Delete),
 		deleteCase("taxrate", taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCase("uom", uom.NewService, (*uom.Service).Delete),
+		deleteCase("processingorder", processingorder.NewService, (*processingorder.Service).Delete),
 		deleteCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Delete),
 		deleteCase("processingstage", processingstage.NewService, (*processingstage.Service).Delete),
 		deleteCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Delete),
@@ -271,6 +273,7 @@ func TestDeleteRejectsInvalidID(t *testing.T) {
 		deleteCall(supply.NewService, (*supply.Service).Delete),
 		deleteCall(taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCall(uom.NewService, (*uom.Service).Delete),
+		deleteCall(processingorder.NewService, (*processingorder.Service).Delete),
 		deleteCall(processingprocess.NewService, (*processingprocess.Service).Delete),
 		deleteCall(processingstage.NewService, (*processingstage.Service).Delete),
 		deleteCall(processingplanfolder.NewService, (*processingplanfolder.Service).Delete),

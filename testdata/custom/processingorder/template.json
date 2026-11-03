@@ -1,0 +1,65 @@
+{
+  "owner": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/d5ad957e-91f1-11e6-5bed-427b0000002a",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+      "type": "employee",
+      "mediaType": "application/json"
+    }
+  },
+  "shared": false,
+  "group": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/group/d55da707-91f1-11e6-5bed-427b00000001",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/group/metadata",
+      "type": "group",
+      "mediaType": "application/json"
+    }
+  },
+  "moment": "2016-12-05 14:35:47",
+  "applicable": true,
+  "organization": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/a1331985-a1c8-11e6-5bed-427b00000084",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organization/metadata",
+      "type": "organization",
+      "mediaType": "application/json"
+    }
+  },
+  "quantity": 1,
+  "processingPlan": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/1a18770e-ad9a-11e6-5bed-427b00000064",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/metadata",
+      "type": "processingplan",
+      "mediaType": "application/json"
+    }
+  },
+  "store": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/store/d5e311c0-91f1-11e6-5bed-427b00000053",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/store/metadata",
+      "type": "store",
+      "mediaType": "application/json"
+    }
+  },
+  "created": "2007-02-07 17:16:41",
+  "printed": true,
+  "published": true,
+  "positions": {
+    "rows": [
+      {
+        "quantity": 1,
+        "assortment": {
+          "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/product/0de151c1-acdc-11e6-5bed-427b00000080",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/product/metadata",
+            "type": "product",
+            "mediaType": "application/json",
+            "uuidHref": "https://online.moysklad.ru/app/#good/edit?id=e64d0a86-2a99-11e9-ac12-000c00000041"
+          }
+        }
+      }
+    ]
+  }
+}

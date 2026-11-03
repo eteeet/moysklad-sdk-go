@@ -1,0 +1,13 @@
+{
+  "processingPlan": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/33333333-3333-3333-3333-333333333333", "type": "processingplan"}},
+  "name": "000035",
+  "store": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/store/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "type": "store"}},
+  "positions": [
+    {"id": "34f6344f-015e-11e6-9464-e4de0000006c", "quantity": 2.5},
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/44444444-4444-4444-4444-444444444444", "type": "product"}}, "quantity": 1, "reserve": 0.5}
+  ],
+  "deliveryPlannedMoment": null,
+  "applicable": true,
+  "quantity": 0.5,
+  "processings": []
+}

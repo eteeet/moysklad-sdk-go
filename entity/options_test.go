@@ -54,6 +54,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/prepaymentreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
+	"github.com/eteeet/moysklad-sdk-go/entity/processingorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingplanfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingprocess"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingstage"
@@ -224,6 +225,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("processingorder", processingorder.NewService, (*processingorder.Service).Get),
 		getCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Get),
 		getCase("processingstage", processingstage.NewService, (*processingstage.Service).Get),
 		getCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Get),
@@ -299,6 +301,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("processingorder", processingorder.NewService, (*processingorder.Service).Create),
+		updateCase("processingorder", processingorder.NewService, (*processingorder.Service).Update),
 		createCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Create),
 		updateCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Update),
 		createCase("processingstage", processingstage.NewService, (*processingstage.Service).Create),
@@ -456,6 +460,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		positionsCase("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsCase("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsCase("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsCase("processingorder", processingorder.NewService, (*processingorder.Service).GetPositions),
 		positionsCase("pricelist", pricelist.NewService, (*pricelist.Service).GetPositions),
 		positionsCase("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).GetPositions),
 		positionsCase("prepayment", prepayment.NewService, (*prepayment.Service).GetPositions),
@@ -617,6 +622,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("processingorder", processingorder.NewService, (*processingorder.Service).Get, (*processingorder.Service).Create, (*processingorder.Service).Update, (*processingorder.Service).List)...)
 	cases = append(cases, localCases("processingprocess", processingprocess.NewService, (*processingprocess.Service).Get, (*processingprocess.Service).Create, (*processingprocess.Service).Update, (*processingprocess.Service).List)...)
 	cases = append(cases, localCases("processingstage", processingstage.NewService, (*processingstage.Service).Get, (*processingstage.Service).Create, (*processingstage.Service).Update, (*processingstage.Service).List)...)
 	cases = append(cases, localCases("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Get, (*processingplanfolder.Service).Create, (*processingplanfolder.Service).Update, (*processingplanfolder.Service).List)...)
@@ -670,6 +676,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 		positionsLocal("purchaseorder", purchaseorder.NewService, (*purchaseorder.Service).GetPositions),
 		positionsLocal("purchasereturn", purchasereturn.NewService, (*purchasereturn.Service).GetPositions),
 		positionsLocal("supply", supply.NewService, (*supply.Service).GetPositions),
+		positionsLocal("processingorder", processingorder.NewService, (*processingorder.Service).GetPositions),
 		positionsLocal("pricelist", pricelist.NewService, (*pricelist.Service).GetPositions),
 		positionsLocal("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).GetPositions),
 		positionsLocal("prepayment", prepayment.NewService, (*prepayment.Service).GetPositions),
@@ -792,7 +799,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 58*4+21+3+8+1+6 {
+	if len(cases) != 59*4+22+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
