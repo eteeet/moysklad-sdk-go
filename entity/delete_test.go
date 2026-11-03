@@ -82,6 +82,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/specialpricediscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/store"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
+	"github.com/eteeet/moysklad-sdk-go/entity/task"
 	"github.com/eteeet/moysklad-sdk-go/entity/taxrate"
 	"github.com/eteeet/moysklad-sdk-go/entity/thing"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
@@ -153,6 +154,7 @@ func deleteCases() []optionsCase {
 		deleteCase("supply", supply.NewService, (*supply.Service).Delete),
 		deleteCase("taxrate", taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCase("uom", uom.NewService, (*uom.Service).Delete),
+		deleteCase("task", task.NewService, (*task.Service).Delete),
 		deleteCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).Delete),
 		deleteCase("webhook", webhook.NewService, (*webhook.Service).Delete),
 		deleteCase("processingplan", processingplan.NewService, (*processingplan.Service).Delete),
@@ -287,6 +289,7 @@ func TestDeleteRejectsInvalidID(t *testing.T) {
 		deleteCall(supply.NewService, (*supply.Service).Delete),
 		deleteCall(taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCall(uom.NewService, (*uom.Service).Delete),
+		deleteCall(task.NewService, (*task.Service).Delete),
 		deleteCall(webhookstock.NewService, (*webhookstock.Service).Delete),
 		deleteCall(webhook.NewService, (*webhook.Service).Delete),
 		deleteCall(processingplan.NewService, (*processingplan.Service).Delete),

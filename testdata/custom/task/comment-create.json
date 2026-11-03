@@ -1,0 +1,32 @@
+[
+  {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/task/47bc1d9b-8b87-11e8-d9ce-84d900000017/notes/2050793f-b8c6-11f0-0a80-204500000006",
+      "type": "tasknote",
+      "mediaType": "application/json"
+    },
+    "id": "2050793f-b8c6-11f0-0a80-204500000006",
+    "accountId": "5ae35472-b8c5-11f0-0a82-042d00000002",
+    "author": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/5c32c7bb-b8c5-11f0-0a83-01ce00000055",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+        "type": "employee",
+        "mediaType": "application/json",
+        "uuidHref": "https://online.moysklad.ru/app/#employee/edit?id=5c32c7bb-b8c5-11f0-0a83-01ce00000055"
+      }
+    },
+    "text": "Привет, {{employee;861d34a9-f1b3-11ee-ac12-00110000004e}}! Задача актуальна?",
+    "moment": "2025-11-01 18:02:33.338",
+    "files": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/task/47bc1d9b-8b87-11e8-d9ce-84d900000017/notes/2050793f-b8c6-11f0-0a80-204500000006/files",
+        "type": "files",
+        "mediaType": "application/json",
+        "size": 0,
+        "limit": 1000,
+        "offset": 0
+      }
+    }
+  }
+]

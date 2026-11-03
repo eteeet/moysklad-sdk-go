@@ -78,6 +78,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/specialpricediscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/store"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
+	"github.com/eteeet/moysklad-sdk-go/entity/task"
 	"github.com/eteeet/moysklad-sdk-go/entity/taxrate"
 	"github.com/eteeet/moysklad-sdk-go/entity/thing"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
@@ -347,6 +348,9 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// Task — задачи, комментарии и типы задач.
+func (e EntityGroup) Task() *task.Service { return must(task.NewService(e.transport)) }
 
 // RetireOrder — выводы кодов маркировки из оборота.
 func (e EntityGroup) RetireOrder() *retireorder.Service {

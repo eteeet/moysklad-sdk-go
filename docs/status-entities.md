@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 56/60, документы 37/37, отчёты 9/9, прочее 8/8.
+Итого: справочники 57/60, документы 37/37, отчёты 9/9, прочее 8/8.
 
 ## Справочники
 
@@ -60,7 +60,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] specialpricediscount — скидка на спеццену: Get/Create/Update/Delete (список — Discount().List)
 - [x] states — статусы: чтение через metadata, Create/Update
 - [x] store — склад: Get/List/Create/Update/Delete и массовые; зоны и ячейки (List/Get/Create/Update/Delete, массовые)
-- [ ] task — задача
+- [x] task — задача, комментарии и типы задач
 - [x] taxrate — ставка НДС
 - [ ] template — шаблоны печатных форм
 - [x] thing — серийный номер: Get/List (только чтение)

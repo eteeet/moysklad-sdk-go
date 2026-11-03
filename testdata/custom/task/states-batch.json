@@ -1,0 +1,30 @@
+[
+  {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/task/metadata/states/b55d2ddf-60c3-11e7-6adb-ede500000010",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/task/metadata",
+      "type": "state",
+      "mediaType": "application/json"
+    },
+    "id": "b55d2ddf-60c3-11e7-6adb-ede500000010",
+    "accountId": "0af94520-54f7-11e7-6adb-ede500000001",
+    "name": "Встреча",
+    "color": 8767198,
+    "stateType": "Regular",
+    "entityType": "task"
+  },
+  {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/task/metadata/states/b56215dc-60c3-11e7-6adb-ede500000013",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/task/metadata",
+      "type": "state",
+      "mediaType": "application/json"
+    },
+    "id": "b56215dc-60c3-11e7-6adb-ede500000013",
+    "accountId": "0af94520-54f7-11e7-6adb-ede500000001",
+    "name": "Связаться",
+    "color": 34617,
+    "stateType": "Regular",
+    "entityType": "task"
+  }
+]

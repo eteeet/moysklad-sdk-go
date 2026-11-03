@@ -85,6 +85,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/specialpricediscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/store"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
+	"github.com/eteeet/moysklad-sdk-go/entity/task"
 	"github.com/eteeet/moysklad-sdk-go/entity/taxrate"
 	"github.com/eteeet/moysklad-sdk-go/entity/thing"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
@@ -234,6 +235,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("task", task.NewService, (*task.Service).Get),
 		getCase("retireorder", retireorder.NewService, (*retireorder.Service).Get),
 		getCase("emissionorder", emissionorder.NewService, (*emissionorder.Service).Get),
 		getCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).Get),
@@ -319,6 +321,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("task", task.NewService, (*task.Service).Create),
+		updateCase("task", task.NewService, (*task.Service).Update),
 		createCase("retireorder", retireorder.NewService, (*retireorder.Service).Create),
 		updateCase("retireorder", retireorder.NewService, (*retireorder.Service).Update),
 		createCase("emissionorder", emissionorder.NewService, (*emissionorder.Service).Create),
@@ -658,6 +662,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("task", task.NewService, (*task.Service).Get, (*task.Service).Create, (*task.Service).Update, (*task.Service).List)...)
 	cases = append(cases, localCases("retireorder", retireorder.NewService, (*retireorder.Service).Get, (*retireorder.Service).Create, (*retireorder.Service).Update, (*retireorder.Service).List)...)
 	cases = append(cases, localCases("emissionorder", emissionorder.NewService, (*emissionorder.Service).Get, (*emissionorder.Service).Create, (*emissionorder.Service).Update, (*emissionorder.Service).List)...)
 	cases = append(cases, localCases("webhookstock", webhookstock.NewService, (*webhookstock.Service).Get, (*webhookstock.Service).Create, (*webhookstock.Service).Update, (*webhookstock.Service).List)...)
@@ -845,7 +850,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 67*4+24+3+8+1+6 {
+	if len(cases) != 68*4+24+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

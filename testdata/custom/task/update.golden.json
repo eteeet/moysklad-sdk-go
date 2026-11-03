@@ -1,0 +1,14 @@
+{
+  "description": "Уточнить контактные лица",
+  "done": true,
+  "dueToDate": null,
+  "agent": null,
+  "operation": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/supply/7eb5b552-8aa3-11e8-7210-075e000000f1",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/supply/metadata",
+      "type": "supply",
+      "mediaType": "application/json"
+    }
+  }
+}

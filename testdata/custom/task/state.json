@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/task/metadata/states/6262b270-60c3-11e7-6adb-ede50000000d",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/task/metadata",
+    "type": "state",
+    "mediaType": "application/json"
+  },
+  "id": "6262b270-60c3-11e7-6adb-ede50000000d",
+  "accountId": "0af94520-54f7-11e7-6adb-ede500000001",
+  "name": "Встреча",
+  "color": 69446,
+  "stateType": "Regular",
+  "entityType": "task"
+}
