@@ -44,7 +44,52 @@ func CreateMany[T, C any](ctx context.Context, client *transport.Client, entity 
 // UpdateMany — один POST entity/{entity}: каждый элемент — meta объекта по ID и поля Request.
 // До запроса проверяются только UUID и непустой Request; остальные проверки Update — на сервере.
 func UpdateMany[T, U any](ctx context.Context, client *transport.Client, entity string, items []batch.Update[U], opts []transport.RequestOption) ([]batch.Result[T], error) {
-	operation := "update many " + entity
+	return updateMany[T](ctx, client, "update many "+entity, "entity/"+entity, items, func(id string) model.Meta {
+		return objectMeta(client, entity, id)
+	}, opts)
+}
+
+// CreateManyNested — CreateMany вложенной коллекции: один POST endpoint
+// (entity/{entity}/{id}/{collection}) с массивом новых объектов.
+func CreateManyNested[T, C any](ctx context.Context, client *transport.Client, operation, endpoint string, items []C, opts []transport.RequestOption) ([]batch.Result[T], error) {
+	if err := checkCount(len(items)); err != nil {
+		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
+	}
+	return post[batch.Result[T]](ctx, client, operation, endpoint, items, len(items), opts)
+}
+
+// UpdateManyNested — UpdateMany вложенной коллекции endpoint: meta элемента — href
+// endpoint/{id} и metaType без metadataHref, как в примерах источника.
+func UpdateManyNested[T, U any](ctx context.Context, client *transport.Client, operation, endpoint string, metaType model.MetaType, items []batch.Update[U], opts []transport.RequestOption) ([]batch.Result[T], error) {
+	return updateMany[T](ctx, client, operation, endpoint, items, func(id string) model.Meta {
+		return nestedMeta(client, endpoint, metaType, id)
+	}, opts)
+}
+
+// DeleteManyNested — один POST endpoint/delete с meta вложенных объектов по ids.
+func DeleteManyNested(ctx context.Context, client *transport.Client, operation, endpoint string, metaType model.MetaType, ids []string, opts []transport.RequestOption) ([]batch.Deleted, error) {
+	if err := checkCount(len(ids)); err != nil {
+		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
+	}
+	type item struct {
+		Meta model.Meta `json:"meta"`
+	}
+	body := make([]item, len(ids))
+	for i, id := range ids {
+		if !validID(id) {
+			return nil, fmt.Errorf("moysklad: %s: ids[%d]: id must be a UUID", operation, i)
+		}
+		body[i] = item{nestedMeta(client, endpoint, metaType, id)}
+	}
+	return post[batch.Deleted](ctx, client, operation, endpoint+"/delete", body, len(ids), opts)
+}
+
+func nestedMeta(client *transport.Client, endpoint string, metaType model.MetaType, id string) model.Meta {
+	return model.Meta{Href: client.Href(endpoint + "/" + id), Type: metaType, MediaType: "application/json"}
+}
+
+func updateMany[T, U any](ctx context.Context, client *transport.Client, operation, endpoint string, items []batch.Update[U],
+	metaOf func(id string) model.Meta, opts []transport.RequestOption) ([]batch.Result[T], error) {
 	if err := checkCount(len(items)); err != nil {
 		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
 	}
@@ -63,7 +108,7 @@ func UpdateMany[T, U any](ctx context.Context, client *transport.Client, entity 
 		if len(fields) < 2 || fields[0] != '{' {
 			return nil, fmt.Errorf("moysklad: %s: items[%d]: request must encode to a JSON object", operation, i)
 		}
-		meta, err := json.Marshal(objectMeta(client, entity, item.ID))
+		meta, err := json.Marshal(metaOf(item.ID))
 		if err != nil {
 			return nil, fmt.Errorf("moysklad: %s: items[%d]: %w", operation, i, err)
 		}
@@ -76,7 +121,7 @@ func UpdateMany[T, U any](ctx context.Context, client *transport.Client, entity 
 		}
 		body[i] = object
 	}
-	return post[batch.Result[T]](ctx, client, operation, "entity/"+entity, body, len(items), opts)
+	return post[batch.Result[T]](ctx, client, operation, endpoint, body, len(items), opts)
 }
 
 // DeleteMany — один POST entity/{entity}/delete с массивом meta объектов по ids.

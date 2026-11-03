@@ -1,0 +1,19 @@
+{
+  "name": "Склад SDK",
+  "description": "",
+  "code": "sdk-store",
+  "externalCode": "SDK-EXT",
+  "archived": false,
+  "shared": true,
+  "pathName": "Основной склад",
+  "address": "",
+  "addressFull": {
+    "city": "Москва",
+    "street": "Ленинские горы",
+    "country": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/country/40e6f69a-991c-4fbc-8be9-d0d906cad180", "type": "country", "mediaType": "application/json"}}
+  },
+  "attributes": [],
+  "parent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/store/faf3ff5b-2e58-11e6-8a84-bae500000050", "type": "store", "mediaType": "application/json"}},
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "type": "employee", "mediaType": "application/json"}},
+  "group": null
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Склад3",
+  "pathName": "Не Основной склад",
+  "address": "",
+  "archived": true,
+  "parent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/store/faf3ff5b-2e58-11e6-8a84-bae500000050", "type": "store", "mediaType": "application/json"}}
+}
