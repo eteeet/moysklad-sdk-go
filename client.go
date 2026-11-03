@@ -33,6 +33,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/organizationbranch"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentin"
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
+	"github.com/eteeet/moysklad-sdk-go/entity/personaldiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -260,6 +261,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// PersonalDiscount — Персональные скидки.
+func (e EntityGroup) PersonalDiscount() *personaldiscount.Service {
+	return must(personaldiscount.NewService(e.transport))
+}
 
 // AccumulationDiscount — Накопительные скидки.
 func (e EntityGroup) AccumulationDiscount() *accumulationdiscount.Service {
