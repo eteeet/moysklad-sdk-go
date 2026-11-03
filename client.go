@@ -84,6 +84,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	"github.com/eteeet/moysklad-sdk-go/entity/webhook"
 	"github.com/eteeet/moysklad-sdk-go/entity/webhookstock"
+	"github.com/eteeet/moysklad-sdk-go/eventfeed"
 	"github.com/eteeet/moysklad-sdk-go/files"
 	"github.com/eteeet/moysklad-sdk-go/images"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
@@ -198,6 +199,9 @@ func (e EntityGroup) NamedFilter() *namedfilter.Service {
 
 // Files — файлы операций, документов и других сущностей (entity/<type>/<id>/files).
 func (e EntityGroup) Files() *files.Service { return must(files.NewService(e.transport)) }
+
+// EventFeed — лента событий документов entity/<type>/<id>/notes.
+func (e EntityGroup) EventFeed() *eventfeed.Service { return must(eventfeed.NewService(e.transport)) }
 
 // Images — изображения товара, комплекта, модификации и карточки контента.
 func (e EntityGroup) Images() *images.Service { return must(images.NewService(e.transport)) }
