@@ -1,0 +1,10 @@
+{
+  "name": "Партнер 3",
+  "code": "partner3",
+  "description": "Описание",
+  "externalCode": "5434665867876",
+  "shared": false,
+  "attributes": [],
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/9bc5de98-79f2-11e8-1a0d-4e0d0000002b", "type": "employee", "mediaType": "application/json"}},
+  "group": null
+}
