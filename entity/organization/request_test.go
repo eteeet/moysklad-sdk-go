@@ -157,11 +157,52 @@ func TestRequestZeroAttributeValue(t *testing.T) {
 	}
 }
 
+// Пример создания юрлица источника: подписи и печать — filename и content (Base64), НДС для
+// авансов и настройки НДС.
+func TestRequestVatAndImages(t *testing.T) {
+	png := []byte{0x89, 'P', 'N', 'G'}
+	for _, codec := range codecs {
+		t.Run(codec.name, func(t *testing.T) {
+			data, err := codec.marshal(organization.UpdateRequest{
+				CompanyVat:        model.Value(organization.CompanyVatRequest{UseCompanyVat: model.Value(true), DefaultCompanyVat: model.Value(0), DefaultCompanyVatEnabled: model.Value(false)}),
+				AdvancePaymentVat: model.Value(20.0),
+				DirectorSign:      model.Value(organization.ImageRequest{Filename: "directorSignTest.png", Content: png}),
+				ChiefAccountSign:  model.Null[organization.ImageRequest](),
+				Stamp:             model.Value(organization.ImageRequest{Filename: "stampTest.png", Content: []byte{}}),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertJSONEqual(t, data, []byte(`{"companyVat__ru":{"useCompanyVat":true,"defaultCompanyVat":0,"defaultCompanyVatEnabled":false},"advancePaymentVat":20,"directorSign":{"filename":"directorSignTest.png","content":"iVBORw=="},"chiefAccountSign":null,"stamp":{"filename":"stampTest.png","content":""}}`))
+		})
+	}
+}
+
+// Ответ источника с подписями: meta файла, размер, миниатюра; «без НДС» — без defaultCompanyVat.
+func TestVatAndImagesResponse(t *testing.T) {
+	data := []byte(`{"payerVat":true,"companyVat__ru":{"useCompanyVat":true,"defaultCompanyVatEnabled":false},"advancePaymentVat":10.5,` +
+		`"directorSign":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/download/7da0feb5-e110-4021-a49f-35db4ae75f13","mediaType":"application/octet-stream"},` +
+		`"title":"directorSignTest","filename":"directorSignTest.png","size":70,"updated":"2020-09-23 07:37:26.417",` +
+		`"miniature":{"href":"https://api.moysklad.ru/api/remap/1.2/download/7da0feb5-e110-4021-a49f-35db4ae75f13?miniature=true","mediaType":"image/png","downloadHref":"https://miniature-prod.moysklad.ru/x"}}}`)
+	for _, codec := range codecs {
+		var got organization.Organization
+		if err := codec.unmarshal(data, &got); err != nil {
+			t.Fatal(err)
+		}
+		vat, sign := got.CompanyVat, got.DirectorSign
+		if vat == nil || !vat.UseCompanyVat || vat.DefaultCompanyVat != nil || vat.DefaultCompanyVatEnabled == nil || *vat.DefaultCompanyVatEnabled ||
+			got.AdvancePaymentVat != 10.5 || sign == nil || sign.Size != 70 || sign.Filename != "directorSignTest.png" || sign.Title != "directorSignTest" ||
+			sign.Meta.Href == "" || sign.Miniature == nil || sign.Miniature.DownloadHref == "" || sign.Updated.IsZero() || got.Stamp != nil {
+			t.Fatalf("%s: organization = %+v", codec.name, got)
+		}
+	}
+}
+
 func TestRequestReadOnlyAndDeferredFields(t *testing.T) {
 	for _, typ := range []reflect.Type{reflect.TypeFor[organization.CreateRequest](), reflect.TypeFor[organization.UpdateRequest]()} {
 		for _, field := range reflect.VisibleFields(typ) {
 			tag := strings.Split(field.Tag.Get("json"), ",")[0]
-			for _, forbidden := range []string{"meta", "id", "accountId", "created", "updated", "bonusPoints", "isEgaisEnable", "accounts", "mod__requisites__uz", "mod__requisites__kz", "companyVat__ru", "advancePaymentVat", "chiefAccountSign", "directorSign", "stamp", "fsrarId", "utmUrl"} {
+			for _, forbidden := range []string{"meta", "id", "accountId", "created", "updated", "bonusPoints", "isEgaisEnable", "accounts", "mod__requisites__uz", "mod__requisites__kz", "fsrarId", "utmUrl"} {
 				if tag == forbidden {
 					t.Errorf("%s contains %s", typ.Name(), forbidden)
 				}
