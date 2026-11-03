@@ -44,8 +44,9 @@ func TestSettingsFixtures(t *testing.T) {
 		if err := codec.Unmarshal(fixture(t, "user_settings.json"), &user); err != nil {
 			t.Fatal(err)
 		}
-		if user.Meta.Type != "usersettings" || user.DefaultCompany == nil || user.DefaultCompany.Meta.Href != "" ||
-			user.DefaultCustomerCounterparty == nil || user.DefaultPlace == nil || user.DefaultProject == nil || user.DefaultPurchaseCounterparty == nil ||
+		if user.Meta.Type != "usersettings" || user.DefaultCompany == nil || user.DefaultCompany.Href != "" || user.DefaultCompany.Type != "organization" ||
+			user.DefaultCustomerCounterparty == nil || !strings.HasSuffix(user.DefaultCustomerCounterparty.Href, "/counterparty/5f13f655-a419-11ea-ac12-000a00000073") ||
+			user.DefaultPlace == nil || user.DefaultPlace.Type != "store" || user.DefaultProject == nil || user.DefaultPurchaseCounterparty == nil ||
 			user.Locale != "ru_RU" || user.MailFooter != "подпись в письме" || user.FieldsPerRow != 3 || user.DefaultScreen != "importcustom" ||
 			user.PrintFormat != "pdf" || user.AutoShowReports {
 			t.Fatalf("%s: user = %+v", codec.Name, user)
@@ -60,8 +61,30 @@ func TestSettingsFixtures(t *testing.T) {
 	}
 }
 
+// Форма примера источника: ссылки — Meta без обёртки {"meta": …}.
+func TestUserSettingsBareMeta(t *testing.T) {
+	data := []byte(`{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/context/usersettings"},` +
+		`"defaultCompany":{"metadataHref":"https://api.moysklad.ru/api/remap/1.2/entity/organization/metadata","type":"organization","mediaType":"application/json"},` +
+		`"defaultPlace":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/store/5f13ac1b-a419-11ea-ac12-000a00000072","type":"store","mediaType":"application/json"}}`)
+	for _, codec := range documenttest.Codecs {
+		var got contexts.UserSettings
+		if err := codec.Unmarshal(data, &got); err != nil {
+			t.Fatal(err)
+		}
+		if got.DefaultCompany == nil || got.DefaultCompany.Href != "" || got.DefaultCompany.Type != "organization" ||
+			got.DefaultPlace == nil || got.DefaultPlace.Type != "store" || !strings.HasSuffix(got.DefaultPlace.Href, "5f13ac1b-a419-11ea-ac12-000a00000072") ||
+			got.DefaultProject != nil {
+			t.Fatalf("%s: settings = %+v", codec.Name, got)
+		}
+		var bad contexts.UserSettings
+		if err := codec.Unmarshal([]byte(`{"defaultPlace":"x"}`), &bad); err == nil {
+			t.Fatalf("%s: string reference accepted", codec.Name)
+		}
+	}
+}
+
 func TestSettingsRequestJSON(t *testing.T) {
-	store := model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/api/remap/1.2/entity/store/5f13ac1b-a419-11ea-ac12-000a00000072", Type: "store", MediaType: "application/json"}}
+	store := model.Meta{Href: "https://api.moysklad.ru/api/remap/1.2/entity/store/5f13ac1b-a419-11ea-ac12-000a00000072", Type: "store", MediaType: "application/json"}
 	for _, codec := range documenttest.Codecs {
 		for _, tc := range []struct {
 			name  string
@@ -70,9 +93,9 @@ func TestSettingsRequestJSON(t *testing.T) {
 		}{
 			{"company", contexts.CompanySettingsRequest{DiscountStrategy: model.Value("byPriority"), UseRecycleBin: model.Value(false), CompanyAddress: model.Value("")},
 				`{"discountStrategy":"byPriority","useRecycleBin":false,"companyAddress":""}`},
-			{"user", contexts.UserSettingsRequest{DefaultPlace: model.Value(store), DefaultProject: model.Null[model.Reference](), FieldsPerRow: model.Value(0),
+			{"user", contexts.UserSettingsRequest{DefaultPlace: model.Value(store), DefaultProject: model.Null[model.Meta](), FieldsPerRow: model.Value(0),
 				Locale: model.Value("en_US"), AutoShowReports: model.Value(false)},
-				`{"defaultPlace":{"meta":{"href":"` + store.Meta.Href + `","type":"store","mediaType":"application/json"}},"defaultProject":null,"fieldsPerRow":0,"locale":"en_US","autoShowReports":false}`},
+				`{"defaultPlace":{"href":"` + store.Href + `","type":"store","mediaType":"application/json"},"defaultProject":null,"fieldsPerRow":0,"locale":"en_US","autoShowReports":false}`},
 		} {
 			got, err := codec.Marshal(tc.input)
 			if err != nil {

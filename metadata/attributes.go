@@ -91,6 +91,11 @@ func (s *Service) CreateManyAttributes(ctx context.Context, entityType string, i
 	if !entityTypePattern.MatchString(entityType) {
 		return nil, fmt.Errorf("moysklad: create many attributes: entity type %q must match [a-z][a-z0-9]*", entityType)
 	}
+	for i, item := range items {
+		if item.Name == "" || item.Type == "" {
+			return nil, fmt.Errorf("moysklad: create many %s attributes: items[%d]: name and type are required", entityType, i)
+		}
+	}
 	return write.CreateManyNested[Attribute](ctx, s.client, "create many "+entityType+" attributes", "entity/"+entityType+"/metadata/attributes", items, opts)
 }
 

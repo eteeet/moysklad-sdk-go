@@ -93,6 +93,20 @@ func TestAccessHTTP(t *testing.T) {
 	}
 }
 
+func TestAccessJSON(t *testing.T) {
+	for _, codec := range documenttest.Codecs {
+		got, err := codec.Marshal(employee.ActivateRequest{Login: model.Value(""), Group: model.Null[model.Reference]()})
+		if err != nil {
+			t.Fatal(err)
+		}
+		documenttest.JSONEqual(t, got, []byte(`{"login":"","group":null}`))
+		var a employee.Activation
+		if err := codec.Unmarshal([]byte(`{"mailActivationRequired":true,"future":1}`), &a); err != nil || !a.MailActivationRequired {
+			t.Fatalf("%s: activation = %+v, err = %v", codec.Name, a, err)
+		}
+	}
+}
+
 func TestAccessLocalErrors(t *testing.T) {
 	documenttest.LocalErrors(t, func(ctx context.Context, c *transport.Client) (*employee.Activation, error) {
 		s, _ := employee.NewService(c)

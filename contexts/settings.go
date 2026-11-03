@@ -2,6 +2,7 @@ package contexts
 
 import (
 	"context"
+	"encoding/json/v2"
 	"fmt"
 	"net/http"
 
@@ -54,38 +55,59 @@ func (s *Service) UpdateCompanySettings(ctx context.Context, input CompanySettin
 }
 
 // UserSettings — настройки пользователя. Ссылки Default* — значения по умолчанию в документах;
-// meta без href означает «не задано». Locale (ru_RU, en_US), DefaultScreen и PrintFormat —
+// без href — «не задано». Locale (ru_RU, en_US), DefaultScreen и PrintFormat —
 // открытые enum. MailFooter таблица помечает Boolean, но пример и фикстура источника передают
 // текст подписи: SDK следует данным — string.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/usersettings#2-nastrojki-polzovatelya
 type UserSettings struct {
-	Meta                        model.Meta       `json:"meta"`
-	DefaultCompany              *model.Reference `json:"defaultCompany,omitzero"`
-	DefaultCustomerCounterparty *model.Reference `json:"defaultCustomerCounterparty,omitzero"`
-	DefaultPurchaseCounterparty *model.Reference `json:"defaultPurchaseCounterparty,omitzero"`
-	DefaultProject              *model.Reference `json:"defaultProject,omitzero"`
-	DefaultPlace                *model.Reference `json:"defaultPlace,omitzero"`
-	Locale                      string           `json:"locale"`
-	MailFooter                  string           `json:"mailFooter"`
-	FieldsPerRow                int              `json:"fieldsPerRow"`
-	DefaultScreen               string           `json:"defaultScreen"`
-	PrintFormat                 string           `json:"printFormat"`
-	AutoShowReports             bool             `json:"autoShowReports"`
+	Meta                        model.Meta   `json:"meta"`
+	DefaultCompany              *SettingsRef `json:"defaultCompany,omitzero"`
+	DefaultCustomerCounterparty *SettingsRef `json:"defaultCustomerCounterparty,omitzero"`
+	DefaultPurchaseCounterparty *SettingsRef `json:"defaultPurchaseCounterparty,omitzero"`
+	DefaultProject              *SettingsRef `json:"defaultProject,omitzero"`
+	DefaultPlace                *SettingsRef `json:"defaultPlace,omitzero"`
+	Locale                      string       `json:"locale"`
+	MailFooter                  string       `json:"mailFooter"`
+	FieldsPerRow                int          `json:"fieldsPerRow"`
+	DefaultScreen               string       `json:"defaultScreen"`
+	PrintFormat                 string       `json:"printFormat"`
+	AutoShowReports             bool         `json:"autoShowReports"`
 }
 
+// UserSettingsRequest: Default* — Meta без обёртки {"meta": …}, как в примере изменения источника.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/usersettings#3-izmenit-nastrojki-polzovatelya
 type UserSettingsRequest struct {
-	DefaultCompany              model.Field[model.Reference] `json:"defaultCompany,omitzero"`
-	DefaultCustomerCounterparty model.Field[model.Reference] `json:"defaultCustomerCounterparty,omitzero"`
-	DefaultPurchaseCounterparty model.Field[model.Reference] `json:"defaultPurchaseCounterparty,omitzero"`
-	DefaultProject              model.Field[model.Reference] `json:"defaultProject,omitzero"`
-	DefaultPlace                model.Field[model.Reference] `json:"defaultPlace,omitzero"`
-	Locale                      model.Field[string]          `json:"locale,omitzero"`
-	MailFooter                  model.Field[string]          `json:"mailFooter,omitzero"`
-	FieldsPerRow                model.Field[int]             `json:"fieldsPerRow,omitzero"`
-	DefaultScreen               model.Field[string]          `json:"defaultScreen,omitzero"`
-	PrintFormat                 model.Field[string]          `json:"printFormat,omitzero"`
-	AutoShowReports             model.Field[bool]            `json:"autoShowReports,omitzero"`
+	DefaultCompany              model.Field[model.Meta] `json:"defaultCompany,omitzero"`
+	DefaultCustomerCounterparty model.Field[model.Meta] `json:"defaultCustomerCounterparty,omitzero"`
+	DefaultPurchaseCounterparty model.Field[model.Meta] `json:"defaultPurchaseCounterparty,omitzero"`
+	DefaultProject              model.Field[model.Meta] `json:"defaultProject,omitzero"`
+	DefaultPlace                model.Field[model.Meta] `json:"defaultPlace,omitzero"`
+	Locale                      model.Field[string]     `json:"locale,omitzero"`
+	MailFooter                  model.Field[string]     `json:"mailFooter,omitzero"`
+	FieldsPerRow                model.Field[int]        `json:"fieldsPerRow,omitzero"`
+	DefaultScreen               model.Field[string]     `json:"defaultScreen,omitzero"`
+	PrintFormat                 model.Field[string]     `json:"printFormat,omitzero"`
+	AutoShowReports             model.Field[bool]       `json:"autoShowReports,omitzero"`
+}
+
+// SettingsRef — ссылка настроек пользователя. Примеры источника передают Meta без обёртки,
+// фикстура OpenAPI — {"meta": …}: чтение принимает обе формы, запись — форма источника.
+type SettingsRef struct {
+	model.Meta
+}
+
+func (r *SettingsRef) UnmarshalJSON(data []byte) error {
+	var wrapped struct {
+		Meta *model.Meta `json:"meta"`
+	}
+	if err := json.Unmarshal(data, &wrapped); err != nil {
+		return err
+	}
+	if wrapped.Meta != nil {
+		r.Meta = *wrapped.Meta
+		return nil
+	}
+	return json.Unmarshal(data, &r.Meta)
 }
 
 // UserSettings — GET context/usersettings (настройки пользователя токена).

@@ -12,7 +12,8 @@ import (
 
 // ComponentAddRequest — новый компонент комплекта: assortment обязателен (проверяется до
 // запроса), quantity передаётся всегда, как в примере источника; лимит 50 компонентов проверяет
-// сервер.
+// сервер. Таблица компонента помечает quantity «только для чтения», но добавление и изменение
+// компонента его задают — SDK следует этим методам.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/bundle#3-dobavit-komponent-komplekta
 type ComponentAddRequest struct {
 	Assortment model.Reference `json:"assortment"`

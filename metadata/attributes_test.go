@@ -169,6 +169,10 @@ func TestAttributeValidation(t *testing.T) {
 			_, err := s.CreateManyAttributes(ctx, "x/y", []metadata.AttributeCreateRequest{ok}, o...)
 			return err
 		},
+		"create many no type": func(o ...transport.RequestOption) error {
+			_, err := s.CreateManyAttributes(ctx, "product", []metadata.AttributeCreateRequest{ok, {Name: "n"}}, o...)
+			return err
+		},
 		"create many empty": func(o ...transport.RequestOption) error {
 			_, err := s.CreateManyAttributes(ctx, "product", nil, o...)
 			return err

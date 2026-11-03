@@ -98,7 +98,7 @@ func (s *Service) state(ctx context.Context, operation, method, endpoint string,
 
 // CreateManyStates и UpdateManyStates — один POST entity/{type}/metadata/states с массивом:
 // элемент без meta создаёт статус, с meta (тип state) — изменяет. До запроса проверяются только
-// тип сущности, размер массива, UUID и непустой запрос; поля — сервер. Правила ответа — пакет
+// тип сущности, размер массива, UUID и непустой запрос; поля — сервер (nil Color уходит как null). Правила ответа — пакет
 // batch; повторов нет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/states#3-massovoe-sozdanie-i-obnovlenie-statusov
 func (s *Service) CreateManyStates(ctx context.Context, entityType string, items []StateCreateRequest, opts ...transport.RequestOption) ([]batch.Result[State], error) {

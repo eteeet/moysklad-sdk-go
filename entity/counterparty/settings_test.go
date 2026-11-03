@@ -16,6 +16,17 @@ func TestSettingsHTTP(t *testing.T) {
 		`"uniqueCodeRules":{"checkUniqueCode":true,"fillUniqueCode":true},"createShared":true}`
 	request := counterparty.SettingsRequest{UniqueCodeRules: model.Value(model.UniqueCodeRulesRequest{CheckUniqueCode: model.Value(true), FillUniqueCode: model.Value(true)}),
 		CreateShared: model.Value(false)}
+	for _, codec := range documenttest.Codecs {
+		data, err := codec.Marshal(request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		documenttest.JSONEqual(t, data, []byte(`{"uniqueCodeRules":{"checkUniqueCode":true,"fillUniqueCode":true},"createShared":false}`))
+		var decoded counterparty.Settings
+		if err := codec.Unmarshal([]byte(response), &decoded); err != nil || decoded.Meta.Type != "counterpartysettings" || !decoded.CreateShared {
+			t.Fatalf("%s: settings = %+v, err = %v", codec.Name, decoded, err)
+		}
+	}
 	check := func(got *counterparty.Settings) {
 		if got.Meta.Type != "counterpartysettings" || !got.UniqueCodeRules.CheckUniqueCode || !got.UniqueCodeRules.FillUniqueCode || !got.CreateShared {
 			t.Fatalf("settings = %+v", got)

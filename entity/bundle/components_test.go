@@ -68,6 +68,25 @@ func TestComponentMutationsHTTP(t *testing.T) {
 	}
 }
 
+func TestComponentRequestJSON(t *testing.T) {
+	product := model.Reference{Meta: model.Meta{Href: productURL, Type: "product"}}
+	for _, codec := range documenttest.Codecs {
+		for _, tc := range []struct {
+			input any
+			want  string
+		}{
+			{bundle.ComponentAddRequest{Assortment: product, Quantity: 0.5}, `{"assortment":{"meta":{"href":"` + productURL + `","type":"product"}},"quantity":0.5}`},
+			{bundle.ComponentUpdateRequest{Quantity: model.Value(0.0), Assortment: model.Null[model.Reference]()}, `{"assortment":null,"quantity":0}`},
+		} {
+			got, err := codec.Marshal(tc.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			documenttest.JSONEqual(t, got, []byte(tc.want))
+		}
+	}
+}
+
 func TestComponentDelete(t *testing.T) {
 	var got []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
