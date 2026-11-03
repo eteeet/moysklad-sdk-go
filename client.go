@@ -27,6 +27,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
 	"github.com/eteeet/moysklad-sdk-go/entity/group"
 	"github.com/eteeet/moysklad-sdk-go/entity/internalorder"
+	"github.com/eteeet/moysklad-sdk-go/entity/inventory"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoicein"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoiceout"
 	"github.com/eteeet/moysklad-sdk-go/entity/loss"
@@ -274,6 +275,9 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// Inventory — инвентаризации с позициями, шаблоном и корзиной.
+func (e EntityGroup) Inventory() *inventory.Service { return must(inventory.NewService(e.transport)) }
 
 // InternalOrder — внутренние заказы с позициями, шаблоном и корзиной.
 func (e EntityGroup) InternalOrder() *internalorder.Service {
