@@ -23,7 +23,12 @@ report, err := c.Report().Turnover().All(ctx, turnover.AllOptions{...})
 | `c.Entity().<Сущность>()` | сервис пакета `entity/<сущность>`: Product, CustomerOrder, Assortment, … UOM; `Service()` возвращает `*service.Client` |
 | `c.Entity().Metadata()` | `metadata.Service`: метаданные сущностей и статусы (CreateState/UpdateState/DeleteState) |
 | `c.Entity().Files()` | `files.Service`: файлы объектов |
+| `c.Entity().EventFeed()` | `eventfeed.Service`: лента событий документов ([eventfeed.md](eventfeed.md)) |
+| `c.Entity().NamedFilter()` | `namedfilter.Service`: сохранённые фильтры ([namedfilter.md](namedfilter.md)) |
 | `c.Report().Turnover()` | `turnover.Service` |
+| `c.Report().Stock()`, `ByOperations()`, `Dashboard()`, `Counterparty()`, `Money()`, `Profit()`, `Sales()` | сервисы `report/*` ([README](../README.md)) |
+| `c.Notification()` | `notification.Service`: лента и настройки уведомлений ([notification.md](notification.md)) |
+| `c.Print()`, `c.Publication()` | `print.Service`, `publication.Service` ([print.md](print.md), [publication.md](publication.md)) |
 | `c.Context()` | `contexts.Service`: `Employee(ctx)`, `Application(ctx)` |
 | `c.Audit()`, `c.Security()` | `audit.Service`, `security.Service` |
 | `c.Async()` | `async.Service`: асинхронные задачи ([write-async.md](write-async.md)) |

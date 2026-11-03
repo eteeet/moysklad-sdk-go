@@ -78,7 +78,7 @@
 - [x] Вложенные коллекции справочников: зоны и ячейки склада, счета, контакты и события контрагента,
   счета юрлица, компоненты комплекта (с мутациями), кассиры, элементы пользовательского справочника
 - [x] Delete и массовое удаление (POST …/delete); у ассортимента — по meta разных типов
-- [x] Удаление в корзину: Trash у 35 документов ([documents-extra](documents-extra.md))
+- [x] Удаление в корзину: Trash у 37 документов ([documents-extra](documents-extra.md))
 - [x] Массовое создание/обновление (POST массивом): CreateMany/UpdateMany по разделам источника
 - [x] Отдельные операции позиций: Get, Create, Update, Delete, массовое удаление
 - [x] Позиции: pack, things, slot, trackingCodes, gtd, declaration, остатки (fields=stock)
@@ -86,10 +86,10 @@
 - [x] Автозаполнение: POST wizard/{тип} — пакет wizard
 - [x] Печать (export без следования 303), публикации, шаблоны печатных форм ([print](print.md), [publication](publication.md))
 - [x] Файлы: список, загрузка base64, скачивание по downloadHref; изображения — пакет images
-- [x] Metadata: entity/{type}/metadata, states (customtemplate/embeddedtemplate — нет)
+- [x] Metadata: entity/{type}/metadata, states; шаблоны customtemplate/embeddedtemplate — пакет print
 - [x] Доп. поля: CRUD описаний и массовые операции, тип справочник (customEntityMeta)
 - [x] Настройки справочников, компании и пользователя (GET/частичный PUT)
-- [x] Async: ListAsync counterparty/assortment, статус, список, ожидание, результат, отмена
+- [x] Async: ListAsync counterparty/assortment, *Async отчётов, статус, список, ожидание, результат, отмена
 - [x] Серверные решения: context/application
 
 ## Качество и выпуск

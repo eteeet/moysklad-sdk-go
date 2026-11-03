@@ -12,8 +12,9 @@ err = c.Entity().Metadata().DeleteState(ctx, "customerorder", stateID)
 err = c.Entity().Files().Delete(ctx, "product", productID, fileID)
 ```
 
-- `Delete(ctx, id, opts...)` есть у всех сервисов `entity/*`, кроме assortment и pricetype: у
-  них раздела «Удалить» в источнике нет. Роль — пользовательская (`entity/role`).
+- `Delete(ctx, id, opts...)` есть у всех сервисов `entity/*`, кроме assortment, pricetype, region,
+  saleplatform, thing, application, emissionorder и retireorder: у них раздела «Удалить» в
+  источнике нет (TestDeleteOnlyWhereDocumented). Роль — пользовательская (`entity/role`).
 - Один `DELETE`, тела нет; успех — 200 или 204 (примеры источника — 200 с пустым телом). Неверный
   UUID отклоняется до запроса; права и связанные объекты проверяет сервер (APIError).
 - Delete — не корзина: удаление документа в корзину — `Trash` ([documents-extra](documents-extra.md));
@@ -67,7 +68,9 @@ for _, r := range res {
 | assortment | — | — | да, по `model.Meta` разных типов |
 | discount | — | да (округление копеек) | — |
 | group, customentity, region, saleplatform, thing, accumulationdiscount, personaldiscount, specialpricediscount, prepayment, prepaymentreturn | — | — | — |
-| остальные 57 сервисов `entity/*` | да | да | да |
+| emissionorder, retireorder | да | да | — |
+| application | — | — | — |
+| остальные 60 сервисов `entity/*` | да | да | да |
 
 Раздел «Массовое обновление Сотрудников» называет только обновление, хотя второй элемент его
 примера — без meta (создание); SDK следует заголовку. Массовые операции вложенных коллекций (зоны и ячейки склада, счета,
@@ -84,9 +87,10 @@ if done.State == async.StateDone {
 }
 ```
 
-- Создают задачи только `ListAsync` контрагентов и ассортимента (новый endpoint, с beta-тегом):
-  из запросов SDK источник разрешает async лишь им. Async-отчёты (остатки, прибыльность, деньги,
-  показатели) в SDK не входят. Limit и Offset с async источник запрещает — ошибка до запроса.
+- Создают задачи `ListAsync` контрагентов и ассортимента (новый endpoint, с beta-тегом) и методы
+  `*Async` отчётов из списка `_async.md`: остатки, прибыльность, деньги, продажи и заказы,
+  показатели контрагентов (кроме выборочных, POST) и dashboard — таблицы в docs/report-*.md.
+  Limit и Offset с async источник запрещает — ошибка до запроса.
 - Создание задачи — побочный эффект и у GET: `async=true` transport не повторяет. Ответ 202 даёт
   `async.Submitted`: ID, адрес статуса (Content-Location, …/async/{id}) и результата (Location,
   …/async/{id}/result); другой ответ — ошибка. После сбоя сети или отмены ctx задача могла

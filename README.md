@@ -35,6 +35,20 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 Скачивание файлов (`transport.Client.Download`), файлы объектов (`files`) и отчёт «Обороты»
 (`report/turnover`): [docs/files-reports.md](docs/files-reports.md).
 
+Отчёты `c.Report()`: остатки ([report/stock](docs/report-stock.md)), по документам
+([byoperations](docs/report-byoperations.md)), показатели ([dashboard](docs/report-dashboard.md)),
+показатели контрагентов ([counterparty](docs/report-counterparty.md)), деньги
+([money](docs/report-money.md)), прибыльность ([profit](docs/report-profit.md)), продажи и заказы
+([sales](docs/report-sales.md)). Каждый отчёт — своя форма ответа; одна отправка без автообхода.
+
+Печать и публикации: шаблоны печатных форм, печать документов, этикеток и ценников
+([`c.Print()`](docs/print.md), 303/202 с Location без скрытого GET), публикации
+([`c.Publication()`](docs/publication.md)). Интеграции и служебное: вебхуки
+([webhook](docs/webhook.md), [webhookstock](docs/webhookstock.md)), уведомления
+([`c.Notification()`](docs/notification.md)), лента событий документов
+([eventfeed](docs/eventfeed.md)), задачи ([task](docs/task.md)), сохранённые фильтры
+([namedfilter](docs/namedfilter.md)), серверные решения ([application](docs/application.md)).
+
 Склады, группы товаров, отделы, проекты, договоры, регионы, каналы и площадки продаж,
 подразделения юрлиц, серийные номера, пользовательские справочники; счета, контакты и события
 контрагента, счета юрлица; настройки справочников, компании и пользователя; CRUD описаний доп.
@@ -47,7 +61,7 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 транспортные поля отгрузки и автозаполнение (`wizard`): [docs/documents-extra.md](docs/documents-extra.md).
 
 Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) и асинхронные задачи
-(`async`, `ListAsync` контрагентов и ассортимента): [docs/write-async.md](docs/write-async.md).
+(`async`, `ListAsync` контрагентов и ассортимента, `*Async` отчётов): [docs/write-async.md](docs/write-async.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
 
 ## Справочники
@@ -115,6 +129,8 @@ Get/Create/Update документов и типизированные entity.Ge
 | `entity/retaildrawercashin` | `Get/List/Create/Update`, `New`, `Trash` | [RetailDrawerCashIn](docs/retaildrawercashin.md) |
 | `entity/retaildrawercashout` | `Get/List/Create/Update`, `New`, `Trash` | [RetailDrawerCashOut](docs/retaildrawercashout.md) |
 | `entity/payroll` | `Get/List/Create/Update`, позиции, `Trash` | [Payroll](docs/payroll.md) |
+| `entity/emissionorder` | `Get/List/Create/Update`, массовые без удаления, позиции, `Trash` | [EmissionOrder](docs/emissionorder.md) |
+| `entity/retireorder` | `Get/List/Create/Update`, массовые без удаления, позиции, `Trash` | [RetireOrder](docs/retireorder.md) |
 
 ## Производство
 
@@ -131,7 +147,7 @@ Get/Create/Update документов и типизированные entity.Ge
 
 Строки производства — собственные формы каждого ресурса, не `positions.Position`; операции строк —
 только те, что описывает источник (например, у заказа на производство нет создания отдельной позиции).
-Metadata техкарт, техопераций и заданий — общий пакет `metadata` (`c.Metadata().Get(ctx, "processing")`).
+Metadata техкарт, техопераций и заданий — общий пакет `metadata` (`c.Entity().Metadata().Get(ctx, "processing")`).
 
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,
