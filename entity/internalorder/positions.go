@@ -8,8 +8,8 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
-// Отдельные операции со строками: entity/internalorder/{id}/positions[/{positionID}]. Это
-// единственный способ записи строк: positions в таблице документа помечен readonly. Повторов нет.
+// Отдельные операции со строками: entity/internalorder/{id}/positions[/{positionID}]. Строки
+// можно передать и в теле Create/Update (утверждённое исключение для readonly positions). Повторов нет.
 
 func (s *Service) rows() *positions.Service[Position] {
 	// NewService падает только на nil client и неверном коде документа — здесь их нет.

@@ -9,8 +9,9 @@ import (
 // commissionPeriodStart, commissionPeriodEnd и name — name помечен «Необходимо при создании» в
 // таблице атрибутов, хотя список обязательных полей раздела «Создать» его не называет.
 // Счета organizationAccount/agentAccount нужны, если у стороны несколько счетов (проверяет сервер).
-// Таблица помечает attributes, shared, positions и syncId «Только для чтения», хотя примеры
-// записи передают первые три, — SDK их не пишет; строки добавляет CreatePositions.
+// Таблица помечает attributes, shared, positions и syncId «Только для чтения». Пример Create передаёт
+// первые три: SDK их пишет — исключение из правила «пометка таблицы сильнее примеров» утверждено
+// пользователем; syncId не пишется. Positions — не больше 1000 строк; дальше — CreatePositions.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/commissionreportout#3-sozdat-vydannyj-otchet-komissionera
 type CreateRequest struct {
 	Organization          model.Reference                        `json:"organization"`
@@ -36,10 +37,15 @@ type CreateRequest struct {
 	VATIncluded           model.Field[bool]                      `json:"vatIncluded,omitzero"`
 	RewardType            model.Field[string]                    `json:"rewardType,omitzero"`
 	RewardPercent         model.Field[int]                       `json:"rewardPercent,omitzero"`
+	Shared                model.Field[bool]                      `json:"shared,omitzero"`
 	Payments              model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	Attributes            model.Field[[]model.Attribute]         `json:"attributes,omitzero"`
+	Positions             model.Field[[]PositionRequest]         `json:"positions,omitzero"`
 }
 
-// UpdateRequest. Строки меняются отдельными методами позиций (positions в таблице readonly).
+// UpdateRequest. Positions и attributes пишутся по тому же исключению, что в CreateRequest (их
+// передаёт пример Update); positions заменяют все строки: лишние удаляются, строки с ID меняются.
+// Shared пример Update не передаёт — в UpdateRequest его нет.
 // При смене organization или agent источник требует передать и organizationAccount/agentAccount.
 // Примеры источника передают sum и vatSum, но таблица помечает их readonly — SDK их не пишет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/commissionreportout#3-izmenit-vydannyj-otchet-komissionera
@@ -68,11 +74,15 @@ type UpdateRequest struct {
 	RewardType            model.Field[string]                    `json:"rewardType,omitzero"`
 	RewardPercent         model.Field[int]                       `json:"rewardPercent,omitzero"`
 	Payments              model.Field[[]model.Reference]         `json:"payments,omitzero"`
+	Attributes            model.Field[[]model.Attribute]         `json:"attributes,omitzero"`
+	Positions             model.Field[[]PositionRequest]         `json:"positions,omitzero"`
 }
 
-// PositionRequest — строка в CreatePositions и UpdatePosition. Для новой строки сервер требует
-// assortment и положительный quantity; в UpdatePosition обязательных полей нет.
+// PositionRequest — строка в Create/Update документа, CreatePositions и UpdatePosition. Для новой
+// строки сервер требует assortment и положительный quantity; в UpdatePosition обязательных полей
+// нет. ID сопоставляет существующую строку в Update документа; для новой строки его не задают.
 type PositionRequest struct {
+	ID         model.Field[string]                `json:"id,omitzero"`
 	Assortment model.Field[model.Reference]       `json:"assortment,omitzero"`
 	Quantity   model.Field[float64]               `json:"quantity,omitzero"`
 	Price      model.Field[float64]               `json:"price,omitzero"`

@@ -58,12 +58,14 @@ var (
 		Owner:      model.Value(ref("employee/44444444-4444-4444-4444-444444444444", "employee")),
 		Group:      model.Null[model.Reference](),
 		Attributes: model.Value([]model.Attribute{}),
+		Sum:        model.Value(12.5),
 	}
 	fullUpdate = counterpartyadjustment.UpdateRequest{
 		Agent:       model.Value(ref("counterparty/99999999-9999-9999-9999-999999999999", "counterparty")),
 		Description: model.Value(""),
 		Applicable:  model.Value(true),
 		Owner:       model.Null[model.Reference](),
+		Sum:         model.Value(0.0),
 	}
 )
 
@@ -120,8 +122,9 @@ func TestCounterpartyAdjustmentRequestJSON(t *testing.T) {
 			})
 		}
 	}
+	// sum помечен «Только для чтения», но пишется: исключение утверждено пользователем.
 	for _, typ := range []reflect.Type{reflect.TypeFor[counterpartyadjustment.CreateRequest](), reflect.TypeFor[counterpartyadjustment.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "Files", "Project", "Store", "Positions", "Code", "SyncID", "Rate", "State"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Files", "Project", "Store", "Positions", "Code", "SyncID", "Rate", "State"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only or foreign %s", typ.Name(), name)
 			}

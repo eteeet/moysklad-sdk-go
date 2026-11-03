@@ -56,6 +56,7 @@ var (
 		Applicable: model.Value(false), Shared: model.Value(true),
 		Organization: model.Value(ref("entity/organization/11111111-1111-1111-1111-111111111111", "organization")),
 		Attributes:   model.Value([]model.Attribute{}),
+		PriceType:    model.Value(model.PriceType{Meta: model.Meta{Href: "https://api.moysklad.ru/api/remap/1.2/context/companysettings/pricetype/672559f1-cbf3-11e1-9eb9-889ffa6f49fd", Type: "pricetype"}}),
 		Positions: model.Value(pricelist.PositionRows{Rows: []pricelist.PositionRequest{{
 			Assortment: model.Value(product),
 			Cells:      model.Value([]pricelist.Cell{{Column: "without_discount", Sum: 90000}, {Column: "with_discount", Sum: 1000.5}}),
@@ -125,7 +126,7 @@ func TestPriceListRequestJSON(t *testing.T) {
 		}
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[pricelist.CreateRequest](), reflect.TypeFor[pricelist.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Files", "PriceType", "Sum", "Store", "Rate"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Files", "Sum", "Store", "Rate"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only or foreign %s", typ.Name(), name)
 			}
@@ -134,6 +135,11 @@ func TestPriceListRequestJSON(t *testing.T) {
 	// Столбцы после создания не меняются.
 	if _, ok := reflect.TypeFor[pricelist.UpdateRequest]().FieldByName("Columns"); ok {
 		t.Error("UpdateRequest contains immutable Columns")
+	}
+	// priceType (readonly) пишется только в Create — исключение по примеру Create, утверждено
+	// пользователем; пример Update его не передаёт.
+	if _, ok := reflect.TypeFor[pricelist.UpdateRequest]().FieldByName("PriceType"); ok {
+		t.Error("UpdateRequest contains read-only PriceType")
 	}
 }
 

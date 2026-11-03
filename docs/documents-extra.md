@@ -100,12 +100,20 @@ shippingDocumentNumber, shippingDocumentDate ([demand](demand.md)).
 ## Маркер «Только для чтения» против примеров
 
 По общему правилу SDK маркер таблицы важнее примеров; исключения — только с решением пользователя.
-У новых документов это закрывает запись полей, которые примеры источника передают:
+Утверждённые исключения (поле пишется только в тех методах, где его передаёт пример источника):
 
-- internalorder и commissionreportout — `positions` в теле документа (строки — методами позиций);
-  у commissionreportout также `attributes` и `shared`;
-- counterpartyadjustment, retaildrawercashin и retaildrawercashout — `sum`: сумму через SDK не задать;
-- pricelist — `priceType`; commissionreportin — `sum`, `vatSum`.
+| Документ | Поле | Create | Update |
+| --- | --- | --- | --- |
+| internalorder | `positions` | да | да |
+| commissionreportout | `positions`, `attributes` | да | да |
+| commissionreportout | `shared` | да | нет |
+| counterpartyadjustment | `sum` | да | да |
+| retaildrawercashin, retaildrawercashout | `sum` | да | да |
+| pricelist | `priceType` | да | нет |
+
+Вне этого списка правило действует: например, `shared` и `syncId` внутреннего заказа, `sum` и
+`vatSum` отчётов комиссионера и внутреннего заказа не пишутся, хотя примеры их передают.
+Справочники: исключение `slot.zone` — [dictionaries](dictionaries.md).
 
 Связи, которые ticket называл «только для чтения», а таблица не помечает (moves/purchaseOrders
 внутреннего заказа, enters/losses инвентаризации), пишутся по общему правилу связей. У payroll

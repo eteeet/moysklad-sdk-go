@@ -2,5 +2,6 @@
   "agent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/99999999-9999-9999-9999-999999999999", "type": "counterparty"}},
   "description": "",
   "applicable": true,
-  "owner": null
+  "owner": null,
+  "sum": 0
 }

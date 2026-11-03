@@ -4,8 +4,10 @@ import "github.com/eteeet/moysklad-sdk-go/model"
 
 // CreateRequest: необходимы organization и непустое name — так помечает таблица атрибутов
 // («Необходимо при создании»), хотя раздел «Создать» перечисляет только organization.
-// shared, syncId и positions таблица помечает «Только для чтения», поэтому их нет в запросах,
-// хотя примеры Create/Update их передают: строки пишутся отдельными методами позиций.
+// shared и syncId таблица помечает «Только для чтения», поэтому их нет в запросах, хотя примеры
+// Create/Update их передают. Positions тоже помечен readonly, но примеры Create, Update и массового
+// создания передают строки массивом: SDK их пишет — исключение из правила «пометка таблицы сильнее
+// примеров» утверждено пользователем. Не больше 1000 строк; дальше — CreatePositions.
 // moves, purchaseOrders и productionTasks — связи документов без readonly-маркера: пишутся
 // (ticket O08 называет moves/purchaseOrders read-only — решение по источнику).
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/internalOrder#3-sozdat-vnutrennij-zakaz
@@ -30,9 +32,11 @@ type CreateRequest struct {
 	Moves                 model.Field[[]model.Reference]         `json:"moves,omitzero"`
 	PurchaseOrders        model.Field[[]model.Reference]         `json:"purchaseOrders,omitzero"`
 	ProductionTasks       model.Field[[]model.Reference]         `json:"productionTasks,omitzero"`
+	Positions             model.Field[[]PositionRequest]         `json:"positions,omitzero"`
 }
 
-// UpdateRequest: обязательных полей нет; sum, vatSum, shared, syncId и positions — readonly.
+// UpdateRequest: обязательных полей нет; sum, vatSum, shared и syncId — readonly. Positions
+// (исключение, см. CreateRequest) заменяют все строки: лишние удаляются, строки с ID меняются.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/internalOrder#3-izmenit-vnutrennij-zakaz
 type UpdateRequest struct {
 	Organization          model.Field[model.Reference]           `json:"organization,omitzero"`
@@ -55,4 +59,5 @@ type UpdateRequest struct {
 	Moves                 model.Field[[]model.Reference]         `json:"moves,omitzero"`
 	PurchaseOrders        model.Field[[]model.Reference]         `json:"purchaseOrders,omitzero"`
 	ProductionTasks       model.Field[[]model.Reference]         `json:"productionTasks,omitzero"`
+	Positions             model.Field[[]PositionRequest]         `json:"positions,omitzero"`
 }

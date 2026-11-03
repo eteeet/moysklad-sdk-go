@@ -44,7 +44,7 @@ doc, err := s.Create(ctx, pricelist.CreateRequest{
 | `state` | `*model.Reference` | Field | Field |
 | `attributes` | `[]model.Attribute` | Field | Field |
 | `columns` | `[]Column` | required `[]ColumnRequest` | — (после создания не меняется) |
-| `priceType` | `*model.PriceType` | — | — |
+| `priceType` | `*model.PriceType` | Field | — |
 | `positions` | `*model.Collection[Position]` | Field `PositionRows` | Field `PositionRows` |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 
@@ -74,7 +74,9 @@ doc, err := s.Create(ctx, pricelist.CreateRequest{
 ## Ограничения и противоречия источника
 
 - `priceType` таблица помечает «Только для чтения», а пример Create передаёт его и примечание
-  описывает поведение при несуществующем типе цен. По правилу SDK readonly-поле не пишется.
+  описывает поведение при несуществующем типе цен (сервер подставит тип цен продаж по умолчанию).
+  SDK пишет `priceType` только в Create: исключение из правила «readonly важнее примеров» утверждено пользователем. Пример Update его не передаёт, текст «Изменить»
+  запрещает readonly-поля — в `UpdateRequest` его нет.
 - В примерах Create/Update `positions` — объект `{"rows": [...]}`, а не массив, как у других
   документов; SDK следует примерам.
 - `Cell.sum` в таблице — Int («числовое значение ячейки»), в примерах — цены в копейках; SDK

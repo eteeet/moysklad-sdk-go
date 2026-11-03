@@ -2,8 +2,9 @@ package retaildrawercashin
 
 import "github.com/eteeet/moysklad-sdk-go/model"
 
-// CreateRequest: необходимы organization, agent (сотрудник) и retailShift. sum таблица помечает
-// «Только для чтения», хотя примеры Create и массового создания его передают: SDK sum не пишет.
+// CreateRequest: необходимы organization, agent (сотрудник) и retailShift. Sum (копейки) таблица
+// помечает «Только для чтения», но примеры Create, массового создания и Update его передают: SDK
+// sum пишет — исключение из правила «пометка таблицы сильнее примеров» утверждено пользователем.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retaildrawercashin#3-sozdat-vnesenie-deneg
 type CreateRequest struct {
 	Organization       model.Reference                        `json:"organization"`
@@ -22,10 +23,10 @@ type CreateRequest struct {
 	State              model.Field[model.Reference]           `json:"state,omitzero"`
 	Attributes         model.Field[[]model.Attribute]         `json:"attributes,omitzero"`
 	Rate               model.Field[model.DocumentRateRequest] `json:"rate,omitzero"`
+	Sum                model.Field[float64]                   `json:"sum,omitzero"`
 }
 
-// UpdateRequest. Пример Update источника передаёт sum, таблица помечает его readonly — SDK sum не
-// пишет. syncId после заполнения не меняется.
+// UpdateRequest. Sum пишется по исключению из CreateRequest. syncId после заполнения не меняется.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retaildrawercashin#3-izmenit-vnesenie-deneg
 type UpdateRequest struct {
 	Organization       model.Field[model.Reference]           `json:"organization,omitzero"`
@@ -44,4 +45,5 @@ type UpdateRequest struct {
 	State              model.Field[model.Reference]           `json:"state,omitzero"`
 	Attributes         model.Field[[]model.Attribute]         `json:"attributes,omitzero"`
 	Rate               model.Field[model.DocumentRateRequest] `json:"rate,omitzero"`
+	Sum                model.Field[float64]                   `json:"sum,omitzero"`
 }

@@ -60,6 +60,8 @@ var (
 		Moves:           model.Value([]model.Reference{ref("entity/move/55555555-5555-5555-5555-555555555555", "move")}),
 		PurchaseOrders:  model.Value([]model.Reference{ref("entity/purchaseorder/77777777-7777-7777-7777-777777777777", "purchaseorder")}),
 		ProductionTasks: model.Value([]model.Reference(nil)),
+		Positions: model.Value([]internalorder.PositionRequest{{ItemRequest: positions.ItemRequest{Assortment: model.Value(ref("entity/variant/fc635ded-acf7-11e6-8a84-bae500000075", "variant")), Quantity: model.Value(1.0)},
+			Price: model.Value(0.0), Discount: model.Value(0.0), VAT: model.Value(0)}}),
 	}
 	fullUpdate = internalorder.UpdateRequest{
 		Name:       model.Value("DOC-2"),
@@ -67,6 +69,7 @@ var (
 		Project:    model.Null[model.Reference](),
 		Applicable: model.Value(true),
 		Moves:      model.Value([]model.Reference{}),
+		Positions:  model.Value([]internalorder.PositionRequest{{ItemRequest: positions.ItemRequest{CoreRequest: positions.CoreRequest{ID: model.Value(rowID)}, Quantity: model.Value(3.0)}}}),
 	}
 )
 
@@ -132,10 +135,11 @@ func TestInternalOrderRequestJSON(t *testing.T) {
 			})
 		}
 	}
-	// shared, syncId и positions помечены в таблице «Только для чтения».
+	// shared и syncId помечены в таблице «Только для чтения». Positions тоже readonly, но пишется:
+	// исключение по примерам Create/Update утверждено пользователем.
 	for _, typ := range []reflect.Type{reflect.TypeFor[internalorder.CreateRequest](), reflect.TypeFor[internalorder.UpdateRequest]()} {
 		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "VATSum",
-			"Files", "Shared", "SyncID", "Positions", "Agent"} {
+			"Files", "Shared", "SyncID", "Agent"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only or foreign %s", typ.Name(), name)
 			}
@@ -373,6 +377,14 @@ func TestInternalOrderValidation(t *testing.T) {
 		},
 		"delete many id": func(o transport.RequestOption) error {
 			_, err := s.DeleteMany(t.Context(), []string{"bad"}, o)
+			return err
+		},
+		"create 1001 positions": func(o transport.RequestOption) error {
+			_, err := s.Create(t.Context(), internalorder.CreateRequest{Organization: organization, Name: "N", Positions: model.Value(make([]internalorder.PositionRequest, 1001))}, o)
+			return err
+		},
+		"update 1001 positions": func(o transport.RequestOption) error {
+			_, err := s.Update(t.Context(), testID, internalorder.UpdateRequest{Positions: model.Value(make([]internalorder.PositionRequest, 1001))}, o)
 			return err
 		},
 		"positions id": func(o transport.RequestOption) error {

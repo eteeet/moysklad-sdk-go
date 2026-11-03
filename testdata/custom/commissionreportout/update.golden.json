@@ -5,5 +5,7 @@
   "project": null,
   "rewardType": "None",
   "rewardPercent": 0,
-  "payments": []
+  "payments": [],
+  "attributes": [],
+  "positions": [{"id": "34f6344f-015e-11e6-9464-e4de0000006c", "quantity": 3}]
 }

@@ -56,11 +56,13 @@ var (
 		Applicable: model.Value(false), Shared: model.Value(true),
 		Rate:       model.Value(model.DocumentRateRequest{Currency: model.Value(ref("entity/currency/66666666-6666-6666-6666-666666666666", "currency"))}),
 		Attributes: model.Value([]model.Attribute{}),
+		Sum:        model.Value(100500.0),
 	}
 	fullUpdate = retaildrawercashin.UpdateRequest{
 		Name: model.Value("0000004"), Applicable: model.Value(false),
 		RetailShift: model.Value(ref("entity/retailshift/99999999-9999-9999-9999-999999999999", "retailshift")),
 		State:       model.Null[model.Reference](),
+		Sum:         model.Value(0.0),
 	}
 )
 
@@ -105,8 +107,9 @@ func TestRetailDrawerCashInRequestJSON(t *testing.T) {
 			})
 		}
 	}
+	// sum помечен «Только для чтения», но пишется: исключение утверждено пользователем.
 	for _, typ := range []reflect.Type{reflect.TypeFor[retaildrawercashin.CreateRequest](), reflect.TypeFor[retaildrawercashin.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "Files", "Code", "Project"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Files", "Code", "Project"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only or foreign %s", typ.Name(), name)
 			}

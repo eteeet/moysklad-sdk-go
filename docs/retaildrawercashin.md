@@ -43,15 +43,15 @@ doc, err := s.Create(ctx, retaildrawercashin.CreateRequest{
 | `state` | `*model.Reference` | Field | Field |
 | `attributes` | `[]model.Attribute` | Field | Field |
 | `rate` | `*model.DocumentRate` | Field | Field |
-| `sum` | `float64` (копейки) | — | — |
+| `sum` | `float64` (копейки) | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `retailShift` | `*model.Reference` | required | Field |
 
 ## Ограничения и противоречия источника
 
 - `sum` таблица атрибутов помечает «Только для чтения», а примеры Create, массового создания и
-  Update передают его (`"sum": 100500`, `"sum": 700`). По правилу SDK readonly-поле не пишется:
-  сумму внесения через SDK не задать. Если живой API принимает sum — нужна правка контракта.
+  Update передают его (`"sum": 100500`, `"sum": 700`). SDK пишет `sum` в Create и Update:
+  исключение из правила «readonly важнее примеров» утверждено пользователем, без него сумму внесения не задать.
 - `retailShift` описан в разделе «Связи с другими документами» с пометкой «Необходимое» и в
   списке обязательных полей Create; пишется и в Update (маркера «Только для чтения» нет).
 - `code` в таблице внесения нет (у выплаты есть) — SDK его не читает и не пишет.

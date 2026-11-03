@@ -35,7 +35,7 @@ created, err := s.Create(ctx, counterpartyadjustment.CreateRequest{Organization:
 | `owner` | `*model.Reference` | Field | Field |
 | `group` | `*model.Reference` | Field | Field |
 | `attributes` | `[]model.Attribute` | Field | Field |
-| `sum` | `float64` (копейки) | — | — |
+| `sum` | `float64` (копейки) | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 
 `code`, `syncId`, `rate`, `state`, `project` в таблице атрибутов нет — SDK их не читает и не пишет.
@@ -48,9 +48,7 @@ created, err := s.Create(ctx, counterpartyadjustment.CreateRequest{Organization:
   проверяет: отрицательная сумма из ответа читается как есть.
 - **Противоречие источника:** таблица атрибутов помечает `sum` «Только для чтения», текст «Изменить»
   запрещает передавать такие поля, но примеры «Создать», «Массовое создание» и «Изменить» передают
-  `sum`. SDK следует таблице: `sum` нет в `CreateRequest` и `UpdateRequest`, поэтому задать сумму
-  корректировки через SDK нельзя. Если живой API принимает `sum`, поле нужно добавить отдельным
-  решением.
+  `sum`. SDK пишет `sum` в Create и Update: исключение из правила «readonly важнее примеров» утверждено пользователем, без него сумму корректировки не задать.
 
 ## Корзина
 

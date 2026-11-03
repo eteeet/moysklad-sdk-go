@@ -22,5 +22,8 @@
   "vatIncluded": false,
   "rewardType": "PercentOfSales",
   "rewardPercent": 15,
-  "payments": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/paymentout/dddddddd-dddd-dddd-dddd-dddddddddddd", "type": "paymentout"}}]
+  "payments": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/paymentout/dddddddd-dddd-dddd-dddd-dddddddddddd", "type": "paymentout"}}],
+  "shared": false,
+  "attributes": [],
+  "positions": [{"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/36eb1628-912b-11e6-8a84-bae500000124", "type": "variant"}}, "quantity": 2, "price": 13205, "vat": 10, "reward": 123}]
 }

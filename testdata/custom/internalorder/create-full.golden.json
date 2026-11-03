@@ -12,5 +12,6 @@
   "vatIncluded": false,
   "moves": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/move/55555555-5555-5555-5555-555555555555", "type": "move"}}],
   "purchaseOrders": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/purchaseorder/77777777-7777-7777-7777-777777777777", "type": "purchaseorder"}}],
-  "productionTasks": []
+  "productionTasks": [],
+  "positions": [{"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/fc635ded-acf7-11e6-8a84-bae500000075", "type": "variant"}}, "quantity": 1, "price": 0, "discount": 0, "vat": 0}]
 }

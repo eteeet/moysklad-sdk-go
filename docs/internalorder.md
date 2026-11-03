@@ -6,14 +6,16 @@
 Строки — aliases `Position`/`PositionRequest` общей формы (meta.type `internalorderposition`).
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `organization` и непустое `name`.
+Минимальный Create: `organization` и непустое `name`. Строки можно передать сразу в теле документа
+(`Positions`, не больше 1000 — 1001 отклоняется до запроса) или добавить потом `CreatePositions`.
 
 ```go
 s, _ := internalorder.NewService(client)
-doc, err := s.Create(ctx, internalorder.CreateRequest{Organization: org, Name: "ВЗ-1"})
-_, err = s.CreatePositions(ctx, doc.ID, []internalorder.PositionRequest{{
-	ItemRequest: positions.ItemRequest{Assortment: model.Value(product), Quantity: model.Value(2.0)},
-}})
+doc, err := s.Create(ctx, internalorder.CreateRequest{Organization: org, Name: "ВЗ-1",
+	Positions: model.Value([]internalorder.PositionRequest{{
+		ItemRequest: positions.ItemRequest{Assortment: model.Value(product), Quantity: model.Value(2.0)},
+	}}),
+})
 ```
 
 ## Поддержанные поля
@@ -49,7 +51,7 @@ _, err = s.CreatePositions(ctx, doc.ID, []internalorder.PositionRequest{{
 | `vatEnabled` | `bool` | Field | Field |
 | `vatIncluded` | `bool` | Field | Field |
 | `vatSum` | `float64` | — | — |
-| `positions` | `*model.Collection[Position]` | — | — |
+| `positions` | `*model.Collection[Position]` | Field | Field |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `moves` | `[]model.Reference` | Field | Field |
 | `purchaseOrders` | `[]model.Reference` | Field | Field |
@@ -62,13 +64,14 @@ _, err = s.CreatePositions(ctx, doc.ID, []internalorder.PositionRequest{{
 их приём определяет сервер. `GetPositions` читает одну страницу (Limit 1…1000, 0 — 1000); `fields`
 источник для внутреннего заказа не документирует, непустой `PageOptions.Fields` отклоняется до HTTP.
 `CreatePositions` — один POST массивом, ответ `[]batch.Result[Position]`; `DeleteManyPositions` —
-POST `…/positions/delete`, ответ без тела.
+POST `…/positions/delete`, ответ без тела. В Update документа `Positions` заменяют весь набор: строка с
+`ID` — существующая (id только адресует её), без — новая, лишние удаляются.
 
 ## Решения и противоречия источника
 
-- `positions` в основной таблице помечен «Только для чтения», хотя текст раздела позиций и пример
-  Create передают массив строк в составе документа. По правилу SDK (readonly-маркер важнее примеров)
-  embedded positions в Create/Update нет — строки пишутся только отдельными методами позиций.
+- `positions` в основной таблице помечен «Только для чтения», хотя текст раздела позиций и примеры
+  Create, Update и массового создания передают массив строк в составе документа. SDK пишет
+  `positions` в Create и Update: исключение из правила «readonly важнее примеров» утверждено пользователем, без него строки нельзя сохранить вместе с документом.
 - `shared` и `syncId` помечены «Только для чтения» — в запросах их нет, хотя примеры Create/Update
   передают `shared`.
 - `name` помечен «Необходимо при создании», а раздел «Создать» перечисляет только `organization`.

@@ -10,5 +10,6 @@
   "applicable": false,
   "shared": true,
   "rate": {"currency": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/66666666-6666-6666-6666-666666666666", "type": "currency"}}},
-  "attributes": []
+  "attributes": [],
+  "sum": 100500
 }

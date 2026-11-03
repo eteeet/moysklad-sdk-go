@@ -9,5 +9,6 @@
   "shared": true,
   "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/44444444-4444-4444-4444-444444444444", "type": "employee"}},
   "group": null,
-  "attributes": []
+  "attributes": [],
+  "sum": 12.5
 }

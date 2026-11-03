@@ -71,6 +71,9 @@ var (
 		VATEnabled:          model.Value(true), VATIncluded: model.Value(false),
 		RewardType: model.Value("PercentOfSales"), RewardPercent: model.Value(15),
 		Payments: model.Value([]model.Reference{ref("entity/paymentout/dddddddd-dddd-dddd-dddd-dddddddddddd", "paymentout")}),
+		Shared:   model.Value(false), Attributes: model.Value([]model.Attribute{}),
+		Positions: model.Value([]commissionreportout.PositionRequest{{Assortment: model.Value(ref("entity/variant/36eb1628-912b-11e6-8a84-bae500000124", "variant")),
+			Quantity: model.Value(2.0), Price: model.Value(13205.0), VAT: model.Value(10), Reward: model.Value(123.0)}}),
 	}
 	fullUpdate = commissionreportout.UpdateRequest{
 		Contract:            model.Value(ref("entity/contract/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "contract")),
@@ -78,7 +81,9 @@ var (
 		Name:                model.Value(""),
 		Project:             model.Null[model.Reference](),
 		RewardType:          model.Value("None"), RewardPercent: model.Value(0),
-		Payments: model.Value([]model.Reference{}),
+		Payments:   model.Value([]model.Reference{}),
+		Attributes: model.Value([]model.Attribute{}),
+		Positions:  model.Value([]commissionreportout.PositionRequest{{ID: model.Value(positionID), Quantity: model.Value(3.0)}}),
 	}
 )
 
@@ -143,15 +148,20 @@ func TestRequestJSON(t *testing.T) {
 			})
 		}
 	}
+	// attributes, shared и positions помечены «Только для чтения», но пишутся: исключение по примерам
+	// утверждено пользователем. Shared пример Update не передаёт.
+	if _, ok := reflect.TypeFor[commissionreportout.UpdateRequest]().FieldByName("Shared"); ok {
+		t.Error("UpdateRequest contains read-only Shared")
+	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[commissionreportout.CreateRequest](), reflect.TypeFor[commissionreportout.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "VATSum", "PayedSum", "CommitentSum", "Files", "SyncID", "Shared", "Attributes", "Positions", "ReturnToCommissionerPositions", "CommissionOverhead"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Created", "Updated", "Deleted", "Printed", "Published", "Sum", "VATSum", "PayedSum", "CommitentSum", "Files", "SyncID", "ReturnToCommissionerPositions", "CommissionOverhead"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}
 		}
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[commissionreportout.PositionRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID"} {
+		for _, name := range []string{"Meta", "AccountID"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}
@@ -397,6 +407,16 @@ func TestValidation(t *testing.T) {
 		},
 		"delete many bad id": func(o ...transport.RequestOption) error {
 			_, err := s.DeleteMany(ctx, []string{"bad"}, o...)
+			return err
+		},
+		"create 1001 positions": func(o ...transport.RequestOption) error {
+			r := minimal
+			r.Positions = model.Value(make([]commissionreportout.PositionRequest, 1001))
+			_, err := s.Create(ctx, r, o...)
+			return err
+		},
+		"update 1001 positions": func(o ...transport.RequestOption) error {
+			_, err := s.Update(ctx, testID, commissionreportout.UpdateRequest{Positions: model.Value(make([]commissionreportout.PositionRequest, 1001))}, o...)
 			return err
 		},
 		"positions bad id": page(positions.PageOptions{}, "bad", getPositions),

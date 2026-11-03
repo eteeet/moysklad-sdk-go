@@ -7,7 +7,10 @@ import (
 
 // CreateRequest: необходимы columns (хотя бы один столбец с непустым name); после создания
 // столбцы не меняются, поэтому их нет в UpdateRequest. priceType таблица помечает «Только для
-// чтения», хотя пример Create его передаёт: SDK priceType не пишет.
+// чтения», но пример Create его передаёт: SDK пишет priceType в Create — исключение из правила
+// «пометка таблицы сильнее примеров» утверждено пользователем. Несуществующий тип цен сервер
+// заменяет типом цен продаж по умолчанию. Пример Update priceType не передаёт — в UpdateRequest
+// его нет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/pricelist#3-sozdat-prajs-list
 type CreateRequest struct {
 	Columns      []ColumnRequest                `json:"columns"`
@@ -24,6 +27,7 @@ type CreateRequest struct {
 	Group        model.Field[model.Reference]   `json:"group,omitzero"`
 	State        model.Field[model.Reference]   `json:"state,omitzero"`
 	Attributes   model.Field[[]model.Attribute] `json:"attributes,omitzero"`
+	PriceType    model.Field[model.PriceType]   `json:"priceType,omitzero"`
 	Positions    model.Field[PositionRows]      `json:"positions,omitzero"`
 }
 

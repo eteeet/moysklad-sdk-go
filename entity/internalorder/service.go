@@ -47,6 +47,9 @@ func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...trans
 	if input.Name == "" {
 		return nil, fmt.Errorf("moysklad: %s: name must not be empty", operation)
 	}
+	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
+		return nil, fmt.Errorf("moysklad: %s: positions must not exceed 1000", operation)
+	}
 	return s.do(ctx, operation, http.MethodPost, "entity/internalorder", input, opts)
 }
 
@@ -60,6 +63,9 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, op
 	// Нулевые Field — «не передано»; Value(false), Value("") и Null не нулевые.
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: %s: no fields specified", operation)
+	}
+	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
+		return nil, fmt.Errorf("moysklad: %s: positions must not exceed 1000", operation)
 	}
 	return s.do(ctx, operation+" "+id, http.MethodPut, "entity/internalorder/"+id, input, opts)
 }
