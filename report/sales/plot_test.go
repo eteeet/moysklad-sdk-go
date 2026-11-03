@@ -121,9 +121,9 @@ func testHTTP(t *testing.T, report, fixture string, call method, filter string, 
 		t.Run(tc.name+"/local", func(t *testing.T) { documenttest.LocalErrors(t, invoke) })
 	}
 
-	// Пустой series — успех.
+	// Пустой series без meta — успех: обязательным при ответе источник называет только series.
 	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"meta":{"href":"h"},"series":[]}`))
+		w.Write([]byte(`{"series":[]}`))
 	}))
 	defer server.Close()
 	c, err := transport.NewClient(transport.Config{BaseURL: server.URL})

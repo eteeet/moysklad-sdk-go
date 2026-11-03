@@ -4,7 +4,8 @@ import "github.com/eteeet/moysklad-sdk-go/model"
 
 // CreateRequest: url, action и entityType «Необходимо при создании» — пустые отклоняются до
 // HTTP. Значения не проверяются: action, entityType и diffType — открытые строки, доступность
-// url проверяет сервер. Ограничения уникальности и тарифа также проверяет сервер.
+// url проверяет сервер. Ограничения уникальности и тарифа также проверяет сервер. method (единственное
+// значение источника — POST) маркера «Только для чтения» не имеет и пишется; authorApplication — нет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/webhook#3-sozdat-vebhuk
 type CreateRequest struct {
 	URL        string              `json:"url"`
@@ -12,6 +13,7 @@ type CreateRequest struct {
 	EntityType string              `json:"entityType"`
 	DiffType   model.Field[string] `json:"diffType,omitzero"`
 	Enabled    model.Field[bool]   `json:"enabled,omitzero"`
+	Method     model.Field[string] `json:"method,omitzero"`
 }
 
 // UpdateRequest: Enabled: model.Value(false) отключает вебхук («Отключить вебхук»).
@@ -22,4 +24,5 @@ type UpdateRequest struct {
 	EntityType model.Field[string] `json:"entityType,omitzero"`
 	DiffType   model.Field[string] `json:"diffType,omitzero"`
 	Enabled    model.Field[bool]   `json:"enabled,omitzero"`
+	Method     model.Field[string] `json:"method,omitzero"`
 }

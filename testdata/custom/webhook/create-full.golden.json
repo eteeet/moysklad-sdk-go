@@ -1,1 +1,1 @@
-{"url": "https://example.com/hooks/moysklad", "action": "UPDATE", "entityType": "supply", "diffType": "FIELDS", "enabled": false}
+{"url": "https://example.com/hooks/moysklad", "action": "UPDATE", "entityType": "supply", "diffType": "FIELDS", "enabled": false, "method": "POST"}

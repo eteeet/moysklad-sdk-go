@@ -72,8 +72,9 @@ doc, err := s.Create(ctx, retireorder.CreateRequest{
 - Поля строки: `meta`, `id`, `accountId` (только чтение), `assortment` (`model.Reference`),
   `quantity` (`float64`), `price` (`float64`, копейки), `vat` (`int`, процент), `vatEnabled`,
   `trackingCodes` (`[]positions.TrackingCode`: `cis`, открытый `type`, вложенные коды).
-- Для новой строки источник требует `assortment` и `trackingCodes` — проверяет сервер (одна форма
-  `PositionRequest` служит и Create, и Update).
+- Для новой строки источник требует `assortment` и `trackingCodes`: `CreatePositions` отклоняет
+  строку без них до запроса. Строки без `ID` в теле Create/Update документа и `UpdatePosition`
+  проверяет сервер (одна форма `PositionRequest` служит и созданию, и изменению).
 - Positions в Create/Update — не больше 1000 строк (1001 отклоняется до запроса); в Update массив
   заменяет весь набор: строка с `ID` — существующая, без — новая.
 

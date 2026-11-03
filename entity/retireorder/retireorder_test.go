@@ -382,6 +382,9 @@ func TestNoDelete(t *testing.T) {
 
 // Ошибки входа — до HTTP, ResponseInfo сброшен; ровно 1000 строк уходят.
 func TestValidation(t *testing.T) {
+	// Корректная новая строка: ошибку в случаях ниже вызывает только изменённая часть.
+	validRow := retireorder.PositionRequest{ItemRequest: positions.ItemRequest{Assortment: model.Value(product)},
+		TrackingCodes: model.Value([]positions.TrackingCode{{CIS: "c", Type: "trackingcode"}})}
 	var calls atomic.Int32
 	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
@@ -464,7 +467,19 @@ func TestValidation(t *testing.T) {
 			return err
 		},
 		"create positions bad id": func(o ...transport.RequestOption) error {
-			_, err := s.CreatePositions(ctx, "bad", []retireorder.PositionRequest{{}}, o...)
+			_, err := s.CreatePositions(ctx, "bad", []retireorder.PositionRequest{validRow}, o...)
+			return err
+		},
+		"create positions no assortment": func(o ...transport.RequestOption) error {
+			row := validRow
+			row.Assortment = model.Field[model.Reference]{}
+			_, err := s.CreatePositions(ctx, testID, []retireorder.PositionRequest{validRow, row}, o...)
+			return err
+		},
+		"create positions no tracking codes": func(o ...transport.RequestOption) error {
+			row := validRow
+			row.TrackingCodes = model.Value([]positions.TrackingCode{})
+			_, err := s.CreatePositions(ctx, testID, []retireorder.PositionRequest{row}, o...)
 			return err
 		},
 		"update position empty": func(o ...transport.RequestOption) error {

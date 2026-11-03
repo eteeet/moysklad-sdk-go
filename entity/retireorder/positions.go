@@ -2,6 +2,7 @@ package retireorder
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/nested"
@@ -35,10 +36,18 @@ func (s *Service) GetPosition(ctx context.Context, id, positionID string, opts .
 }
 
 // CreatePositions добавляет строки к существующим одним POST массивом (одна строка — массив из
-// одного элемента); assortment и trackingCodes новой строки проверяет сервер. Ответ — по
-// правилам batch.
+// одного элемента). assortment и trackingCodes таблица помечает «Необходимо при создании» —
+// строка без них отклоняется до запроса. Ответ — по правилам batch.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retireorder#3-sozdat-poziciyu
 func (s *Service) CreatePositions(ctx context.Context, id string, items []PositionRequest, opts ...transport.RequestOption) ([]batch.Result[Position], error) {
+	transport.ResetResponseInfo(opts)
+	for i, item := range items {
+		ref, ok := item.Assortment.Get()
+		codes, _ := item.TrackingCodes.Get()
+		if !ok || ref.Meta.Href == "" || len(codes) == 0 {
+			return nil, fmt.Errorf("moysklad: create retireorder %s positions: items[%d]: assortment meta.href and trackingCodes must be set", id, i)
+		}
+	}
 	return nested.CreateMany[Position](ctx, s.collection(id), items, opts)
 }
 

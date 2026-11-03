@@ -113,9 +113,6 @@ func (s *Service) plot(ctx context.Context, report string, options Options, opts
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
 	}
-	if result.Meta.Href == "" {
-		return nil, fmt.Errorf("moysklad: %s: response has no meta.href", operation)
-	}
 	if result.Series == nil {
 		return nil, fmt.Errorf("moysklad: %s: response series must be a non-null array", operation)
 	}

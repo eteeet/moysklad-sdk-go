@@ -46,7 +46,7 @@ func service(c *transport.Client) *webhook.Service {
 var (
 	full = webhook.CreateRequest{
 		URL: "https://example.com/hooks/moysklad", Action: "UPDATE", EntityType: "supply",
-		DiffType: model.Value("FIELDS"), Enabled: model.Value(false),
+		DiffType: model.Value("FIELDS"), Enabled: model.Value(false), Method: model.Value("POST"),
 	}
 	update = webhook.UpdateRequest{
 		URL: model.Value("http://www.example.com"), Action: model.Value("DELETE"), EntityType: model.Value("demand"),
@@ -140,9 +140,9 @@ func TestRequestJSON(t *testing.T) {
 			})
 		}
 	}
-	// method и authorApplication: без маркера readonly, но в запросах источника их нет.
+	// method без маркера readonly пишется; authorApplication в запросах не нужен (его ставит сервер).
 	for _, typ := range []reflect.Type{reflect.TypeFor[webhook.CreateRequest](), reflect.TypeFor[webhook.UpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Method", "AuthorApplication"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "AuthorApplication"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}

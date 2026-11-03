@@ -15,7 +15,7 @@
 
 Оба возвращают `*sales.Plot`: таблица series общая для обоих разделов (date, quantity, sum), поэтому
 один тип; `meta.type` различает графики (`salesplotseries`, `ordersplotseries`). Один GET, без
-повторов. Async (I23) не входит.
+повторов. Async — раздел «Асинхронно».
 
 ## Параметры `Options`
 

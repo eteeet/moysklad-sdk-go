@@ -37,7 +37,7 @@ hook, err := s.Create(ctx, webhook.CreateRequest{
 | `action` | `string` (открытая) | required | Field |
 | `diffType` | `string` (открытая) | Field | Field |
 | `enabled` | `bool` | Field | Field |
-| `method` | `string` (открытая) | — | — |
+| `method` | `string` (открытая) | Field | Field |
 | `authorApplication` | `*model.Reference` | — | — |
 
 Field — `model.Field[T]` с `omitzero`: не задано — поле не уходит; `model.Value(false)` уходит
@@ -52,10 +52,10 @@ Field — `model.Field[T]` с `omitzero`: не задано — поле не у
 - `url` не проверяется (ни схема, ни длина до 255, ни доступность); уникальность сочетания
   `entityType`+`action`+`url`, лимит 5 вебхуков (1 для решения), тариф и права
   администратора проверяет сервер.
-- `method` и `authorApplication` в таблице атрибутов без маркера «Только для чтения», но их нет ни
-  в одном примере запроса; `authorApplication` — метаданные решения, создавшего вебхук (у
-  webhookstock он помечен «Только для чтения»), `method` имеет единственное значение `POST`.
-  Отсутствие маркера не доказывает запись, поэтому SDK их только читает.
+- `method` и `authorApplication` в таблице атрибутов без маркера «Только для чтения», их нет ни в
+  одном примере запроса. `method` (единственное значение `POST`) пишется в Create/Update — по
+  правилу полей проекта. `authorApplication` — метаданные решения, создавшего вебхук (у
+  webhookstock он помечен «Только для чтения»): его ставит сервер, SDK только читает.
 - `authorApplication` в таблице — `Meta`, в примерах — объект `{"meta": …}`: читается как
   `*model.Reference`; дополнительные поля решения (upstream-фикстура SDK) не сохраняются.
 - `enabled` в источнике не помечен «Необходимо при создании»; пример создания webhookstock

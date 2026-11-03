@@ -26,7 +26,8 @@ Services теряли headers и status ответа, а per-call headers (ре�
 - `transport.WithAuth(auth)` заменяет `Config.Auth` на один вызов (T04: Basic для
   `security/token` на клиенте с Bearer); заголовок `Authorization` по-прежнему задаёт transport.
 - `transport.Client.Send` — seam JSON-вызова: сборка запроса, Do и ResponseInfo.
-  Services вызывают только его. Limiter и retry (T08/T09) встраиваются сюда, а не
+  Services вызывают только его и его обёртку `SendNoRedirect` (печать: один вызов без следования
+  303/202, тело успеха не декодируется; тот же limiter, retry и ResponseInfo, что у Send). Limiter и retry (T08/T09) встраиваются сюда, а не
   в services. Download (F01) не может идти через Send, потому что Do закрывает body:
   это отдельный метод Client с тем же limiter и retry. Решение F01 — writer, а не
   ReadCloser: тело закрывается внутри метода на всех путях, слоты limiter держатся ровно

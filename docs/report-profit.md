@@ -17,7 +17,7 @@
 | `BySalesChannel(ctx, Options)` | GET report/profit/bysaleschannel | `SalesChannelRow` |
 
 Каждый метод — один GET одной страницы (`*model.Collection[T]`), без автообхода `nextHref`.
-Отчёт только для чтения: запись, expand и async (I23) не входят.
+Отчёт только для чтения: запись и expand не входят; async — раздел «Асинхронно».
 
 ## Параметры `Options`
 
