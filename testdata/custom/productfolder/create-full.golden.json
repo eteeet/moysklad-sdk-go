@@ -1,0 +1,6 @@
+{
+  "name": "Группа SDK", "description": "", "code": "g-1", "externalCode": "ext",
+  "productFolder": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/productfolder/55555555-5555-5555-5555-555555555556", "type": "productfolder", "mediaType": "application/json"}},
+  "vat": 0, "vatEnabled": false, "useParentVat": false, "taxSystem": "GENERAL_TAX_SYSTEM",
+  "shared": true, "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "type": "employee", "mediaType": "application/json"}}, "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/faba7f37-2e58-11e6-8a84-bae500000029", "type": "group", "mediaType": "application/json"}}
+}

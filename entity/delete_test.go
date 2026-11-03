@@ -34,6 +34,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
+	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
@@ -112,6 +113,7 @@ func deleteCases() []optionsCase {
 		deleteCase("supply", supply.NewService, (*supply.Service).Delete),
 		deleteCase("taxrate", taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCase("uom", uom.NewService, (*uom.Service).Delete),
+		deleteCase("productfolder", productfolder.NewService, (*productfolder.Service).Delete),
 		deleteCase("store", store.NewService, (*store.Service).Delete),
 		deleteCase("variant", variant.NewService, (*variant.Service).Delete),
 		{"files delete", http.MethodDelete, "entity/product/" + testID + "/files/" + testID, func(ctx context.Context, c *transport.Client, opts ...transport.RequestOption) error {
@@ -210,6 +212,7 @@ func TestDeleteRejectsInvalidID(t *testing.T) {
 		deleteCall(supply.NewService, (*supply.Service).Delete),
 		deleteCall(taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCall(uom.NewService, (*uom.Service).Delete),
+		deleteCall(productfolder.NewService, (*productfolder.Service).Delete),
 		deleteCall(store.NewService, (*store.Service).Delete),
 		deleteCall(variant.NewService, (*variant.Service).Delete),
 	} {

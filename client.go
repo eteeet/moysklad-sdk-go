@@ -27,6 +27,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/paymentout"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
+	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
@@ -242,6 +243,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// ProductFolder — Группы товаров.
+func (e EntityGroup) ProductFolder() *productfolder.Service {
+	return must(productfolder.NewService(e.transport))
+}
 
 // Store — Склады.
 func (e EntityGroup) Store() *store.Service { return must(store.NewService(e.transport)) }
