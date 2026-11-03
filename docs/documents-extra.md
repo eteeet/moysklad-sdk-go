@@ -7,7 +7,10 @@
 ## Отдельные операции позиций
 
 У customerorder, demand, enter, invoicein, invoiceout, loss, move, purchaseorder, purchasereturn,
-retaildemand, retailsalesreturn, salesreturn, supply (общая реализация — `positions.Service[T]`):
+retaildemand, retailsalesreturn, salesreturn, supply и internalorder (общая реализация —
+`positions.Service[T]`). Inventory, commissionreportin/out, payroll и pricelist — те же методы со своей
+формой строки (у commissionreportin ещё набор `…ReturnPositions`), prepayment и prepaymentreturn —
+только чтение строк:
 
 | Метод | Маршрут |
 | --- | --- |
@@ -18,7 +21,8 @@ retaildemand, retailsalesreturn, salesreturn, supply (общая реализа�
 | `DeleteManyPositions(ctx, id, []positionID)` — 1–1000, ответ без тела | `POST …/positions/delete` |
 
 meta.type строк — `{тип}position`, кроме invoicein/invoiceout (`invoiceposition`), retaildemand
-(`demandposition`) и retailsalesreturn (`salesreturnposition`): так в примерах источника. Список
+(`demandposition`), retailsalesreturn (`salesreturnposition`) и pricelist (`pricelistrow`): так в
+примерах источника. Список
 строк — прежний `GetPositions`.
 
 ## Шаблон документа — `New(ctx, basis)`
@@ -27,7 +31,8 @@ meta.type строк — `{тип}position`, кроме invoicein/invoiceout (`i
 `{"customerOrder": {meta}}` и т.п. Документ не создаётся; ответ — модель документа, которую можно
 доработать и передать в Create. Есть у cashin, cashout, demand, enter, invoicein, invoiceout, loss,
 move, paymentin, paymentout, purchaseorder, purchasereturn, retaildemand, retailsalesreturn,
-salesreturn, supply. Какие основания допустимы для типа, проверяет сервер.
+salesreturn, supply, а также internalorder, inventory, facturein, factureout, retaildrawercashin,
+retaildrawercashout. Какие основания допустимы для типа, проверяет сервер.
 
 ## Автозаполнение — пакет `wizard`, `c.Wizard()`
 
@@ -47,7 +52,10 @@ inventory, move, internalorder, enter, loss, payroll; цены — не у inven
 
 `POST entity/{type}/{id}/trash`, ответ 200 или 204 без тела. У cashin, cashout, customerorder,
 demand, enter, invoicein, invoiceout, loss, move, paymentin, paymentout, purchaseorder,
-purchasereturn, retaildemand, retailsalesreturn, retailshift, salesreturn, supply. Восстановление из
+purchasereturn, retaildemand, retailsalesreturn, retailshift, salesreturn, supply и у всех новых
+документов (internalorder, inventory, facturein, factureout, commissionreportin, commissionreportout,
+counterpartyadjustment, pricelist, prepayment, prepaymentreturn, retaildrawercashin,
+retaildrawercashout, payroll). Восстановление из
 корзины API не предоставляет; `Delete` удаляет безвозвратно.
 
 ## Связи документов
@@ -67,6 +75,10 @@ Update как `model.Field[model.Reference]` или `model.Field[[]model.Referen
 | purchasereturn, salesreturn | factureIn/factureOut, payments; losses — у salesreturn |
 | supply | purchaseOrder, factureIn, invoicesIn, payments, productionTask, returns |
 | paymentin/out, cashin/out | operations, factureOut/factureIn (раньше) |
+| internalorder | moves, purchaseOrders, productionTasks |
+| inventory | enters, losses |
+| facturein; factureout | supplies, payments; demands, returns, payments |
+| commissionreportin/out | payments |
 
 Только для чтения по маркеру основной таблицы: payments у invoicein и invoiceout, demand и supply у
 move. supply у purchasereturn и demand у salesreturn задаются только в Create (основание). payedSum
@@ -84,3 +96,17 @@ supply, demand, purchasereturn — pack, slot, things и коды маркиро
 Demand читает и пишет транспортные поля («Другие поля»): cargoName, carrier, consignee(Branch),
 consignor(Branch), goodPackQuantity, shippingInstructions, stateContractId, transportFacility(Number),
 shippingDocumentNumber, shippingDocumentDate ([demand](demand.md)).
+
+## Маркер «Только для чтения» против примеров
+
+По общему правилу SDK маркер таблицы важнее примеров; исключения — только с решением пользователя.
+У новых документов это закрывает запись полей, которые примеры источника передают:
+
+- internalorder и commissionreportout — `positions` в теле документа (строки — методами позиций);
+  у commissionreportout также `attributes` и `shared`;
+- counterpartyadjustment, retaildrawercashin и retaildrawercashout — `sum`: сумму через SDK не задать;
+- pricelist — `priceType`; commissionreportin — `sum`, `vatSum`.
+
+Связи, которые ticket называл «только для чтения», а таблица не помечает (moves/purchaseOrders
+внутреннего заказа, enters/losses инвентаризации), пишутся по общему правилу связей. У payroll
+`payments` только читаются: источник помечает допустимые типы связи readonly.

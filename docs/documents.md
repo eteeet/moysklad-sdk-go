@@ -13,8 +13,9 @@ Create — POST `entity/<type>`, Update — PUT `entity/<type>/{id}`.
 После неоднозначного сбоя POST проверь результат на сервере до повторного создания.
 
 Get/Update проверяют форму UUID без ограничения версии. Create проверяет только
-непустой Meta.Href обязательных ссылок, а у InvoiceIn/InvoiceOut и RetailSalesReturn также
-Name != "" без trim. Update отклоняет полностью незаданный request. Name остальных документов
+непустой Meta.Href обязательных ссылок, а у InvoiceIn/InvoiceOut, RetailSalesReturn, InternalOrder и
+CommissionReportOut также Name != "" без trim; у CommissionReportIn/Out и Payroll — заданные даты
+периода, у PriceList — непустые columns. Update отклоняет полностью незаданный request. Name остальных документов
 необязателен; SDK не подставляет суммы, даты, имена и другие defaults.
 Типы/доступность ссылок, требуемые сочетания полей и бизнес-правила проверяет API.
 

@@ -102,6 +102,19 @@ Get/Create/Update документов и типизированные entity.Ge
 | `entity/enter` | `Get/List/Create/Update` и `GetPositions` | [Enter](docs/enter.md) |
 | `entity/loss` | `Get/List/Create/Update` и `GetPositions` | [Loss](docs/loss.md) |
 | `entity/salesreturn` | `Get/List/Create/Update` и `GetPositions` | [SalesReturn](docs/salesreturn.md) |
+| `entity/internalorder` | `Get/List/Create/Update`, позиции, `New`, `Trash` | [InternalOrder](docs/internalorder.md) |
+| `entity/inventory` | `Get/List/Create/Update`, позиции, `New`, `Trash` | [Inventory](docs/inventory.md) |
+| `entity/facturein` | `Get/List/Create/Update`, `New`, `Trash` | [FactureIn](docs/facturein.md) |
+| `entity/factureout` | `Get/List/Create/Update`, `New`, `Trash` | [FactureOut](docs/factureout.md) |
+| `entity/commissionreportin` | `Get/List/Create/Update`, два вида строк, `Trash` | [CommissionReportIn](docs/commissionreportin.md) |
+| `entity/commissionreportout` | `Get/List/Create/Update`, позиции, `Trash` | [CommissionReportOut](docs/commissionreportout.md) |
+| `entity/counterpartyadjustment` | `Get/List/Create/Update`, `Trash` | [CounterpartyAdjustment](docs/counterpartyadjustment.md) |
+| `entity/pricelist` | `Get/List/Create/Update`, строки, `Trash` | [PriceList](docs/pricelist.md) |
+| `entity/prepayment` | `Get/List/Delete`, `GetPositions/GetPosition`, `Trash` | [Prepayment](docs/prepayment.md) |
+| `entity/prepaymentreturn` | `Get/List/Delete`, `GetPositions/GetPosition`, `Trash` | [PrepaymentReturn](docs/prepaymentreturn.md) |
+| `entity/retaildrawercashin` | `Get/List/Create/Update`, `New`, `Trash` | [RetailDrawerCashIn](docs/retaildrawercashin.md) |
+| `entity/retaildrawercashout` | `Get/List/Create/Update`, `New`, `Trash` | [RetailDrawerCashOut](docs/retaildrawercashout.md) |
+| `entity/payroll` | `Get/List/Create/Update`, позиции, `Trash` | [Payroll](docs/payroll.md) |
 
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,
