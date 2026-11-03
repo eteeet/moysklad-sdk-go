@@ -26,6 +26,7 @@ var statusHandles = map[string]string{
 	"usersettings":          "Context",
 	"companysubscription":   "Context",
 	"turnover":              "Report.Turnover",
+	"report/counterparty":   "Report.Counterparty",
 	"sales":                 "Report.Sales",
 	"orders":                "Report.Sales",
 	"profit":                "Report.Profit",

@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 55/60, документы 35/37, отчёты 6/9, прочее 8/8.
+Итого: справочники 55/60, документы 35/37, отчёты 7/9, прочее 8/8.
 
 ## Справочники
 
@@ -115,7 +115,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 
 - [x] dashboard — day/week/month
 - [x] byoperations — stock/reserve/intransit
-- [ ] counterparty — показатели контрагентов
+- [x] report/counterparty — показатели контрагентов (List, Selected, Get)
 - [ ] money — plotseries/byaccount
 - [x] profit — byproduct/byvariant/byemployee/bycounterparty/bysaleschannel
 - [x] orders — plotseries
