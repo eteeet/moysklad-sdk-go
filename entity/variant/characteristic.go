@@ -83,7 +83,7 @@ func (s *Service) GetCharacteristic(ctx context.Context, id string, opts ...tran
 }
 
 // CreateCharacteristic создаёт одно описание с непустым именем; изменения описаний API не описывает,
-// массовое создание (POST массива) в SDK v1 не входит.
+// массовое создание — CreateManyCharacteristics.
 // Права на редактирование товаров проверяет сервер. Не повторять после неоднозначного сбоя:
 // возможен дубль.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/characteristic#3-sozdat-harakteristiku

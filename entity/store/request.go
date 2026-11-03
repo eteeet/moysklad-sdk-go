@@ -53,20 +53,18 @@ type ZoneUpdateRequest struct {
 }
 
 // SlotCreateRequest: обязателен name; имена и штрихкоды ячеек уникальны в пределах склада.
-// Zone таблица помечает «только для чтения», но источник даёт отдельные примеры создания и
-// изменения ячейки с зоной — SDK поле передаёт: без него ячейку нельзя привязать к зоне.
+// zone таблица помечает «только для чтения» — SDK его не пишет, хотя источник даёт примеры
+// создания и изменения ячейки с зоной: пометка таблицы сильнее примеров, исключение не утверждено.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/store#3-sozdat-yachejku-sklada
 type SlotCreateRequest struct {
-	Name         string                       `json:"name"`
-	ExternalCode model.Field[string]          `json:"externalCode,omitzero"`
-	Barcode      model.Field[string]          `json:"barcode,omitzero"`
-	Zone         model.Field[model.Reference] `json:"zone,omitzero"`
+	Name         string              `json:"name"`
+	ExternalCode model.Field[string] `json:"externalCode,omitzero"`
+	Barcode      model.Field[string] `json:"barcode,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/store#3-izmenit-yachejku-sklada
 type SlotUpdateRequest struct {
-	Name         model.Field[string]          `json:"name,omitzero"`
-	ExternalCode model.Field[string]          `json:"externalCode,omitzero"`
-	Barcode      model.Field[string]          `json:"barcode,omitzero"`
-	Zone         model.Field[model.Reference] `json:"zone,omitzero"`
+	Name         model.Field[string] `json:"name,omitzero"`
+	ExternalCode model.Field[string] `json:"externalCode,omitzero"`
+	Barcode      model.Field[string] `json:"barcode,omitzero"`
 }
