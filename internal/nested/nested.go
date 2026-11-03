@@ -131,6 +131,36 @@ func DeleteMany(ctx context.Context, c Collection, ids []string, opts []transpor
 	return write.DeleteManyNested(ctx, c.Client, operation, c.endpoint(), c.MetaType, ids, opts)
 }
 
+// DeleteRows — один POST {коллекция}/delete с meta элементов по ids для коллекций, где источник
+// отвечает 200 или 204 с пустым телом (строки документов): результата по элементам нет.
+func DeleteRows(ctx context.Context, c Collection, operation string, ids []string, opts []transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	if !validID(c.ParentID) {
+		return fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
+	}
+	if len(ids) == 0 || len(ids) > batch.MaxItems {
+		return fmt.Errorf("moysklad: %s: ids must contain 1 to %d elements, got %d", operation, batch.MaxItems, len(ids))
+	}
+	type item struct {
+		Meta model.Meta `json:"meta"`
+	}
+	body := make([]item, len(ids))
+	for i, id := range ids {
+		if !validID(id) {
+			return fmt.Errorf("moysklad: %s: ids[%d]: id must be a UUID", operation, i)
+		}
+		body[i] = item{model.Meta{Href: c.Client.Href(c.endpoint() + "/" + id), Type: c.MetaType, MediaType: "application/json"}}
+	}
+	resp, err := c.Client.Send(ctx, http.MethodPost, c.endpoint()+"/delete", nil, body, nil, opts...)
+	if err != nil {
+		return fmt.Errorf("%s: %w", operation, err)
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
+	}
+	return nil
+}
+
 func (c Collection) check(operation, id string) error {
 	if !validID(c.ParentID) || !validID(id) {
 		return fmt.Errorf("moysklad: %s: %s and %s ids must be UUIDs", operation, c.Parent, c.Item)

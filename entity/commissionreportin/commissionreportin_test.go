@@ -147,6 +147,7 @@ func TestRequestJSON(t *testing.T) {
 				`"contract":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/contract/33333333-3333-3333-3333-333333333333","type":"contract"}},` +
 				`"commissionPeriodStart":"2016-11-01 10:07:00.000","commissionPeriodEnd":"2016-11-29 10:07:00.000"}`)},
 			{"update", fullUpdate, read(t, "custom/commissionreportin/update.golden.json")},
+			{"update existing rows", commissionreportin.UpdateRequest{Positions: model.Value([]commissionreportin.PositionRequest{{ID: model.Value("7944ef04-f831-11e5-7a69-971500188b20"), Price: model.Value(0.5)}}), ReturnToCommissionerPositions: model.Value([]commissionreportin.ReturnPositionRequest{{ID: model.Value("7944ef04-f831-11e5-7a69-971500188b20"), Reward: model.Value(0.0)}})}, []byte(`{"positions":[{"id":"7944ef04-f831-11e5-7a69-971500188b20","price":0.5}],"returnToCommissionerPositions":[{"id":"7944ef04-f831-11e5-7a69-971500188b20","reward":0}]}`)},
 			{"position update", commissionreportin.PositionRequest{Price: model.Value(0.0), VATEnabled: model.Value(false)}, []byte(`{"price":0,"vatEnabled":false}`)},
 		} {
 			t.Run(codec.Name+"/"+tc.name, func(t *testing.T) {
@@ -166,7 +167,7 @@ func TestRequestJSON(t *testing.T) {
 		}
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[commissionreportin.PositionRequest](), reflect.TypeFor[commissionreportin.ReturnPositionRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID"} {
+		for _, name := range []string{"Meta", "AccountID"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}

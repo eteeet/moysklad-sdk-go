@@ -94,8 +94,8 @@ doc, err := s.Create(ctx, commissionreportin.CreateRequest{
 - Поля строки: `meta`, `id`, `accountId` (только чтение), `assortment`, `quantity`, `price`, `vat`,
   `vatEnabled`, `reward`; у «реализовано» ещё `pack` (`positions.Pack`/`positions.PackRequest`).
 - Positions и ReturnToCommissionerPositions в Create/Update — не больше 1000 строк каждый
-  (1001 отклоняется до запроса); в Update массив заменяет весь набор. `PositionRequest` не имеет
-  `id`: строки массива в Update — новые; адресная правка — `UpdatePosition`.
+  (1001 отклоняется до запроса); в Update массив заменяет весь набор: строка с `ID` — существующая (id только адресует её),
+  без — новая.
 
 ## Ограничения и противоречия источника
 

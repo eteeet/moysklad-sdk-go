@@ -93,11 +93,11 @@ func TestPositionWrites(t *testing.T) {
 	if err := rowService(c).DeletePosition(ctx, mutDoc, mutRow); err != nil {
 		t.Fatal(err)
 	}
-	if err := rowService(c).DeletePositions(ctx, mutDoc, []string{mutRow}); err != nil {
+	if err := rowService(c).DeleteManyPositions(ctx, mutDoc, []string{mutRow}); err != nil {
 		t.Fatal(err)
 	}
 	invoice, _ := positions.NewService[positions.Position](c, "invoiceout")
-	if err := invoice.DeletePositions(ctx, mutDoc, []string{mutRow}); err != nil {
+	if err := invoice.DeleteManyPositions(ctx, mutDoc, []string{mutRow}); err != nil {
 		t.Fatal(err)
 	}
 	want := []string{
@@ -136,7 +136,7 @@ func TestDeletePositionsResponses(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			err = rowService(c).DeletePositions(t.Context(), mutDoc, []string{mutRow})
+			err = rowService(c).DeleteManyPositions(t.Context(), mutDoc, []string{mutRow})
 			if (err == nil) != tc.ok || calls.Load() != 1 {
 				t.Fatalf("err = %v, calls = %d", err, calls.Load())
 			}
@@ -174,11 +174,13 @@ func TestPositionValidation(t *testing.T) {
 			return err
 		},
 		"delete bad row":    func(o ...transport.RequestOption) error { return s.DeletePosition(ctx, mutDoc, "x", o...) },
-		"delete many empty": func(o ...transport.RequestOption) error { return s.DeletePositions(ctx, mutDoc, nil, o...) },
-		"delete many 1001":  func(o ...transport.RequestOption) error { return s.DeletePositions(ctx, mutDoc, many, o...) },
-		"delete many bad":   func(o ...transport.RequestOption) error { return s.DeletePositions(ctx, mutDoc, []string{"x"}, o...) },
+		"delete many empty": func(o ...transport.RequestOption) error { return s.DeleteManyPositions(ctx, mutDoc, nil, o...) },
+		"delete many 1001":  func(o ...transport.RequestOption) error { return s.DeleteManyPositions(ctx, mutDoc, many, o...) },
+		"delete many bad": func(o ...transport.RequestOption) error {
+			return s.DeleteManyPositions(ctx, mutDoc, []string{"x"}, o...)
+		},
 		"delete many doc": func(o ...transport.RequestOption) error {
-			return s.DeletePositions(ctx, "../x", []string{mutRow}, o...)
+			return s.DeleteManyPositions(ctx, "../x", []string{mutRow}, o...)
 		},
 	} {
 		info := transport.ResponseInfo{StatusCode: 503}

@@ -120,6 +120,7 @@ func TestRequestJSON(t *testing.T) {
 			{"create minimal", minimal, []byte(`{"organization":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/organization/11111111-1111-1111-1111-111111111111","type":"organization"}},` +
 				`"startPayrollPeriod":"2026-03-24 00:00:00.000","endPayrollPeriod":"2026-03-25 23:59:59.000"}`)},
 			{"update", fullUpdate, read(t, "custom/payroll/update.golden.json")},
+			{"update existing row", payroll.UpdateRequest{Positions: model.Value([]payroll.PositionRequest{{ID: model.Value("7944ef04-f831-11e5-7a69-971500188b20"), BaseSalary: model.Value(12.5)}})}, []byte(`{"positions":[{"id":"7944ef04-f831-11e5-7a69-971500188b20","baseSalary":12.5}]}`)},
 			{"update empty positions", payroll.UpdateRequest{Positions: model.Value([]payroll.PositionRequest{})}, []byte(`{"positions":[]}`)},
 			{"position update", payroll.PositionRequest{BaseSalary: model.Value(20.0)}, []byte(`{"baseSalary":20}`)},
 		} {
@@ -139,7 +140,7 @@ func TestRequestJSON(t *testing.T) {
 			}
 		}
 	}
-	for _, name := range []string{"ID", "Meta", "AccountID"} {
+	for _, name := range []string{"Meta", "AccountID"} {
 		if _, ok := reflect.TypeFor[payroll.PositionRequest]().FieldByName(name); ok {
 			t.Errorf("PositionRequest contains read-only %s", name)
 		}

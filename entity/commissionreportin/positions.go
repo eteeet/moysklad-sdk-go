@@ -3,7 +3,6 @@ package commissionreportin
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
@@ -64,7 +63,7 @@ func (s *Service) DeletePosition(ctx context.Context, id, positionID string, opt
 // DeleteManyPositions — POST …/positions/delete; ответ без тела, результата по элементам нет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/commissionreportin#3-massovoe-udalenie-pozicij-realizovano-komissionerom
 func (s *Service) DeleteManyPositions(ctx context.Context, id string, positionIDs []string, opts ...transport.RequestOption) error {
-	return s.rows().DeletePositions(ctx, id, positionIDs, opts...)
+	return s.rows().DeleteManyPositions(ctx, id, positionIDs, opts...)
 }
 
 // GetReturnPositions читает одну страницу строк «возврат на склад комиссионера»: только limit и
@@ -112,31 +111,5 @@ func (s *Service) DeleteReturnPosition(ctx context.Context, id, positionID strin
 // Источник отвечает 200 с пустым телом, поэтому результата по элементам нет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/commissionreportin#3-massovoe-udalenie-pozicij-vozvrata-na-sklad-komissionera
 func (s *Service) DeleteManyReturnPositions(ctx context.Context, id string, positionIDs []string, opts ...transport.RequestOption) error {
-	transport.ResetResponseInfo(opts)
-	operation := "delete commissionreportin " + id + " return positions"
-	if !validID(id) {
-		return fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
-	}
-	if len(positionIDs) == 0 || len(positionIDs) > batch.MaxItems {
-		return fmt.Errorf("moysklad: %s: ids must contain 1 to %d elements, got %d", operation, batch.MaxItems, len(positionIDs))
-	}
-	type item struct {
-		Meta model.Meta `json:"meta"`
-	}
-	endpoint := "entity/commissionreportin/" + id + "/" + returnPath
-	body := make([]item, len(positionIDs))
-	for i, positionID := range positionIDs {
-		if !validID(positionID) {
-			return fmt.Errorf("moysklad: %s: ids[%d]: id must be a UUID", operation, i)
-		}
-		body[i] = item{model.Meta{Href: s.client.Href(endpoint + "/" + positionID), Type: "commissionreportinreturnedposition", MediaType: "application/json"}}
-	}
-	resp, err := s.client.Send(ctx, http.MethodPost, endpoint+"/delete", nil, body, nil, opts...)
-	if err != nil {
-		return fmt.Errorf("%s: %w", operation, err)
-	}
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
-	}
-	return nil
+	return nested.DeleteRows(ctx, s.returned(id), "delete commissionreportin "+id+" return positions", positionIDs, opts)
 }

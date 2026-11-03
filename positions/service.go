@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"net/http"
 	"regexp"
 	"slices"
 
@@ -110,35 +109,8 @@ func (s *Service[T]) DeletePosition(ctx context.Context, documentID, positionID 
 	return nested.Delete(ctx, s.rows(documentID), positionID, opts)
 }
 
-// DeletePositions удаляет строки одним POST …/positions/delete с их meta. Источник отвечает 200 с
-// пустым телом, поэтому результата по элементам нет; 1–1000 строк, повторов нет.
-func (s *Service[T]) DeletePositions(ctx context.Context, documentID string, positionIDs []string, opts ...transport.RequestOption) error {
-	transport.ResetResponseInfo(opts)
-	rows := s.rows(documentID)
-	operation := "delete " + s.documentType + " " + documentID + " positions"
-	if !validID(documentID) {
-		return fmt.Errorf("moysklad: %s: document id must be a UUID", operation)
-	}
-	if len(positionIDs) == 0 || len(positionIDs) > batch.MaxItems {
-		return fmt.Errorf("moysklad: %s: ids must contain 1 to %d elements, got %d", operation, batch.MaxItems, len(positionIDs))
-	}
-	type item struct {
-		Meta model.Meta `json:"meta"`
-	}
-	endpoint := "entity/" + s.documentType + "/" + documentID + "/positions"
-	body := make([]item, len(positionIDs))
-	for i, id := range positionIDs {
-		if !validID(id) {
-			return fmt.Errorf("moysklad: %s: ids[%d]: id must be a UUID", operation, i)
-		}
-		body[i] = item{model.Meta{Href: s.client.Href(endpoint + "/" + id), Type: rows.MetaType, MediaType: "application/json"}}
-	}
-	resp, err := s.client.Send(ctx, http.MethodPost, endpoint+"/delete", nil, body, nil, opts...)
-	if err != nil {
-		return fmt.Errorf("%s: %w", operation, err)
-	}
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
-	}
-	return nil
+// DeleteManyPositions удаляет строки одним POST …/positions/delete с их meta. Источник отвечает 200
+// с пустым телом, поэтому результата по элементам нет; 1–1000 строк, повторов нет.
+func (s *Service[T]) DeleteManyPositions(ctx context.Context, documentID string, positionIDs []string, opts ...transport.RequestOption) error {
+	return nested.DeleteRows(ctx, s.rows(documentID), "delete "+s.documentType+" "+documentID+" positions", positionIDs, opts)
 }

@@ -40,5 +40,5 @@ func (s *Service) DeletePosition(ctx context.Context, id, positionID string, opt
 // DeleteManyPositions — POST …/positions/delete; ответ без тела, результата по элементам нет.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in#3-massovoe-udalenie-pozicij
 func (s *Service) DeleteManyPositions(ctx context.Context, id string, positionIDs []string, opts ...transport.RequestOption) error {
-	return s.rows().DeletePositions(ctx, id, positionIDs, opts...)
+	return s.rows().DeleteManyPositions(ctx, id, positionIDs, opts...)
 }

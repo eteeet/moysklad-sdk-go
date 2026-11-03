@@ -50,6 +50,8 @@ type UpdateRequest struct {
 // строки источник требует employee, baseSalary и pieceworkSalary (положительные, округляются до
 // целого) — проверяет сервер; в UpdatePosition обязательных полей нет.
 type PositionRequest struct {
+	// ID сопоставляет существующую строку в Update документа; для новой строки его не задают.
+	ID              model.Field[string]          `json:"id,omitzero"`
 	Employee        model.Field[model.Reference] `json:"employee,omitzero"`
 	BaseSalary      model.Field[float64]         `json:"baseSalary,omitzero"`
 	PieceworkSalary model.Field[float64]         `json:"pieceworkSalary,omitzero"`

@@ -80,8 +80,10 @@ type UpdateRequest struct {
 
 // PositionRequest — строка «реализовано» в Create/Update документа, CreatePositions и
 // UpdatePosition. Для новой строки сервер требует assortment и положительный quantity; в
-// UpdatePosition обязательных полей нет. Строки без id в Update документа — новые.
+// UpdatePosition обязательных полей нет.
 type PositionRequest struct {
+	// ID сопоставляет существующую строку в Update документа; для новой строки его не задают.
+	ID         model.Field[string]                `json:"id,omitzero"`
 	Assortment model.Field[model.Reference]       `json:"assortment,omitzero"`
 	Quantity   model.Field[float64]               `json:"quantity,omitzero"`
 	Price      model.Field[float64]               `json:"price,omitzero"`
@@ -93,6 +95,8 @@ type PositionRequest struct {
 
 // ReturnPositionRequest — строка «возврат на склад комиссионера»: поля PositionRequest без pack.
 type ReturnPositionRequest struct {
+	// ID сопоставляет существующую строку в Update документа; для новой строки его не задают.
+	ID         model.Field[string]          `json:"id,omitzero"`
 	Assortment model.Field[model.Reference] `json:"assortment,omitzero"`
 	Quantity   model.Field[float64]         `json:"quantity,omitzero"`
 	Price      model.Field[float64]         `json:"price,omitzero"`
