@@ -1,0 +1,19 @@
+  {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/productionstage/7944ef04-f831-11e5-7a69-971500188b19/materials/34f6344f-015e-11e6-9464-e4de0000006c",
+      "type": "productiontaskmaterial",
+      "mediaType": "application/json"
+    },
+    "id": "34f6344f-015e-11e6-9464-e4de0000006c",
+    "accountId": "d55cbfba-91f1-11e6-5bed-427b00000000",
+    "planQuantity": 3.0,
+    "assortment": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/product/57c9a841-99d8-11ee-0a83-0a2e00000773",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/product/metadata",
+        "type": "product",
+        "mediaType": "application/json",
+        "uuidHref": "https://online.moysklad.ru/app/#good/edit?id=57c98e8c-99d8-11ee-0a83-0a2e00000358"
+      }
+    }
+  }

@@ -1,0 +1,13 @@
+{
+  "description": "тестовое производственное задание на обновление",
+  "productionStart": "2023-12-14 10:00:00.000",
+  "awaiting": false,
+  "reserve": false,
+  "state": null,
+  "productionRows": [
+    {"id": "e66de5ff-9a5c-11ee-0a83-0a2e00000910", "productionVolume": 15},
+    {"processingPlan": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/66666666-6666-6666-6666-666666666666", "type": "processingplan"}}, "productionVolume": 0.5}
+  ],
+  "products": [],
+  "supplies": []
+}

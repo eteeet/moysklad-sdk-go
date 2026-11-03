@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/productiontask/metadata",
+    "mediaType": "application/json"
+  },
+  "attributes": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/productiontask/metadata/attributes",
+      "type": "attributemetadata",
+      "mediaType": "application/json",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "createShared": false
+}

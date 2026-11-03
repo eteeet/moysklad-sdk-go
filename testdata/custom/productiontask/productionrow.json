@@ -1,0 +1,32 @@
+{
+  "accountId": "899eb32d-99d5-11ee-ac12-000e00000001",
+  "externalCode": "3oKBsRwZigCESI13Mncqq1",
+  "id": "85b4d986-99d6-11ee-ac12-000f0000011c",
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/productiontask/85b4c65e-99d6-11ee-ac12-000f0000011a/productionrows/85b4d986-99d6-11ee-ac12-000f0000011c",
+    "mediaType": "application/json",
+    "type": "productionrow",
+    "uuidHref": "https://online.moysklad.ru/app/#productionrow/edit?id=85b4d986-99d6-11ee-ac12-000f0000011c"
+  },
+  "name": "example-name",
+  "processingPlan": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/81269542-99d6-11ee-ac12-000f00000115",
+      "mediaType": "application/json",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/processingplan/metadata",
+      "type": "processingplan",
+      "uuidHref": "https://online.moysklad.ru/app/#processingplan/edit?id=81269542-99d6-11ee-ac12-000f00000115"
+    }
+  },
+  "productionVariant": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/variant/c2774209-421f-11f1-0a82-06c50000023f",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/variant/metadata",
+      "type": "variant",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#feature/edit?id=c2772aff-421f-11f1-0a82-06c50000023c"
+    }
+  },
+  "productionVolume": 2.0,
+  "updated": "2023-12-13 19:41:53.990"
+}

@@ -34,6 +34,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/processing"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/productionstagecompletion"
+	"github.com/eteeet/moysklad-sdk-go/entity/productiontask"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
@@ -122,6 +123,10 @@ func TestDocumentTrash(t *testing.T) {
 		}},
 		{"supply", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
 			s, _ := supply.NewService(c)
+			return s.Trash(ctx, id, o...)
+		}},
+		{"productiontask", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
+			s, _ := productiontask.NewService(c)
 			return s.Trash(ctx, id, o...)
 		}},
 		{"processing", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {

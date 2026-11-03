@@ -1,0 +1,12 @@
+{
+  "enableHourAccounting": false,
+  "processingUnitCost": 70,
+  "labourUnitCost": 30.5,
+  "standardHourCost": 0,
+  "standardHourUnit": 43.5,
+  "plannedEndDate": "2023-12-20 18:00:00.000",
+  "materials": [
+    {"id": "34f6344f-015e-11e6-9464-e4de0000006c", "planQuantity": 3},
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/57c9a841-99d8-11ee-0a83-0a2e00000773", "type": "product"}}, "planQuantity": 2}
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/productionstage/19070bfd-99d6-11ee-0a83-0a2e0000076b",
+    "type": "productionstage",
+    "mediaType": "application/json"
+  },
+  "id": "19070bfd-99d6-11ee-0a83-0a2e0000076b",
+  "accountId": "4ac40edf-99d4-11ee-0a83-0ded0000002b",
+  "stage": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/processingstage/4b3ada86-99d4-11ee-0a83-0a2e0000070e",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/processingstage/metadata",
+      "type": "processingstage",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#processingstage/edit?id=4b3ada86-99d4-11ee-0a83-0a2e0000070e"
+    }
+  },
+  "productionRow": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/productiontask/1906fa20-99d6-11ee-0a83-0a2e00000767/productionrows/19070a2e-99d6-11ee-0a83-0a2e0000076a",
+      "type": "productionrow",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#productionrow/edit?id=19070a2e-99d6-11ee-0a83-0a2e0000076a"
+    }
+  },
+  "materials": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/productionstage/19070bfd-99d6-11ee-0a83-0a2e0000076b/materials",
+      "type": "productiontaskmaterial",
+      "mediaType": "application/json",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "orderingPosition": 0,
+  "totalQuantity": 1.0,
+  "completedQuantity": 0.0,
+  "availableQuantity": 1.0,
+  "blockedQuantity": 0.0,
+  "skippedQuantity": 0.0,
+  "processingUnitCost": 2.0,
+  "labourUnitCost": 0.0,
+  "standardHourUnit": 0.0,
+  "standardHourCost": 0.0,
+  "enableHourAccounting": false,
+  "instruction": "1.Откройте верхнюю крышку и извлеките блок фотобарабана\n2.Установите в нижнее положение переключатель в правом нижнем 3.углу блока фотобарабана\n4.Вытащите тонер-картридж\n5.Поставьте на его место новый\n\nПо факту выполнения всех шагов обратитесь к руководителю",
+  "files": {
+    "meta": {
+      "href": "https://api.ru/api/remap/1.2/entity/productionstage/19070bfd-99d6-11ee-0a83-0a2e0000076be/files",
+      "type": "files",
+      "mediaType": "application/json",
+      "size": 2,
+      "limit": 1000,
+      "offset": 0
+    }
+  }
+}
