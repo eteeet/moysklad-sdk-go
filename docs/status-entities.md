@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 36/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 37/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -17,7 +17,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] bonusprogram — бонусная программа
 - [x] bonustransaction — бонусная операция
 - [x] bundle — комплект: Get/List/Create/Update, GetComponents/GetComponent
-- [ ] cashier — кассир (retailstore/{id}/cashiers)
+- [x] cashier — кассир: RetailStore().ListCashiers/GetCashier (только чтение)
 - [x] characteristic — характеристики модификаций: List/Get/Create
 - [x] companysettings — настройки компании: Context().CompanySettings/UpdateCompanySettings; метаданные — metadata.GetCompanySettings
 - [x] companysubscription — подписка компании: Context().Subscription (только чтение)

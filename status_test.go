@@ -14,6 +14,7 @@ import (
 // Строки статуса, которые не совпадают с именем метода группы Entity.
 var statusHandles = map[string]string{
 	"characteristic":      "Entity.Variant",
+	"cashier":             "Entity.RetailStore",
 	"companysettings":     "Entity.Metadata",
 	"states":              "Entity.Metadata",
 	"entity/metadata":     "Entity.Metadata",
