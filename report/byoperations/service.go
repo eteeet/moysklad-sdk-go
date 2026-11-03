@@ -11,8 +11,8 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
-// Options — параметры всех трёх отчётов. Assortment обязателен: ссылка на товар, модификацию
-// или партию (meta.type product, variant или consignment) уходит фильтром
+// Options — параметры всех трёх отчётов. Assortment обязателен: непустой meta.href товара,
+// модификации или партии уходит фильтром
 // filter=assortment=<href>; другой фильтрации источник не описывает. Limit=0 — 1000.
 // Extra — прочие параметры как есть, без filter, limit и offset; имена общих параметров
 // отчётов (momentFrom, momentTo, groupBy, interval), expand и async query.ReportOptions тоже
@@ -25,8 +25,9 @@ type Options struct {
 }
 
 func (o Options) values() (url.Values, error) {
-	if key := o.Assortment.Meta.Type; o.Assortment.Meta.Href == "" || key != "product" && key != "variant" && key != "consignment" {
-		return nil, fmt.Errorf("moysklad: assortment must be a product, variant or consignment reference")
+	// В запрос уходит только href; тип ссылки (товар, модификация или партия) проверяет сервер.
+	if o.Assortment.Meta.Href == "" {
+		return nil, fmt.Errorf("moysklad: assortment meta.href must not be empty")
 	}
 	if o.Extra.Has(query.ParamLimit) || o.Extra.Has(query.ParamOffset) {
 		return nil, fmt.Errorf("moysklad: use Limit and Offset instead of Extra")

@@ -138,6 +138,8 @@ func TestHTTP(t *testing.T) {
 		{"full", byoperations.Options{Assortment: ref("entity/consignment/c1", "consignment"), Limit: 2, Offset: 4, Extra: url.Values{"x": {"1"}}}, full},
 		{"defaults", byoperations.Options{Assortment: ref("entity/product/p1", "product")}, defaults},
 		{"variant", byoperations.Options{Assortment: ref("entity/variant/v1", "variant")}, strings.ReplaceAll(defaults, "product%2Fp1", "variant%2Fv1")},
+		// Тип ссылки в запрос не уходит и до HTTP не требуется.
+		{"href only", byoperations.Options{Assortment: model.Reference{Meta: model.Meta{Href: ref("entity/product/p1", "product").Meta.Href}}}, defaults},
 	}
 	for _, tc := range options {
 		t.Run("stock/"+tc.name, func(t *testing.T) {
@@ -215,7 +217,6 @@ func TestValidation(t *testing.T) {
 		for name, options := range map[string]byoperations.Options{
 			"no assortment": {},
 			"no href":       {Assortment: model.Reference{Meta: model.Meta{Type: "product"}}},
-			"bundle":        {Assortment: ref("entity/bundle/b1", "bundle")},
 			"extra limit":   {Assortment: p, Extra: url.Values{"limit": {"5"}}},
 			"extra offset":  {Assortment: p, Extra: url.Values{"offset": {"5"}}},
 			"extra filter":  {Assortment: p, Extra: url.Values{"filter": {"store=x"}}},

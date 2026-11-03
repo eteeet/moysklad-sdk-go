@@ -18,7 +18,7 @@
 
 | Поле | Query | Правило |
 | --- | --- | --- |
-| `Assortment model.Reference` | `filter=assortment=<href>` | обязателен; meta.type `product`, `variant` или `consignment` и непустой href, иначе ошибка до HTTP |
+| `Assortment model.Reference` | `filter=assortment=<href>` | обязателен непустой meta.href (товар, модификация или партия), иначе ошибка до HTTP; meta.type в запрос не уходит, тип ссылки проверяет сервер |
 | `Limit int` | `limit` | 0 — 1000; допустимо 1–1000 |
 | `Offset int` | `offset` | ≥ 0; всегда передаётся |
 | `Extra url.Values` | как есть | без `filter`, `limit`, `offset`, `expand`, `async`; имена `momentFrom`, `momentTo`, `groupBy`, `interval` тоже отклоняются (общий `query.ReportOptions`) — источник их для этого отчёта не описывает |
