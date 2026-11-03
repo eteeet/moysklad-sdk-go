@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 40/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 41/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -22,7 +22,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] companysettings — настройки компании: Context().CompanySettings/UpdateCompanySettings; метаданные — metadata.GetCompanySettings
 - [x] companysubscription — подписка компании: Context().Subscription (только чтение)
 - [x] consignment — партия
-- [ ] contentcard — карточка контента
+- [x] contentcard — карточка контента; изображения — Entity.Images
 - [x] contract — договор
 - [x] counterparty — контрагент
 - [x] country — страна

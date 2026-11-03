@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/contentcard/529eb5b6-d726-11f0-0a80-073800000329",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/contentcard/metadata",
+    "type": "contentcard",
+    "mediaType": "application/json"
+  },
+  "id": "529eb5b6-d726-11f0-0a80-073800000329",
+  "accountId": "e008259e-d666-11f0-0a83-14a000000002",
+  "name": "товар",
+  "description": "Описание",
+  "cardContentName": "Название",
+  "assortment": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/product/013c258e-d667-11f0-0a80-073800000148",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/product/metadata",
+      "type": "product",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru//app/#good/edit?id=013b7724-d667-11f0-0a80-073800000146"
+    }
+  },
+  "salePlatform": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/saleplatform/0f9b8b4c-4597-4772-b896-c8aff047a117",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/saleplatform/metadata",
+      "type": "saleplatform",
+      "mediaType": "application/json"
+    }
+  },
+  "images": {
+    "meta": {
+      "href": "http://localhost/api/remap/1.2/entity/contentcard/529eb5b6-d726-11f0-0a80-073800000329/images",
+      "type": "image",
+      "mediaType": "application/json",
+      "size": 0,
+      "limit": 1000,
+      "offset": 0
+    }
+  },
+  "salesChannels": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/saleschannel/31e8ce0f-c99f-4824-a930-83fe7de68cd6",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/saleschannel/metadata",
+        "type": "saleschannel",
+        "mediaType": "application/json",
+        "uuidHref": "https://online.moysklad.ru/app/#saleschannel/edit?id=31e8ce0f-c99f-4824-a930-83fe7de68cd6"
+      }
+    }
+  ]
+}

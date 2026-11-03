@@ -1,0 +1,6 @@
+{
+  "name": "товар", "description": "Описание", "cardContentName": "Название",
+  "assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/013c258e-d667-11f0-0a80-073800000148", "type": "product", "mediaType": "application/json"}},
+  "salePlatform": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/saleplatform/0f9b8b4c-4597-4772-b896-c8aff047a117", "type": "saleplatform", "mediaType": "application/json"}},
+  "salesChannels": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/saleschannel/31e8ce0f-c99f-4824-a930-83fe7de68cd6", "type": "saleschannel", "mediaType": "application/json"}}]
+}
