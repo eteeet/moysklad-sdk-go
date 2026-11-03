@@ -116,6 +116,23 @@ Get/Create/Update документов и типизированные entity.Ge
 | `entity/retaildrawercashout` | `Get/List/Create/Update`, `New`, `Trash` | [RetailDrawerCashOut](docs/retaildrawercashout.md) |
 | `entity/payroll` | `Get/List/Create/Update`, позиции, `Trash` | [Payroll](docs/payroll.md) |
 
+## Производство
+
+| Пакет | Методы | Контракт полей и ограничения |
+| --- | --- | --- |
+| `entity/processingplanfolder` | `Get/List/Create/Update`, массовые | [ProcessingPlanFolder](docs/processingplanfolder.md) |
+| `entity/processingstage` | `Get/List/Create/Update`, массовые | [ProcessingStage](docs/processingstage.md) |
+| `entity/processingprocess` | `Get/List/Create/Update`, массовые, позиции-этапы | [ProcessingProcess](docs/processingprocess.md) |
+| `entity/processingplan` | `Get/List/Create/Update`, массовые, этапы, материалы, параметрические материалы, продукты | [ProcessingPlan](docs/processingplan.md) |
+| `entity/processing` | `Get/List/Create/Update`, массовые, материалы, продукты, `New`, `Trash` | [Processing](docs/processing.md) |
+| `entity/processingorder` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [ProcessingOrder](docs/processingorder.md) |
+| `entity/productiontask` | `Get/List/Create/Update`, массовые, позиции, продукты, этапы и их материалы, `Trash` | [ProductionTask](docs/productiontask.md) |
+| `entity/productionstagecompletion` | `Get/List/Create/Update`, массовые, материалы, продукты, `Trash` | [ProductionStageCompletion](docs/productionstagecompletion.md) |
+
+Строки производства — собственные формы каждого ресурса, не `positions.Position`; операции строк —
+только те, что описывает источник (например, у заказа на производство нет создания отдельной позиции).
+Metadata техкарт, техопераций и заданий — общий пакет `metadata` (`c.Metadata().Get(ctx, "processing")`).
+
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,
 строки — отдельным GetPositions. Embedded positions ограничены 1000 и полностью

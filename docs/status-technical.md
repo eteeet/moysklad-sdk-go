@@ -73,16 +73,16 @@
 
 - [x] Get/Create/Update: 16 справочников, 18 документов
 - [x] GetPositions: generic GetPage и typed в 13 документах
-- [x] List: 16 справочников со страницами, assortment, pricetype и характеристики (массив целиком), 18 документов
+- [x] List: 20 справочников со страницами, assortment, pricetype и характеристики (массив целиком), 22 документа
 - [x] Beta-режим: assortment List и All с assortmentWithoutStock на каждой странице, ListLegacy без него
 - [x] Вложенные коллекции справочников: зоны и ячейки склада, счета, контакты и события контрагента,
   счета юрлица, компоненты комплекта (с мутациями), кассиры, элементы пользовательского справочника
 - [x] Delete и массовое удаление (POST …/delete); у ассортимента — по meta разных типов
-- [x] Удаление в корзину: Trash у 31 документа ([documents-extra](documents-extra.md))
+- [x] Удаление в корзину: Trash у 35 документов ([documents-extra](documents-extra.md))
 - [x] Массовое создание/обновление (POST массивом): CreateMany/UpdateMany по разделам источника
 - [x] Отдельные операции позиций: Get, Create, Update, Delete, массовое удаление
 - [x] Позиции: pack, things, slot, trackingCodes, gtd, declaration, остатки (fields=stock)
-- [x] Шаблон документа: PUT entity/{type}/new — New у 22 документов
+- [x] Шаблон документа: PUT entity/{type}/new — New у 24 документов
 - [x] Автозаполнение: POST wizard/{тип} — пакет wizard
 - [ ] Печать (export), публикации, шаблоны печатных форм
 - [x] Файлы: список, загрузка base64, скачивание по downloadHref; изображения — пакет images

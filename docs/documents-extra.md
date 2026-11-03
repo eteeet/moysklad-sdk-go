@@ -32,8 +32,8 @@ meta.type строк — `{тип}position`, кроме invoicein/invoiceout (`i
 а не `CreateRequest`: прямого преобразования нет, нужные поля переносятся в `CreateRequest` вручную.
 Есть у cashin, cashout, demand, enter, invoicein, invoiceout, loss, move, paymentin, paymentout,
 purchaseorder, purchasereturn, retaildemand, retailsalesreturn, salesreturn, supply, а также
-internalorder, inventory, facturein, factureout, retaildrawercashin, retaildrawercashout. Какие
-основания допустимы для типа, проверяет сервер.
+internalorder, inventory, facturein, factureout, retaildrawercashin, retaildrawercashout, processing и
+processingorder. Какие основания допустимы для типа, проверяет сервер.
 
 ## Автозаполнение — пакет `wizard`, `c.Wizard()`
 
@@ -56,7 +56,8 @@ demand, enter, invoicein, invoiceout, loss, move, paymentin, paymentout, purchas
 purchasereturn, retaildemand, retailsalesreturn, retailshift, salesreturn, supply и у всех новых
 документов (internalorder, inventory, facturein, factureout, commissionreportin, commissionreportout,
 counterpartyadjustment, pricelist, prepayment, prepaymentreturn, retaildrawercashin,
-retaildrawercashout, payroll). Восстановление из
+retaildrawercashout, payroll), а также у документов производства (processing, processingorder,
+productiontask, productionstagecompletion). Восстановление из
 корзины API не предоставляет; `Delete` удаляет безвозвратно.
 
 ## Связи документов

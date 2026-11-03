@@ -67,7 +67,7 @@ for _, r := range res {
 | assortment | — | — | да, по `model.Meta` разных типов |
 | discount | — | да (округление копеек) | — |
 | group, customentity, region, saleplatform, thing, accumulationdiscount, personaldiscount, specialpricediscount, prepayment, prepaymentreturn | — | — | — |
-| остальные 49 сервисов `entity/*` | да | да | да |
+| остальные 57 сервисов `entity/*` | да | да | да |
 
 Раздел «Массовое обновление Сотрудников» называет только обновление, хотя второй элемент его
 примера — без meta (создание); SDK следует заголовку. Массовые операции вложенных коллекций (зоны и ячейки склада, счета,
