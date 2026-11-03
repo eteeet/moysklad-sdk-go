@@ -30,6 +30,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/currency"
 	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
+	"github.com/eteeet/moysklad-sdk-go/entity/discount"
 	"github.com/eteeet/moysklad-sdk-go/entity/employee"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
@@ -236,6 +237,7 @@ func batchCases() []batchCase {
 		createManyCase("uom", uom.NewService, (*uom.Service).CreateMany),
 		updateManyCase("uom", uom.NewService, (*uom.Service).UpdateMany),
 		deleteManyCase("uom", uom.NewService, (*uom.Service).DeleteMany),
+		updateManyCase("discount", discount.NewService, (*discount.Service).UpdateMany),
 		createManyCase("contentcard", contentcard.NewService, (*contentcard.Service).CreateMany),
 		updateManyCase("contentcard", contentcard.NewService, (*contentcard.Service).UpdateMany),
 		deleteManyCase("contentcard", contentcard.NewService, (*contentcard.Service).DeleteMany),
@@ -528,6 +530,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():             "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():            "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*discount.Service]():           "UpdateMany",
 		reflect.TypeFor[*contentcard.Service]():        "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*consignment.Service]():        "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*thing.Service]():              "",

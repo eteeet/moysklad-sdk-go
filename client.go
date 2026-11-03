@@ -19,6 +19,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/customentity"
 	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
+	"github.com/eteeet/moysklad-sdk-go/entity/discount"
 	"github.com/eteeet/moysklad-sdk-go/entity/employee"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
@@ -258,6 +259,9 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// Discount — Скидки: общий список и округление копеек.
+func (e EntityGroup) Discount() *discount.Service { return must(discount.NewService(e.transport)) }
 
 // ContentCard — Карточки контента.
 func (e EntityGroup) ContentCard() *contentcard.Service {

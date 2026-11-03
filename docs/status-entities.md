@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 41/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 42/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -28,7 +28,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] country — страна
 - [x] currency — валюта
 - [x] customentity — пользовательский справочник: Create/Update/Delete, элементы List/Get/Create/Update/Delete
-- [ ] discount — скидки (общий список)
+- [x] discount — скидки: общий список, изменение и массовое изменение округления копеек
 - [x] employee — сотрудник: Get/List/Create/Update, права GetSecurity/UpdateSecurity
 - [x] context/employee — контекст сотрудника
 - [x] context/application — контекст решения (токен решения)
