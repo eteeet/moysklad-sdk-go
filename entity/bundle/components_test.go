@@ -16,11 +16,11 @@ import (
 )
 
 const (
-	mutBundleID      = "7944ef04-f831-11e5-7a69-971500188b19"
-	mutComponentID   = "34f6344f-015e-11e6-9464-e4de0000006c"
-	componentPath = "entity/bundle/" + mutBundleID + "/components"
-	componentJSON = `{"meta":{"type":"bundlecomponent"},"id":"` + mutComponentID + `","assortment":{"meta":{"type":"product"}},"quantity":50}`
-	productURL    = "https://api.moysklad.ru/api/remap/1.2/entity/product/010afdea-ea40-11e6-5bed-427b000000b8"
+	mutBundleID    = "7944ef04-f831-11e5-7a69-971500188b19"
+	mutComponentID = "34f6344f-015e-11e6-9464-e4de0000006c"
+	componentPath  = "entity/bundle/" + mutBundleID + "/components"
+	componentJSON  = `{"meta":{"type":"bundlecomponent"},"id":"` + mutComponentID + `","assortment":{"meta":{"type":"product"}},"quantity":50}`
+	productURL     = "https://api.moysklad.ru/api/remap/1.2/entity/product/010afdea-ea40-11e6-5bed-427b000000b8"
 )
 
 func componentService(c *transport.Client) *bundle.Service {
