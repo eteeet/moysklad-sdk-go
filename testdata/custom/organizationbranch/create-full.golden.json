@@ -1,0 +1,8 @@
+{
+  "name": "Филиал",
+  "organization": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/fae3561a-2e58-11e6-8a84-bae50000004e", "type": "organization", "mediaType": "application/json"}},
+  "description": "", "code": "b-1", "externalCode": "ext", "archived": false,
+  "email": "b@example.com", "phone": "", "fax": "", "actualAddress": "", "actualAddressFull": {"city": "Москва"},
+  "mod__requisites__ru": {"kpp": "773301001"}, "syncId": "6f6a3a5e-0c1f-4c3a-9d1c-3b2a1d4e5f60",
+  "shared": true, "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "type": "employee", "mediaType": "application/json"}}, "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/faba7f37-2e58-11e6-8a84-bae500000029", "type": "group", "mediaType": "application/json"}}
+}
