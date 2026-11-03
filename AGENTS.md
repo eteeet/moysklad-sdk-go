@@ -1,3 +1,5 @@
+# moysklad-sdk-go
+
 Документация:
 МойСклад JSON API: `https://dev.moysklad.ru/doc/api/remap/1.2/`
 
