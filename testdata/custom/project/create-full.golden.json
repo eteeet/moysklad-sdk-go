@@ -1,0 +1,11 @@
+{
+  "name": "Проект SDK",
+  "description": "",
+  "code": "p-1",
+  "externalCode": "ext",
+  "archived": false,
+  "attributes": [],
+  "shared": true,
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "type": "employee", "mediaType": "application/json"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/faba7f37-2e58-11e6-8a84-bae500000029", "type": "group", "mediaType": "application/json"}}
+}

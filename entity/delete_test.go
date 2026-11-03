@@ -36,6 +36,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
+	"github.com/eteeet/moysklad-sdk-go/entity/project"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
@@ -114,6 +115,7 @@ func deleteCases() []optionsCase {
 		deleteCase("supply", supply.NewService, (*supply.Service).Delete),
 		deleteCase("taxrate", taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCase("uom", uom.NewService, (*uom.Service).Delete),
+		deleteCase("project", project.NewService, (*project.Service).Delete),
 		deleteCase("group", group.NewService, (*group.Service).Delete),
 		deleteCase("productfolder", productfolder.NewService, (*productfolder.Service).Delete),
 		deleteCase("store", store.NewService, (*store.Service).Delete),
@@ -214,6 +216,7 @@ func TestDeleteRejectsInvalidID(t *testing.T) {
 		deleteCall(supply.NewService, (*supply.Service).Delete),
 		deleteCall(taxrate.NewService, (*taxrate.Service).Delete),
 		deleteCall(uom.NewService, (*uom.Service).Delete),
+		deleteCall(project.NewService, (*project.Service).Delete),
 		deleteCall(group.NewService, (*group.Service).Delete),
 		deleteCall(productfolder.NewService, (*productfolder.Service).Delete),
 		deleteCall(store.NewService, (*store.Service).Delete),

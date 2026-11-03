@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 27/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 28/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -50,7 +50,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [ ] processingstage — этап производства
 - [x] product — товар
 - [x] productfolder — группа товаров
-- [ ] project — проект
+- [x] project — проект
 - [ ] region — регион
 - [x] retailstore — точка продаж
 - [x] role — пользовательские роли и предустановленные (Preset)
