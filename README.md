@@ -35,6 +35,11 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 Скачивание файлов (`transport.Client.Download`), файлы объектов (`files`) и отчёт «Обороты»
 (`report/turnover`): [docs/files-reports.md](docs/files-reports.md).
 
+Склады, группы товаров, отделы, проекты, договоры, регионы, каналы и площадки продаж,
+подразделения юрлиц, серийные номера, пользовательские справочники; счета, контакты и события
+контрагента, счета юрлица; настройки справочников, компании и пользователя; CRUD описаний доп.
+полей: [docs/dictionaries.md](docs/dictionaries.md).
+
 Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) и асинхронные задачи
 (`async`, `ListAsync` контрагентов и ассортимента): [docs/write-async.md](docs/write-async.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.

@@ -13,10 +13,11 @@
 | `role.Service.Preset(ctx, role.PresetAdmin)` | `entity/role/{owner,admin,individual,cashier,worker,…}` |
 
 - Employee: `lastName` обязателен и в Create, и в Update. salary, owner, group, archived и email меняет
-  только администратор — права проверяет сервер. Фото, активация, деактивация и сброс пароля не входят.
+  только администратор — права проверяет сервер. Фото не входит; активация, деактивация и сброс
+  пароля — [dictionaries.md](dictionaries.md).
 - Security: роль задаётся по meta (`SecurityRoleRequest`); для индивидуальной роли непереданные права
   сервер выключает (кроме view=ALL у currency, country, uom), без `permissions` — сохраняет прежние.
-  login и isActive меняются активацией (не входит), email — через `Employee.Update`.
+  login и isActive меняются активацией (`Activate`, `Deactivate`), email — через `Employee.Update`.
 - Права (`model.Permissions`) — объект «имя → значение»: флаг (`importData: true`), области по действиям
   (`supply: {"view":"ALL"}`, у задач ключ `script` и действие `done`) или иная форма в `Raw` без потерь.
   Таблицы источника называют поле Array(Object), но все примеры — объект.

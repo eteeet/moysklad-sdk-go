@@ -59,7 +59,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] service — услуга
 - [ ] specialpricediscount — скидка на спеццену
 - [x] states — статусы: чтение через metadata, Create/Update
-- [x] store — склад: Get/List/Create/Update, зоны и ячейки (List/Get/Create/Update/Delete, массовые)
+- [x] store — склад: Get/List/Create/Update/Delete и массовые; зоны и ячейки (List/Get/Create/Update/Delete, массовые)
 - [ ] task — задача
 - [x] taxrate — ставка НДС
 - [ ] template — шаблоны печатных форм

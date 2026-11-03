@@ -30,8 +30,8 @@
 - Bundle: Create требует name и непустые components; `ComponentRequest{ID, Assortment, Quantity}` —
   с ID изменяет существующий компонент. Quantity пишется, хотя таблица источника помечает его
   readonly: исключение из правила «readonly сильнее примеров» утверждено пользователем — без
-  количества компонент не имеет смысла, его передают примеры Create и добавления компонента. Компоненты — свой тип, не Position; отдельные мутации
-  компонентов не входят. `GetComponents` читает одну страницу (`query.PageOptions`).
+  количества компонент не имеет смысла, его передают примеры Create и добавления компонента. Компоненты — свой тип, не Position;
+  мутации компонентов — [dictionaries.md](dictionaries.md). `GetComponents` читает одну страницу (`query.PageOptions`).
 - Variant: Create требует product и непустые characteristics. Значение характеристики
   (`CharacteristicValue`) сервер связывает с описанием по id, иначе по name; Update заменяет набор
   характеристик целиком. Описания характеристик — отдельные методы, скрыто не создаются.
@@ -54,6 +54,6 @@
 ## Не входит
 
 Expand, изображения и файлы (только метаданные коллекций), `minimumStock` у Product и
-Variant, отдельные мутации компонентов комплекта, массовое создание характеристик, склады остатков
-(storebalances). Delete, массовые операции и `ListAsync` ассортимента —
+Variant, склады остатков (storebalances). Мутации компонентов комплекта и массовое создание
+характеристик — [dictionaries.md](dictionaries.md). Delete, массовые операции и `ListAsync` ассортимента —
 [write-async.md](write-async.md). Противоречия источника записаны в godoc и Answer tickets C01–C08.

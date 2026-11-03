@@ -50,5 +50,5 @@
 
 ## Не входит
 
-Шаблоны /new, expand, отдельные операции с позициями, кассиры точки продаж, внесения и
-выплаты денег (retaildrawercashin/out), фискализация и расчёт бонусов. Delete и массовые операции — [write-async.md](write-async.md).
+Шаблоны /new, expand, отдельные операции с позициями, внесения и
+выплаты денег (retaildrawercashin/out), фискализация и расчёт бонусов. Кассиры точки продаж — [dictionaries.md](dictionaries.md). Delete и массовые операции — [write-async.md](write-async.md).

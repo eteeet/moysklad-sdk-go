@@ -102,12 +102,10 @@ Readonly-поля и отложенные поля отсутствуют в о�
 
 ## Границы
 
-Не поддержаны банковские `accounts` целиком, региональные объекты
-`mod__requisites__uz`/`mod__requisites__kz`, `companyVat__ru`, `advancePaymentVat`,
-`chiefAccountSign`, `directorSign`, `stamp`, `fsrarId`, `utmUrl`.
-Последние два поля встречаются в официальных примерах, но отсутствуют в таблицах
-атрибутов и намеренно игнорируются. Также не поддержаны expand и отдельные
-подресурсы; List — [transport.md](transport.md), Delete и массовые операции — [write-async.md](write-async.md).
+Счета, `mod__requisites__uz`/`mod__requisites__kz`, `companyVat__ru`, `advancePaymentVat`,
+подписи и печать — [dictionaries.md](dictionaries.md). Не поддержаны `fsrarId` и `utmUrl`: они
+встречаются в официальных примерах, но отсутствуют в таблицах атрибутов. Также не поддержан
+expand; List — [transport.md](transport.md), Delete и массовые операции — [write-async.md](write-async.md).
 
 Локальные тесты проверяют JSON обоими кодеками и HTTP с настоящим transport.
 Upstream Organization используется без изменений; дополнительные случаи
