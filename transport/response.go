@@ -18,13 +18,19 @@ const maxErrorBodySize = 1 << 20
 // Body ответа закрыт до возврата; resp нужен для статуса и заголовков.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/general#3-szhatie-soderzhimogo-otvetov
 func (c *Client) Do(req *http.Request, dst any) (*http.Response, error) {
+	noRedirect := req.Context().Value(noRedirectKey{}) != nil
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
+		if noRedirect {
+			redactURLError(err) // Location печати — ссылка на файл, как в Download
+		}
 		return resp, fmt.Errorf("moysklad: send request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	hasBody := req.Method != http.MethodHead &&
+	// SendNoRedirect не декодирует успех и 3xx: пустое тело с Content-Encoding: gzip не ошибка.
+	success := noRedirect && resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusBadRequest
+	hasBody := req.Method != http.MethodHead && !success &&
 		resp.StatusCode != http.StatusNoContent &&
 		resp.StatusCode != http.StatusResetContent
 
@@ -37,7 +43,7 @@ func (c *Client) Do(req *http.Request, dst any) (*http.Response, error) {
 		reader = decoded
 	}
 
-	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+	if !success && (resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices) {
 		return resp, readAPIError(resp.StatusCode, reader)
 	}
 

@@ -32,6 +32,22 @@
 `X-Lognex-Content-Timezone`. Некорректное значение даёт `ok=false`, сырое остаётся в `Header`.
 Единицы `X-RateLimit-*` после ввода весов источник не уточняет: SDK не считает их бюджетом.
 
+## Вызов без следования redirect
+
+`Client.Send` следует redirect как net/http: POST с ответом 303 превращается в скрытый GET по
+Location (307/308 у записи не выполняются, остаются APIError). Для печати
+([print.md](print.md)) есть `Client.SendNoRedirect(ctx, method, endpoint, body, opts...)`:
+
+- одна отправка, redirect не выполняется: ответ 3xx возвращается без ошибки, статус и заголовки
+  (Location) — в `*http.Response` и `ResponseInfo`; 2xx тоже успех; тело не декодируется;
+- ответы вне 2xx/3xx — `APIError`, как у Send; Limiter, Retry (только GET/HEAD), заголовки и
+  проверки размера — те же;
+- режим действует только на этот вызов (значение в контексте запроса), Client его не хранит;
+- Location не проверяется и не запрашивается. Загрузка по нему — отдельный вызов `Download`,
+  same-origin контракт которого не ослаблен: ссылка чужого origin отклоняется до отправки;
+- неразбираемый Location net/http отвергает без ответа (StatusCode 0); query ссылки из текста
+  ошибки удаляется, как у Download.
+
 ## Ошибки
 
 `errors/codes.go` содержит все 545 кодов `_errors.md` как `CodeNNNN` (нетипизированные int).

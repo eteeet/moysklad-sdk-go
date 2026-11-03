@@ -74,18 +74,7 @@ func (c *Client) downloadOnce(ctx context.Context, client *http.Client, req *htt
 	defer release()
 	resp, err = client.Do(req)
 	if err != nil {
-		var urlErr *url.Error
-		if errors.As(err, &urlErr) {
-			// Подпись временной ссылки — секрет: в ошибке остаются схема, хост и путь.
-			if u, parseErr := url.Parse(urlErr.URL); parseErr == nil {
-				u.RawQuery, u.Fragment = "", ""
-				urlErr.URL = u.String()
-			}
-			// Неразбираемый Location попадает целиком в текст вложенной ошибки.
-			if strings.Contains(urlErr.Err.Error(), "?") {
-				urlErr.Err = redactedError{urlErr.Err}
-			}
-		}
+		redactURLError(err)
 		// При отказе CheckRedirect Do возвращает и полученный ответ (body закрыт) — для ResponseInfo.
 		return 0, resp, fmt.Errorf("moysklad: send request: %w", err), true
 	}
@@ -105,6 +94,23 @@ func (c *Client) downloadOnce(ctx context.Context, client *http.Client, req *htt
 		return n, resp, fmt.Errorf("moysklad: download: %w", err), true
 	}
 	return n, resp, nil, true
+}
+
+// redactURLError убирает подпись временной ссылки из *url.Error в цепочке err: в ошибке остаются
+// схема, хост и путь.
+func redactURLError(err error) {
+	var urlErr *url.Error
+	if !errors.As(err, &urlErr) {
+		return
+	}
+	if u, parseErr := url.Parse(urlErr.URL); parseErr == nil {
+		u.RawQuery, u.Fragment = "", ""
+		urlErr.URL = u.String()
+	}
+	// Неразбираемый Location попадает целиком в текст вложенной ошибки.
+	if strings.Contains(urlErr.Err.Error(), "?") {
+		urlErr.Err = redactedError{urlErr.Err}
+	}
 }
 
 // redactedError обрезает текст на первом "?": граница query в тексте неизвестна, в ней бывают

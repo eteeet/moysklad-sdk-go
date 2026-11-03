@@ -203,3 +203,19 @@ func mergeQuery(raw string, query url.Values) (string, error) {
 	}
 	return strings.Join(parts, "&"), nil
 }
+
+// noRedirectKey в контексте запроса отключает следование redirect только для SendNoRedirect.
+type noRedirectKey struct{}
+
+// SendNoRedirect — Send одного вызова без следования redirect и без dst: ответ 3xx (303 печати
+// с Location на файл) возвращается без ошибки и без скрытого запроса по Location; статус и
+// заголовки — в resp и ResponseInfo, тело ответа не декодируется. Ответы вне 2xx и 3xx — APIError.
+// Location не проверяется: загрузка по нему — отдельный вызов (Download держит same-origin).
+// Неразбираемый Location net/http отвергает без ответа (StatusCode 0); подпись ссылки из текста
+// ошибки удаляется, как в Download.
+func (c *Client) SendNoRedirect(ctx context.Context, method, endpoint string, body any, opts ...RequestOption) (*http.Response, error) {
+	if ctx != nil {
+		ctx = context.WithValue(ctx, noRedirectKey{}, true)
+	}
+	return c.Send(ctx, method, endpoint, nil, body, nil, opts...)
+}
