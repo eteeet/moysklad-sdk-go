@@ -62,6 +62,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/security"
+	"github.com/eteeet/moysklad-sdk-go/trackingcode"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -125,6 +126,11 @@ func (e EntityGroup) Files() *files.Service { return must(files.NewService(e.tra
 
 // Images — изображения товара, комплекта, модификации и карточки контента.
 func (e EntityGroup) Images() *images.Service { return must(images.NewService(e.transport)) }
+
+// TrackingCode — коды маркировки позиций документов.
+func (e EntityGroup) TrackingCode() *trackingcode.Service {
+	return must(trackingcode.NewService(e.transport))
+}
 
 // Assortment — Ассортимент: товары, услуги, комплекты, модификации и серии (только чтение).
 func (e EntityGroup) Assortment() *assortment.Service {
