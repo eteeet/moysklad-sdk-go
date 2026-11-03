@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/counterpartyadjustment/7944ef04-f831-11e5-7a69-971500188b19",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/counterpartyadjustment/metadata",
+    "type": "counterpartyadjustment",
+    "mediaType": "application/json",
+    "uuidHref": "https://online.moysklad.ru/app/#counterpartyadjustment/edit?id=7944ef04-f831-11e5-7a69-971500188b19"
+  },
+  "id": "7944ef04-f831-11e5-7a69-971500188b19",
+  "accountId": "9067e733-099c-11ec-ac16-000c00000001",
+  "owner": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/9334c6a2-099c-11ec-ac16-000b00000042",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+      "type": "employee",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#employee/edit?id=9334c6a2-099c-11ec-ac16-000b00000042"
+    }
+  },
+  "shared": false,
+  "group": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/group/906f1cd6-099c-11ec-ac16-000c00000002",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/group/metadata",
+      "type": "group",
+      "mediaType": "application/json"
+    }
+  },
+  "updated": "2021-09-01 14:52:26.430",
+  "name": "00004",
+  "externalCode": "WWA5w--1ggqvF29G28atu1",
+  "moment": "2021-09-01 14:52:00.000",
+  "applicable": true,
+  "sum": 12.5,
+  "agent": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/947ebfcd-099c-11ec-ac16-000b00000083",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/metadata",
+      "type": "counterparty",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#company/edit?id=947ebfcd-099c-11ec-ac16-000b00000083"
+    }
+  },
+  "organization": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/94527995-099c-11ec-ac16-000b0000007e",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organization/metadata",
+      "type": "organization",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#mycompany/edit?id=94527995-099c-11ec-ac16-000b0000007e"
+    }
+  },
+  "created": "2021-09-01 14:52:26.476",
+  "printed": false,
+  "published": false,
+  "files": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/counterpartyadjustment/7944ef04-f831-11e5-7a69-971500188b19/files",
+      "type": "files",
+      "mediaType": "application/json",
+      "size": 0,
+      "limit": 1000,
+      "offset": 0
+    }
+  }
+}

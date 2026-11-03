@@ -12,6 +12,7 @@ import (
 
 	"github.com/eteeet/moysklad-sdk-go/entity/cashin"
 	"github.com/eteeet/moysklad-sdk-go/entity/cashout"
+	"github.com/eteeet/moysklad-sdk-go/entity/counterpartyadjustment"
 	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
@@ -110,6 +111,10 @@ func TestDocumentTrash(t *testing.T) {
 		}},
 		{"supply", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
 			s, _ := supply.NewService(c)
+			return s.Trash(ctx, id, o...)
+		}},
+		{"counterpartyadjustment", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
+			s, _ := counterpartyadjustment.NewService(c)
 			return s.Trash(ctx, id, o...)
 		}},
 		{"factureout", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {

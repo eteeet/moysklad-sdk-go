@@ -1,0 +1,13 @@
+{
+  "organization": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/11111111-1111-1111-1111-111111111111", "type": "organization"}},
+  "agent": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/33333333-3333-3333-3333-333333333333", "type": "employee"}},
+  "name": "00001",
+  "description": "",
+  "externalCode": "ext-1",
+  "moment": "2026-11-01 12:34:56.000",
+  "applicable": false,
+  "shared": true,
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/44444444-4444-4444-4444-444444444444", "type": "employee"}},
+  "group": null,
+  "attributes": []
+}
