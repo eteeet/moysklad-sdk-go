@@ -23,6 +23,8 @@ type Product struct {
 	MinPrice   *model.Price      `json:"minPrice,omitzero"`
 	SalePrices []model.SalePrice `json:"salePrices"`
 	Attributes []model.Attribute `json:"attributes"`
+	Barcodes   []model.Barcode   `json:"barcodes"`
+	Packs      []Pack            `json:"packs"`
 
 	Weight float64 `json:"weight"`
 	Volume float64 `json:"volume"`
@@ -41,4 +43,14 @@ type Product struct {
 	UOM           *model.Reference `json:"uom,omitzero"`
 	Supplier      *model.Reference `json:"supplier,omitzero"`
 	Country       *model.Reference `json:"country,omitzero"`
+}
+
+// Pack — упаковка товара: единица измерения (не совпадает с единицей товара — проверяет
+// сервер), количество товара в упаковке и не более одного штрихкода (без штрихкода поля нет).
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-upakovki-tovara
+type Pack struct {
+	ID       string           `json:"id"`
+	UOM      *model.Reference `json:"uom,omitzero"`
+	Quantity float64          `json:"quantity"`
+	Barcodes []model.Barcode  `json:"barcodes"`
 }

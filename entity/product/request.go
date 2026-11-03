@@ -30,6 +30,10 @@ type CreateRequest struct {
 	MinPrice   model.Field[model.Price]       `json:"minPrice,omitzero"`
 	SalePrices model.Field[[]model.SalePrice] `json:"salePrices,omitzero"`
 	Attributes model.Field[[]model.Attribute] `json:"attributes,omitzero"`
+	// Barcodes: без поля или с пустым списком сервер создаёт один случайный EAN13; список из пустых
+	// значений — ни одного штрихкода.
+	Barcodes model.Field[[]model.Barcode] `json:"barcodes,omitzero"`
+	Packs    model.Field[[]PackRequest]   `json:"packs,omitzero"`
 
 	// SyncID — UUID, сгенерированный клиентом: повторный Create с тем же SyncID вернёт ранее
 	// созданный товар. Это не общий Idempotency-Key, SDK сам Create не повторяет.
@@ -65,4 +69,18 @@ type UpdateRequest struct {
 	// Сервер сливает по priceType / meta; пустые массивы не очищают коллекции.
 	SalePrices model.Field[[]model.SalePrice] `json:"salePrices,omitzero"`
 	Attributes model.Field[[]model.Attribute] `json:"attributes,omitzero"`
+	// Barcodes заменяет список целиком: отсутствующие штрихкоды удаляются, пустой список — все.
+	Barcodes model.Field[[]model.Barcode] `json:"barcodes,omitzero"`
+	// Packs заменяет коллекцию упаковок целиком; id упаковки только читается, поэтому прежние
+	// упаковки сервер пересоздаёт.
+	Packs model.Field[[]PackRequest] `json:"packs,omitzero"`
+}
+
+// PackRequest — упаковка в запросе: uom и quantity необходимы, штрихкодов не больше одного;
+// переданный список штрихкодов заменяет прежний.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-upakovki-tovara
+type PackRequest struct {
+	UOM      model.Reference              `json:"uom"`
+	Quantity float64                      `json:"quantity"`
+	Barcodes model.Field[[]model.Barcode] `json:"barcodes,omitzero"`
 }
