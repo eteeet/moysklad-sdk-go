@@ -8,7 +8,7 @@ import (
 )
 
 // New — шаблон документа: PUT entity/purchasereturn/new, документ не создаётся. basis — объект основания по
-// источнику (приёмка), например {"customerOrder": model.Reference{…}}; nil — шаблон без
+// источнику (приёмка), например {"supply": model.Reference{…}}; nil — шаблон без
 // основания. Ответ — PurchaseReturn без id: его можно доработать и передать в Create.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return#3-shablon-vozvrata-postavshhiku
 func (s *Service) New(ctx context.Context, basis map[string]any, opts ...transport.RequestOption) (*PurchaseReturn, error) {

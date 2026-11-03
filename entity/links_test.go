@@ -2,6 +2,8 @@
 package entity_test
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -136,9 +138,16 @@ func TestDocumentLinks(t *testing.T) {
 					t.Fatal(err)
 				}
 				documenttest.JSONEqual(t, data, []byte(tc.body))
-				if data, err = codec.Marshal(tc.create()); err != nil || !strings.Contains(string(data), tc.key) {
+				// Create пишет то же значение связи, что Update: сравниваем поле целиком.
+				if data, err = codec.Marshal(tc.create()); err != nil {
+					t.Fatal(err)
+				}
+				var created, updated map[string]jsontext.Value
+				name := strings.Trim(tc.key, `":`)
+				if err := json.Unmarshal(data, &created); err != nil || json.Unmarshal([]byte(tc.body), &updated) != nil || created[name] == nil {
 					t.Fatalf("%s: create = %s, err = %v", codec.Name, data, err)
 				}
+				documenttest.JSONEqual(t, created[name], updated[name])
 			}
 			for _, c := range []struct {
 				name, response string

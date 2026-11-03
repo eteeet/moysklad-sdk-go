@@ -13,9 +13,9 @@ Update заменяют все строки.
 s, _ := inventory.NewService(client)
 doc, err := s.Create(ctx, inventory.CreateRequest{
 	Organization: org, Store: store,
-	Positions: model.Value([]inventory.PositionRequest{{
+	Positions: model.Value(inventory.PositionRows{Rows: []inventory.PositionRequest{{
 		ItemRequest: positions.ItemRequest{Assortment: model.Value(product), Quantity: model.Value(140.0)},
-	}}),
+	}}}),
 })
 ```
 
@@ -45,7 +45,7 @@ doc, err := s.Create(ctx, inventory.CreateRequest{
 | `state` | `*model.Reference` | Field | Field |
 | `attributes` | `[]model.Attribute` | Field | Field |
 | `sum` | `float64` | — | — |
-| `positions` | `*model.Collection[Position]` | Field | Field |
+| `positions` | `*model.Collection[Position]` | Field[`PositionRows`] | Field[`PositionRows`] |
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `enters` | `[]model.Reference` | Field | Field |
 | `losses` | `[]model.Reference` | Field | Field |
@@ -80,8 +80,8 @@ doc, err := s.Create(ctx, inventory.CreateRequest{
   противоречит источнику, решение принято по источнику. Описание называет поле «ссылкой» в
   единственном числе, но имя во множественном числе по общему правилу означает коллекцию: SDK
   использует массив ссылок; примеров с этими полями в источнике нет.
-- Пример Update передаёт `positions` объектом `{"rows":[…]}`; SDK, как у остальных документов и по
-  тексту раздела позиций, передаёт массив.
+- Текст раздела позиций называет `positions` массивом, но все примеры запросов передают объект
+  `{"rows":[…]}`: SDK следует примерам (`PositionRows`), как у прайс-листа.
 - `New` (PUT `entity/inventory/new`): источник описывает шаблон только без основания; непустой basis
   передаётся как есть, его принятие определяет сервер.
 - `Trash` — POST `…/{id}/trash` (общий раздел «Удаление в корзину»), в отличие от `Delete`.

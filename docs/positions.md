@@ -114,10 +114,9 @@ Embedded write имеет предел API 1000 строк. SDK не долже�
 конкретных полей/количеств определяет документ; модель JSON не является бизнес-валидатором.
 
 Обычный Get заголовка документа возвращает positions metadata; наличие meta не означает,
-что Rows прочитаны. Для строк нужна явная страница. Этот модуль не добавляет List
-документов,
-отдельные HTTP Get/Create/Update/Delete строк, массовые операции строк, templates, walker, stock enrichment
-или expand. Expand отложен до конца разработки всего остального SDK, если понадобится.
+что Rows прочитаны. Для строк нужна явная страница. Отдельные операции строк (GetPosition,
+CreatePositions, UpdatePosition, DeletePosition, DeleteManyPositions) — [documents-extra](documents-extra.md).
+Walker, stock enrichment и expand модуль не добавляет. Expand отложен до конца разработки всего остального SDK, если понадобится.
 
 Первичные источники на revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`:
 [общие правила](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/_general.md#L1022-L1063),

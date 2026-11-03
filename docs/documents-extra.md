@@ -37,7 +37,7 @@ retaildrawercashout. Какие основания допустимы для т�
 ## Автозаполнение — пакет `wizard`, `c.Wizard()`
 
 `Fill(ctx, document, actions, Template)` — `POST wizard/{тип}?action=evaluate_price,…`. Документ не
-создаётся. Действия: `EvaluatePrice`, `EvaluateVat`, `EvaluateDiscount`, `EvaluateCost`; нужно хотя
+создаётся. Действия: `EvaluatePrice`, `EvaluateVAT`, `EvaluateDiscount`, `EvaluateCost`; нужно хотя
 бы одно, запятые внутри значения отклоняются до запроса. `Template` — organization, agent, store,
 vatEnabled, vatIncluded, rate, moment и positions (assortment, quantity, price, discount, vat,
 vatEnabled); `Result` — те же поля и рассчитанные discountedPrice, sum, cost строк, исходный JSON —

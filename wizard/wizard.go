@@ -23,7 +23,7 @@ import (
 // без основания) проверяет сервер.
 const (
 	EvaluatePrice    = "evaluate_price"
-	EvaluateVat      = "evaluate_vat"
+	EvaluateVAT      = "evaluate_vat"
 	EvaluateDiscount = "evaluate_discount"
 	EvaluateCost     = "evaluate_cost"
 )
@@ -37,8 +37,8 @@ type Template struct {
 	Organization model.Field[model.Reference]           `json:"organization,omitzero"`
 	Agent        model.Field[model.Reference]           `json:"agent,omitzero"`
 	Store        model.Field[model.Reference]           `json:"store,omitzero"`
-	VatEnabled   model.Field[bool]                      `json:"vatEnabled,omitzero"`
-	VatIncluded  model.Field[bool]                      `json:"vatIncluded,omitzero"`
+	VATEnabled   model.Field[bool]                      `json:"vatEnabled,omitzero"`
+	VATIncluded  model.Field[bool]                      `json:"vatIncluded,omitzero"`
 	Rate         model.Field[model.DocumentRateRequest] `json:"rate,omitzero"`
 	Moment       model.Field[model.DateTime]            `json:"moment,omitzero"`
 	Positions    []PositionRequest                      `json:"positions"`
@@ -60,8 +60,8 @@ type Result struct {
 	Organization *model.Reference    `json:"organization,omitzero"`
 	Agent        *model.Reference    `json:"agent,omitzero"`
 	Store        *model.Reference    `json:"store,omitzero"`
-	VatEnabled   bool                `json:"vatEnabled"`
-	VatIncluded  bool                `json:"vatIncluded"`
+	VATEnabled   bool                `json:"vatEnabled"`
+	VATIncluded  bool                `json:"vatIncluded"`
 	Rate         *model.DocumentRate `json:"rate,omitzero"`
 	Moment       model.DateTime      `json:"moment,omitzero"`
 	Positions    []Position          `json:"positions"`

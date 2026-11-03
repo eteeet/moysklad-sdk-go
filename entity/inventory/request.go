@@ -2,6 +2,13 @@ package inventory
 
 import "github.com/eteeet/moysklad-sdk-go/model"
 
+// PositionRows — positions в теле Create/Update. Текст раздела позиций называет их массивом, но все
+// примеры запросов источника передают объект {"rows": [...]} — SDK следует примерам, как у прайс-листа.
+// Не больше 1000 строк.
+type PositionRows struct {
+	Rows []PositionRequest `json:"rows"`
+}
+
 // CreateRequest: необходимы organization и store. Positions — не больше 1000 строк; дальше —
 // отдельные операции позиций. enters и losses — связи документов: основная таблица их не
 // помечает «Только для чтения», поэтому они пишутся по общему правилу привязки документов
@@ -21,14 +28,13 @@ type CreateRequest struct {
 	Group        model.Field[model.Reference]   `json:"group,omitzero"`
 	State        model.Field[model.Reference]   `json:"state,omitzero"`
 	Attributes   model.Field[[]model.Attribute] `json:"attributes,omitzero"`
-	Positions    model.Field[[]PositionRequest] `json:"positions,omitzero"`
+	Positions    model.Field[PositionRows]      `json:"positions,omitzero"`
 	Enters       model.Field[[]model.Reference] `json:"enters,omitzero"`
 	Losses       model.Field[[]model.Reference] `json:"losses,omitzero"`
 }
 
-// UpdateRequest. Positions заменяют все строки: лишние удаляются, строки с ID меняются. Пример
-// Update источника передаёт positions объектом {"rows":[…]}; SDK, как у остальных документов,
-// передаёт массив. syncId после заполнения не меняется.
+// UpdateRequest. Positions заменяют все строки: лишние удаляются, строки с ID меняются. syncId
+// после заполнения не меняется.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/inventory#3-izmenit-inventarizaciyu
 type UpdateRequest struct {
 	Organization model.Field[model.Reference]   `json:"organization,omitzero"`
@@ -44,7 +50,7 @@ type UpdateRequest struct {
 	Group        model.Field[model.Reference]   `json:"group,omitzero"`
 	State        model.Field[model.Reference]   `json:"state,omitzero"`
 	Attributes   model.Field[[]model.Attribute] `json:"attributes,omitzero"`
-	Positions    model.Field[[]PositionRequest] `json:"positions,omitzero"`
+	Positions    model.Field[PositionRows]      `json:"positions,omitzero"`
 	Enters       model.Field[[]model.Reference] `json:"enters,omitzero"`
 	Losses       model.Field[[]model.Reference] `json:"losses,omitzero"`
 }

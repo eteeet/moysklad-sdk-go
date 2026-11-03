@@ -89,7 +89,7 @@ func TestFill(t *testing.T) {
 				t.Fatal(err)
 			}
 			s, _ := wizard.NewService(c)
-			got, err := s.Fill(t.Context(), "demand", []string{wizard.EvaluatePrice, wizard.EvaluateVat}, template)
+			got, err := s.Fill(t.Context(), "demand", []string{wizard.EvaluatePrice, wizard.EvaluateVAT}, template)
 			if tc.ok != (err == nil) || tc.ok != (got != nil) || calls.Load() != 1 {
 				t.Fatalf("got = %+v, err = %v, calls = %d", got, err, calls.Load())
 			}

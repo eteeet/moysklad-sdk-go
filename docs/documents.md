@@ -36,8 +36,8 @@ float64 в копейках, без округления, пересчётов �
 ## Позиции
 
 InvoiceIn, InvoiceOut, Supply, Demand, PurchaseOrder, Move, PurchaseReturn, CustomerOrder, Enter,
-Loss, SalesReturn, RetailDemand и RetailSalesReturn ([розница](retail.md)) используют
-общие `positions.Position`/`PositionRequest`. Каждый entity-пакет экспортирует aliases
+Loss, SalesReturn, RetailDemand, RetailSalesReturn ([розница](retail.md)), InternalOrder, Prepayment и
+PrepaymentReturn используют общие `positions.Position`/`PositionRequest`. Каждый entity-пакет экспортирует aliases
 `Position` и `PositionRequest`, а Service предоставляет типизированный
 `GetPositions(ctx, id, positions.PageOptions) (*model.Collection[Position], error)`.
 Ресурс и форма строки фиксированы пакетом. Одна страница, Limit=0 означает 1000,
@@ -50,7 +50,9 @@ GetPositions делает отдельный GET `entity/<type>/{id}/positions?l
 У страницы требуются HTTP 200, непустой meta.href и non-null rows; [] — успешная
 пустая страница. Дополнительные правила: [positions](positions.md).
 
-Embedded Create/Update принимает до 1000 строк; 1001 отклоняется до HTTP.
+Embedded Create/Update принимает до 1000 строк; 1001 отклоняется до HTTP. В CreateMany/UpdateMany
+лимит строк каждого элемента проверяет сервер. У Inventory, PriceList, CommissionReportIn/Out и Payroll
+своя форма строки; у Inventory и PriceList positions в теле — объект `{"rows":[…]}`.
 Незаданные positions не меняют набор; [] запрашивает замену пустым набором.
 Непустой positions в Update полностью заменяет набор: matching ID обновляет строку,
 отсутствующие строки удаляются, новые добавляются. ID не задают для новой строки Create.
@@ -83,8 +85,8 @@ context, auth/transport/APIError, malformed/null/empty ответы и ошиб�
 Реализованы: List одной страницы с filter/search/order ([transport](transport.md)), явный обход
 страниц через `pages.All`, поля строк общей формы (pack, things, gtd, trackingCodes, declaration,
 stock — [positions](positions.md)) и `fields=stock`/`declaration` у GetPositions.
-Templates/new, wizard, expand (в том числе stock в Get/List через expand=positions),
-отдельные mutations позиций, файлы и их операции, автоматический обход страниц и финансовые
-вычисления остаются вне этих срезов. Delete и массовые операции документов —
+Отдельные операции строк, шаблоны `New`, `Trash`, связи и wizard —
+[documents-extra.md](documents-extra.md). Expand (в том числе stock в Get/List через
+expand=positions), автоматический обход страниц и финансовые вычисления остаются вне этих срезов. Delete и массовые операции документов —
 [write-async.md](write-async.md).
 Точный scope полей и исключений каждого документа указан в его документации.

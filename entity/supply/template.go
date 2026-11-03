@@ -8,7 +8,7 @@ import (
 )
 
 // New — шаблон документа: PUT entity/supply/new, документ не создаётся. basis — объект основания по
-// источнику (без основания (раздел шаблона приёмки)), например {"customerOrder": model.Reference{…}}; nil — шаблон без
+// источнику (без основания (раздел шаблона приёмки)); nil — шаблон без
 // основания. Ответ — Supply без id: его можно доработать и передать в Create.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply#3-shablon-priemki
 func (s *Service) New(ctx context.Context, basis map[string]any, opts ...transport.RequestOption) (*Supply, error) {

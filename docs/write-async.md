@@ -16,9 +16,9 @@ err = c.Entity().Files().Delete(ctx, "product", productID, fileID)
   них раздела «Удалить» в источнике нет. Роль — пользовательская (`entity/role`).
 - Один `DELETE`, тела нет; успех — 200 или 204 (примеры источника — 200 с пустым телом). Неверный
   UUID отклоняется до запроса; права и связанные объекты проверяет сервер (APIError).
-- Delete — не корзина. Удаление документа в корзину (`POST …/trash`) и восстановление из неё
-  в SDK нет. Удаление позиций документов, компонентов комплекта, счетов контрагента и юрлица —
-  тоже нет.
+- Delete — не корзина: удаление документа в корзину — `Trash` ([documents-extra](documents-extra.md));
+  восстановления из корзины API не даёт. Удаление строк документов — там же; вложенных объектов
+  справочников — в guide соответствующих сервисов.
 - `files.Delete`: по источнику сервер удаляет первый найденный файл с этим id у операции,
   номенклатуры, задачи или контрагента.
 
@@ -66,8 +66,8 @@ for _, r := range res {
 | role, pricetype | — | — | — |
 | assortment | — | — | да, по `model.Meta` разных типов |
 | discount | — | да (округление копеек) | — |
-| group, customentity, region, saleplatform, thing, accumulationdiscount, personaldiscount, specialpricediscount | — | — | — |
-| остальные 38 сервисов `entity/*` | да | да | да |
+| group, customentity, region, saleplatform, thing, accumulationdiscount, personaldiscount, specialpricediscount, prepayment, prepaymentreturn | — | — | — |
+| остальные 49 сервисов `entity/*` | да | да | да |
 
 Раздел «Массовое обновление Сотрудников» называет только обновление, хотя второй элемент его
 примера — без meta (создание); SDK следует заголовку. Массовые операции вложенных коллекций (зоны и ячейки склада, счета,

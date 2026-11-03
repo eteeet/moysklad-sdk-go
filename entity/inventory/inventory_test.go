@@ -57,22 +57,22 @@ var (
 		Attributes: model.Value([]model.Attribute{}),
 		Enters:     model.Value([]model.Reference{ref("entity/enter/55555555-5555-5555-5555-555555555555", "enter")}),
 		Losses:     model.Value([]model.Reference(nil)),
-		Positions: model.Value([]inventory.PositionRequest{{
+		Positions: model.Value(inventory.PositionRows{Rows: []inventory.PositionRequest{{
 			ItemRequest: positions.ItemRequest{
 				Assortment: model.Value(ref("entity/product/88888888-8888-8888-8888-888888888888", "product")),
 				Quantity:   model.Value(140.0),
 			},
 			Price: model.Value(5000.0), CalculatedQuantity: model.Value(200.0), Pack: model.Value(positions.PackRequest{ID: "77777777-7777-7777-7777-777777777777"}),
-		}}),
+		}}}),
 	}
 	fullUpdate = inventory.UpdateRequest{
 		Store:  model.Value(ref("entity/store/99999999-9999-9999-9999-999999999999", "store")),
 		State:  model.Null[model.Reference](),
 		Losses: model.Value([]model.Reference{ref("entity/loss/44444444-4444-4444-4444-444444444444", "loss")}),
-		Positions: model.Value([]inventory.PositionRequest{{
+		Positions: model.Value(inventory.PositionRows{Rows: []inventory.PositionRequest{{
 			ItemRequest:        positions.ItemRequest{CoreRequest: positions.CoreRequest{ID: model.Value("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")}, Quantity: model.Value(3.0)},
 			CalculatedQuantity: model.Value(0.0),
-		}}),
+		}}}),
 	}
 )
 
@@ -134,7 +134,7 @@ func TestInventoryRequestJSON(t *testing.T) {
 		}{
 			{"create full", fullCreate, read(t, "custom/inventory/create-full.golden.json")},
 			{"create minimal", inventory.CreateRequest{Organization: organization, Store: store}, []byte(`{"organization":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/organization/11111111-1111-1111-1111-111111111111","type":"organization"}},"store":{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/entity/store/33333333-3333-3333-3333-333333333333","type":"store"}}}`)},
-			{"update empty positions", inventory.UpdateRequest{Positions: model.Value([]inventory.PositionRequest{})}, []byte(`{"positions":[]}`)},
+			{"update empty positions", inventory.UpdateRequest{Positions: model.Value(inventory.PositionRows{Rows: []inventory.PositionRequest{}})}, []byte(`{"positions":{"rows":[]}}`)},
 			{"update", fullUpdate, read(t, "custom/inventory/update.golden.json")},
 			{"position", inventory.PositionRequest{ItemRequest: positions.ItemRequest{Quantity: model.Value(2.0)}, Price: model.Value(0.0), CalculatedQuantity: model.Null[float64](), Pack: model.Value(positions.PackRequest{ID: "p"})},
 				[]byte(`{"quantity":2,"price":0,"calculatedQuantity":null,"pack":{"id":"p"}}`)},
@@ -371,11 +371,11 @@ func TestInventoryValidation(t *testing.T) {
 			return err
 		},
 		"create 1001": func(o transport.RequestOption) error {
-			_, err := s.Create(t.Context(), inventory.CreateRequest{Organization: organization, Store: store, Positions: model.Value(make([]inventory.PositionRequest, 1001))}, o)
+			_, err := s.Create(t.Context(), inventory.CreateRequest{Organization: organization, Store: store, Positions: model.Value(inventory.PositionRows{Rows: make([]inventory.PositionRequest, 1001)})}, o)
 			return err
 		},
 		"update 1001": func(o transport.RequestOption) error {
-			_, err := s.Update(t.Context(), testID, inventory.UpdateRequest{Positions: model.Value(make([]inventory.PositionRequest, 1001))}, o)
+			_, err := s.Update(t.Context(), testID, inventory.UpdateRequest{Positions: model.Value(inventory.PositionRows{Rows: make([]inventory.PositionRequest, 1001)})}, o)
 			return err
 		},
 		"update id": func(o transport.RequestOption) error {

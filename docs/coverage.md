@@ -56,7 +56,7 @@ long.
 
 Подробности: [общие типы документов](document-common.md), [позиции](positions.md).
 Get/Create/Update документов и типизированные entity.GetPositions реализованы.
-Отдельные mutations строк, List документов, walker и expand отложены.
+Отдельные операции строк — [documents-extra](documents-extra.md); walker и expand отложены.
 
 ## Документы — реализованные срезы
 

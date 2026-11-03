@@ -47,7 +47,7 @@ func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...trans
 	if input.Store.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: %s: store meta.href must not be empty", operation)
 	}
-	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
+	if rows, ok := input.Positions.Get(); ok && len(rows.Rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: %s: positions must not exceed 1000", operation)
 	}
 	return s.do(ctx, operation, http.MethodPost, "entity/inventory", input, opts)
@@ -64,7 +64,7 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, op
 	if reflect.ValueOf(input).IsZero() {
 		return nil, fmt.Errorf("moysklad: %s: no fields specified", operation)
 	}
-	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
+	if rows, ok := input.Positions.Get(); ok && len(rows.Rows) > 1000 {
 		return nil, fmt.Errorf("moysklad: %s: positions must not exceed 1000", operation)
 	}
 	return s.do(ctx, operation+" "+id, http.MethodPut, "entity/inventory/"+id, input, opts)

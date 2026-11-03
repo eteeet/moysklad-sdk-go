@@ -9,7 +9,7 @@
   "attributes": [],
   "enters": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/enter/55555555-5555-5555-5555-555555555555", "type": "enter"}}],
   "losses": [],
-  "positions": [
+  "positions": {"rows": [
     {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/88888888-8888-8888-8888-888888888888", "type": "product"}}, "quantity": 140, "price": 5000, "calculatedQuantity": 200, "pack": {"id": "77777777-7777-7777-7777-777777777777"}}
-  ]
+  ]}
 }
