@@ -53,7 +53,8 @@ var (
 	}
 	update = store.UpdateRequest{Name: model.Value("Склад3"), PathName: model.Value("Не Основной склад"), Address: model.Value(""),
 		Archived: model.Value(true), Parent: model.Value(ref("entity/store/faf3ff5b-2e58-11e6-8a84-bae500000050", "store"))}
-	slot = store.SlotCreateRequest{Name: "slot 1", Barcode: model.Value("0123456789")}
+	slot = store.SlotCreateRequest{Name: "slot 1", Barcode: model.Value("0123456789"),
+		Zone: model.Value(ref("entity/store/7a6a11b6-12c5-11e6-9464-e4de00000006/zones/"+zoneID, "storezone"))}
 )
 
 func TestStoreFixture(t *testing.T) {
@@ -100,7 +101,7 @@ func TestRequestJSON(t *testing.T) {
 			{"zone create", store.ZoneCreateRequest{Name: "Zona 2"}, []byte(`{"name":"Zona 2"}`)},
 			{"zone update", store.ZoneUpdateRequest{Name: model.Value("Zone new"), ExternalCode: model.Value("")}, []byte(`{"name":"Zone new","externalCode":""}`)},
 			{"slot create", slot, read(t, "custom/store/slot-create.golden.json")},
-			{"slot update empty barcode", store.SlotUpdateRequest{Barcode: model.Value("")}, []byte(`{"barcode":""}`)},
+			{"slot update null zone", store.SlotUpdateRequest{Zone: model.Null[model.Reference](), Barcode: model.Value("")}, []byte(`{"barcode":"","zone":null}`)},
 		} {
 			t.Run(codec.Name+"/"+tc.name, func(t *testing.T) {
 				got, err := codec.Marshal(tc.input)
@@ -114,7 +115,7 @@ func TestRequestJSON(t *testing.T) {
 	for _, typ := range []reflect.Type{reflect.TypeFor[store.CreateRequest](), reflect.TypeFor[store.UpdateRequest](),
 		reflect.TypeFor[store.ZoneCreateRequest](), reflect.TypeFor[store.ZoneUpdateRequest](),
 		reflect.TypeFor[store.SlotCreateRequest](), reflect.TypeFor[store.SlotUpdateRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Updated", "Zones", "Slots", "Zone"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Updated", "Zones", "Slots"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}
@@ -232,9 +233,9 @@ func TestNestedHTTP(t *testing.T) {
 			slotCall(func(s *store.Service, ctx context.Context) (*store.Slot, error) {
 				return s.CreateSlot(ctx, testID, slot)
 			})},
-		{"update slot", "PUT", "entity/store/" + testID + "/slots/" + slotID, `{"barcode":"0123456789"}`, "[" + slotJSON + "]", slotOK,
+		{"update slot", "PUT", "entity/store/" + testID + "/slots/" + slotID, `{"zone":null}`, "[" + slotJSON + "]", slotOK,
 			slotCall(func(s *store.Service, ctx context.Context) (*store.Slot, error) {
-				return s.UpdateSlot(ctx, testID, slotID, store.SlotUpdateRequest{Barcode: model.Value("0123456789")})
+				return s.UpdateSlot(ctx, testID, slotID, store.SlotUpdateRequest{Zone: model.Null[model.Reference]()})
 			})},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
