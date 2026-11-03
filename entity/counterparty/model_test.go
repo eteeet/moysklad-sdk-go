@@ -53,6 +53,14 @@ func TestCounterpartyFixtures(t *testing.T) {
 				Href: apiURL + "context/companysettings/pricetype/b35e9728-01b5-11f1-0a81-0727000000aa",
 				Type: "pricetype", MediaType: "application/json",
 			}, ID: "b35e9728-01b5-11f1-0a81-0727000000aa", Name: "Цена продажи", ExternalCode: "cbcf493b-55bc-11d9-848a-00112f43529a"},
+			Discounts: []counterparty.Discount{
+				{Discount: model.Reference{Meta: model.Meta{Href: apiURL + "entity/personaldiscount/83077b71-025e-11f1-0a81-07270000016d",
+					MetadataHref: apiURL + "entity/personaldiscount/metadata", Type: "personaldiscount", MediaType: "application/json",
+					UUIDHref: "https://online.moysklad.ru/app/#discount/edit?id=83077b71-025e-11f1-0a81-07270000016d"}}, PersonalDiscount: new(10.0)},
+				{Discount: model.Reference{Meta: model.Meta{Href: apiURL + "entity/accumulationdiscount/a851332c-025e-11f1-0a81-072700000173",
+					MetadataHref: apiURL + "entity/accumulationdiscount/metadata", Type: "accumulationdiscount", MediaType: "application/json",
+					UUIDHref: "https://online.moysklad.ru/app/#discount/edit?id=a851332c-025e-11f1-0a81-072700000173"}}, DemandSumCorrection: new(1100.0)},
+			},
 		}, 3},
 		{"counterparty_legal.json", counterparty.Counterparty{
 			Meta: responseMeta("counterparty", "12a8b923-692c-11e6-8a84-bae500000057"),
@@ -162,6 +170,7 @@ func TestCounterpartyOptionalAndNewValues(t *testing.T) {
 					BirthDate: date(t, "1990-05-05T20:00:00Z"), Sex: "future-sex", CompanyType: "future-region", Archived: true,
 					SalesAmount: wantAmount, INN: "00123", KPP: "00456", OGRN: "00789", OGRNIP: "00012", OKPO: "00034",
 					ActualAddressFull: &model.Address{AddInfo: "entry", Apartment: "03", House: "02", Street: "Лесная", FIASCodeRU: "00001", PostalCode: "001234"},
+					RequisitesUZ:      &model.RequisitesUZ{INN: "123"}, RequisitesKZ: &model.RequisitesKZ{},
 				}
 				if !reflect.DeepEqual(got, want) {
 					t.Errorf("counterparty = %+v, want %+v", got, want)

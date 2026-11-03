@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/internal/documenttest"
@@ -80,6 +81,13 @@ func TestNestedRequestJSON(t *testing.T) {
 				`{"name":"Петров","email":"","position":"Бухгалтер"}`},
 			{"contact update null", counterparty.ContactPersonUpdateRequest{Phone: model.Null[string]()}, `{"phone":null}`},
 			{"note", counterparty.NoteRequest{Description: "текст"}, `{"description":"текст"}`},
+			// Пример создания контрагента Узбекистана из источника; null у kz отправляется как есть.
+			{"requisites", counterparty.UpdateRequest{RequisitesUZ: model.Value(model.RequisitesUZRequest{INN: model.Value("125152124"),
+				OKED: model.Value("2013557"), VATPayerRegCode: model.Value("901283746528"), PINFL: model.Value("")}), RequisitesKZ: model.Null[model.RequisitesKZRequest]()},
+				`{"mod__requisites__uz":{"inn":"125152124","oked":"2013557","vatPayerRegCode":"901283746528","pinfl":""},"mod__requisites__kz":null}`},
+			{"requisites kz", counterparty.CreateRequest{Name: "ТОО", RequisitesKZ: model.Value(model.RequisitesKZRequest{BIN: model.Value("123"),
+				VATCertificateDate: model.Value(model.DateTime(time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC)))})},
+				`{"name":"ТОО","mod__requisites__kz":{"bin":"123","vatCertificateDate":"2024-01-02 03:00:00.000"}}`},
 		} {
 			t.Run(codec.Name+"/"+tc.name, func(t *testing.T) {
 				got, err := codec.Marshal(tc.input)

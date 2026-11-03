@@ -47,4 +47,21 @@ type Counterparty struct {
 	SyncID             string            `json:"syncId"`
 	BonusPoints        int               `json:"bonusPoints"`
 	SalesAmount        float64           `json:"salesAmount"`
+
+	// Discounts — только чтение: записи скидок контрагента источник не описывает.
+	Discounts    []Discount          `json:"discounts"`
+	RequisitesUZ *model.RequisitesUZ `json:"mod__requisites__uz,omitzero"`
+	RequisitesKZ *model.RequisitesKZ `json:"mod__requisites__kz,omitzero"`
+}
+
+// Discount — скидка контрагента: персональная (PersonalDiscount, процент) или накопительная
+// (DemandSumCorrection — коррекция суммы накоплений, AccumulationDiscount — текущий процент).
+// Поля выводятся, только если значение задавалось; nil — поле не пришло. Тип скидки —
+// Discount.Meta.Type, неизвестный тип не отвергается.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/counterparty#4-atributy-sushnosti
+type Discount struct {
+	Discount             model.Reference `json:"discount"`
+	PersonalDiscount     *float64        `json:"personalDiscount,omitzero"`
+	DemandSumCorrection  *float64        `json:"demandSumCorrection,omitzero"`
+	AccumulationDiscount *float64        `json:"accumulationDiscount,omitzero"`
 }
