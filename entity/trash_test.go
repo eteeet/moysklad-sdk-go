@@ -16,6 +16,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/facturein"
+	"github.com/eteeet/moysklad-sdk-go/entity/factureout"
 	"github.com/eteeet/moysklad-sdk-go/entity/internalorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/inventory"
 	"github.com/eteeet/moysklad-sdk-go/entity/invoicein"
@@ -109,6 +110,10 @@ func TestDocumentTrash(t *testing.T) {
 		}},
 		{"supply", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
 			s, _ := supply.NewService(c)
+			return s.Trash(ctx, id, o...)
+		}},
+		{"factureout", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
+			s, _ := factureout.NewService(c)
 			return s.Trash(ctx, id, o...)
 		}},
 		{"facturein", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {

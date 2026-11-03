@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/factureout/99d41b01-aa8a-11e6-8af5-581e0000007e",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/factureout/metadata",
+    "type": "factureout",
+    "mediaType": "application/json"
+  },
+  "id": "99d41b01-aa8a-11e6-8af5-581e0000007e",
+  "accountId": "9560e3e3-9609-11e6-8af5-581e00000008",
+  "owner": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/9575ba6d-9609-11e6-8af5-581e000000ad",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+      "type": "employee",
+      "mediaType": "application/json"
+    }
+  },
+  "shared": false,
+  "group": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/group/956169fa-9609-11e6-8af5-581e00000009",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/group/metadata",
+      "type": "group",
+      "mediaType": "application/json"
+    }
+  },
+  "updated": "2016-11-14 19:52:25",
+  "name": "00001",
+  "externalCode": "iXXMP3d-gJI8avpfWsDAU3",
+  "moment": "2016-11-08 17:26:00",
+  "applicable": true,
+  "printed": true,
+  "published": true,
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/baac25f0-50ac-11e5-300d-c79b00000055",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/currency/metadata",
+        "type": "currency",
+        "mediaType": "application/json"
+      }
+    }
+  },
+  "sum": 0,
+  "agent": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/9596f69c-9609-11e6-8af5-581e000000d9",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/metadata",
+      "type": "counterparty",
+      "mediaType": "application/json"
+    }
+  },
+  "organization": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/95920812-9609-11e6-8af5-581e000000d4",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organization/metadata",
+      "type": "organization",
+      "mediaType": "application/json"
+    }
+  },
+  "state": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/factureout/metadata/states/9770ee98-aa8a-11e6-8af5-581e0000007b",
+      "type": "state",
+      "mediaType": "application/json"
+    }
+  },
+  "attributes": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/factureout/metadata/attributes/3aa46d91-aa8a-11e6-8af5-581e00000077",
+        "type": "attributemetadata",
+        "mediaType": "application/json"
+      },
+      "id": "3aa46d91-aa8a-11e6-8af5-581e00000077",
+      "name": "special_description",
+      "type": "string",
+      "value": "jih"
+    }
+  ],
+  "stateContractId": "005674",
+  "consignee": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/e125ef4f-b685-11f1-0a83-233b00002a9d",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/metadata",
+      "type": "counterparty",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#company/edit?id=e125ef4f-b685-11f1-0a83-233b00002a9d"
+    }
+  },
+  "demands": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/demand/750c8f8e-a5bf-11e6-8af5-581e000000bc",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata",
+        "type": "demand",
+        "mediaType": "application/json"
+      }
+    }
+  ]
+}
