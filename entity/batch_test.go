@@ -36,6 +36,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/entity/discount"
+	"github.com/eteeet/moysklad-sdk-go/entity/emissionorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/employee"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
@@ -78,6 +79,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
+	"github.com/eteeet/moysklad-sdk-go/entity/retireorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleplatform"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
@@ -265,6 +267,10 @@ func batchCases() []batchCase {
 		createManyCase("uom", uom.NewService, (*uom.Service).CreateMany),
 		updateManyCase("uom", uom.NewService, (*uom.Service).UpdateMany),
 		deleteManyCase("uom", uom.NewService, (*uom.Service).DeleteMany),
+		createManyCase("retireorder", retireorder.NewService, (*retireorder.Service).CreateMany),
+		updateManyCase("retireorder", retireorder.NewService, (*retireorder.Service).UpdateMany),
+		createManyCase("emissionorder", emissionorder.NewService, (*emissionorder.Service).CreateMany),
+		updateManyCase("emissionorder", emissionorder.NewService, (*emissionorder.Service).UpdateMany),
 		createManyCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).CreateMany),
 		updateManyCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).UpdateMany),
 		deleteManyCase("webhookstock", webhookstock.NewService, (*webhookstock.Service).DeleteMany),
@@ -624,6 +630,8 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                    "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                   "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                       "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*retireorder.Service]():               "CreateMany UpdateMany",
+		reflect.TypeFor[*emissionorder.Service]():             "CreateMany UpdateMany",
 		reflect.TypeFor[*webhookstock.Service]():              "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*webhook.Service]():                   "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*application.Service]():               "",

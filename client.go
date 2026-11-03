@@ -26,6 +26,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
 	"github.com/eteeet/moysklad-sdk-go/entity/discount"
+	"github.com/eteeet/moysklad-sdk-go/entity/emissionorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/employee"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
@@ -68,6 +69,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
+	"github.com/eteeet/moysklad-sdk-go/entity/retireorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleplatform"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
@@ -341,6 +343,16 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// RetireOrder — выводы кодов маркировки из оборота.
+func (e EntityGroup) RetireOrder() *retireorder.Service {
+	return must(retireorder.NewService(e.transport))
+}
+
+// EmissionOrder — заказы кодов маркировки.
+func (e EntityGroup) EmissionOrder() *emissionorder.Service {
+	return must(emissionorder.NewService(e.transport))
+}
 
 // WebhookStock — вебхуки на изменение остатков.
 func (e EntityGroup) WebhookStock() *webhookstock.Service {

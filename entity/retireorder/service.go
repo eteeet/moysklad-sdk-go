@@ -1,0 +1,132 @@
+package retireorder
+
+import (
+	"context"
+	"encoding/hex"
+	"fmt"
+	"net/http"
+	"reflect"
+
+	"github.com/eteeet/moysklad-sdk-go/batch"
+	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
+	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/query"
+	"github.com/eteeet/moysklad-sdk-go/transport"
+)
+
+// Service — выводы кодов маркировки из оборота. Удаления документа (Delete, DeleteMany)
+// источник не описывает: доступна только корзина (Trash).
+type Service struct {
+	client *transport.Client
+}
+
+func NewService(client *transport.Client) (*Service, error) {
+	if client == nil {
+		return nil, fmt.Errorf("moysklad: retireorder service requires a client")
+	}
+	return &Service{client: client}, nil
+}
+
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retireorder#3-poluchit-vyvod-iz-oborota
+func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestOption) (*RetireOrder, error) {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return nil, fmt.Errorf("moysklad: get retireorder: id must be a UUID")
+	}
+	return s.do(ctx, "get retireorder "+id, http.MethodGet, "entity/retireorder/"+id, nil, opts)
+}
+
+// Не повторять POST автоматически после неоднозначного сбоя: возможен дубль документа.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retireorder#3-sozdat-vyvod-iz-oborota
+func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*RetireOrder, error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "create retireorder"
+	if input.Organization.Meta.Href == "" {
+		return nil, fmt.Errorf("moysklad: %s: organization meta.href must not be empty", operation)
+	}
+	if input.RetireOrderType == "" || input.TrackingType == "" {
+		return nil, fmt.Errorf("moysklad: %s: retireOrderType and trackingType must not be empty", operation)
+	}
+	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
+		return nil, fmt.Errorf("moysklad: %s: positions must not exceed 1000", operation)
+	}
+	return s.do(ctx, operation, http.MethodPost, "entity/retireorder", input, opts)
+}
+
+// Допустимость изменения по documentState (CREATED, CHECKED_NOT_OK, PROCESSING_ERROR) проверяет
+// сервер: SDK не делает GET перед PUT.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retireorder#3-izmenenie-vyvoda-iz-oborota
+func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, opts ...transport.RequestOption) (*RetireOrder, error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "update retireorder"
+	if !validID(id) {
+		return nil, fmt.Errorf("moysklad: %s: id must be a UUID", operation)
+	}
+	// Нулевые Field — «не передано»; Value(false), Value("") и Null не нулевые.
+	if reflect.ValueOf(input).IsZero() {
+		return nil, fmt.Errorf("moysklad: %s: no fields specified", operation)
+	}
+	if rows, ok := input.Positions.Get(); ok && len(rows) > 1000 {
+		return nil, fmt.Errorf("moysklad: %s: positions must not exceed 1000", operation)
+	}
+	return s.do(ctx, operation+" "+id, http.MethodPut, "entity/retireorder/"+id, input, opts)
+}
+
+// List читает одну страницу без expand и автообхода; следующие страницы — pages.All.
+// Удалённые в корзину документы сервер по умолчанию не отдаёт: см. filter isDeleted.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retireorder#3-poluchit-vyvody-iz-oborota
+func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[RetireOrder], error) {
+	return list.Entity[RetireOrder](ctx, s.client, "retireorder", options, nil, opts...)
+}
+
+// CreateMany создаёт объекты одним POST entity/retireorder: массив до batch.MaxItems элементов.
+// Источник: «Массовое создание и обновление Выводов из оборота».
+// Обязательные поля проверяет сервер у каждого элемента; ответ, ошибки элементов и неизвестный
+// исход при сбое — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retireorder#3-massovoe-sozdanie-i-obnovlenie-vyvodov-iz-oborota
+func (s *Service) CreateMany(ctx context.Context, items []CreateRequest, opts ...transport.RequestOption) ([]batch.Result[RetireOrder], error) {
+	transport.ResetResponseInfo(opts)
+	return write.CreateMany[RetireOrder](ctx, s.client, "retireorder", items, opts)
+}
+
+// UpdateMany изменяет объекты одним POST entity/retireorder: элемент — meta по ID и поля Request.
+// До запроса проверяются только UUID и непустой Request, остальные проверки Update делает
+// сервер у каждого элемента. Ответ — по правилам пакета batch. Повторов нет.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/retireorder#3-massovoe-sozdanie-i-obnovlenie-vyvodov-iz-oborota
+func (s *Service) UpdateMany(ctx context.Context, items []batch.Update[UpdateRequest], opts ...transport.RequestOption) ([]batch.Result[RetireOrder], error) {
+	transport.ResetResponseInfo(opts)
+	return write.UpdateMany[RetireOrder](ctx, s.client, "retireorder", items, opts)
+}
+
+// Trash — удаление документа в корзину: POST entity/retireorder/{id}/trash. Документ
+// восстанавливается из корзины только в интерфейсе; права и настройку корзины проверяет сервер.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/common-info#3-udalenie-v-korzinu
+func (s *Service) Trash(ctx context.Context, id string, opts ...transport.RequestOption) error {
+	transport.ResetResponseInfo(opts)
+	return write.Trash(ctx, s.client, "retireorder", id, opts)
+}
+
+func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*RetireOrder, error) {
+	var result RetireOrder
+	resp, err := s.client.Send(ctx, method, endpoint, nil, body, &result, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
+	}
+	if result.ID == "" {
+		return nil, fmt.Errorf("moysklad: %s: response has no id", operation)
+	}
+	return &result, nil
+}
+
+// Проверяем форму UUID, не ограничивая его версию.
+func validID(id string) bool {
+	if len(id) != 36 || id[8] != '-' || id[13] != '-' || id[18] != '-' || id[23] != '-' {
+		return false
+	}
+	_, err := hex.DecodeString(id[:8] + id[9:13] + id[14:18] + id[19:23] + id[24:])
+	return err == nil
+}

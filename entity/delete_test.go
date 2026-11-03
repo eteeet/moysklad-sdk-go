@@ -30,6 +30,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/customentity"
 	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
+	"github.com/eteeet/moysklad-sdk-go/entity/emissionorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/employee"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/expenseitem"
@@ -72,6 +73,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
+	"github.com/eteeet/moysklad-sdk-go/entity/retireorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/role"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleplatform"
 	"github.com/eteeet/moysklad-sdk-go/entity/saleschannel"
@@ -363,6 +365,8 @@ func TestDeleteOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*thing.Service](),
 		reflect.TypeFor[*saleplatform.Service](),
 		reflect.TypeFor[*region.Service](),
+		reflect.TypeFor[*retireorder.Service](),
+		reflect.TypeFor[*emissionorder.Service](),
 		reflect.TypeFor[*contexts.Service](), reflect.TypeFor[*audit.Service](), reflect.TypeFor[*turnover.Service]()} {
 		if _, ok := typ.MethodByName("Delete"); ok {
 			t.Errorf("%s has Delete", typ)

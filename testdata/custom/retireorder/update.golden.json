@@ -1,0 +1,10 @@
+{
+  "retireOrderType": "OTHER_TYPE",
+  "name": "обновленный",
+  "description": "новое описание Вывода из оборота",
+  "agent": null,
+  "positions": [
+    {"id": "d3040339-a8bd-11ef-ac15-000400000059", "trackingCodes": [{"cis": "010465011724001921yM1QsEStTWZfG2406402", "type": "trackingcode"}, {"cis": "110465011724001921yM1QsEStTWZfG2406402", "type": "trackingcode"}]},
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/77777777-7777-7777-7777-777777777777", "type": "product"}}, "price": 123456789.01, "trackingCodes": []}
+  ]
+}

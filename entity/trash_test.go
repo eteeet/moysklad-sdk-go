@@ -16,6 +16,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/counterpartyadjustment"
 	"github.com/eteeet/moysklad-sdk-go/entity/customerorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/demand"
+	"github.com/eteeet/moysklad-sdk-go/entity/emissionorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/enter"
 	"github.com/eteeet/moysklad-sdk-go/entity/facturein"
 	"github.com/eteeet/moysklad-sdk-go/entity/factureout"
@@ -42,6 +43,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashout"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
+	"github.com/eteeet/moysklad-sdk-go/entity/retireorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
 	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
@@ -123,6 +125,14 @@ func TestDocumentTrash(t *testing.T) {
 		}},
 		{"supply", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
 			s, _ := supply.NewService(c)
+			return s.Trash(ctx, id, o...)
+		}},
+		{"retireorder", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
+			s, _ := retireorder.NewService(c)
+			return s.Trash(ctx, id, o...)
+		}},
+		{"emissionorder", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {
+			s, _ := emissionorder.NewService(c)
 			return s.Trash(ctx, id, o...)
 		}},
 		{"productiontask", func(ctx context.Context, c *transport.Client, id string, o ...transport.RequestOption) error {

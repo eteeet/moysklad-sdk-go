@@ -1,0 +1,20 @@
+{
+  "organization": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/11111111-1111-1111-1111-111111111111", "type": "organization"}},
+  "trackingType": "MILK",
+  "emissionType": "LOCAL",
+  "name": "2000",
+  "description": "",
+  "externalCode": "ext",
+  "moment": "2026-03-25 19:03:00.000",
+  "shared": false,
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/55555555-5555-5555-5555-555555555555", "type": "employee"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/66666666-6666-6666-6666-666666666666", "type": "group"}},
+  "state": null,
+  "positions": [
+    {
+      "assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/77777777-7777-7777-7777-777777777777", "type": "product"}},
+      "quantity": 3
+    }
+  ],
+  "productionTasks": [{"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/productiontask/88888888-8888-8888-8888-888888888888", "type": "productiontask"}}]
+}

@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/retireorder/b14bcb5e-3b17-4765-87cf-bc4569fc5f32",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/retireorder/metadata",
+    "type": "retireorder",
+    "mediaType": "application/json",
+    "uuidHref": "https://online.moysklad.ru/app/#retireorder/edit?id=b14bcb5e-3b17-4765-87cf-bc4569fc5f32"
+  },
+  "id": "b14bcb5e-3b17-4765-87cf-bc4569fc5f32",
+  "accountId": "dbb8cfc1-cbfa-11e1-6dfb-889ffa6f49fd",
+  "owner": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/872559f1-cbf3-11e1-9eb9-889ffa6f49fd",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+      "type": "employee",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#employee/edit?id=872559f1-cbf3-11e1-9eb9-889ffa6f49fd"
+    }
+  },
+  "shared": false,
+  "group": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/group/f7eb1e3b-fd2a-42f7-b799-b3d1e6b3bf43",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/group/metadata",
+      "type": "group",
+      "mediaType": "application/json"
+    }
+  },
+  "updated": "2024-11-22 13:37:51.355",
+  "name": "00001",
+  "description": "some_some",
+  "externalCode": "4fXzFRjOjDC8upZ1iEK-n3",
+  "moment": "2024-11-26 13:20:51.272",
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/883f0496-6af5-11e6-ba80-448a5bed452a",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/currency/metadata",
+        "type": "currency",
+        "mediaType": "application/json",
+        "uuidHref": "https://online.moysklad.ru/app/#currency/edit?id=883f0496-6af5-11e6-ba80-448a5bed452a"
+      }
+    }
+  },
+  "sum": 100000.0,
+  "organization": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/972559f1-cbf3-11e1-9eb9-889ffa6f49fd",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organization/metadata",
+      "type": "organization",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#mycompany/edit?id=972559f1-cbf3-11e1-9eb9-889ffa6f49fd"
+    }
+  },
+  "organizationBranch": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organizationbranch/12854b0b-e03c-4e3e-bb37-296bdebeca20",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organizationbranch/metadata",
+      "type": "organizationbranch",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#mycompanybranch/edit?id=12854b0b-e03c-4e3e-bb37-296bdebeca20"
+    }
+  },
+  "created": "2024-11-22 13:37:51.431",
+  "printed": false,
+  "published": false,
+  "documentState": "CREATED",
+  "retireOrderType": "RETAIL_SALE",
+  "supportingTransaction": "OTHER",
+  "supportingTransactionDate": "2024-11-22 13:37:51.335",
+  "supportingTransactionNumber": "123",
+  "primaryDocumentName": "doc name",
+  "trackingType": "SHOES",
+  "vatEnabled": true,
+  "vatIncluded": true,
+  "vatSum": 16667.0,
+  "positions": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/retireorder/b14bcb5e-3b17-4765-87cf-bc4569fc5f32/positions",
+      "type": "retireorderposition",
+      "mediaType": "application/json",
+      "size": 1,
+      "limit": 1000,
+      "offset": 0
+    }
+  }
+}

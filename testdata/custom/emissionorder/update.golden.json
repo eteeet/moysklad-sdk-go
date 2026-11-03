@@ -1,0 +1,10 @@
+{
+  "emissionType": "REMAINS",
+  "name": "00001-обновленный",
+  "group": null,
+  "positions": [
+    {"id": "34b7de2d-a670-11ef-ac12-000d00000112", "quantity": 44},
+    {"assortment": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/product/77777777-7777-7777-7777-777777777777", "type": "product"}}, "quantity": 1.5}
+  ],
+  "productionTasks": []
+}
