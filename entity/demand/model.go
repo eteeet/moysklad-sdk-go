@@ -56,4 +56,20 @@ type Demand struct {
 	ProductionTasks     []model.Reference                  `json:"productionTasks"`
 	InvoicesOut         []model.Reference                  `json:"invoicesOut"`
 	Overhead            *model.DocumentOverhead            `json:"overhead,omitzero"`
+
+	// Транспортные поля («Другие поля» источника): carrier, consignee и consignor — контрагент или
+	// юрлицо, *Branch — подразделение юрлица; GoodPackQuantity — всего мест.
+	CargoName               string           `json:"cargoName"`
+	Carrier                 *model.Reference `json:"carrier,omitzero"`
+	Consignee               *model.Reference `json:"consignee,omitzero"`
+	ConsigneeBranch         *model.Reference `json:"consigneeBranch,omitzero"`
+	Consignor               *model.Reference `json:"consignor,omitzero"`
+	ConsignorBranch         *model.Reference `json:"consignorBranch,omitzero"`
+	GoodPackQuantity        int              `json:"goodPackQuantity"`
+	ShippingInstructions    string           `json:"shippingInstructions"`
+	StateContractID         string           `json:"stateContractId"`
+	TransportFacility       string           `json:"transportFacility"`
+	TransportFacilityNumber string           `json:"transportFacilityNumber"`
+	ShippingDocumentNumber  string           `json:"shippingDocumentNumber"`
+	ShippingDocumentDate    model.DateTime   `json:"shippingDocumentDate,omitzero"`
 }

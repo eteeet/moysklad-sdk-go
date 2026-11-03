@@ -73,3 +73,14 @@ move. supply у purchasereturn и demand у salesreturn задаются тол�
 в разделе связей — сумма, только чтение. Пустой массив уходит как `[]`, null — как `null`; что
 делает с ними сервер (отвязка), источник не описывает. Совместимость типа привязываемого документа
 и права проверяет сервер.
+
+## Поля строк и транспортные поля demand
+
+Общая форма `positions.Position`/`PositionRequest` покрывает все поля таблиц позиций источника у
+документов SDK: у invoicein и invoiceout — pack; у move — pack, things, sourceSlot, targetSlot; у
+supply, demand, purchasereturn — pack, slot, things и коды маркировки по таблице. serial-полей у
+строк этих документов источник не даёт.
+
+Demand читает и пишет транспортные поля («Другие поля»): cargoName, carrier, consignee(Branch),
+consignor(Branch), goodPackQuantity, shippingInstructions, stateContractId, transportFacility(Number),
+shippingDocumentNumber, shippingDocumentDate ([demand](demand.md)).

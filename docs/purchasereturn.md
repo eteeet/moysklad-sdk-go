@@ -67,10 +67,9 @@ quantity не больше исходного; запрещает смену в�
 запрету этих полей: они отсутствуют в UpdateRequest. OrganizationAccount доступен.
 Discount помечен readonly в таблице, но встречается в write-примерах. Общий
 PositionRequest содержит Discount, это не обещание его изменения у возврата.
-Price/VAT доступны в embedded Update; правило «только quantity» относится к отдельному
-PUT позиции, который вне scope. FactureIn/FactureOut/Payments пишутся как связи документов.
-Pack, things, slot (кроме SourceSlot/TargetSlot общей формы), serial/tracking/stock
-и остальные не перечисленные поля позиций остаются TODO.
+Price/VAT доступны в embedded Update; правило «только quantity» источник относит к
+отдельному PUT позиции (`UpdatePosition`); SDK его не проверяет, решает сервер. FactureIn/FactureOut/Payments пишутся как связи документов.
+Строки — все поля таблицы позиций источника: pack, slot, things (общая форма).
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_purchase_return.md).

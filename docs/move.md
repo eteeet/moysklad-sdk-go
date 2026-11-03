@@ -60,11 +60,11 @@ contract и VAT-поля заголовка не добавлены по ана�
 Неиспользуемые коммерческие Field строки обычно не задаются; допустимость заданных
 проверяет сервер. SourceSlot/TargetSlot — ссылки. Overhead документа распределяет
 сервер; наличие строк, равенство/различие складов и тип assortment локально не проверяются.
-Demand, Supply, ProductionTasks только читаются, запись ProductionTasks TODO.
+Demand и Supply только читаются (маркер таблицы); ProductionTasks пишется как связь документа.
 Таблица допускает service в ассортименте, вводный текст его не перечисляет;
 SDK не вводит локальное ограничение по этому расхождению.
-Pack, things, slot (кроме SourceSlot/TargetSlot общей формы), serial/tracking/stock
-и остальные не перечисленные поля позиций остаются TODO.
+Строки — все поля таблицы позиций источника: pack, things, sourceSlot, targetSlot (общая форма);
+overhead строки только читается.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/move),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_move.md).

@@ -61,8 +61,8 @@ Readonly поля в requests отсутствуют.
 При смене organization/agent API требует соответствующие счета сторон; SDK
 передаёт organizationAccount/agentAccount без локального сравнения или скрытого Get.
 Files исключены целиком. Demands пишутся как связи документов; payments источник помечает «Только для чтения».
-Pack, things, slot (кроме SourceSlot/TargetSlot общей формы), serial/tracking/stock
-и остальные не перечисленные поля позиций остаются TODO.
+Строки — все поля таблицы позиций источника, включая pack (общая форма); things, slot и
+кодов маркировки у строк счёта источник не даёт.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-out),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_invoice_out.md).

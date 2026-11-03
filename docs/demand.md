@@ -56,6 +56,19 @@
 | `productionTasks` | `[]model.Reference` | Field | Field |
 | `invoicesOut` | `[]model.Reference` | Field | Field |
 | `overhead` | `*model.DocumentOverhead` | Field | Field |
+| `cargoName` | `string` | Field | Field |
+| `carrier` | `*model.Reference` | Field | Field |
+| `consignee` | `*model.Reference` | Field | Field |
+| `consigneeBranch` | `*model.Reference` | Field | Field |
+| `consignor` | `*model.Reference` | Field | Field |
+| `consignorBranch` | `*model.Reference` | Field | Field |
+| `goodPackQuantity` | `int` | Field | Field |
+| `shippingInstructions` | `string` | Field | Field |
+| `stateContractId` | `string` | Field | Field |
+| `transportFacility` | `string` | Field | Field |
+| `transportFacilityNumber` | `string` | Field | Field |
+| `shippingDocumentNumber` | `string` | Field | Field |
+| `shippingDocumentDate` | `model.DateTime` | Field | Field |
 
 Required Reference передаются обычными значениями; остальные поля записи —
 `model.Field[T]`. Вложенные write-формы: `DocumentRateRequest`, `DocumentOverheadRequest`,
@@ -77,12 +90,13 @@ Address/AddressRequest, но FIASCodeRU у Demand не обещается. Cost 
 Overhead распределяет сервер, наличие позиций не проверяется скрытым Get.
 FactureOut, Returns, Payments, ProductionTasks, InvoicesOut пишутся как связи документов
 ([общее правило](documents-extra.md#связи-документов)).
-Transport fields cargoName/carrier/consignee/consigneeBranch/consignor/consignorBranch/
-goodPackQuantity/shippingInstructions/stateContractId/transportFacility/transportFacilityNumber/
-shippingDocumentNumber/shippingDocumentDate — TODO и read, и write.
-Поля строк общей формы (pack, things, trackingCodes, stock через `GetPositions` с
-`fields=stock` и др.) описаны в [контракте позиций](positions.md); остальные не
-перечисленные поля позиций остаются TODO.
+Транспортные поля (раздел «Другие поля» источника) читаются и пишутся: cargoName, carrier,
+consignee, consigneeBranch, consignor, consignorBranch, goodPackQuantity, shippingInstructions,
+stateContractId, transportFacility, transportFacilityNumber, shippingDocumentNumber,
+shippingDocumentDate. Маркеров readonly нет; carrier/consignee/consignor — контрагент или юрлицо,
+*Branch — подразделение юрлица, тип ссылки проверяет сервер.
+Строки — все поля таблицы позиций источника: cost, pack, slot, things, trackingCodes (общая форма,
+[контракт позиций](positions.md)); declaration, trackingCodes_1162 и overhead — только чтение.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/demand),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_demand.md).
