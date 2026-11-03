@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 51/60, документы 35/37, отчёты 1/9, прочее 6/8.
+Итого: справочники 52/60, документы 35/37, отчёты 1/9, прочее 6/8.
 
 ## Справочники
 
@@ -39,7 +39,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [ ] gtd — ГТД (объект без endpoint)
 - [x] images — изображения: List/Add/Replace/Delete/DeleteMany/Download (product, bundle, variant, contentcard)
 - [ ] labels — этикетки и ценники
-- [ ] namedfilter — сохранённые фильтры
+- [x] namedfilter — сохранённые фильтры
 - [x] organization — юрлицо
 - [x] organizationbranch — подразделение юрлица
 - [x] personaldiscount — персональная скидка: Get/Create/Update/Delete (список — Discount().List)

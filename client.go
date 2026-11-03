@@ -82,6 +82,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/files"
 	"github.com/eteeet/moysklad-sdk-go/images"
 	"github.com/eteeet/moysklad-sdk-go/metadata"
+	"github.com/eteeet/moysklad-sdk-go/namedfilter"
 	"github.com/eteeet/moysklad-sdk-go/report/turnover"
 	"github.com/eteeet/moysklad-sdk-go/security"
 	"github.com/eteeet/moysklad-sdk-go/trackingcode"
@@ -146,6 +147,11 @@ func (r ReportGroup) Turnover() *turnover.Service { return must(turnover.NewServ
 
 // Metadata — метаданные сущностей (entity/metadata, entity/<type>/metadata) и статусы.
 func (e EntityGroup) Metadata() *metadata.Service { return must(metadata.NewService(e.transport)) }
+
+// NamedFilter — сохранённые фильтры entity/<type>/namedfilter (только чтение).
+func (e EntityGroup) NamedFilter() *namedfilter.Service {
+	return must(namedfilter.NewService(e.transport))
+}
 
 // Files — файлы операций, документов и других сущностей (entity/<type>/<id>/files).
 func (e EntityGroup) Files() *files.Service { return must(files.NewService(e.transport)) }
