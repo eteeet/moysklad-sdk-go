@@ -15,6 +15,7 @@ import (
 
 	"github.com/eteeet/moysklad-sdk-go/entity/accumulationdiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/aggregatepack"
+	"github.com/eteeet/moysklad-sdk-go/entity/application"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonusprogram"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonustransaction"
@@ -229,6 +230,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("application", application.NewService, (*application.Service).Get),
 		getCase("processingplan", processingplan.NewService, (*processingplan.Service).Get),
 		getCase("productiontask", productiontask.NewService, (*productiontask.Service).Get),
 		getCase("processing", processing.NewService, (*processing.Service).Get),

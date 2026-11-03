@@ -17,6 +17,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/batch"
 	"github.com/eteeet/moysklad-sdk-go/entity/accumulationdiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/aggregatepack"
+	"github.com/eteeet/moysklad-sdk-go/entity/application"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonusprogram"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonustransaction"
@@ -615,6 +616,7 @@ func TestBatchOnlyWhereDocumented(t *testing.T) {
 		reflect.TypeFor[*supply.Service]():                    "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*taxrate.Service]():                   "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*uom.Service]():                       "CreateMany UpdateMany DeleteMany",
+		reflect.TypeFor[*application.Service]():               "",
 		reflect.TypeFor[*processingplan.Service]():            "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*productiontask.Service]():            "CreateMany UpdateMany DeleteMany",
 		reflect.TypeFor[*processing.Service]():                "CreateMany UpdateMany DeleteMany",

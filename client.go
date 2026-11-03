@@ -6,6 +6,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/contexts"
 	"github.com/eteeet/moysklad-sdk-go/entity/accumulationdiscount"
 	"github.com/eteeet/moysklad-sdk-go/entity/aggregatepack"
+	"github.com/eteeet/moysklad-sdk-go/entity/application"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonusprogram"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonustransaction"
@@ -300,6 +301,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// Application — серверные решения (только GET).
+func (e EntityGroup) Application() *application.Service {
+	return must(application.NewService(e.transport))
+}
 
 // ProcessingPlan — техкарты.
 func (e EntityGroup) ProcessingPlan() *processingplan.Service {

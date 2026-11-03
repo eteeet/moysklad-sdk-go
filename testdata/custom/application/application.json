@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/application/b58a6312-f958-11e9-ac12-000a00000020",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/application/metadata",
+    "type": "application",
+    "mediaType": "application/json"
+  },
+  "appUid": "test.moysklad@reqwy1",
+  "id": "b58a6312-f958-11e9-ac12-000a00000020"
+}
