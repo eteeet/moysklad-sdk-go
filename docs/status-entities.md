@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 33/60, документы 18/37, отчёты 1/9, прочее 5/8.
+Итого: справочники 34/60, документы 18/37, отчёты 1/9, прочее 5/8.
 
 ## Справочники
 
@@ -63,7 +63,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [ ] task — задача
 - [x] taxrate — ставка НДС
 - [ ] template — шаблоны печатных форм
-- [ ] thing — серийный номер
+- [x] thing — серийный номер: Get/List (только чтение)
 - [ ] trackingcode — коды маркировки
 - [x] uom — единица измерения
 - [ ] usersettings — настройки пользователя (context)

@@ -47,6 +47,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/store"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
 	"github.com/eteeet/moysklad-sdk-go/entity/taxrate"
+	"github.com/eteeet/moysklad-sdk-go/entity/thing"
 	"github.com/eteeet/moysklad-sdk-go/entity/uom"
 	"github.com/eteeet/moysklad-sdk-go/entity/variant"
 	"github.com/eteeet/moysklad-sdk-go/files"
@@ -250,6 +251,9 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// Thing — Серийные номера (только чтение).
+func (e EntityGroup) Thing() *thing.Service { return must(thing.NewService(e.transport)) }
 
 // OrganizationBranch — Подразделения юрлиц.
 func (e EntityGroup) OrganizationBranch() *organizationbranch.Service {
