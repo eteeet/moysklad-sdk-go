@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/memnet"
@@ -51,6 +52,29 @@ func TestNewServer(t *testing.T) {
 	resp.Body.Close()
 	if string(body) != "other" {
 		t.Fatalf("body = %q", body)
+	}
+}
+
+// Закрытый сервер не уходит в TCP: порт-метка не зарезервирован и может быть занят чужим listener.
+func TestClosedServerDoesNotReachTCP(t *testing.T) {
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	ln, err := net.Listen("tcp", server.Listener.Addr().String())
+	if err != nil {
+		t.Skipf("address busy: %v", err)
+	}
+	var calls atomic.Int32
+	go http.Serve(ln, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		io.WriteString(w, "other-process")
+	}))
+	defer ln.Close()
+	server.Close()
+	resp, err := (&http.Client{}).Get(server.URL)
+	if err == nil {
+		resp.Body.Close()
+	}
+	if err == nil || calls.Load() != 0 {
+		t.Fatalf("err = %v, TCP calls = %d", err, calls.Load())
 	}
 }
 

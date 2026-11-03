@@ -3,8 +3,8 @@
 // соединения в памяти этого не делают.
 //
 // NewServer возвращает обычный *httptest.Server, но его Listener отдаёт концы net.Pipe.
-// init подменяет DialContext у http.DefaultTransport: адреса живых memnet-серверов соединяются
-// в памяти, остальные — по сети как прежде. Клиент SDK без HTTPClient использует
+// init подменяет DialContext у http.DefaultTransport: адреса memnet-серверов соединяются в
+// памяти (закрытые — connection refused, без сети), остальные — по сети как прежде. Клиент SDK без HTTPClient использует
 // http.DefaultTransport, поэтому тестам достаточно заменить конструктор сервера.
 // server.Client() по-прежнему ходит по TCP — тесты его не используют.
 package memnet
@@ -16,12 +16,15 @@ import (
 	"net/http/httptest"
 	"sync"
 	"sync/atomic"
+	"syscall"
 )
 
 var (
 	mu        sync.Mutex
 	listeners = map[string]*listener{}
-	// Порты-метки ниже эфемерного диапазона Linux и macOS: с реальными серверами теста не совпадут.
+	// Порты-метки ниже эфемерного диапазона Linux и macOS: эфемерные порты теста их не займут.
+	// Порт не резервируется — его может слушать другой процесс, поэтому адрес закрытого сервера
+	// остаётся в listeners и в сеть не уходит. Метки не переиспользуются.
 	nextPort atomic.Int32
 )
 
@@ -71,14 +74,9 @@ func (l *listener) Accept() (net.Conn, error) {
 	}
 }
 
-// Close снимает адрес с регистрации: дальнейший dial уходит в сеть и получает connection refused.
+// Close оставляет адрес зарегистрированным: dial закрытого сервера получает connection refused.
 func (l *listener) Close() error {
-	l.once.Do(func() {
-		close(l.done)
-		mu.Lock()
-		delete(listeners, l.addr.String())
-		mu.Unlock()
-	})
+	l.once.Do(func() { close(l.done) })
 	return nil
 }
 
@@ -92,7 +90,7 @@ func (l *listener) dial(ctx context.Context) (net.Conn, error) {
 	case <-l.done:
 		client.Close()
 		server.Close()
-		return nil, &net.OpError{Op: "dial", Net: "tcp", Addr: l.addr, Err: net.ErrClosed}
+		return nil, &net.OpError{Op: "dial", Net: "tcp", Addr: l.addr, Err: syscall.ECONNREFUSED}
 	case <-ctx.Done():
 		client.Close()
 		server.Close()
