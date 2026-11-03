@@ -29,6 +29,24 @@ GET. Нужно право `viewDashboard` (проверяет сервер).
 | money.todayMovement | `float64` | Float | дельта за сегодня; не объявлена деньгами |
 | money.movement | `float64` | Float | дельта за период; не объявлена деньгами |
 
+## Асинхронно
+
+«Отчет Показатели» входит в список async источника целиком. [_async.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/_async.md) (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
+
+| Метод | Endpoint |
+| --- | --- |
+| `DayAsync(ctx)` | GET report/dashboard/day?async=true |
+| `WeekAsync(ctx)` | GET report/dashboard/week?async=true |
+| `MonthAsync(ctx)` | GET report/dashboard/month?async=true |
+
+Каждый метод — один GET с теми же параметрами, что у синхронного, плюс `async=true`; ответ 202 с
+Content-Location (…/async/{id}) и Location (…/async/{id}/result) — `*async.Submitted` (ID,
+StatusHref, ResultHref), другой статус или 202 без этих адресов — ошибка. Создание задачи —
+побочный эффект: transport не повторяет `async=true` даже с `Config.Retry`; после сбоя сети задача
+могла создаться — проверьте `c.Async().List`. Результат: `c.Async().Wait`, затем
+`c.Async().Result(ctx, task.ID, w)` — JSON того же вида, что ответ синхронного метода (SDK его не
+разбирает). `limit`/`offset` источник у async запрещает: параметров у методов нет, в запросе только `async=true`.
+
 ## Противоречия и неизвестное
 
 - Ticket I06: «sales/orders/money — копейки, movement — проценты». Источник единиц не называет.

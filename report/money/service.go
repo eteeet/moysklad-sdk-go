@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/eteeet/moysklad-sdk-go/async"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -48,18 +50,9 @@ func NewService(client *transport.Client) (*Service, error) {
 func (s *Service) PlotSeries(ctx context.Context, options PlotSeriesOptions, opts ...transport.RequestOption) (*PlotSeries, error) {
 	transport.ResetResponseInfo(opts)
 	const operation = "get money plotseries"
-	switch {
-	case options.MomentFrom.IsZero():
-		return nil, fmt.Errorf("moysklad: %s: momentFrom is required", operation)
-	case options.MomentTo.IsZero():
-		return nil, fmt.Errorf("moysklad: %s: momentTo is required", operation)
-	case options.Interval == "":
-		return nil, fmt.Errorf("moysklad: %s: interval is required", operation)
-	}
-	params, err := query.ReportOptions{MomentFrom: options.MomentFrom, MomentTo: options.MomentTo,
-		Interval: options.Interval, Filter: options.Filter, Extra: options.Extra}.Values()
+	params, err := options.values(operation)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
+		return nil, err
 	}
 	var result PlotSeries
 	resp, err := s.client.Send(ctx, http.MethodGet, "report/money/plotseries", params, nil, &result, opts...)
@@ -75,10 +68,50 @@ func (s *Service) PlotSeries(ctx context.Context, options PlotSeriesOptions, opt
 	return &result, nil
 }
 
+// PlotSeriesAsync создаёт асинхронную задачу «Движение денежных средств»: GET
+// report/money/plotseries с async=true и теми же обязательными параметрами, что у PlotSeries;
+// limit и offset (в Extra) источник у async запрещает — ошибка до запроса. Результат — через
+// async.Service.Result; создание задачи не повторяется.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) PlotSeriesAsync(ctx context.Context, options PlotSeriesOptions, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "get money plotseries async"
+	params, err := options.values(operation)
+	if err != nil {
+		return nil, err
+	}
+	return write.Submit(ctx, s.client, operation, "report/money/plotseries", params, opts)
+}
+
+func (o PlotSeriesOptions) values(operation string) (url.Values, error) {
+	switch {
+	case o.MomentFrom.IsZero():
+		return nil, fmt.Errorf("moysklad: %s: momentFrom is required", operation)
+	case o.MomentTo.IsZero():
+		return nil, fmt.Errorf("moysklad: %s: momentTo is required", operation)
+	case o.Interval == "":
+		return nil, fmt.Errorf("moysklad: %s: interval is required", operation)
+	}
+	params, err := query.ReportOptions{MomentFrom: o.MomentFrom, MomentTo: o.MomentTo,
+		Interval: o.Interval, Filter: o.Filter, Extra: o.Extra}.Values()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return params, nil
+}
+
 // ByAccount читает текущие остатки по кассам и счетам. Параметров источник не описывает; ответ —
 // {context, meta, rows} без size/limit (в CollectionMeta они нулевые) и без страниц.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/reports/report-money#3-ostatki-denezhnyh-sredstv
 func (s *Service) ByAccount(ctx context.Context, opts ...transport.RequestOption) (*model.Collection[AccountRow], error) {
 	transport.ResetResponseInfo(opts)
 	return list.Page[AccountRow](ctx, s.client, "get money byaccount", "report/money/byaccount", nil, opts...)
+}
+
+// ByAccountAsync создаёт асинхронную задачу «Остатки денежных средств»: GET report/money/byaccount
+// с одним параметром async=true. Результат — через async.Service.Result; без повторов.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) ByAccountAsync(ctx context.Context, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	return write.Submit(ctx, s.client, "get money byaccount async", "report/money/byaccount", url.Values{}, opts)
 }

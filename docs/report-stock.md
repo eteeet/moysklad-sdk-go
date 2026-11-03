@@ -81,6 +81,35 @@ search, soldByWeight, stockMode, store, supplier, variant, доп. поля (т�
 
 Неизвестные поля ответа игнорируются.
 
+## Асинхронно
+
+«Отчет Остатки» входит в список async источника целиком (раздел `## Отчет Остатки`, в нём расширенный, краткие, по складам и по документам). [_async.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/_async.md) (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
+
+| Метод | Endpoint | Синхронный аналог |
+| --- | --- | --- |
+| `AllAsync(ctx, AllOptions)` | GET report/stock/all?async=true | `All` |
+| `ByStoreAsync(ctx, ByStoreOptions)` | GET report/stock/bystore?async=true | `ByStore` |
+| `AllCurrentAsync(ctx, CurrentOptions)` | GET report/stock/all/current?async=true | `AllCurrent` |
+| `ByStoreCurrentAsync(ctx, CurrentOptions)` | GET report/stock/bystore/current?async=true | `ByStoreCurrent` |
+| `BySlotCurrentAsync(ctx, SlotOptions)` | GET report/stock/byslot/current?async=true | `BySlotCurrent` |
+| `ByOperationAsync(ctx, operationID)` | GET report/stock/byoperation?operation.id=…&async=true | `ByOperation` |
+
+Каждый метод — один GET с теми же параметрами, что у синхронного, плюс `async=true`; ответ 202 с
+Content-Location (…/async/{id}) и Location (…/async/{id}/result) — `*async.Submitted` (ID,
+StatusHref, ResultHref), другой статус или 202 без этих адресов — ошибка. Создание задачи —
+побочный эффект: transport не повторяет `async=true` даже с `Config.Retry`; после сбоя сети задача
+могла создаться — проверьте `c.Async().List`. Результат: `c.Async().Wait`, затем
+`c.Async().Result(ctx, task.ID, w)` — JSON того же вида, что ответ синхронного метода (SDK его не
+разбирает). `limit`/`offset` источник у async запрещает: ненулевые `Limit`/`Offset` у `AllAsync`/`ByStoreAsync` и `limit`/`offset` в `Extra` любого метода —
+ошибка до запроса (`ResponseInfo` сброшен). Остальные проверки — как у синхронного метода.
+
+- Решение по scope: источник перечисляет отчёты ссылками на раздел целиком и исключает только
+  выборочные показатели контрагентов, поэтому async получили все GET-endpoints раздела, включая
+  краткие и byoperation. Отдельно async у кратких отчётов и byoperation источник не подтверждает
+  (пример — только bystore); если сервер откажет, это будет APIError.
+- Вес лимита async-запроса all/bystore источник не описывает: `transport.DefaultWeight` считает его
+  как синхронный (5 единиц).
+
 ## Противоречия и ограничения источника
 
 - `image` расширенного отчёта: таблица — `Meta`, пример ответа и фикстура официального SDK — объект

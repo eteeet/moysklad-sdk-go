@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
+	"github.com/eteeet/moysklad-sdk-go/async"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -38,6 +41,32 @@ func (s *Service) Week(ctx context.Context, opts ...transport.RequestOption) (*D
 func (s *Service) Month(ctx context.Context, opts ...transport.RequestOption) (*Dashboard, error) {
 	transport.ResetResponseInfo(opts)
 	return s.get(ctx, "month", opts)
+}
+
+// DayAsync создаёт асинхронную задачу показателей за день: GET report/dashboard/day?async=true.
+// Результат — через async.Service.Result; создание задачи не повторяется.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) DayAsync(ctx context.Context, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	return s.submit(ctx, "day", opts)
+}
+
+// WeekAsync создаёт асинхронную задачу показателей за неделю: GET report/dashboard/week?async=true.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) WeekAsync(ctx context.Context, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	return s.submit(ctx, "week", opts)
+}
+
+// MonthAsync создаёт асинхронную задачу показателей за месяц: GET report/dashboard/month?async=true.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) MonthAsync(ctx context.Context, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	return s.submit(ctx, "month", opts)
+}
+
+func (s *Service) submit(ctx context.Context, period string, opts []transport.RequestOption) (*async.Submitted, error) {
+	return write.Submit(ctx, s.client, "get dashboard "+period+" async", "report/dashboard/"+period, url.Values{}, opts)
 }
 
 func (s *Service) get(ctx context.Context, period string, opts []transport.RequestOption) (*Dashboard, error) {

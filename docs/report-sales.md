@@ -43,6 +43,24 @@ Filter: organization, store, project у обоих графиков; retailStore
 | series[].quantity | `int` | количество документов (Int источника), не деньги |
 | series[].sum | `float64` | сумма, копейки |
 
+## Асинхронно
+
+«Показатели продаж и заказов» входят в список async источника целиком. [_async.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/_async.md) (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
+
+| Метод | Endpoint |
+| --- | --- |
+| `SalesAsync(ctx, Options)` | GET report/sales/plotseries?async=true |
+| `OrdersAsync(ctx, Options)` | GET report/orders/plotseries?async=true |
+
+Каждый метод — один GET с теми же параметрами, что у синхронного, плюс `async=true`; ответ 202 с
+Content-Location (…/async/{id}) и Location (…/async/{id}/result) — `*async.Submitted` (ID,
+StatusHref, ResultHref), другой статус или 202 без этих адресов — ошибка. Создание задачи —
+побочный эффект: transport не повторяет `async=true` даже с `Config.Retry`; после сбоя сети задача
+могла создаться — проверьте `c.Async().List`. Результат: `c.Async().Wait`, затем
+`c.Async().Result(ctx, task.ID, w)` — JSON того же вида, что ответ синхронного метода (SDK его не
+разбирает). `limit`/`offset` источник у async запрещает: `limit`/`offset` в `Extra` — ошибка до запроса (`ResponseInfo` сброшен);
+обязательные MomentFrom, MomentTo, Interval проверяются, как у синхронных методов.
+
 ## Противоречия источника и решения
 
 - Пример запроса продаж с фильтром разделяет условия `&` (`filter=retailStore=…&project=…`), что

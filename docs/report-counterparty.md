@@ -66,6 +66,28 @@ counterparty.email, counterparty.inn, counterparty.phone.
 | externalCode | `string` | внешний код |
 | companyType | `model.CompanyType` | открытый enum: неизвестное значение сохраняется |
 
+## Асинхронно
+
+«Отчет Показатели контрагентов» входит в список async источника, кроме выборочных показателей. [_async.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/_async.md) (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
+
+| Метод | Endpoint |
+| --- | --- |
+| `ListAsync(ctx, ListOptions)` | GET report/counterparty?async=true |
+| `GetAsync(ctx, id)` | GET report/counterparty/{id}?async=true |
+
+Каждый метод — один GET с теми же параметрами, что у синхронного, плюс `async=true`; ответ 202 с
+Content-Location (…/async/{id}) и Location (…/async/{id}/result) — `*async.Submitted` (ID,
+StatusHref, ResultHref), другой статус или 202 без этих адресов — ошибка. Создание задачи —
+побочный эффект: transport не повторяет `async=true` даже с `Config.Retry`; после сбоя сети задача
+могла создаться — проверьте `c.Async().List`. Результат: `c.Async().Wait`, затем
+`c.Async().Result(ctx, task.ID, w)` — JSON того же вида, что ответ синхронного метода (SDK его не
+разбирает). `limit`/`offset` источник у async запрещает: ненулевые `Limit`/`Offset` и `limit`/`offset` в `Extra` — ошибка
+до запроса (`ResponseInfo` сброшен); id `GetAsync` — UUID.
+
+- `Selected` (POST, выборочные показатели) async не получает: источник исключает его явно.
+- `GetAsync`: раздел «Показатели контрагента» входит в раздел отчёта, исключён только выборочный;
+  отдельно async одного контрагента источник не подтверждает.
+
 ## Противоречия и неизвестное
 
 - `inn`, `email`, `phone` контрагента не перечислены в таблице «Контрагент», но описаны как фильтры

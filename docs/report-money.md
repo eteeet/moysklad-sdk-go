@@ -49,6 +49,24 @@
 | organization | `Named` | организация (name — наименование) |
 | balance | `float64` | текущий остаток в валюте счёта, копейки (минимальные единицы); валюту SDK не пересчитывает |
 
+## Асинхронно
+
+«Отчет Деньги» входит в список async источника целиком. [_async.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/_async.md) (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
+
+| Метод | Endpoint |
+| --- | --- |
+| `PlotSeriesAsync(ctx, PlotSeriesOptions)` | GET report/money/plotseries?async=true |
+| `ByAccountAsync(ctx)` | GET report/money/byaccount?async=true |
+
+Каждый метод — один GET с теми же параметрами, что у синхронного, плюс `async=true`; ответ 202 с
+Content-Location (…/async/{id}) и Location (…/async/{id}/result) — `*async.Submitted` (ID,
+StatusHref, ResultHref), другой статус или 202 без этих адресов — ошибка. Создание задачи —
+побочный эффект: transport не повторяет `async=true` даже с `Config.Retry`; после сбоя сети задача
+могла создаться — проверьте `c.Async().List`. Результат: `c.Async().Wait`, затем
+`c.Async().Result(ctx, task.ID, w)` — JSON того же вида, что ответ синхронного метода (SDK его не
+разбирает). `limit`/`offset` источник у async запрещает: `limit`/`offset` в `Extra` — ошибка до запроса (`ResponseInfo` сброшен);
+обязательные MomentFrom, MomentTo, Interval проверяются, как у `PlotSeries`.
+
 ## Противоречия и неизвестное
 
 - Таблица атрибутов plotseries не перечисляет `context` и `meta`; они есть во всех примерах, SDK их

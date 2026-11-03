@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/eteeet/moysklad-sdk-go/async"
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/internal/single"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -45,9 +47,9 @@ func (s *Service) List(ctx context.Context, options ListOptions, opts ...transpo
 	if options.Extra.Has(query.ParamLimit) || options.Extra.Has(query.ParamOffset) {
 		return nil, fmt.Errorf("moysklad: %s: use Limit and Offset instead of Extra", operation)
 	}
-	params, err := query.ReportOptions{Filter: options.Filter, Extra: options.Extra}.Values()
+	params, err := options.values(operation)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", operation, err)
+		return nil, err
 	}
 	page, err := query.PageOptions{Limit: options.Limit, Offset: options.Offset}.Values()
 	if err != nil {
@@ -57,6 +59,32 @@ func (s *Service) List(ctx context.Context, options ListOptions, opts ...transpo
 		params[key] = values
 	}
 	return list.Page[Row](ctx, s.client, operation, "report/counterparty", params, opts...)
+}
+
+// ListAsync создаёт асинхронную задачу показателей всех контрагентов: GET report/counterparty с
+// async=true и Filter/Extra; Limit и Offset источник у async запрещает — заданные отклоняются до
+// запроса. Результат — через async.Service.Result; создание задачи не повторяется. У Selected
+// (POST) async нет: источник исключает выборочные показатели.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) ListAsync(ctx context.Context, options ListOptions, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	const operation = "get counterparty report async"
+	if options.Limit != 0 || options.Offset != 0 {
+		return nil, fmt.Errorf("moysklad: %s: limit and offset are not allowed with async", operation)
+	}
+	params, err := options.values(operation)
+	if err != nil {
+		return nil, err
+	}
+	return write.Submit(ctx, s.client, operation, "report/counterparty", params, opts)
+}
+
+func (o ListOptions) values(operation string) (url.Values, error) {
+	params, err := query.ReportOptions{Filter: o.Filter, Extra: o.Extra}.Values()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return params, nil
 }
 
 type selectedRequest struct {
@@ -111,6 +139,17 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 		return nil, fmt.Errorf("moysklad: get counterparty report: id must be a UUID")
 	}
 	return single.Get[Row](ctx, s.client, "get counterparty report "+id, "report/counterparty/"+id, opts)
+}
+
+// GetAsync создаёт асинхронную задачу показателей одного контрагента: GET report/counterparty/{id}
+// с одним параметром async=true. Результат — через async.Service.Result; без повторов.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) GetAsync(ctx context.Context, id string, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	if !validID(id) {
+		return nil, fmt.Errorf("moysklad: get counterparty report async: id must be a UUID")
+	}
+	return write.Submit(ctx, s.client, "get counterparty report "+id+" async", "report/counterparty/"+id, url.Values{}, opts)
 }
 
 // Проверяем форму UUID, не ограничивая его версию.

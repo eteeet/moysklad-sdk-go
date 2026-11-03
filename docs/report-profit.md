@@ -67,6 +67,27 @@ SDK это не проверяет (бизнес-ограничение оста
 | profit | `float64` | прибыль, копейки |
 | margin, salesMargin | `float64` | доля |
 
+## Асинхронно
+
+«Отчет Прибыльность» входит в список async источника целиком. [_async.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/_async.md) (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
+
+| Метод | Endpoint |
+| --- | --- |
+| `ByProductAsync(ctx, Options)` | GET report/profit/byproduct?async=true |
+| `ByVariantAsync(ctx, Options)` | GET report/profit/byvariant?async=true |
+| `ByEmployeeAsync(ctx, Options)` | GET report/profit/byemployee?async=true |
+| `ByCounterpartyAsync(ctx, Options)` | GET report/profit/bycounterparty?async=true |
+| `BySalesChannelAsync(ctx, Options)` | GET report/profit/bysaleschannel?async=true |
+
+Каждый метод — один GET с теми же параметрами, что у синхронного, плюс `async=true`; ответ 202 с
+Content-Location (…/async/{id}) и Location (…/async/{id}/result) — `*async.Submitted` (ID,
+StatusHref, ResultHref), другой статус или 202 без этих адресов — ошибка. Создание задачи —
+побочный эффект: transport не повторяет `async=true` даже с `Config.Retry`; после сбоя сети задача
+могла создаться — проверьте `c.Async().List`. Результат: `c.Async().Wait`, затем
+`c.Async().Result(ctx, task.ID, w)` — JSON того же вида, что ответ синхронного метода (SDK его не
+разбирает). `limit`/`offset` источник у async запрещает: ненулевые `Limit`/`Offset` и `limit`/`offset` в `Extra` — ошибка
+до запроса (`ResponseInfo` сброшен).
+
 ## Противоречия источника и решения
 
 - Путь сотрудников: запрос раздела — `report/profit/byemployee`, `meta.href` примера ответа —

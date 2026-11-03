@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/eteeet/moysklad-sdk-go/async"
+	"github.com/eteeet/moysklad-sdk-go/internal/write"
 	"github.com/eteeet/moysklad-sdk-go/model"
 	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
@@ -59,15 +61,49 @@ func (s *Service) Orders(ctx context.Context, options Options, opts ...transport
 	return s.plot(ctx, "orders", options, opts)
 }
 
-func (s *Service) plot(ctx context.Context, report string, options Options, opts []transport.RequestOption) (*Plot, error) {
-	operation := "get " + report + " plotseries"
-	if options.MomentFrom.IsZero() || options.MomentTo.IsZero() || options.Interval == "" {
+// SalesAsync создаёт асинхронную задачу показателей продаж: GET report/sales/plotseries с
+// async=true и теми же обязательными параметрами, что у Sales; limit и offset (в Extra) источник у
+// async запрещает — ошибка до запроса. Результат — через async.Service.Result; без повторов.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) SalesAsync(ctx context.Context, options Options, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	return s.submit(ctx, "sales", options, opts)
+}
+
+// OrdersAsync создаёт асинхронную задачу показателей заказов: GET report/orders/plotseries с
+// async=true; параметры и ограничения — как у SalesAsync.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/async#3-vypolnenie-zaprosa-v-asinhronnom-rezhime
+func (s *Service) OrdersAsync(ctx context.Context, options Options, opts ...transport.RequestOption) (*async.Submitted, error) {
+	transport.ResetResponseInfo(opts)
+	return s.submit(ctx, "orders", options, opts)
+}
+
+func (s *Service) submit(ctx context.Context, report string, options Options, opts []transport.RequestOption) (*async.Submitted, error) {
+	operation := "get " + report + " plotseries async"
+	params, err := options.values(operation)
+	if err != nil {
+		return nil, err
+	}
+	return write.Submit(ctx, s.client, operation, "report/"+report+"/plotseries", params, opts)
+}
+
+func (o Options) values(operation string) (url.Values, error) {
+	if o.MomentFrom.IsZero() || o.MomentTo.IsZero() || o.Interval == "" {
 		return nil, fmt.Errorf("moysklad: %s: MomentFrom, MomentTo and Interval are required", operation)
 	}
-	params, err := query.ReportOptions{MomentFrom: options.MomentFrom, MomentTo: options.MomentTo,
-		Interval: options.Interval, Filter: options.Filter, Extra: options.Extra}.Values()
+	params, err := query.ReportOptions{MomentFrom: o.MomentFrom, MomentTo: o.MomentTo,
+		Interval: o.Interval, Filter: o.Filter, Extra: o.Extra}.Values()
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return params, nil
+}
+
+func (s *Service) plot(ctx context.Context, report string, options Options, opts []transport.RequestOption) (*Plot, error) {
+	operation := "get " + report + " plotseries"
+	params, err := options.values(operation)
+	if err != nil {
+		return nil, err
 	}
 	var result Plot
 	resp, err := s.client.Send(ctx, http.MethodGet, "report/"+report+"/plotseries", params, nil, &result, opts...)
