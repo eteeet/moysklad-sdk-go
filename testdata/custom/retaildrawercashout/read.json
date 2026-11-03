@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/retaildrawercashout/1c5afb86-9603-11e6-8a84-bae500000079",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/retaildrawercashout/metadata",
+    "type": "retaildrawercashout",
+    "mediaType": "application/json"
+  },
+  "id": "1c5afb86-9603-11e6-8a84-bae500000079",
+  "accountId": "b8b74698-9128-11e6-8a84-bae500000001",
+  "owner": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/b905bfb0-9128-11e6-8a84-bae50000002a",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+      "type": "employee",
+      "mediaType": "application/json"
+    }
+  },
+  "shared": false,
+  "group": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/group/b8ba0d3f-9128-11e6-8a84-bae500000002",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/group/metadata",
+      "type": "group",
+      "mediaType": "application/json"
+    }
+  },
+  "updated": "2016-10-19 16:51:18",
+  "name": "00001",
+  "description": "Выплата",
+  "externalCode": "BYeqnCMUgjNIhODoqt5C52",
+  "syncId": "ece1344a-5a68-4d32-ac70-a56b943717b5",
+  "moment": "2016-10-19 16:51:00",
+  "applicable": true,
+  "created": "2016-08-25 19:55:00",
+  "printed": true,
+  "published": true,
+  "rate": {
+    "currency": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/currency/baac25f0-50ac-11e5-300d-c79b00000055",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/currency/metadata",
+        "type": "currency",
+        "mediaType": "application/json"
+      }
+    }
+  },
+  "sum": 12441200,
+  "organization": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organization/b9324d71-9128-11e6-8a84-bae500000051",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organization/metadata",
+      "type": "organization",
+      "mediaType": "application/json"
+    }
+  },
+  "organizationBranch": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/organizationbranch/12854b0b-e03c-4e3e-bb37-296bdebeca20",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/organizationbranch/metadata",
+      "type": "organizationbranch",
+      "mediaType": "application/json",
+      "uuidHref": "https://online.moysklad.ru/app/#mycompanybranch/edit?id=12854b0b-e03c-4e3e-bb37-296bdebeca20"
+    }
+  },
+  "retailShift": {
+    "meta": {
+      "href": "https://api.moysklad.ru/api/remap/1.2/entity/retailshift/131aaeb6-9603-11e6-8a84-bae500000072",
+      "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/retailshift/metadata",
+      "type": "retailshift",
+      "mediaType": "application/json"
+    }
+  }
+}

@@ -54,6 +54,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/region"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashin"
+	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashout"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
@@ -284,6 +285,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// RetailDrawerCashOut — выплаты денег из кассы.
+func (e EntityGroup) RetailDrawerCashOut() *retaildrawercashout.Service {
+	return must(retaildrawercashout.NewService(e.transport))
+}
 
 // RetailDrawerCashIn — внесения денег в кассу.
 func (e EntityGroup) RetailDrawerCashIn() *retaildrawercashin.Service {

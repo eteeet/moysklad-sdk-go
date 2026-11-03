@@ -62,6 +62,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/region"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashin"
+	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashout"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailstore"
@@ -210,6 +211,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Get),
 		getCase("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Get),
 		getCase("prepaymentreturn", prepaymentreturn.NewService, (*prepaymentreturn.Service).Get),
 		getCase("prepayment", prepayment.NewService, (*prepayment.Service).Get),
@@ -280,6 +282,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Create),
+		updateCase("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Update),
 		createCase("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Create),
 		updateCase("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Update),
 		createCase("payroll", payroll.NewService, (*payroll.Service).Create),
@@ -587,6 +591,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("retaildrawercashout", retaildrawercashout.NewService, (*retaildrawercashout.Service).Get, (*retaildrawercashout.Service).Create, (*retaildrawercashout.Service).Update, (*retaildrawercashout.Service).List)...)
 	cases = append(cases, localCases("retaildrawercashin", retaildrawercashin.NewService, (*retaildrawercashin.Service).Get, (*retaildrawercashin.Service).Create, (*retaildrawercashin.Service).Update, (*retaildrawercashin.Service).List)...)
 	cases = append(cases, localCases("payroll", payroll.NewService, (*payroll.Service).Get, (*payroll.Service).Create, (*payroll.Service).Update, (*payroll.Service).List)...)
 	cases = append(cases, localCases("commissionreportout", commissionreportout.NewService, (*commissionreportout.Service).Get, (*commissionreportout.Service).Create, (*commissionreportout.Service).Update, (*commissionreportout.Service).List)...)
@@ -756,7 +761,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 53*4+20+3+8+1+6 {
+	if len(cases) != 54*4+20+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }

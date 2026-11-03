@@ -1,0 +1,6 @@
+{
+  "name": "0000004",
+  "applicable": false,
+  "retailShift": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/retailshift/99999999-9999-9999-9999-999999999999", "type": "retailshift"}},
+  "state": null
+}

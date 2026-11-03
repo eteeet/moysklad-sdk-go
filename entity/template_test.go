@@ -28,6 +28,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashin"
+	"github.com/eteeet/moysklad-sdk-go/entity/retaildrawercashout"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/salesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/supply"
@@ -119,6 +120,11 @@ func TestDocumentTemplates(t *testing.T) {
 		}},
 		{"supply", func(c *transport.Client, basis map[string]any) (bool, error) {
 			s, _ := supply.NewService(c)
+			r, err := s.New(t.Context(), basis)
+			return r != nil, err
+		}},
+		{"retaildrawercashout", func(c *transport.Client, basis map[string]any) (bool, error) {
+			s, _ := retaildrawercashout.NewService(c)
 			r, err := s.New(t.Context(), basis)
 			return r != nil, err
 		}},
