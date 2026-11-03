@@ -1,0 +1,34 @@
+{
+  "context": {
+    "employee": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/context/employee",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+        "type": "employee",
+        "mediaType": "application/json"
+      }
+    }
+  },
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/customtemplate/",
+    "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+    "type": "customtemplate",
+    "mediaType": "application/json",
+    "size": 1,
+    "limit": 1000,
+    "offset": 0
+  },
+  "rows": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/customtemplate/38d1c843-1601-11e7-8af5-581e00000009",
+        "type": "customtemplate",
+        "mediaType": "application/json"
+      },
+      "id": "38d1c843-1601-11e7-8af5-581e00000009",
+      "name": "tratata",
+      "type": "entity",
+      "content": "https://api.moysklad.ru/api/remap/1.2/download/38d1c843-1601-11e7-8af5-581e00000009"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/assortment/metadata/embeddedtemplate/a8218d14-6017-3ba4-85c4-254fff93bbc8",
+    "type": "embeddedtemplate",
+    "mediaType": "application/json"
+  },
+  "id": "a8218d14-6017-3ba4-85c4-254fff93bbc8",
+  "name": "Термоэтикетка (58х40мм)",
+  "type": "mxtemplate",
+  "content": "https://api.moysklad.ru/api/remap/1.2/download-template/termo_58x40.xml"
+}

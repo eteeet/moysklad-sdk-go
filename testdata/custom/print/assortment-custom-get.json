@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/assortment/metadata/customtemplate/a4d36b88-d329-4b73-966a-b66b6a1b1b9a",
+    "type": "customtemplate",
+    "mediaType": "application/json"
+  },
+  "id": "a4d36b88-d329-4b73-966a-b66b6a1b1b9a",
+  "name": "NewCustomTemplate",
+  "type": "mxtemplate",
+  "content": "https://api.moysklad.ru/api/remap/1.2/download/a4d36b88-d329-4b73-966a-b66b6a1b1b9a"
+}

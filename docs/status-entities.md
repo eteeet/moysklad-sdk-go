@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 57/60, документы 37/37, отчёты 9/9, прочее 8/8.
+Итого: справочники 59/60, документы 37/37, отчёты 9/9, прочее 8/8.
 
 ## Справочники
 
@@ -38,7 +38,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] group — отдел (массовых операций нет)
 - [ ] gtd — ГТД (объект без endpoint)
 - [x] images — изображения: List/Add/Replace/Delete/DeleteMany/Download (product, bundle, variant, contentcard)
-- [ ] labels — этикетки и ценники
+- [x] labels — этикетки и ценники
 - [x] namedfilter — сохранённые фильтры
 - [x] organization — юрлицо
 - [x] organizationbranch — подразделение юрлица
@@ -62,7 +62,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] store — склад: Get/List/Create/Update/Delete и массовые; зоны и ячейки (List/Get/Create/Update/Delete, массовые)
 - [x] task — задача, комментарии и типы задач
 - [x] taxrate — ставка НДС
-- [ ] template — шаблоны печатных форм
+- [x] template — шаблоны печатных форм (embedded/custom)
 - [x] thing — серийный номер: Get/List (только чтение)
 - [x] trackingcode — коды маркировки позиции документа: List/Save/DeleteMany
 - [x] uom — единица измерения

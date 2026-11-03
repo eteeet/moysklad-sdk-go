@@ -1,0 +1,44 @@
+{
+  "context": {
+    "employee": {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/context/employee",
+        "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/employee/metadata",
+        "type": "employee",
+        "mediaType": "application/json"
+      }
+    }
+  },
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/assortment/metadata/embeddedtemplate",
+    "type": "embeddedtemplate",
+    "mediaType": "application/json",
+    "size": 2,
+    "limit": 100,
+    "offset": 0
+  },
+  "rows": [
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/assortment/metadata/embeddedtemplate/a8218d14-6017-3ba4-85c4-254fff93bbc8",
+        "type": "embeddedtemplate",
+        "mediaType": "application/json"
+      },
+      "id": "a8218d14-6017-3ba4-85c4-254fff93bbc8",
+      "name": "Термоэтикетка (58х40мм)",
+      "type": "mxtemplate",
+      "content": "https://api.moysklad.ru/api/remap/1.2/download-template/termo_58x40.xml"
+    },
+    {
+      "meta": {
+        "href": "https://api.moysklad.ru/api/remap/1.2/entity/assortment/metadata/embeddedtemplate/2746190f-cf7c-3a0b-922d-e75f44e88cce",
+        "type": "embeddedtemplate",
+        "mediaType": "application/json"
+      },
+      "id": "2746190f-cf7c-3a0b-922d-e75f44e88cce",
+      "name": "Ценник (70x49,5мм)",
+      "type": "mxtemplate",
+      "content": "https://api.moysklad.ru/api/remap/1.2/download-template/price_tag_70x49.5.xml"
+    }
+  ]
+}

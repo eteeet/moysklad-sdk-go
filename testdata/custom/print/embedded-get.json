@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "href": "https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/embeddedtemplate/c2645cf0-43f0-3379-adff-99929da86d5e",
+    "type": "embeddedtemplate",
+    "mediaType": "application/json"
+  },
+  "id": "c2645cf0-43f0-3379-adff-99929da86d5e",
+  "name": "Транспортная накладная",
+  "type": "entity",
+  "content": "https://api.moysklad.ru/api/remap/1.2/download-template/ttn.xls"
+}

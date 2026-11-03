@@ -91,6 +91,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/metadata"
 	"github.com/eteeet/moysklad-sdk-go/namedfilter"
 	"github.com/eteeet/moysklad-sdk-go/notification"
+	"github.com/eteeet/moysklad-sdk-go/print"
 	"github.com/eteeet/moysklad-sdk-go/report/byoperations"
 	reportcounterparty "github.com/eteeet/moysklad-sdk-go/report/counterparty"
 	"github.com/eteeet/moysklad-sdk-go/report/dashboard"
@@ -152,6 +153,9 @@ func (c *Client) Wizard() *wizard.Service { return must(wizard.NewService(c.tran
 func (c *Client) Notification() *notification.Service {
 	return must(notification.NewService(c.transport))
 }
+
+// Print — шаблоны печатных форм, печать документов, этикеток и ценников (export без следования 303).
+func (c *Client) Print() *print.Service { return must(print.NewService(c.transport)) }
 
 // Security — выпуск токена POST security/token.
 func (c *Client) Security() *security.Service { return must(security.NewService(c.transport)) }
