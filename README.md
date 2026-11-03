@@ -14,7 +14,7 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 ```
 
 Фасад `moysklad.Client` собирает сервисы в группы по пути API (`Entity`, `Report`, `Context`,
-`Audit`, `Async`, `Security`) над одним transport и не делает HTTP при создании. Прежние
+`Audit`, `Async`, `Wizard`, `Security`) над одним transport и не делает HTTP при создании. Прежние
 `<пакет>.NewService(c.Transport())` работают на том же transport. Фасад и примеры сценариев:
 [docs/client.md](docs/client.md).
 
@@ -42,6 +42,9 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 
 Поля товара, неснижаемый остаток, изображения (`images`), карточки контента, партии, транспортные
 упаковки, скидки и коды маркировки (`trackingcode`): [docs/catalog-extra.md](docs/catalog-extra.md).
+
+Отдельные операции строк документов, шаблоны `New`, корзина `Trash`, запись связей документов,
+транспортные поля отгрузки и автозаполнение (`wizard`): [docs/documents-extra.md](docs/documents-extra.md).
 
 Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) и асинхронные задачи
 (`async`, `ListAsync` контрагентов и ассортимента): [docs/write-async.md](docs/write-async.md).
@@ -103,7 +106,8 @@ Get/Create/Update документов и типизированные entity.Ge
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,
 строки — отдельным GetPositions. Embedded positions ограничены 1000 и полностью
-заменяют набор при Update. Expand и отдельные mutations строк отложены;
+заменяют набор при Update. Expand отложен; отдельные операции строк, `New`, `Trash` —
+[docs/documents-extra.md](docs/documents-extra.md);
 Delete и массовые операции — [docs/write-async.md](docs/write-async.md).
 
 ## Product

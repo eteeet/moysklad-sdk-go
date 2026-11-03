@@ -18,6 +18,10 @@
   (`fields=minimumStock`, storebalances у товара и модификации); изображения (`images`), карточки
   контента, партии, транспортные упаковки с позициями, скидки всех видов и округление копеек, коды
   маркировки позиций (`trackingcode`). Подробности: [docs/catalog-extra.md](docs/catalog-extra.md).
+- Документы: отдельные операции строк (`GetPosition`, `CreatePositions`, `UpdatePosition`,
+  `DeletePosition`, `DeleteManyPositions`), шаблоны `New` (PUT entity/{type}/new), корзина `Trash`,
+  запись связей документов в Create/Update, транспортные поля отгрузки, автозаполнение `c.Wizard()`.
+  Подробности: [docs/documents-extra.md](docs/documents-extra.md).
 
 ## v1.0.0 — предложение
 

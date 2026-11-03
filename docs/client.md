@@ -27,6 +27,7 @@ report, err := c.Report().Turnover().All(ctx, turnover.AllOptions{...})
 | `c.Context()` | `contexts.Service`: `Employee(ctx)`, `Application(ctx)` |
 | `c.Audit()`, `c.Security()` | `audit.Service`, `security.Service` |
 | `c.Async()` | `async.Service`: асинхронные задачи ([write-async.md](write-async.md)) |
+| `c.Wizard()` | `wizard.Service`: автозаполнение документов ([documents-extra.md](documents-extra.md)) |
 | `c.Transport()` | общий `transport.Client`: Download, HeaderValues, standalone сервисы |
 
 Все handles работают через один transport: общие HTTPClient, Auth, Header, Limiter и Retry.
