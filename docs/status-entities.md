@@ -6,7 +6,7 @@
 handles фасада совпадают; набор методов — тесты пакетов.
 List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
-Итого: справочники 47/60, документы 20/37, отчёты 1/9, прочее 6/8.
+Итого: справочники 47/60, документы 21/37, отчёты 1/9, прочее 6/8.
 
 ## Справочники
 
@@ -82,7 +82,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] demand — отгрузка
 - [ ] emissionorder — заказ кодов маркировки
 - [x] enter — оприходование
-- [ ] facturein — счёт-фактура полученный
+- [x] facturein — счёт-фактура полученный
 - [ ] factureout — счёт-фактура выданный
 - [x] internalorder — внутренний заказ
 - [x] inventory — инвентаризация
