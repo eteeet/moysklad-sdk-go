@@ -26,6 +26,7 @@ var statusHandles = map[string]string{
 	"usersettings":          "Context",
 	"companysubscription":   "Context",
 	"turnover":              "Report.Turnover",
+	"profit":                "Report.Profit",
 	"notification":          "Notification",
 	"notification/settings": "Notification",
 	"dashboard":             "Report.Dashboard",
