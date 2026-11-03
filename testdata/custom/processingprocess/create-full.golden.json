@@ -1,0 +1,18 @@
+{
+  "name": "Изготавливаем двигатель",
+  "positions": [
+    {
+      "processingstage": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingstage/364b1107-9bd3-11ed-ac12-000c0000006a", "type": "processingstage"}}
+    },
+    {
+      "processingstage": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/processingstage/c18373c0-9aea-11ed-ac12-000e000000c2", "type": "processingstage"}},
+      "nextPositions": []
+    }
+  ],
+  "description": "",
+  "externalCode": "ext-1",
+  "archived": false,
+  "shared": false,
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/c0f98b1e-9aea-11ed-ac12-000e00000050", "type": "employee"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/c0b230f9-9aea-11ed-ac12-000b00000012", "type": "group"}}
+}

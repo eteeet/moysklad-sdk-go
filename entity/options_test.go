@@ -55,6 +55,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/pricelist"
 	"github.com/eteeet/moysklad-sdk-go/entity/pricetype"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingplanfolder"
+	"github.com/eteeet/moysklad-sdk-go/entity/processingprocess"
 	"github.com/eteeet/moysklad-sdk-go/entity/processingstage"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
@@ -181,8 +182,14 @@ func fillRequest[I any]() I {
 			field.Set(reflect.ValueOf(model.Value(1.0)))
 		case field.Kind() == reflect.Slice && field.Type().Elem().Kind() == reflect.Struct:
 			field.Set(reflect.MakeSlice(field.Type(), 1, 1))
-			if name := field.Index(0).FieldByName("Name"); name.IsValid() && name.Kind() == reflect.String {
+			row := field.Index(0)
+			if name := row.FieldByName("Name"); name.IsValid() && name.Kind() == reflect.String {
 				name.SetString("x")
+			}
+			for j := range row.NumField() {
+				if row.Field(j).Type() == reflect.TypeFor[model.Reference]() {
+					row.Field(j).Set(reflect.ValueOf(model.Reference{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}))
+				}
 			}
 		case field.Type() == reflect.TypeFor[model.DateTime]():
 			field.Set(reflect.ValueOf(model.DateTime(time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC))))
@@ -217,6 +224,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Get),
 		getCase("processingstage", processingstage.NewService, (*processingstage.Service).Get),
 		getCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Get),
 		getCase("pricelist", pricelist.NewService, (*pricelist.Service).Get),
@@ -291,6 +299,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Create),
+		updateCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Update),
 		createCase("processingstage", processingstage.NewService, (*processingstage.Service).Create),
 		updateCase("processingstage", processingstage.NewService, (*processingstage.Service).Update),
 		createCase("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Create),
@@ -607,6 +617,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("processingprocess", processingprocess.NewService, (*processingprocess.Service).Get, (*processingprocess.Service).Create, (*processingprocess.Service).Update, (*processingprocess.Service).List)...)
 	cases = append(cases, localCases("processingstage", processingstage.NewService, (*processingstage.Service).Get, (*processingstage.Service).Create, (*processingstage.Service).Update, (*processingstage.Service).List)...)
 	cases = append(cases, localCases("processingplanfolder", processingplanfolder.NewService, (*processingplanfolder.Service).Get, (*processingplanfolder.Service).Create, (*processingplanfolder.Service).Update, (*processingplanfolder.Service).List)...)
 	cases = append(cases, localCases("pricelist", pricelist.NewService, (*pricelist.Service).Get, (*pricelist.Service).Create, (*pricelist.Service).Update, (*pricelist.Service).List)...)
@@ -781,7 +792,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 57*4+21+3+8+1+6 {
+	if len(cases) != 58*4+21+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
