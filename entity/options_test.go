@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/accumulationdiscount"
+	"github.com/eteeet/moysklad-sdk-go/entity/aggregatepack"
 	"github.com/eteeet/moysklad-sdk-go/entity/assortment"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonusprogram"
 	"github.com/eteeet/moysklad-sdk-go/entity/bonustransaction"
@@ -142,6 +143,8 @@ func fillRequest[I any]() I {
 		switch {
 		case slices.Contains([]string{"Name", "LastName", "Label", "Description", "CardContentName"}, v.Type().Field(i).Name) && field.Kind() == reflect.String:
 			field.SetString("x")
+		case field.Type() == reflect.TypeFor[[]model.Barcode]():
+			field.Set(reflect.ValueOf([]model.Barcode{{"ean13": "4600000000001"}}))
 		case field.Type() == reflect.TypeFor[[]model.Reference]():
 			field.Set(reflect.ValueOf([]model.Reference{{Meta: model.Meta{Href: "https://api.moysklad.ru/x"}}}))
 		case v.Type().Field(i).Name == "TransactionType" && field.Kind() == reflect.String:
@@ -191,6 +194,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Get),
 		getCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Get),
 		getCase("personaldiscount", personaldiscount.NewService, (*personaldiscount.Service).Get),
 		getCase("accumulationdiscount", accumulationdiscount.NewService, (*accumulationdiscount.Service).Get),
@@ -249,6 +253,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Create),
+		updateCase("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Update),
 		createCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Create),
 		updateCase("specialpricediscount", specialpricediscount.NewService, (*specialpricediscount.Service).Update),
 		createCase("personaldiscount", personaldiscount.NewService, (*personaldiscount.Service).Create),
@@ -529,6 +535,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("aggregatepack", aggregatepack.NewService, (*aggregatepack.Service).Get, (*aggregatepack.Service).Create, (*aggregatepack.Service).Update, (*aggregatepack.Service).List)...)
 	cases = append(cases, localCases("contentcard", contentcard.NewService, (*contentcard.Service).Get, (*contentcard.Service).Create, (*contentcard.Service).Update, (*contentcard.Service).List)...)
 	cases = append(cases, localCases("consignment", consignment.NewService, (*consignment.Service).Get, (*consignment.Service).Create, (*consignment.Service).Update, (*consignment.Service).List)...)
 	cases = append(cases, localCases("organizationbranch", organizationbranch.NewService, (*organizationbranch.Service).Get, (*organizationbranch.Service).Create, (*organizationbranch.Service).Update, (*organizationbranch.Service).List)...)
@@ -681,7 +688,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 43*4+13+3+8+1+6 {
+	if len(cases) != 44*4+13+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
