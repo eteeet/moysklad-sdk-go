@@ -42,6 +42,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/project"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
+	"github.com/eteeet/moysklad-sdk-go/entity/region"
 	"github.com/eteeet/moysklad-sdk-go/entity/retaildemand"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailsalesreturn"
 	"github.com/eteeet/moysklad-sdk-go/entity/retailshift"
@@ -177,6 +178,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("region", region.NewService, (*region.Service).Get),
 		getCase("contract", contract.NewService, (*contract.Service).Get),
 		getCase("project", project.NewService, (*project.Service).Get),
 		getCase("group", group.NewService, (*group.Service).Get),
