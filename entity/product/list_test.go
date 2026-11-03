@@ -16,7 +16,7 @@ func TestServiceList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	listtest.Run(t, "product", row, "", "archived", func(c *transport.Client) listtest.ListFunc[product.Product] {
+	listtest.Run(t, "product", row, "minimumStock", "archived", func(c *transport.Client) listtest.ListFunc[product.Product] {
 		s, err := product.NewService(c)
 		if err != nil {
 			t.Fatal(err)
@@ -29,8 +29,8 @@ func TestServiceList(t *testing.T) {
 	})
 }
 
-// Регрессия ревью 46e9d06: minimumStock не декодируется в Product, поэтому отклоняется до запроса.
-func TestServiceListRejectsMinimumStock(t *testing.T) {
+// fields принимает только minimumStock; другие значения — ошибка до запроса.
+func TestServiceListRejectsOtherFields(t *testing.T) {
 	client, err := transport.NewClient(transport.Config{BaseURL: "http://example.test"})
 	if err != nil {
 		t.Fatal(err)
@@ -39,8 +39,8 @@ func TestServiceListRejectsMinimumStock(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, err := s.List(t.Context(), query.ListOptions{Fields: "minimumStock"}); got != nil || err == nil ||
-		!strings.Contains(err.Error(), "minimumStock") {
+	if got, err := s.List(t.Context(), query.ListOptions{Fields: "stock"}); got != nil || err == nil ||
+		!strings.Contains(err.Error(), "stock") {
 		t.Fatalf("got = %+v, err = %v", got, err)
 	}
 }

@@ -53,10 +53,10 @@ func (s *Service) Update(ctx context.Context, id string, input UpdateRequest, op
 
 // List читает одну страницу без expand и автообхода; следующие страницы — pages.All.
 // Поиск — только по name; товар отбирается фильтром productid (= и !=), штрихкод — barcode
-// в единственном числе. fields=minimumStock не принимается: остаток отложен, как у Product.
+// в единственном числе. fields принимает только minimumStock — поле Variant.MinimumStock.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/variant#3-poluchit-spisok-modifikacij
 func (s *Service) List(ctx context.Context, options query.ListOptions, opts ...transport.RequestOption) (*model.Collection[Variant], error) {
-	return list.Entity[Variant](ctx, s.client, "variant", options, nil, opts...)
+	return list.Entity[Variant](ctx, s.client, "variant", options, []string{"minimumStock"}, opts...)
 }
 
 func (s *Service) do(ctx context.Context, operation, method, endpoint string, body any, opts []transport.RequestOption) (*Variant, error) {

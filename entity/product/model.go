@@ -56,6 +56,8 @@ type Product struct {
 	Weighed         bool       `json:"weighed"`
 	OnTap           bool       `json:"onTap"`
 	VariantsCount   int        `json:"variantsCount"`
+	// MinimumStock приходит только при List с fields=minimumStock.
+	MinimumStock *model.MinimumStock `json:"minimumStock,omitzero"`
 
 	// Регионоспецифичные модули: TasnifUZ и MarkingUZ — с transport.WithAcceptRegion(RegionUZ).
 	TasnifUZ  *model.TasnifUZ  `json:"mod__tasnif__uz,omitzero"`

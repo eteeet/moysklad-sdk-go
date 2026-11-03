@@ -65,7 +65,7 @@ func TestVariantFixture(t *testing.T) {
 			}
 			var sparse variant.Variant
 			if err := codec.Unmarshal([]byte(`{"id":"x","characteristics":[{"id":"y","name":"Размер","value":"XL"}],"minimumStock":{"type":"FUTURE"},"future":1}`), &sparse); err != nil ||
-				len(sparse.Characteristics) != 1 || sparse.BuyPrice != nil || sparse.Images != nil || sparse.Packs != nil {
+				len(sparse.Characteristics) != 1 || sparse.MinimumStock == nil || sparse.MinimumStock.Type != "FUTURE" || sparse.BuyPrice != nil || sparse.Images != nil || sparse.Packs != nil {
 				t.Fatalf("sparse = %+v, err = %v", sparse, err)
 			}
 		})
@@ -95,7 +95,7 @@ func TestVariantRequestJSON(t *testing.T) {
 		}
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[variant.CreateRequest](), reflect.TypeFor[variant.UpdateRequest](), reflect.TypeFor[variant.PackRequest]()} {
-		for _, name := range []string{"ID", "Meta", "AccountID", "Updated", "Things", "Images", "MinimumStock"} {
+		for _, name := range []string{"ID", "Meta", "AccountID", "Updated", "Things", "Images"} {
 			if _, ok := typ.FieldByName(name); ok {
 				t.Errorf("%s contains read-only or deferred %s", typ.Name(), name)
 			}
@@ -209,7 +209,7 @@ func TestVariantListByProduct(t *testing.T) {
 }
 
 func TestVariantList(t *testing.T) {
-	listtest.Run(t, "variant", read(t, "upstream/variant.json"), "", "archived", func(c *transport.Client) listtest.ListFunc[variant.Variant] {
+	listtest.Run(t, "variant", read(t, "upstream/variant.json"), "minimumStock", "archived", func(c *transport.Client) listtest.ListFunc[variant.Variant] {
 		return service(c).List
 	}, func(t *testing.T, got variant.Variant) {
 		if got.ID != fixtureID || len(got.Characteristics) != 1 {

@@ -30,7 +30,9 @@ type Variant struct {
 	MinPrice   *model.Price      `json:"minPrice,omitzero"`
 	SalePrices []model.SalePrice `json:"salePrices"`
 	Barcodes   []model.Barcode   `json:"barcodes"`
-	Packs      []Pack            `json:"packs"`
+	// MinimumStock приходит только при List с fields=minimumStock.
+	MinimumStock *model.MinimumStock `json:"minimumStock,omitzero"`
+	Packs        []Pack              `json:"packs"`
 	// Things — серийные номера, только для чтения.
 	Things []string `json:"things"`
 	// Images — только метаданные коллекции; изображения читаются отдельным ресурсом.

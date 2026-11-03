@@ -19,8 +19,8 @@ type PackRequest struct {
 // CreateRequest: необходимы product и непустой characteristics. Правила создания штрихкодов
 // раздел variant копирует из bundle под заголовком «при создании комплекта» (нет barcodes или
 // пустой список — один случайный EAN13; список пустых значений — ни одного); для модификации
-// это не подтверждено. НДС и налоговых полей у модификации в источнике нет. Images и
-// minimumStock в SDK v1 не пишутся.
+// это не подтверждено. НДС и налоговых полей у модификации в источнике нет. Images не пишутся
+// (изображения — отдельный ресурс).
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/variant#3-sozdat-modifikaciyu
 type CreateRequest struct {
 	Product         model.Reference       `json:"product"`
@@ -34,11 +34,12 @@ type CreateRequest struct {
 	Archived           model.Field[bool]   `json:"archived,omitzero"`
 	DiscountProhibited model.Field[bool]   `json:"discountProhibited,omitzero"`
 
-	BuyPrice   model.Field[model.Price]       `json:"buyPrice,omitzero"`
-	MinPrice   model.Field[model.Price]       `json:"minPrice,omitzero"`
-	SalePrices model.Field[[]model.SalePrice] `json:"salePrices,omitzero"`
-	Barcodes   model.Field[[]model.Barcode]   `json:"barcodes,omitzero"`
-	Packs      model.Field[[]PackRequest]     `json:"packs,omitzero"`
+	BuyPrice     model.Field[model.Price]               `json:"buyPrice,omitzero"`
+	MinPrice     model.Field[model.Price]               `json:"minPrice,omitzero"`
+	SalePrices   model.Field[[]model.SalePrice]         `json:"salePrices,omitzero"`
+	Barcodes     model.Field[[]model.Barcode]           `json:"barcodes,omitzero"`
+	MinimumStock model.Field[model.MinimumStockRequest] `json:"minimumStock,omitzero"`
+	Packs        model.Field[[]PackRequest]             `json:"packs,omitzero"`
 }
 
 // UpdateRequest. Characteristics заменяются целиком: непереданная характеристика теряет значение.
@@ -58,9 +59,10 @@ type UpdateRequest struct {
 	Archived           model.Field[bool]   `json:"archived,omitzero"`
 	DiscountProhibited model.Field[bool]   `json:"discountProhibited,omitzero"`
 
-	BuyPrice   model.Field[model.Price]       `json:"buyPrice,omitzero"`
-	MinPrice   model.Field[model.Price]       `json:"minPrice,omitzero"`
-	SalePrices model.Field[[]model.SalePrice] `json:"salePrices,omitzero"`
-	Barcodes   model.Field[[]model.Barcode]   `json:"barcodes,omitzero"`
-	Packs      model.Field[[]PackRequest]     `json:"packs,omitzero"`
+	BuyPrice     model.Field[model.Price]               `json:"buyPrice,omitzero"`
+	MinPrice     model.Field[model.Price]               `json:"minPrice,omitzero"`
+	SalePrices   model.Field[[]model.SalePrice]         `json:"salePrices,omitzero"`
+	Barcodes     model.Field[[]model.Barcode]           `json:"barcodes,omitzero"`
+	MinimumStock model.Field[model.MinimumStockRequest] `json:"minimumStock,omitzero"`
+	Packs        model.Field[[]PackRequest]             `json:"packs,omitzero"`
 }

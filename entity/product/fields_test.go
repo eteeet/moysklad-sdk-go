@@ -2,6 +2,7 @@ package product_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
@@ -90,5 +91,20 @@ func TestProductAttributes(t *testing.T) {
 			}
 			documenttest.JSONEqual(t, data, []byte(tc.want))
 		}
+	}
+}
+
+func TestMinimumStockField(t *testing.T) {
+	for _, codec := range documenttest.Codecs {
+		got := fullProduct(t, codec)
+		if got.MinimumStock == nil || got.MinimumStock.Type != model.MinimumStockWarehouseVaried || got.MinimumStock.StoreBalances == nil ||
+			!strings.HasSuffix(got.MinimumStock.StoreBalances.Meta.Href, "/storebalances") {
+			t.Fatalf("%s: minimumStock = %+v", codec.Name, got.MinimumStock)
+		}
+		data, err := codec.Marshal(product.CreateRequest{Name: "Картофель", MinimumStock: model.Value(model.MinimumStockRequest{Type: model.MinimumStockAllWarehouseSum, Quantity: model.Value(10.0)})})
+		if err != nil {
+			t.Fatal(err)
+		}
+		documenttest.JSONEqual(t, data, []byte(`{"name":"Картофель","minimumStock":{"type":"ALL_WAREHOUSE_SUM","quantity":10}}`))
 	}
 }
