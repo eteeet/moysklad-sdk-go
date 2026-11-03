@@ -38,7 +38,7 @@ func CreateMany[T, C any](ctx context.Context, client *transport.Client, entity 
 	if err := checkCount(len(items)); err != nil {
 		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
 	}
-	return post[batch.Result[T]](ctx, client, operation, "entity/"+entity, items, len(items), opts)
+	return post[batch.Result[T]](ctx, client, operation, "entity/"+entity, items, len(items), 0, opts)
 }
 
 // UpdateMany — один POST entity/{entity}: каждый элемент — meta объекта по ID и поля Request.
@@ -46,16 +46,26 @@ func CreateMany[T, C any](ctx context.Context, client *transport.Client, entity 
 func UpdateMany[T, U any](ctx context.Context, client *transport.Client, entity string, items []batch.Update[U], opts []transport.RequestOption) ([]batch.Result[T], error) {
 	return updateMany[T](ctx, client, "update many "+entity, "entity/"+entity, items, func(id string) model.Meta {
 		return objectMeta(client, entity, id)
-	}, opts)
+	}, 0, opts)
 }
 
 // CreateManyNested — CreateMany вложенной коллекции: один POST endpoint
 // (entity/{entity}/{id}/{collection}) с массивом новых объектов.
 func CreateManyNested[T, C any](ctx context.Context, client *transport.Client, operation, endpoint string, items []C, opts []transport.RequestOption) ([]batch.Result[T], error) {
+	return createManyNested[T](ctx, client, operation, endpoint, items, 0, opts)
+}
+
+// CreateManyNestedCreated — CreateManyNested для коллекций, где источник отвечает 201 (лента
+// событий документа): принимаются 200 и 201.
+func CreateManyNestedCreated[T, C any](ctx context.Context, client *transport.Client, operation, endpoint string, items []C, opts []transport.RequestOption) ([]batch.Result[T], error) {
+	return createManyNested[T](ctx, client, operation, endpoint, items, http.StatusCreated, opts)
+}
+
+func createManyNested[T, C any](ctx context.Context, client *transport.Client, operation, endpoint string, items []C, created int, opts []transport.RequestOption) ([]batch.Result[T], error) {
 	if err := checkCount(len(items)); err != nil {
 		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
 	}
-	return post[batch.Result[T]](ctx, client, operation, endpoint, items, len(items), opts)
+	return post[batch.Result[T]](ctx, client, operation, endpoint, items, len(items), created, opts)
 }
 
 // UpdateManyNested — UpdateMany вложенной коллекции endpoint: meta элемента — href
@@ -63,7 +73,15 @@ func CreateManyNested[T, C any](ctx context.Context, client *transport.Client, o
 func UpdateManyNested[T, U any](ctx context.Context, client *transport.Client, operation, endpoint string, metaType model.MetaType, items []batch.Update[U], opts []transport.RequestOption) ([]batch.Result[T], error) {
 	return updateMany[T](ctx, client, operation, endpoint, items, func(id string) model.Meta {
 		return nestedMeta(client, endpoint, metaType, id)
-	}, opts)
+	}, 0, opts)
+}
+
+// UpdateManyNestedCreated — UpdateManyNested для коллекций, где источник отвечает 201: принимаются
+// 200 и 201.
+func UpdateManyNestedCreated[T, U any](ctx context.Context, client *transport.Client, operation, endpoint string, metaType model.MetaType, items []batch.Update[U], opts []transport.RequestOption) ([]batch.Result[T], error) {
+	return updateMany[T](ctx, client, operation, endpoint, items, func(id string) model.Meta {
+		return nestedMeta(client, endpoint, metaType, id)
+	}, http.StatusCreated, opts)
 }
 
 // DeleteManyNested — один POST endpoint/delete с meta вложенных объектов по ids.
@@ -81,7 +99,7 @@ func DeleteManyNested(ctx context.Context, client *transport.Client, operation, 
 		}
 		body[i] = item{nestedMeta(client, endpoint, metaType, id)}
 	}
-	return post[batch.Deleted](ctx, client, operation, endpoint+"/delete", body, len(ids), opts)
+	return post[batch.Deleted](ctx, client, operation, endpoint+"/delete", body, len(ids), 0, opts)
 }
 
 func nestedMeta(client *transport.Client, endpoint string, metaType model.MetaType, id string) model.Meta {
@@ -89,7 +107,7 @@ func nestedMeta(client *transport.Client, endpoint string, metaType model.MetaTy
 }
 
 func updateMany[T, U any](ctx context.Context, client *transport.Client, operation, endpoint string, items []batch.Update[U],
-	metaOf func(id string) model.Meta, opts []transport.RequestOption) ([]batch.Result[T], error) {
+	metaOf func(id string) model.Meta, created int, opts []transport.RequestOption) ([]batch.Result[T], error) {
 	if err := checkCount(len(items)); err != nil {
 		return nil, fmt.Errorf("moysklad: %s: %w", operation, err)
 	}
@@ -121,7 +139,7 @@ func updateMany[T, U any](ctx context.Context, client *transport.Client, operati
 		}
 		body[i] = object
 	}
-	return post[batch.Result[T]](ctx, client, operation, endpoint, body, len(items), opts)
+	return post[batch.Result[T]](ctx, client, operation, endpoint, body, len(items), created, opts)
 }
 
 // DeleteMany — один POST entity/{entity}/delete с массивом meta объектов по ids.
@@ -163,7 +181,7 @@ func deleteMetas(ctx context.Context, client *transport.Client, operation, entit
 	for i, meta := range metas {
 		body[i] = item{meta}
 	}
-	return post[batch.Deleted](ctx, client, operation, "entity/"+entity+"/delete", body, len(metas), opts)
+	return post[batch.Deleted](ctx, client, operation, "entity/"+entity+"/delete", body, len(metas), 0, opts)
 }
 
 func checkCount(n int) error {
@@ -190,13 +208,13 @@ func objectMeta(client *transport.Client, entity, id string) model.Meta {
 
 // post отправляет массив из sent элементов и ждёт HTTP 200 с массивом той же длины. POST
 // transport не повторяет.
-func post[R any](ctx context.Context, client *transport.Client, operation, endpoint string, body any, sent int, opts []transport.RequestOption) ([]R, error) {
+func post[R any](ctx context.Context, client *transport.Client, operation, endpoint string, body any, sent, created int, opts []transport.RequestOption) ([]R, error) {
 	var results []R
 	resp, err := client.Send(ctx, http.MethodPost, endpoint, nil, body, &results, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != created {
 		return nil, fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
 	}
 	if len(results) != sent {

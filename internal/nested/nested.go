@@ -29,6 +29,9 @@ type Collection struct {
 	Path     string
 	Item     string
 	MetaType model.MetaType
+	// Created — POST создания и массовой записи отвечает 201 (лента событий документа); 200 тоже
+	// принимается. У остальных коллекций 201 — ошибка.
+	Created bool
 }
 
 func (c Collection) endpoint() string {
@@ -108,6 +111,9 @@ func CreateMany[T, C any](ctx context.Context, c Collection, items []C, opts []t
 	if !validID(c.ParentID) {
 		return nil, fmt.Errorf("moysklad: %s: %s id must be a UUID", operation, c.Parent)
 	}
+	if c.Created {
+		return write.CreateManyNestedCreated[T](ctx, c.Client, operation, c.endpoint(), items, opts)
+	}
 	return write.CreateManyNested[T](ctx, c.Client, operation, c.endpoint(), items, opts)
 }
 
@@ -117,6 +123,9 @@ func UpdateMany[T, U any](ctx context.Context, c Collection, items []batch.Updat
 	operation := "update many " + c.Parent + " " + c.ParentID + " " + c.Path
 	if !validID(c.ParentID) {
 		return nil, fmt.Errorf("moysklad: %s: %s id must be a UUID", operation, c.Parent)
+	}
+	if c.Created {
+		return write.UpdateManyNestedCreated[T](ctx, c.Client, operation, c.endpoint(), c.MetaType, items, opts)
 	}
 	return write.UpdateManyNested[T](ctx, c.Client, operation, c.endpoint(), c.MetaType, items, opts)
 }
@@ -174,7 +183,7 @@ func one[T any](ctx context.Context, c Collection, operation, method, endpoint s
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && !(c.Created && method == http.MethodPost && resp.StatusCode == http.StatusCreated) {
 		return nil, fmt.Errorf("moysklad: %s: unexpected HTTP status %d", operation, resp.StatusCode)
 	}
 	if method != http.MethodGet && raw.Kind() == '[' {
