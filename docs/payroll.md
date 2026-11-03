@@ -13,7 +13,7 @@
 doc, err := s.Create(ctx, payroll.CreateRequest{
 	Organization: organization, StartPayrollPeriod: start, EndPayrollPeriod: end,
 	Positions: model.Value([]payroll.PositionRequest{{
-		Employee: model.Value(employee), BaseSalary: model.Value(202000.0), PieceworkSalary: model.Value(0.0),
+		Employee: model.Value(employee), BaseSalary: model.Value(202000.0), PieceworkSalary: model.Value(1000.0),
 	}}),
 })
 ```

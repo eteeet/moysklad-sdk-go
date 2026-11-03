@@ -104,7 +104,7 @@ doc, err := s.Create(ctx, commissionreportin.CreateRequest{
 - `payments` (раздел «Связи с другими документами») не помечен readonly и пишется по общему правилу
   привязки документов; `linkedSum` элемента SDK не читает (как у других документов, `model.Reference`).
 - `commissionOverhead` в примерах отсутствует; форма `{sum}` — по таблице «Прочие расходы».
-- `rewardPercent` в таблице Int — SDK держит `int`, как `contract`.
+- `rewardPercent` в таблице Int — SDK держит `int`.
 - Шаблона `New`, wizard и expand нет (ticket их не называет); Delete удаляет безвозвратно,
   Trash — в корзину.
 

@@ -68,7 +68,7 @@ func (s *Service) Delete(ctx context.Context, id string, opts ...transport.Reque
 
 // Trash — удаление документа в корзину: POST entity/prepaymentreturn/{id}/trash. В отличие от Delete
 // документ восстанавливается из корзины (только в интерфейсе); права и настройку корзины
-// проверяет сервер. Раздела в _prepaymentreturn.md нет — общее правило документов.
+// проверяет сервер. Раздела в _prepayment_return.md нет — общее правило документов.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/common-info#3-udalenie-v-korzinu
 func (s *Service) Trash(ctx context.Context, id string, opts ...transport.RequestOption) error {
 	transport.ResetResponseInfo(opts)

@@ -50,7 +50,8 @@ type UpdateRequest struct {
 // ColumnRequest — новый столбец: name необходим и уникален в прайс-листе (уникальность проверяет
 // сервер); percentageDiscount — скидка (наценка) по умолчанию, ею заполняются ячейки без значения.
 type ColumnRequest struct {
-	Name               string           `json:"name"`
+	Name string `json:"name"`
+	// Единицу источник не называет: таблица — процент, примеры — 1000; SDK передаёт как есть.
 	PercentageDiscount model.Field[int] `json:"percentageDiscount,omitzero"`
 }
 

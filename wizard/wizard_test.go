@@ -134,3 +134,16 @@ func TestValidation(t *testing.T) {
 		}
 	}
 }
+
+// Деньги рассчитанной позиции — копейки float64: 0, 0.0 и дробь читаются обоими кодеками.
+func TestPositionMoneyJSON(t *testing.T) {
+	for _, codec := range documenttest.Codecs {
+		for raw, want := range map[string]float64{"0": 0, "0.0": 0, "12.5": 12.5} {
+			var got wizard.Position
+			data := `{"price":` + raw + `,"discountedPrice":` + raw + `,"sum":` + raw + `,"cost":` + raw + `}`
+			if err := codec.Unmarshal([]byte(data), &got); err != nil || got.Price != want || got.DiscountedPrice != want || got.Sum != want || got.Cost != want {
+				t.Fatalf("%s: %s: got %+v, err = %v", codec.Name, raw, got, err)
+			}
+		}
+	}
+}

@@ -49,7 +49,8 @@ doc, err := s.Create(ctx, pricelist.CreateRequest{
 | `files` | `*model.Collection[model.Reference]` | — | — |
 
 Столбец: `name` (String, необходим), `percentageDiscount` (Int, скидка/наценка по умолчанию; в
-запросе `model.Field[int]`, чтобы отличать 0 от «не задано»). Ячейка `Cell`: `column` (name
+запросе `model.Field[int]`, чтобы отличать 0 от «не задано»). Единицу источник не называет: таблица
+говорит о проценте, а все примеры передают 1000 — SDK значение не пересчитывает. Ячейка `Cell`: `column` (name
 столбца) и `sum` — оба необходимы.
 
 ## Позиции
@@ -79,8 +80,8 @@ doc, err := s.Create(ctx, pricelist.CreateRequest{
 - `Cell.sum` в таблице — Int («числовое значение ячейки»), в примерах — цены в копейках; SDK
   держит `float64`, как остальные суммы.
 - Таблица не помечает `organization` обязательным, обязательны только `columns`.
-- `DeleteManyPositions` реализован в пакете: общий `positions.Service.DeletePositions` выбирает
-  meta.type `pricelistposition`, а источник — `pricelistrow`.
+- `DeleteManyPositions` — общий `positions.Service.DeleteManyPositions`; тип строки `pricelistrow`
+  внесён в общую таблицу positions.
 - Шаблона `New`, wizard и expand нет; Delete удаляет безвозвратно, Trash — в корзину.
 
 Источник: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/pricelist),
