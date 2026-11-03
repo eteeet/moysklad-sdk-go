@@ -53,6 +53,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/processingstage"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
+	"github.com/eteeet/moysklad-sdk-go/entity/productionstagecompletion"
 	"github.com/eteeet/moysklad-sdk-go/entity/project"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
@@ -290,6 +291,11 @@ func (e EntityGroup) TaxRate() *taxrate.Service { return must(taxrate.NewService
 
 // UOM — Единицы измерения.
 func (e EntityGroup) UOM() *uom.Service { return must(uom.NewService(e.transport)) }
+
+// ProductionStageCompletion — выполнения этапов производства.
+func (e EntityGroup) ProductionStageCompletion() *productionstagecompletion.Service {
+	return must(productionstagecompletion.NewService(e.transport))
+}
 
 // ProcessingOrder — заказы на производство.
 func (e EntityGroup) ProcessingOrder() *processingorder.Service {

@@ -1,0 +1,19 @@
+{
+  "productionStage": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/productionstage/3130f7df-660f-11ee-c0a8-100c00000139", "type": "productionstage"}},
+  "productionVolume": 5,
+  "name": "000034",
+  "description": "",
+  "externalCode": "ext-1",
+  "moment": "2016-04-19 13:50:24.000",
+  "shared": false,
+  "defect": true,
+  "enableHourAccounting": false,
+  "owner": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/employee/faba7f37-2e58-11e6-8a84-bae500000028", "type": "employee"}},
+  "group": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/group/f97aa1fb-2e58-11e6-8a84-bae500000002", "type": "group"}},
+  "performer": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/counterparty/c8c0f0de-b6c6-11ef-ac12-00130000009e", "type": "counterparty"}},
+  "service": {"meta": {"href": "https://api.moysklad.ru/api/remap/1.2/entity/service/18616ba6-b6c7-11ef-ac12-001300000103", "type": "service"}},
+  "processingUnitCost": 10,
+  "labourUnitCost": 20.5,
+  "standardHourCost": 0,
+  "standardHourUnit": 30
+}

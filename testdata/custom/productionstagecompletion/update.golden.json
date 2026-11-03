@@ -1,0 +1,11 @@
+{
+  "productionVolume": 22,
+  "name": "000034",
+  "description": null,
+  "shared": true,
+  "enableHourAccounting": true,
+  "performer": null,
+  "service": null,
+  "standardHourCost": 1500,
+  "standardHourUnit": 0.25
+}

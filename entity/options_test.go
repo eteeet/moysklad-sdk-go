@@ -60,6 +60,7 @@ import (
 	"github.com/eteeet/moysklad-sdk-go/entity/processingstage"
 	"github.com/eteeet/moysklad-sdk-go/entity/product"
 	"github.com/eteeet/moysklad-sdk-go/entity/productfolder"
+	"github.com/eteeet/moysklad-sdk-go/entity/productionstagecompletion"
 	"github.com/eteeet/moysklad-sdk-go/entity/project"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchaseorder"
 	"github.com/eteeet/moysklad-sdk-go/entity/purchasereturn"
@@ -225,6 +226,7 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		getCase("role", role.NewService, (*role.Service).Get),
 		getCase("supply", supply.NewService, (*supply.Service).Get),
 		getCase("uom", uom.NewService, (*uom.Service).Get),
+		getCase("productionstagecompletion", productionstagecompletion.NewService, (*productionstagecompletion.Service).Get),
 		getCase("processingorder", processingorder.NewService, (*processingorder.Service).Get),
 		getCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Get),
 		getCase("processingstage", processingstage.NewService, (*processingstage.Service).Get),
@@ -301,6 +303,8 @@ func TestServicesAcceptRequestOptions(t *testing.T) {
 		updateCase("supply", supply.NewService, (*supply.Service).Update),
 		createCase("uom", uom.NewService, (*uom.Service).Create),
 		updateCase("uom", uom.NewService, (*uom.Service).Update),
+		createCase("productionstagecompletion", productionstagecompletion.NewService, (*productionstagecompletion.Service).Create),
+		updateCase("productionstagecompletion", productionstagecompletion.NewService, (*productionstagecompletion.Service).Update),
 		createCase("processingorder", processingorder.NewService, (*processingorder.Service).Create),
 		updateCase("processingorder", processingorder.NewService, (*processingorder.Service).Update),
 		createCase("processingprocess", processingprocess.NewService, (*processingprocess.Service).Create),
@@ -622,6 +626,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 	cases = append(cases, localCases("role", role.NewService, (*role.Service).Get, (*role.Service).Create, (*role.Service).Update, (*role.Service).List)...)
 	cases = append(cases, localCases("supply", supply.NewService, (*supply.Service).Get, (*supply.Service).Create, (*supply.Service).Update, (*supply.Service).List)...)
 	cases = append(cases, localCases("uom", uom.NewService, (*uom.Service).Get, (*uom.Service).Create, (*uom.Service).Update, (*uom.Service).List)...)
+	cases = append(cases, localCases("productionstagecompletion", productionstagecompletion.NewService, (*productionstagecompletion.Service).Get, (*productionstagecompletion.Service).Create, (*productionstagecompletion.Service).Update, (*productionstagecompletion.Service).List)...)
 	cases = append(cases, localCases("processingorder", processingorder.NewService, (*processingorder.Service).Get, (*processingorder.Service).Create, (*processingorder.Service).Update, (*processingorder.Service).List)...)
 	cases = append(cases, localCases("processingprocess", processingprocess.NewService, (*processingprocess.Service).Get, (*processingprocess.Service).Create, (*processingprocess.Service).Update, (*processingprocess.Service).List)...)
 	cases = append(cases, localCases("processingstage", processingstage.NewService, (*processingstage.Service).Get, (*processingstage.Service).Create, (*processingstage.Service).Update, (*processingstage.Service).List)...)
@@ -799,7 +804,7 @@ func TestLocalErrorResetsResponseInfo(t *testing.T) {
 			}
 		}
 	}
-	if len(cases) != 59*4+22+3+8+1+6 {
+	if len(cases) != 60*4+22+3+8+1+6 {
 		t.Fatalf("cases = %d", len(cases))
 	}
 }
