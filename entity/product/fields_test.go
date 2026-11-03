@@ -54,3 +54,41 @@ func TestBarcodesAndPacks(t *testing.T) {
 		}
 	}
 }
+
+func TestProductAttributes(t *testing.T) {
+	for _, codec := range documenttest.Codecs {
+		got := fullProduct(t, codec)
+		if got.Alcoholic == nil || *got.Alcoholic != (product.Alcoholic{Excise: true, Type: 10, Strength: 15.5, Volume: 15.5}) ||
+			!got.PartialDisposal || got.PaymentItemType != "GOOD" || got.PPEType != "2400001226405" || got.TrackingType != "MILK" ||
+			len(got.Things) != 1 || got.Things[0] != "1" || got.VariantsCount != 10 || got.Weighed || got.OnTap || got.NctKZ != nil ||
+			got.Images == nil || got.Files == nil {
+			t.Fatalf("%s: product = %+v", codec.Name, got)
+		}
+		// weighed и onTap выводятся только при true; mod__nct__kz — объект Казахстана.
+		var p product.Product
+		if err := codec.Unmarshal([]byte(`{"weighed":true,"onTap":true,"minimumBalance":2.5,"mod__nct__kz":{"ntin":"0001"},"mod__marking__uz":{"trackingType":"WATER"}}`), &p); err != nil ||
+			!p.Weighed || !p.OnTap || p.MinimumBalance != 2.5 || p.NctKZ == nil || p.NctKZ.NTIN != "0001" || p.MarkingUZ == nil || p.MarkingUZ.TrackingType != "WATER" {
+			t.Fatalf("%s: product = %+v, err = %v", codec.Name, p, err)
+		}
+		for _, tc := range []struct {
+			name  string
+			input any
+			want  string
+		}{
+			{"create", product.CreateRequest{Name: "Вино", Alcoholic: model.Value(product.AlcoholicRequest{Excise: model.Value(true), Type: model.Value(200), Strength: model.Value(12.5), Volume: model.Value(0.75)}),
+				TrackingType: model.Value("NOT_TRACKED"), PaymentItemType: model.Value("GOOD"), TaxSystem: model.Value("GENERAL_TAX_SYSTEM"), TNVED: model.Value("2204"),
+				PartialDisposal: model.Value(false), IsSerialTrackable: model.Value(false), MinimumBalance: model.Value(0.0)},
+				`{"name":"Вино","alcoholic":{"excise":true,"type":200,"strength":12.5,"volume":0.75},"trackingType":"NOT_TRACKED","paymentItemType":"GOOD",` +
+					`"taxSystem":"GENERAL_TAX_SYSTEM","tnved":"2204","partialDisposal":false,"isSerialTrackable":false,"minimumBalance":0}`},
+			{"update", product.UpdateRequest{Weighed: model.Value(true), OnTap: model.Value(false), Things: model.Value([]string{"SN-1"}), PPEType: model.Null[string](),
+				Alcoholic: model.Null[product.AlcoholicRequest](), NctKZ: model.Value(model.NctKZ{NTIN: "0001"}), TasnifUZ: model.Value(model.TasnifUZ{IKPU: "1"})},
+				`{"weighed":true,"onTap":false,"things":["SN-1"],"ppeType":null,"alcoholic":null,"mod__nct__kz":{"ntin":"0001"},"mod__tasnif__uz":{"ikpu":"1"}}`},
+		} {
+			data, err := codec.Marshal(tc.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			documenttest.JSONEqual(t, data, []byte(tc.want))
+		}
+	}
+}

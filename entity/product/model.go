@@ -1,8 +1,15 @@
 package product
 
-import "github.com/eteeet/moysklad-sdk-go/model"
+import (
+	"encoding/json/jsontext"
 
-// Частичная модель чтения без expand; для записи используются CreateRequest и UpdateRequest.
+	"github.com/eteeet/moysklad-sdk-go/model"
+)
+
+// Модель чтения без expand; для записи используются CreateRequest и UpdateRequest.
+// PaymentItemType, TaxSystem, TrackingType и PPEType — открытые enum. Weighed и OnTap сервер
+// выводит только со значением true. Несочетаемые признаки (isSerialTrackable с weighed, alcoholic,
+// ppeType, trackingType, onTap и т.д.) проверяет сервер.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product
 type Product struct {
 	Meta         model.Meta     `json:"meta"`
@@ -37,6 +44,28 @@ type Product struct {
 	DiscountProhibited  bool `json:"discountProhibited"`
 	IsSerialTrackable   bool `json:"isSerialTrackable"`
 
+	Alcoholic       *Alcoholic `json:"alcoholic,omitzero"`
+	MinimumBalance  float64    `json:"minimumBalance"`
+	PartialDisposal bool       `json:"partialDisposal"`
+	PaymentItemType string     `json:"paymentItemType"`
+	PPEType         string     `json:"ppeType"`
+	TaxSystem       string     `json:"taxSystem"`
+	TrackingType    string     `json:"trackingType"`
+	TNVED           string     `json:"tnved"`
+	Things          []string   `json:"things"`
+	Weighed         bool       `json:"weighed"`
+	OnTap           bool       `json:"onTap"`
+	VariantsCount   int        `json:"variantsCount"`
+
+	// Регионоспецифичные модули: TasnifUZ и MarkingUZ — с transport.WithAcceptRegion(RegionUZ).
+	TasnifUZ  *model.TasnifUZ  `json:"mod__tasnif__uz,omitzero"`
+	MarkingUZ *model.MarkingUZ `json:"mod__marking__uz,omitzero"`
+	NctKZ     *model.NctKZ     `json:"mod__nct__kz,omitzero"`
+
+	// Images и Files — только метаданные коллекций (изображения — отдельный ресурс, файлы — files).
+	Images *model.Collection[jsontext.Value] `json:"images,omitzero"`
+	Files  *model.Collection[jsontext.Value] `json:"files,omitzero"`
+
 	Owner         *model.Reference `json:"owner,omitzero"`
 	Group         *model.Reference `json:"group,omitzero"`
 	ProductFolder *model.Reference `json:"productFolder,omitzero"`
@@ -53,4 +82,14 @@ type Pack struct {
 	UOM      *model.Reference `json:"uom,omitzero"`
 	Quantity float64          `json:"quantity"`
 	Barcodes []model.Barcode  `json:"barcodes"`
+}
+
+// Alcoholic — алкогольная продукция: Type — код вида продукции, Strength — крепость, Volume —
+// объём тары.
+// https://dev.moysklad.ru/doc/api/remap/1.2/#/dictionaries/product#5-obekt-soderzhashij-polya-alkogolnoj-produkcii
+type Alcoholic struct {
+	Excise   bool    `json:"excise"`
+	Type     int     `json:"type"`
+	Strength float64 `json:"strength"`
+	Volume   float64 `json:"volume"`
 }

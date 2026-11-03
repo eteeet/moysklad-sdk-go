@@ -39,7 +39,7 @@ func TestRequestReadOnlyFields(t *testing.T) {
 		t.Error("UpdateRequest contains create-only SyncID")
 	}
 	for _, typ := range []reflect.Type{reflect.TypeFor[product.CreateRequest](), reflect.TypeFor[product.UpdateRequest]()} {
-		for _, name := range []string{"ID", "AccountID", "Updated", "PathName", "EffectiveVAT", "EffectiveVATEnabled", "VariantsCount", "Meta"} {
+		for _, name := range []string{"ID", "AccountID", "Updated", "PathName", "EffectiveVAT", "EffectiveVATEnabled", "VariantsCount", "Meta", "Images", "Files"} {
 			if _, exists := typ.FieldByName(name); exists {
 				t.Errorf("%s contains read-only %s", typ.Name(), name)
 			}
