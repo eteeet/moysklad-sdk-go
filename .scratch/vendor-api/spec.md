@@ -1,4 +1,4 @@
-Status: needs-triage
+Status: resolved
 
 # Vendor API 1.0: авторизация решения, контекст пользователя, жизненный цикл
 

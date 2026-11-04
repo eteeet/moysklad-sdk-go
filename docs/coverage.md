@@ -489,8 +489,10 @@ Update-пример архивирует тестовый товар, не уд�
 - [x] [Пакет `vendorapi`](vendorapi.md): `AppAuth` (JWT HS256 на каждую попытку), `Service.Context`.
 - [x] Проверка входящего JWT (`VerifyToken`, `VerifyRequest`), типы активации и деактивации,
   `ActivationPattern` для `http.ServeMux`.
-- [ ] Статус установки решения: `Status`, `SetStatus`.
-- [ ] Обмен одноразового токена: `UserContext`.
+- [x] Статус установки решения: `Status`, `SetStatus`.
+- [x] Обмен одноразового токена: `UserContext`.
+
+Вне объёма этапа: событие `PermissionsChanged`, Loyalty API, кнопки, сценарии, Fiscal API.
 
 ## Core dictionaries — согласованные срезы
 

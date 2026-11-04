@@ -70,6 +70,22 @@ func vendorServer(t *testing.T, handler http.HandlerFunc) *vendorapi.Service {
 	return s
 }
 
+// respond пишет ответ случая ResponseCases с заголовком X-Lognex-Auth для проверки ResponseInfo.
+func respond(w http.ResponseWriter, tc documenttest.ResponseCase) {
+	w.Header().Set("X-Lognex-Auth", "test")
+	if tc.Gzip {
+		w.Header().Set("Content-Encoding", "gzip")
+	}
+	w.WriteHeader(tc.Status)
+	out := io.Writer(w)
+	if tc.Gzip {
+		zw := gzip.NewWriter(w)
+		defer zw.Close()
+		out = zw
+	}
+	io.WriteString(out, tc.Body)
+}
+
 // POST без тела на context/{contextKey}; POST не повторяется даже при RetryPolicy и 5xx.
 func TestServiceContext(t *testing.T) {
 	for _, tc := range documenttest.ResponseCases(string(fixture(t, "context.json"))) {
@@ -87,18 +103,7 @@ func TestServiceContext(t *testing.T) {
 				if data, _ := io.ReadAll(r.Body); len(data) != 0 {
 					t.Errorf("body = %s", data)
 				}
-				w.Header().Set("X-Lognex-Auth", "test")
-				if tc.Gzip {
-					w.Header().Set("Content-Encoding", "gzip")
-				}
-				w.WriteHeader(tc.Status)
-				out := io.Writer(w)
-				if tc.Gzip {
-					zw := gzip.NewWriter(w)
-					defer zw.Close()
-					out = zw
-				}
-				io.WriteString(out, tc.Body)
+				respond(w, tc)
 			})
 			var info transport.ResponseInfo
 			got, err := s.Context(t.Context(), contextKey, transport.WithResponseInfo(&info))
@@ -143,8 +148,8 @@ func TestServiceContextDocumentedErrors(t *testing.T) {
 func TestServiceContextRejectsKey(t *testing.T) {
 	var calls atomic.Int32
 	s := vendorServer(t, func(w http.ResponseWriter, r *http.Request) { calls.Add(1) })
-	// "." и ".." после JoinPath указывали бы на context или корень API.
-	for _, key := range []string{"", "a/b", "a?b", "a#b", ".", ".."} {
+	// "." и ".." после JoinPath указывали бы на context или корень API, "user" — на обмен токена.
+	for _, key := range []string{"", "a/b", "a?b", "a#b", ".", "..", "user"} {
 		info := transport.ResponseInfo{StatusCode: 200, Header: http.Header{"X": {"stale"}}}
 		got, err := s.Context(t.Context(), key, transport.WithResponseInfo(&info))
 		if err == nil || got != nil || info.StatusCode != 0 || info.Header != nil {

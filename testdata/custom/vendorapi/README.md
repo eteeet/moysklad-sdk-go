@@ -3,7 +3,9 @@
 - Repository: https://github.com/moysklad/api-vendor-1.0-doc
 - Commit: be7188e50e29b4ab9acb7e85d0cda08455d0b9fc
 - Source: md/vendor_api/_moysklad_endpoints.md (SHA-256 `f23f79fe2c2d89d8634ef5d7408e9886a7dd086bbda3f5da1dde92df501983c6`),
-  раздел «Получение контекста пользователя», пример ответа: `context.json`
+  примеры ответов разделов «Получение контекста пользователя» (`context.json`), «Получение
+  статуса решения на аккаунте» (`status.json`) и «Получение контекста пользователя по
+  одноразовому токену» (`user-context.json`)
 - Source: md/vendor_api/_vendor_endpoints.md (SHA-256 `3be3ffe933fa06ae421604e396dd5c1df6bc3bfb046a4e777d345583af8fe7cb`),
   разделы «Активация решения на аккаунте» и «Деактивация решения на аккаунте»: тела `-d '…'`
   примеров curl (`activation-*`, `deactivation-*`) и примеры ответов (`response-*`)
@@ -21,6 +23,8 @@
 | `deactivation-suspend.json` | `6588078c0fa86728acb9129cb021a1ce1c11b7aa3b89463f9540f9a4b7654791` |
 | `response-settingsrequired.json` | `ec3104a627502692f39d6d7d98932e55fd46e24577db68043f88791c72534959` |
 | `response-activated.json` | `5e9b584a929822cd2a07650fb645b4091fd0d2e1ed14d26a80d2bc73aaa01328` |
+| `status.json` | `a95af11fb7ce969b1f73f36fc18f35316110bdcb52a34ea0ff716ac0b433064f` |
+| `user-context.json` | `8865a45cd1b03fa1173f4ba512fc6202b7178ff6433e1b7f44047e87cbfe715e` |
 
 JSON скопирован без изменений. Подтверждает форму ответов из примеров документации,
 а не поведение живого API.

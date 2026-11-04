@@ -48,7 +48,7 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 ([`c.Notification()`](docs/notification.md)), лента событий документов
 ([eventfeed](docs/eventfeed.md)), задачи ([task](docs/task.md)), сохранённые фильтры
 ([namedfilter](docs/namedfilter.md)), серверные решения ([application](docs/application.md)).
-Vendor API 1.0 серверного решения (`vendorapi`: подпись JWT, контекст пользователя iframe,
+Vendor API 1.0 серверного решения (`vendorapi`: подпись JWT, контекст сотрудника, статус установки,
 проверка входящих запросов активации):
 [docs/vendorapi.md](docs/vendorapi.md).
 

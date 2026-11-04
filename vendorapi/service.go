@@ -33,8 +33,8 @@ func NewService(client *transport.Client) (*Service, error) {
 // https://dev.moysklad.ru/doc/api/vendor/1.0/#/vendor-api/moysklad-endpoints#3-poluchenie-konteksta-polzovatelya
 func (s *Service) Context(ctx context.Context, contextKey string, opts ...transport.RequestOption) (*contexts.EmployeeContext, error) {
 	transport.ResetResponseInfo(opts)
-	// "." и ".." JoinPath схлопнул бы в context или корень API.
-	if contextKey == "" || contextKey == "." || contextKey == ".." || strings.ContainsAny(contextKey, "/?#") {
+	// "." и ".." JoinPath схлопнул бы в context или корень API; "user" — маршрут обмена токена.
+	if contextKey == "" || contextKey == "." || contextKey == ".." || contextKey == "user" || strings.ContainsAny(contextKey, "/?#") {
 		return nil, fmt.Errorf("moysklad: get vendor context: invalid context key")
 	}
 	var result contexts.EmployeeContext

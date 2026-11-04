@@ -5,7 +5,8 @@
 ### Добавлено
 
 - Vendor API 1.0 (`vendorapi`): `AppAuth` подписывает каждую попытку новым JWT решения,
-  `Service.Context` получает сотрудника iframe по contextKey; `VerifyToken`/`VerifyRequest` строго
+  `Service.Context` и `UserContext` получают сотрудника iframe и виджета, `Status`/`SetStatus` —
+  статус установки; `VerifyToken`/`VerifyRequest` строго
   проверяют JWT входящих запросов МоегоСклада, типы тел активации и деактивации, `ActivationPattern`;
   токены в телах — `vendorapi.Secret`, их не раскрывают fmt, slog и json.
   Подробности: [docs/vendorapi.md](docs/vendorapi.md).

@@ -1,4 +1,4 @@
-Status: needs-triage
+Status: resolved
 Blocked by: None
 
 # 01: AppAuth и контекст пользователя по contextKey
@@ -25,3 +25,7 @@ iframe через `Service.Context`. Первый законченный сре�
 ## Blocked by
 
 Нет.
+
+## Answer
+
+`vendorapi.AppAuth`, `Service.Context`, фикстура `context.json`, `docs/vendorapi.md` — коммит 7ddb5cf; ключи `.`/`..` — a26af61 (ревью).

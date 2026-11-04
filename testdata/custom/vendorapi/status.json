@@ -1,0 +1,38 @@
+{
+  "status": "Activated",
+  "cause": "Install",
+  "subscription": {
+    "tariffId": "23ca69d4-2657-40c4-8ba1-6ce24ddeac2e",
+    "trial": false,
+    "tariffName": "Basic",
+    "expiryMoment": "2024-01-19T18:50:12+03:00",
+    "notForResale": false,
+    "partner": false
+  },
+  "access": [
+    {
+      "resource": "https://api.moysklad.ru/api/remap/1.2/",
+      "scope": [
+        "custom"
+      ],
+      "permissions": {
+        "viewDashboard": true,
+        "viewAudit": true,
+        "useAllWebhooks": true,
+        "useAllAttributeMetadata": true,
+        "supply": {
+          "update": "ALL",
+          "view": "ALL"
+        },
+        "purchaseReturn": {
+          "delete": "ALL",
+          "update": "ALL",
+          "approve": "ALL",
+          "view": "ALL",
+          "create": "ALL",
+          "print": "ALL"
+        }
+      }
+    }
+  ]
+}

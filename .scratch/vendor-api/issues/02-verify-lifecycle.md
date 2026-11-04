@@ -1,4 +1,4 @@
-Status: needs-triage
+Status: resolved
 Blocked by: None
 
 # 02: Проверка входящего JWT и типы активации/деактивации
@@ -22,3 +22,7 @@ Blocked by: None
 ## Blocked by
 
 Нет; можно параллельно с 01.
+
+## Answer
+
+`VerifyToken`/`VerifyRequest`, типы жизненного цикла, `Secret`, `ActivationPattern`, 10 фикстур — коммит a26af61. Сверх spec по ревью: алфавит base64url (CR/LF), канонический base64, отказ на `crit`, повтор имён claims, `bearer` без учёта регистра.

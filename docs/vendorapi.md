@@ -30,7 +30,7 @@ Vendor API не документированы, по умолчанию limiter 
 синхронизированы: допуск расхождения документация не задаёт.
 
 > **Обязательное правило.** `secretKey` решения служит только Vendor API. Токены, которые
-> решение выпускает своим пользователям, фронтенду или сервисам, подписывайте отдельным
+> решение выпускает своим сотрудникам, фронтенду или сервисам, подписывайте отдельным
 > ключом ([RFC 8725 §3.12](https://www.rfc-editor.org/rfc/rfc8725#section-3.12)). Иначе
 > собственный токен решения с теми же claims пройдёт проверку как запрос МоегоСклада, и
 > активацию можно будет подделать. SDK этого запретить не может.
@@ -40,18 +40,53 @@ Vendor API не документированы, по умолчанию limiter 
 | Метод | Запрос | Результат |
 | --- | --- | --- |
 | `Context(ctx, contextKey, opts...)` | POST `context/{contextKey}`, тело пустое | `*contexts.EmployeeContext` |
+| `UserContext(ctx, token, opts...)` | POST `context/user` `{"token"}` | `*vendorapi.UserContext` |
+| `Status(ctx, appID, accountID, opts...)` | GET `apps/{appId}/{accountId}/status` | `*vendorapi.AppStatus` |
+| `SetStatus(ctx, appID, accountID, status, opts...)` | PUT `apps/{appId}/{accountId}/status` `{"status"}` | `error` |
+
+Общее для всех методов: при ошибке результат nil, `errors.As` распознаёт `*sdkerrors.APIError`,
+`errors.Is` сохраняет ошибки context, авторизации и транспорта. `transport.WithResponseInfo`
+сбрасывается до проверки аргументов и заполняется и при APIError. `RetryPolicy` повторяет
+только GET/HEAD: из четырёх методов повторяется только `Status`, каждая попытка — с новым `jti`.
+
+### Context
 
 `Context` возвращает сотрудника, открывшего iframe или виджет решения. contextKey приходит
 GET-параметром при загрузке окна. Ответ по форме совпадает с `context/employee` JSON API,
 поэтому тип — `contexts.EmployeeContext` ([access](access.md)). Признак администратора аккаунта —
-`Permissions["admin"].Actions["view"] == model.ScopeAll`. Пустой contextKey или ключ с `/`, `?`,
-`#` отклоняются до HTTP.
+`Permissions["admin"].Actions["view"] == model.ScopeAll`. Пустой contextKey, `.`, `..`, `user` (маршрут
+`UserContext`) или ключ с `/`, `?`, `#` отклоняются до HTTP.
 
 Успех — HTTP 200 и непустой `id`. Документированные ошибки: 403 — решение не авторизовано по
-этому contextKey, 404 — ключ не найден или истёк. При ошибке результат nil, `errors.As`
-распознаёт `*sdkerrors.APIError`, `errors.Is` сохраняет ошибки context, авторизации и транспорта.
-`transport.WithResponseInfo` сбрасывается до проверки аргументов и заполняется и при APIError.
-`RetryPolicy` повторяет только GET/HEAD, поэтому POST `Context` выполняется ровно один раз.
+этому contextKey, 404 — ключ не найден или истёк.
+
+### UserContext
+
+Рекомендуемый источник сотрудника для главного окна, чатов, модальных окон и виджетов: виджет
+получает у хост-окна одноразовый токен (живёт 60 с) и передаёт его на сервер решения, сервер
+обменивает его этим вызовом. Пустой токен отклоняется до HTTP; токен идёт только в теле. Запрос
+выполняется ровно один раз: `RetryPolicy` POST не повторяет, а после потерянного ответа токен уже
+израсходован, повтор вернул бы 404.
+
+`UserContext{AccountID, UserID, UserUID, Role}`; `Role` — открытый строковый тип: `RoleAdmin`,
+`RoleCashier`, `RoleWorker`, `RoleIndividual`. Успех — HTTP 200 и все четыре поля непустые: источник помечает их обязательными. Ошибки: 400 (3008) — пустой
+токен, 401 — ошибка JWT решения (токен не израсходован, обмен можно повторить), 404 (3007) —
+токен использован, истёк или выдан другому решению. Токен не храните в `localStorage`,
+`sessionStorage`, cookie и не пишите в логи.
+
+### Status и SetStatus
+
+`appID` и `accountID` проверяются как UUID до HTTP. `Status` возвращает
+`AppStatus{Status, Cause, Subscription, Access}`; успех — HTTP 200 и непустой `status`, 404
+(2004) — решение не установлено на аккаунте. `Access` заполнен только в `Activated` и
+`SettingsRequired` и токена не содержит; `resource` в примере источника — со слешем в конце. `scope` таблица источника
+называет String, а пример — массивом; SDK читает массив, как в примерах активации.
+
+`SetStatus` сообщает итог активации, если решение ответило на PUT `Activating` или
+`SettingsRequired`; после ответа `Activated` вызывать его не нужно. Допустимы только
+`StatusActivating`, `StatusSettingsRequired`, `StatusActivated`, иначе ошибка до HTTP. Успех —
+HTTP 200 с пустым телом, в том числе если статус уже целевой; 404 — не установлено, 409 —
+перехода по жизненному циклу нет. PUT не повторяется.
 
 ## Входящие запросы МоегоСклада
 
@@ -116,18 +151,18 @@ glossary TariffChanged и Autoprolongation — не активация, а см�
   неизвестные значения сохраняются. Ответить на активацию можно только `Activating`,
   `SettingsRequired` или `Activated`.
 - `AccessToken` и `FiscalAPI.Token` — тип `vendorapi.Secret`: `fmt` с любым глаголом (и ошибочным
-  `%d`), `slog` (текстовый и JSON) и `json.Marshal` выводят `<redacted>`. Значение достаётся явно — `string(s)`. Поэтому
-  `ActivationRequest` после `json.Marshal` токенов не содержит: сохраняйте их отдельно.
+  `%d`), `slog` (текстовый и JSON) и `json.Marshal` выводят `<redacted>`. Значение достаётся
+  явно — `string(s)`. Поэтому `ActivationRequest` после `json.Marshal` токенов не содержит:
+  сохраняйте их отдельно.
 
 ## Вне пакета
 
-Статус установки, обмен одноразового токена, событие `PermissionsChanged` (путь `…/event` в
-источнике противоречив), Loyalty API, кнопки, сценарии и Fiscal API пока не реализованы; план —
-`.scratch/vendor-api/`. Хранение `jti`, токенов и статусов, HTTP-обработчик и дескриптор XML
-остаются у решения.
+Событие `PermissionsChanged` (путь `…/event` в источнике противоречив), Loyalty API, кнопки,
+сценарии и Fiscal API не реализованы. Хранение `jti`, токенов и статусов, HTTP-обработчик и
+дескриптор XML остаются у решения.
 
 Контракт сверён с [официальной документацией на revision
-be7188e50e29b4ab9acb7e85d0cda08455d0b9fc](https://github.com/moysklad/api-vendor-1.0-doc/blob/be7188e50e29b4ab9acb7e85d0cda08455d0b9fc/md/vendor_api/_moysklad_endpoints.md)
+be7188e50e29b4ab9acb7e85d0cda08455d0b9fc](https://github.com/moysklad/api-vendor-1.0-doc/blob/be7188e50e29b4ab9acb7e85d0cda08455d0b9fc/md/vendor_api/_moysklad_endpoints.md),
 [аутентификацией](https://github.com/moysklad/api-vendor-1.0-doc/blob/be7188e50e29b4ab9acb7e85d0cda08455d0b9fc/md/vendor_api/_authentication.md)
 и [эндпоинтами решения](https://github.com/moysklad/api-vendor-1.0-doc/blob/be7188e50e29b4ab9acb7e85d0cda08455d0b9fc/md/vendor_api/_vendor_endpoints.md).
 Фикстуры — примеры документации: `testdata/custom/vendorapi`. Live-проверки не было.
