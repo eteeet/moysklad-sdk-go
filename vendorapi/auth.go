@@ -17,9 +17,8 @@ import (
 // Header исходящего токена неизменен; кодируется один раз.
 var outgoingHeader = base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
 
-// AppAuth подписывает каждую попытку запроса новым одноразовым JWT решения: sub=appUID, iat,
-// случайный jti. exp не передаётся: МойСклад ограничивает срок iat+300 с.
-// secretKey служит только Vendor API; свои токены приложения подписывайте другим ключом.
+// AppAuth подписывает каждую попытку новым JWT: МойСклад отклоняет повтор jti; без exp срок — iat+300 с.
+// secretKey только для Vendor API: свои токены решения подписывайте другим ключом (RFC 8725 §3.12).
 // https://dev.moysklad.ru/doc/api/vendor/1.0/#/vendor-api/authentication#3-vhodyashie-zaprosy-razrabotchik-mojsklad
 func AppAuth(appUID, secretKey string) (transport.Auth, error) {
 	if appUID == "" || secretKey == "" {

@@ -1,5 +1,5 @@
-// Package vendorapi — Vendor API 1.0 для серверных решений МоегоСклада: подпись запросов решения
-// и обращения к МоемуСкладу. Состояние (jti, токены, статусы) хранит приложение, не SDK.
+// Package vendorapi — Vendor API 1.0 серверного решения: запросы к МоемуСкладу и проверка входящих.
+// Состояние (jti, токены, статусы) хранит решение, не SDK.
 // https://dev.moysklad.ru/doc/api/vendor/1.0/#/vendor-api/moysklad-endpoints#2-rest-endpointy-na-storone-moegosklada
 package vendorapi
 
@@ -28,12 +28,13 @@ func NewService(client *transport.Client) (*Service, error) {
 	return &Service{client: client}, nil
 }
 
-// Context выполняет один POST context/{contextKey} без тела и возвращает сотрудника iframe или
-// виджета в форме context/employee JSON API. POST не повторяется RetryPolicy.
+// Context возвращает сотрудника iframe или виджета в форме context/employee JSON API.
+// Один POST без тела: RetryPolicy POST не повторяет.
 // https://dev.moysklad.ru/doc/api/vendor/1.0/#/vendor-api/moysklad-endpoints#3-poluchenie-konteksta-polzovatelya
 func (s *Service) Context(ctx context.Context, contextKey string, opts ...transport.RequestOption) (*contexts.EmployeeContext, error) {
 	transport.ResetResponseInfo(opts)
-	if contextKey == "" || strings.ContainsAny(contextKey, "/?#") {
+	// "." и ".." JoinPath схлопнул бы в context или корень API.
+	if contextKey == "" || contextKey == "." || contextKey == ".." || strings.ContainsAny(contextKey, "/?#") {
 		return nil, fmt.Errorf("moysklad: get vendor context: invalid context key")
 	}
 	var result contexts.EmployeeContext

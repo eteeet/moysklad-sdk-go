@@ -14,7 +14,7 @@ Blocked by: 01, 02
 - [ ] ADR 0001: `ResetResponseInfo(opts)` до валидации — тест: неверный UUID и недопустимый статус обнуляют заранее заполненный `ResponseInfo`; при APIError он содержит status и headers.
 - [ ] GET `Status` с RetryPolicy (5xx → 200): каждая попытка несёт новый `jti`, подпись каждой проверена независимым HMAC.
 - [ ] `SetStatus` допускает только Activating, SettingsRequired, Activated.
-- [ ] `AppStatus` читает пример документации (status, cause, subscription, access с permissions как RawMessage); оба codecs.
+- [ ] `AppStatus` читает пример документации (status, cause, subscription, access с permissions как jsontext.Value); оба codecs.
 - [ ] HTTP-тесты: 200, 404 (2004) и 409 как APIError; тело PUT `{"status":…}`.
 - [ ] Документация и coverage обновлены; `make check` проходит.
 

@@ -5,7 +5,10 @@
 ### Добавлено
 
 - Vendor API 1.0 (`vendorapi`): `AppAuth` подписывает каждую попытку новым JWT решения,
-  `Service.Context` получает сотрудника iframe по contextKey. Подробности: [docs/vendorapi.md](docs/vendorapi.md).
+  `Service.Context` получает сотрудника iframe по contextKey; `VerifyToken`/`VerifyRequest` строго
+  проверяют JWT входящих запросов МоегоСклада, типы тел активации и деактивации, `ActivationPattern`;
+  токены в телах — `vendorapi.Secret`, их не раскрывают fmt, slog и json.
+  Подробности: [docs/vendorapi.md](docs/vendorapi.md).
 - Справочники: склады (зоны и ячейки), группы товаров, отделы, проекты, договоры, каналы продаж,
   подразделения юрлиц, пользовательские справочники и элементы; только чтение — регионы, площадки
   продаж, серийные номера. Фасад: `c.Entity().Store()` и т.д.

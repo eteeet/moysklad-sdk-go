@@ -104,7 +104,7 @@
 - [ ] CI workflow (для v1 не делается: только `make check`), проверки безопасности
 - [x] CHANGELOG: предложение v1.0.0 и совместимость с 7442803
 - [ ] Тег и релиз — отдельной командой
-- [ ] Vendor API: отдельный контур — начат: `AppAuth`, `Context` ([vendorapi](vendorapi.md))
+- [ ] Vendor API: отдельный контур — начат: `AppAuth`, `Context`, `VerifyRequest`, типы активации ([vendorapi](vendorapi.md))
 
 ## Замечания ревью до sdk-v1
 

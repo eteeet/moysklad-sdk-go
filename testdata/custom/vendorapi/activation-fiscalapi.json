@@ -1,0 +1,20 @@
+{
+  "appUid": "example-app.example-vendor",
+  "accountName": "dummyaccount",
+  "cause": "Install",
+  "access": [
+    {
+      "resource": "https://api.moysklad.ru/api/remap/1.2",
+      "scope": [
+        "admin"
+      ],
+      "access_token": "6ab89be1ae6ff147755625ee8da948e42612233b"
+    }
+  ],
+  "additional": {
+    "fiscalApi": {
+      "id": "23ca69d4-2657-40c4-8ba1-6ce24ddeac2e",
+      "token": "asdfasdfgaerdfgqawefgqaergqa"
+    }
+  }
+}

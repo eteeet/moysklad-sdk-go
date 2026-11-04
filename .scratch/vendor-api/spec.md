@@ -83,9 +83,10 @@ SDK не хранит состояние: защита от повтора `jti`
 
 - `VerifyToken(token, secretKey string, now time.Time) (*TokenClaims, error)`, порядок проверок:
   1. пустой `secretKey` — ошибка (не `ErrInvalidToken`: это ошибка конфигурации);
-  2. ровно три base64url-части без padding;
+  2. только символы base64url и `.` (CR/LF — отказ, ревью); ровно три части без padding;
   3. header — JSON-объект, `alg` строго `HS256` (отказ на `none`, HS384/512, RS*),
      `typ` строго `JWT` (во входящих он обязателен: research, таблица JWT-header); отказ на отсутствие и null;
+     header с `crit` — отказ (RFC 7515 §4.1.11, добавлено по ревью);
   4. подпись HMAC-SHA256 сравнивается constant-time до разбора payload;
   5. payload — JSON-объект; `iat` и `exp` — JSON-числа (NumericDate; дробные секунды допустимы по RFC 7519 §2),
      `jti` — непустая строка; отсутствие, `null`, строка вместо числа и иные типы — отказ;
@@ -98,17 +99,18 @@ SDK не хранит состояние: защита от повтора `jti`
   `errors.Is`, без раскрытия секрета в тексте.
 - Типы тел: `ActivationRequest{AppUID, AccountName, Cause, Access []Access,
   Subscription *Subscription, Additional *Additional}`,
-  `Access{Resource, Scope []string, Permissions json.RawMessage, AccessToken}`,
+  `Access{Resource, Scope []string, Permissions jsontext.Value, AccessToken}`,
   `Subscription{TariffID, Trial, TariffName, ExpiryMoment *time.Time, NotForResale, Partner}`,
   `DeactivationRequest{Cause, AppUID, AccountName}`, `ActivationResponse{Status}`.
-  `Permissions` — `json.RawMessage`: источник противоречит себе (Array в таблице,
+  `Permissions` — `jsontext.Value` (соглашение SDK, как `model.Permission.Raw`): источник противоречит себе (Array в таблице,
   объект в примере), SDK не выбирает форму за приложение.
 - Открытые строковые типы `Cause` и `Status` с константами из research; неизвестные
   значения сохраняются.
 - Константы путей для `net/http.ServeMux`: `ActivationPattern =
   "/api/moysklad/vendor/1.0/apps/{appId}/{accountId}"` (PUT активация, DELETE
   деактивация). Обработчик HTTP SDK не предоставляет.
-- `AccessToken` — секрет: документация пакета предупреждает не логировать тела запросов.
+- `AccessToken` и `FiscalAPI.Token` — `vendorapi.Secret` (ревью): String/Format (любой глагол fmt)/LogValue/MarshalJSON
+  дают `<redacted>`, значение — `string(s)`. Строже `security.Token`: slog JSONHandler тоже не раскрывает.
 - Документация пакета обязательным правилом требует: `secretKey` решения — только для
   Vendor API (`AppAuth` и `VerifyToken`); токены, которые решение выпускает своим
   пользователям или сервисам, подписываются отдельным ключом (RFC 8725 §3.12).

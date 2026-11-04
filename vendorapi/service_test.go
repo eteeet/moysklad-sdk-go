@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -25,18 +24,9 @@ const (
 	contextKey = "1c14e98cd272239c03bf3d9697f167699743292c"
 )
 
-func readFixture(t *testing.T) []byte {
-	t.Helper()
-	data, err := os.ReadFile("../testdata/custom/vendorapi/context.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	return data
-}
-
 // Пример документации Vendor API по форме совпадает с context/employee JSON API.
 func TestContextFixture(t *testing.T) {
-	data := readFixture(t)
+	data := fixture(t, "context.json")
 	for _, codec := range documenttest.Codecs {
 		t.Run(codec.Name, func(t *testing.T) {
 			var got contexts.EmployeeContext
@@ -82,7 +72,7 @@ func vendorServer(t *testing.T, handler http.HandlerFunc) *vendorapi.Service {
 
 // POST без тела на context/{contextKey}; POST не повторяется даже при RetryPolicy и 5xx.
 func TestServiceContext(t *testing.T) {
-	for _, tc := range documenttest.ResponseCases(string(readFixture(t))) {
+	for _, tc := range documenttest.ResponseCases(string(fixture(t, "context.json"))) {
 		t.Run(tc.Name, func(t *testing.T) {
 			var calls atomic.Int32
 			s := vendorServer(t, func(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +143,8 @@ func TestServiceContextDocumentedErrors(t *testing.T) {
 func TestServiceContextRejectsKey(t *testing.T) {
 	var calls atomic.Int32
 	s := vendorServer(t, func(w http.ResponseWriter, r *http.Request) { calls.Add(1) })
-	for _, key := range []string{"", "a/b", "a?b", "a#b"} {
+	// "." и ".." после JoinPath указывали бы на context или корень API.
+	for _, key := range []string{"", "a/b", "a?b", "a#b", ".", ".."} {
 		info := transport.ResponseInfo{StatusCode: 200, Header: http.Header{"X": {"stale"}}}
 		got, err := s.Context(t.Context(), key, transport.WithResponseInfo(&info))
 		if err == nil || got != nil || info.StatusCode != 0 || info.Header != nil {

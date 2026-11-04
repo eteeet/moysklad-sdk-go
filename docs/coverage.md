@@ -487,7 +487,8 @@ Update-пример архивирует тестовый товар, не уд�
 ### Этап 18. Vendor API
 
 - [x] [Пакет `vendorapi`](vendorapi.md): `AppAuth` (JWT HS256 на каждую попытку), `Service.Context`.
-- [ ] Проверка входящего JWT, типы активации и деактивации.
+- [x] Проверка входящего JWT (`VerifyToken`, `VerifyRequest`), типы активации и деактивации,
+  `ActivationPattern` для `http.ServeMux`.
 - [ ] Статус установки решения: `Status`, `SetStatus`.
 - [ ] Обмен одноразового токена: `UserContext`.
 

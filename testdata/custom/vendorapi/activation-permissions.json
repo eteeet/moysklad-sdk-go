@@ -1,0 +1,22 @@
+{
+  "appUid": "example-app.example-vendor",
+  "accountName": "account-test",
+  "access": [
+    {
+      "resource": "https://api.moysklad.ru/api/remap/1.2",
+      "scope": [
+        "custom"
+      ],
+      "permissions": {
+        "supply": {
+          "view": "ALL",
+          "update": "ALL"
+        },
+        "viewDashboard": true,
+        "viewAudit": true
+      },
+      "access_token": "test-token"
+    }
+  ],
+  "cause": "Install"
+}

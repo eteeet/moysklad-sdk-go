@@ -1,0 +1,13 @@
+{
+  "appUid": "example-app.example-vendor",
+  "accountName": "dummyaccount",
+  "cause": "TariffChanged",
+  "subscription": {
+    "tariffId": "23ca69d4-2657-40c4-8ba1-6ce24ddeac2e",
+    "trial": false,
+    "tariffName": "Basic",
+    "expiryMoment": "2024-01-19T18:50:12+03:00",
+    "notForResale": false,
+    "partner": false
+  }
+}
