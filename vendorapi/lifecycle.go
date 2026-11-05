@@ -1,10 +1,12 @@
 package vendorapi
 
 import (
+	"cmp"
 	"encoding/json/jsontext"
 	"fmt"
 	"io"
 	"log/slog"
+	"net/http"
 	"time"
 )
 
@@ -23,6 +25,13 @@ func (s Secret) MarshalJSON() ([]byte, error) { return []byte(`"<redacted>"`), n
 // (деактивация). Путь из endpointBase снимите http.StripPrefix; МойСклад повторяет запросы.
 // https://dev.moysklad.ru/doc/api/vendor/1.0/#/vendor-api/vendor-endpoints#2-rest-endpointy-na-storone-razrabotchika-reshenij
 const ActivationPattern = "/api/moysklad/vendor/1.0/apps/{appId}/{accountId}"
+
+// RequestID — id запроса МоегоСклада для логов; при повторе запроса не меняется. Живой
+// МойСклад (2026-11-05) шлёт X-Lognex-RequestId через дефис, документация пишет
+// X_Lognex_RequestId; читаются оба, дефис первым. Пусто, если заголовка нет.
+func RequestID(r *http.Request) string {
+	return cmp.Or(r.Header.Get("X-Lognex-RequestId"), r.Header.Get("X_Lognex_RequestId"))
+}
 
 // Cause — причина активации, деактивации или события. Неизвестные значения сохраняются.
 type Cause string

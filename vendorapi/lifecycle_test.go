@@ -213,3 +213,29 @@ func TestSecretRedacted(t *testing.T) {
 		}
 	}
 }
+
+// Живой МойСклад 2026-11-05 шлёт X-Lognex-RequestId через дефис, документация — через
+// подчёркивания; RequestID читает оба, дефис первым.
+func TestRequestID(t *testing.T) {
+	for name, tc := range map[string]struct{ header, want string }{
+		"hyphen":     {"X-Lognex-RequestId", "req-1"},
+		"underscore": {"X_Lognex_RequestId", "req-1"},
+		"none":       {"", ""},
+	} {
+		t.Run(name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodPut, "/", nil)
+			if tc.header != "" {
+				req.Header.Set(tc.header, tc.want)
+			}
+			if got := vendorapi.RequestID(req); got != tc.want {
+				t.Fatalf("RequestID = %q, want %q", got, tc.want)
+			}
+		})
+	}
+	req := httptest.NewRequest(http.MethodPut, "/", nil)
+	req.Header.Set("X_Lognex_RequestId", "old")
+	req.Header.Set("X-Lognex-RequestId", "new")
+	if got := vendorapi.RequestID(req); got != "new" {
+		t.Fatalf("both headers: RequestID = %q, want hyphen value", got)
+	}
+}

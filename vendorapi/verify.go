@@ -54,9 +54,13 @@ func VerifyToken(token, secretKey string, now time.Time) (*TokenClaims, error) {
 	if err := decodePart(parts[0], &header); err != nil {
 		return nil, fmt.Errorf("%w: header: %v", ErrInvalidToken, err)
 	}
-	// crit требует понимать расширения, которых SDK не знает (RFC 7515 §4.1.11).
-	if _, crit := header["crit"]; crit || header["alg"] != "HS256" || header["typ"] != "JWT" {
-		return nil, fmt.Errorf("%w: header must be alg HS256, typ JWT, no crit", ErrInvalidToken)
+	// crit требует понимать расширения, которых SDK не знает (RFC 7515 §4.1.11). typ
+	// необязателен (RFC 7519 §5.1) и без учёта регистра (RFC 7515 §4.1.9).
+	typ, hasTyp := header["typ"]
+	typString, typIsString := typ.(string)
+	if _, crit := header["crit"]; crit || header["alg"] != "HS256" || hasTyp && !(typIsString && strings.EqualFold(typString, "JWT")) {
+		return nil, fmt.Errorf("%w: header alg=%.20q typ=%.20q: want alg HS256, typ JWT or none, no crit",
+			ErrInvalidToken, fmt.Sprint(header["alg"]), fmt.Sprint(typ))
 	}
 
 	signature, err := b64.DecodeString(parts[2])

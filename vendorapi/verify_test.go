@@ -123,7 +123,6 @@ func TestVerifyTokenRejects(t *testing.T) {
 		"alg lowercase":  header(`{"alg":"hs256","typ":"JWT"}`),
 		"alg missing":    header(`{"typ":"JWT"}`),
 		"alg null":       header(`{"alg":null,"typ":"JWT"}`),
-		"typ missing":    header(`{"alg":"HS256"}`),
 		"typ null":       header(`{"alg":"HS256","typ":null}`),
 		"typ other":      header(`{"alg":"HS256","typ":"at+jwt"}`),
 		"typ number":     header(`{"alg":"HS256","typ":1}`),
@@ -159,6 +158,29 @@ func TestVerifyTokenRejects(t *testing.T) {
 				t.Errorf("secret in error: %v", err)
 			}
 		})
+	}
+}
+
+// typ необязателен (RFC 7519 §5.1) и без учёта регистра (RFC 7515 §4.1.9): legacy проверял
+// токены МоегоСклада без typ, и живые токены строгую проверку не прошли.
+func TestVerifyTokenTyp(t *testing.T) {
+	for name, header := range map[string]string{
+		"typ missing":   `{"alg":"HS256"}`,
+		"typ lowercase": `{"alg":"HS256","typ":"jwt"}`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			if _, err := vendorapi.VerifyToken(incomingToken(header, incomingPayload, incomingKey), incomingKey, validNow); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+// Отказ по header называет alg и typ: без них отказ живого токена не разобрать по логам.
+func TestVerifyTokenHeaderErrorNamesAlgTyp(t *testing.T) {
+	_, err := vendorapi.VerifyToken(incomingToken(`{"alg":"HS512","typ":"at+jwt"}`, incomingPayload, incomingKey), incomingKey, validNow)
+	if !errors.Is(err, vendorapi.ErrInvalidToken) || !strings.Contains(err.Error(), `alg="HS512"`) || !strings.Contains(err.Error(), `typ="at+jwt"`) {
+		t.Fatalf("err = %v", err)
 	}
 }
 
