@@ -22,10 +22,10 @@ func TestShow(t *testing.T) {
 		case "/api/remap/1.2/audit?limit=10":
 			w.Write([]byte(`{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/audit"},"rows":[` +
 				`{"id":"11111111-1111-1111-1111-111111111111","eventType":"update","entityType":"product"},{"id":"22222222-2222-2222-2222-222222222222","eventType":"create","entityType":"demand"}]}`))
-		case "/api/remap/1.2/audit/11111111-1111-1111-1111-111111111111/events":
+		case "/api/remap/1.2/audit/11111111-1111-1111-1111-111111111111/events?limit=100":
 			w.Write([]byte(`{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/audit/11111111-1111-1111-1111-111111111111/events"},"rows":[` +
 				`{"eventType":"update","entityType":"product","name":"Чай"}]}`))
-		case "/api/remap/1.2/audit/22222222-2222-2222-2222-222222222222/events":
+		case "/api/remap/1.2/audit/22222222-2222-2222-2222-222222222222/events?limit=100":
 			w.Write([]byte(`{"meta":{"href":"https://api.moysklad.ru/api/remap/1.2/audit/22222222-2222-2222-2222-222222222222/events"},"rows":[]}`))
 		default:
 			t.Errorf("request = %s", r.URL.RequestURI())

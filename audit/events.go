@@ -6,10 +6,12 @@ import (
 	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"fmt"
+	"net/url"
 	"regexp"
 
 	"github.com/eteeet/moysklad-sdk-go/internal/list"
 	"github.com/eteeet/moysklad-sdk-go/model"
+	"github.com/eteeet/moysklad-sdk-go/query"
 	"github.com/eteeet/moysklad-sdk-go/transport"
 )
 
@@ -99,24 +101,42 @@ func (e Event) DecodeDiff(dst any) error {
 
 var entityTypePattern = regexp.MustCompile(`^[a-z][a-z0-9]*$`)
 
-// EventsByContext читает одну страницу событий контекста. Параметры пагинации у этого маршрута
-// источник не описывает: SDK их не передаёт и не обещает полноты; nextHref, если сервер его
-// вернёт, можно пройти pages.All.
+// MaxEventsLimit — максимум limit у событий; без limit сервер отдаёт 25. Источник параметры
+// страницы событий не описывает; живой МойСклад (2026-11-05, контекст с 47 событиями) принимает
+// limit до 100 и offset, больший limit урезает до 100.
+const MaxEventsLimit = 100
+
+// EventsOptions — страница событий: Limit 0 — по умолчанию сервера (25), не больше MaxEventsLimit.
+type EventsOptions struct {
+	Limit  int
+	Offset int
+}
+
+func (o EventsOptions) values() (url.Values, error) {
+	return query.ListOptions{Limit: o.Limit, Offset: o.Offset}.Values(MaxEventsLimit)
+}
+
+// EventsByContext читает одну страницу событий контекста; остальные страницы проходит
+// pages.All по nextHref (с тем же limit).
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/audit/audit#3-poluchit-sobytiya-po-kontekstu
-func (s *Service) EventsByContext(ctx context.Context, contextID string, opts ...transport.RequestOption) (*model.Collection[Event], error) {
+func (s *Service) EventsByContext(ctx context.Context, contextID string, options EventsOptions, opts ...transport.RequestOption) (*model.Collection[Event], error) {
 	transport.ResetResponseInfo(opts)
 	operation := "list audit context events"
 	if !validID(contextID) {
 		return nil, fmt.Errorf("moysklad: %s: context id %q must be a UUID", operation, contextID)
 	}
-	return list.Page[Event](ctx, s.client, operation, "audit/"+contextID+"/events", nil, opts...)
+	params, err := options.values()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return list.Page[Event](ctx, s.client, operation, "audit/"+contextID+"/events", params, opts...)
 }
 
 // EventsByEntity читает одну страницу событий сущности entity/{entityType}/{id}/audit.
 // entityType — код сущности API (product, demand …); набор открыт. Элементы пользовательских
 // справочников адресуются entity/customentity/{metadataId}/{id}: этот маршрут их не покрывает.
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/audit/audit#3-poluchit-sobytiya-po-suschnosti
-func (s *Service) EventsByEntity(ctx context.Context, entityType, id string, opts ...transport.RequestOption) (*model.Collection[Event], error) {
+func (s *Service) EventsByEntity(ctx context.Context, entityType, id string, options EventsOptions, opts ...transport.RequestOption) (*model.Collection[Event], error) {
 	transport.ResetResponseInfo(opts)
 	operation := "list entity audit events"
 	if !entityTypePattern.MatchString(entityType) || entityType == "customentity" {
@@ -125,7 +145,11 @@ func (s *Service) EventsByEntity(ctx context.Context, entityType, id string, opt
 	if !validID(id) {
 		return nil, fmt.Errorf("moysklad: %s: entity id %q must be a UUID", operation, id)
 	}
-	return list.Page[Event](ctx, s.client, operation, "entity/"+entityType+"/"+id+"/audit", nil, opts...)
+	params, err := options.values()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", operation, err)
+	}
+	return list.Page[Event](ctx, s.client, operation, "entity/"+entityType+"/"+id+"/audit", params, opts...)
 }
 
 // Проверяем форму UUID, не ограничивая его версию.

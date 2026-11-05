@@ -1,6 +1,14 @@
 # Changelog
 
-## Следующая версия — не выпущено
+## v0.2.0 — 2026-11-05
+
+### Изменено (несовместимо)
+
+- `audit.EventsByContext` и `EventsByEntity` принимают `audit.EventsOptions{Limit, Offset}`:
+  `limit` до `audit.MaxEventsLimit` (100) — живой МойСклад его принимает, без него отдаёт 25.
+  Вызов без страницы — `audit.EventsOptions{}`.
+
+## v0.1.1 — 2026-11-05
 
 ### Исправлено
 
@@ -8,6 +16,8 @@
   живой МойСклад не прошёл строгую проверку `typ=JWT`; ошибка header называет `alg` и `typ`.
 - `vendorapi.RequestID(r)` — id запроса МоегоСклада для логов: живой МойСклад шлёт
   `X-Lognex-RequestId` через дефис, а не `X_Lognex_RequestId` из документации; читаются оба.
+
+## v0.1.0 — 2026-11-04
 
 ### Добавлено
 

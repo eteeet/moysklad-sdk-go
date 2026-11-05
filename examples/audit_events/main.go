@@ -37,7 +37,7 @@ func show(ctx context.Context, c *moysklad.Client, w io.Writer) error {
 		if _, err := fmt.Fprintf(w, "context %s %s %s\n", item.ID, item.EventType, item.EntityType); err != nil {
 			return err
 		}
-		first, err := c.Audit().EventsByContext(ctx, item.ID)
+		first, err := c.Audit().EventsByContext(ctx, item.ID, audit.EventsOptions{Limit: audit.MaxEventsLimit})
 		if err != nil {
 			return err
 		}

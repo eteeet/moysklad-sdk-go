@@ -111,10 +111,10 @@ func TestEventsEndpoints(t *testing.T) {
 		invoke func(*audit.Service, ...transport.RequestOption) (*model.Collection[audit.Event], error)
 	}{
 		{"/audit/" + contextID + "/events", func(s *audit.Service, opts ...transport.RequestOption) (*model.Collection[audit.Event], error) {
-			return s.EventsByContext(context.Background(), contextID, opts...)
+			return s.EventsByContext(context.Background(), contextID, audit.EventsOptions{}, opts...)
 		}},
 		{"/entity/product/" + contextID + "/audit", func(s *audit.Service, opts ...transport.RequestOption) (*model.Collection[audit.Event], error) {
-			return s.EventsByEntity(context.Background(), "product", contextID, opts...)
+			return s.EventsByEntity(context.Background(), "product", contextID, audit.EventsOptions{}, opts...)
 		}},
 	} {
 		for _, tc := range []struct {
@@ -160,7 +160,7 @@ func TestEventsEndpoints(t *testing.T) {
 		if err != nil {
 			return nil, err
 		}
-		return s.EventsByEntity(ctx, "demand", contextID)
+		return s.EventsByEntity(ctx, "demand", contextID, audit.EventsOptions{})
 	})
 }
 
@@ -171,18 +171,50 @@ func TestEventsValidation(t *testing.T) {
 	defer server.Close()
 	s := newService(t, server.URL)
 	info := transport.ResponseInfo{StatusCode: 503}
-	if _, err := s.EventsByContext(t.Context(), "../x", transport.WithResponseInfo(&info)); err == nil || info.StatusCode != 0 {
+	if _, err := s.EventsByContext(t.Context(), "../x", audit.EventsOptions{}, transport.WithResponseInfo(&info)); err == nil || info.StatusCode != 0 {
 		t.Errorf("bad context id: err = %v, info = %+v", err, info)
 	}
 	for _, typ := range []string{"../entity", "Product", "", "a/b", "customentity"} {
-		if _, err := s.EventsByEntity(t.Context(), typ, contextID); err == nil {
+		if _, err := s.EventsByEntity(t.Context(), typ, contextID, audit.EventsOptions{}); err == nil {
 			t.Errorf("type %q accepted", typ)
 		}
 	}
-	if _, err := s.EventsByEntity(t.Context(), "product", "bad"); err == nil {
+	if _, err := s.EventsByEntity(t.Context(), "product", "bad", audit.EventsOptions{}); err == nil {
 		t.Error("bad entity id accepted")
 	}
 	if calls.Load() != 0 {
 		t.Fatalf("calls = %d", calls.Load())
+	}
+}
+
+// limit до 100 и offset уходят в query: живой МойСклад принимает limit до 100, без него отдаёт 25
+// (2026-11-05); limit больше 100 не отправляется.
+func TestEventsPageOptions(t *testing.T) {
+	page := readFixture(t, "audit_event_list.json")
+	var got []string
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got = append(got, r.URL.RequestURI())
+		w.Write(page)
+	}))
+	defer server.Close()
+	s := newService(t, server.URL)
+	opts := audit.EventsOptions{Limit: audit.MaxEventsLimit, Offset: 200}
+	if _, err := s.EventsByContext(t.Context(), contextID, opts); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.EventsByEntity(t.Context(), "product", contextID, opts); err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"/audit/" + contextID + "/events?limit=100&offset=200", "/entity/product/" + contextID + "/audit?limit=100&offset=200"}
+	if strings.Join(got, " ") != strings.Join(want, " ") {
+		t.Fatalf("requests = %v, want %v", got, want)
+	}
+	for _, bad := range []audit.EventsOptions{{Limit: 101}, {Limit: -1}, {Offset: -1}} {
+		if _, err := s.EventsByContext(t.Context(), contextID, bad); err == nil {
+			t.Errorf("%+v accepted", bad)
+		}
+	}
+	if len(got) != 2 {
+		t.Errorf("invalid options sent: %v", got)
 	}
 }

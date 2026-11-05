@@ -49,6 +49,9 @@
 `audit.Service`: `ListContexts(ContextsOptions)` — одна страница `GET audit` (limit до 100, по умолчанию
 сервера 25, filter по moment, employee, uid, source, eventType, entityType, application);
 `GetFilters` — каталог фильтров; `EventsByContext(id)` и `EventsByEntity(type, id)` — события.
+Контексты отдаются по убыванию `moment`; `order` сервер принимает, но игнорирует (живая
+проверка 2026-11-05). События контекста приходят по 25 с `nextHref`, с `EventsOptions{Limit: audit.MaxEventsLimit}` —
+по 100: все страницы — `pages.All` (пример — `examples/audit_events`).
 
 - Событие хранит `Diff` и всё событие (`Raw`) без потерь; `FieldChanges()` даёт «атрибут → oldValue/newValue»,
   `DecodeDiff` — диффы регистрации, публикации и писем. Старые значения не раскладываются в текущие модели.
