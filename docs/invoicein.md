@@ -13,7 +13,7 @@
 | --- | --- | --- | --- |
 | `id` | `string` | — | — |
 | `accountId` | `string` | — | — |
-| `name` | `string` | required | Field |
+| `name` | `string` | string (пусто не уходит — автонумерация МС) | Field |
 | `description` | `string` | Field | Field |
 | `code` | `string` | Field | Field |
 | `externalCode` | `string` | Field | Field |
@@ -52,6 +52,7 @@
 | `incomingNumber` | `string` | Field | Field |
 | `purchaseOrder` | `*model.Reference` | Field | Field |
 | `supplies` | `[]model.Reference` | Field | Field |
+| `files` | — | Field (`[]files.Upload`) | — |
 
 Required Reference передаются обычными значениями; остальные поля записи —
 `model.Field[T]`. Вложенные write-формы: `DocumentRateRequest`, `[]PositionRequest`.
@@ -61,7 +62,8 @@ Readonly поля в requests отсутствуют.
 
 При смене organization/agent API требует соответствующие счета сторон; SDK
 передаёт organizationAccount/agentAccount без локального сравнения или скрытого Get.
-Files исключены целиком. Supplies пишутся как связи документов; payments источник помечает «Только для чтения».
+Files при чтении исключены; при создании `Files` прикрепляет файлы тем же запросом
+(`[]files.Upload`: имя и содержимое Base64); добавить к существующему документу — пакет `files`. Supplies пишутся как связи документов; payments источник помечает «Только для чтения».
 Строки — все поля таблицы позиций источника, включая pack (общая форма); things, slot и
 кодов маркировки у строк счёта источник не даёт.
 

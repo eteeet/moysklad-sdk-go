@@ -1,10 +1,13 @@
 package invoicein
 
-import "github.com/eteeet/moysklad-sdk-go/model"
+import (
+	"github.com/eteeet/moysklad-sdk-go/files"
+	"github.com/eteeet/moysklad-sdk-go/model"
+)
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in
 type CreateRequest struct {
-	Name                 string                                 `json:"name"`
+	Name                 string                                 `json:"name,omitzero"` // пусто — номер присваивает МойСклад (автонумерация)
 	Description          model.Field[string]                    `json:"description,omitzero"`
 	Code                 model.Field[string]                    `json:"code,omitzero"`
 	ExternalCode         model.Field[string]                    `json:"externalCode,omitzero"`
@@ -32,6 +35,8 @@ type CreateRequest struct {
 	IncomingNumber       model.Field[string]                    `json:"incomingNumber,omitzero"`
 	PurchaseOrder        model.Field[model.Reference]           `json:"purchaseOrder,omitzero"`
 	Supplies             model.Field[[]model.Reference]         `json:"supplies,omitzero"`
+	// Files — файлы, прикрепляемые при создании: имя и содержимое (Base64), до files.MaxUpload в запросе.
+	Files model.Field[[]files.Upload] `json:"files,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in

@@ -46,7 +46,7 @@
 | `payedSum` | `float64` | — | — |
 | `store` | `*model.Reference` | required | Field |
 | `payments` | `[]model.Reference` | Field | Field |
-| `files` | `*model.Collection[model.Reference]` | — | — |
+| `files` | `*model.Collection[model.Reference]` | Field (`[]files.Upload`) | — |
 | `incomingDate` | `model.DateTime` | Field | Field |
 | `incomingNumber` | `string` | Field | Field |
 | `purchaseOrder` | `*model.Reference` | Field | Field |
@@ -65,7 +65,8 @@ Readonly поля в requests отсутствуют.
 
 При смене organization/agent API требует соответствующие счета сторон; SDK
 передаёт organizationAccount/agentAccount без локального сравнения или скрытого Get.
-Files представлены только metadata коллекции, без обещания rows или файловых операций.
+Files при чтении — только metadata коллекции; при создании `Files` прикрепляет файлы тем же запросом
+(`[]files.Upload`: имя и содержимое Base64); добавить к существующему документу — пакет `files`.
 Overhead распределяет сервер; без positions его задавать нельзя по API.
 FactureIn, ProductionTask, InvoicesIn, Payments, Returns пишутся как связи документов
 ([общее правило](documents-extra.md#связи-документов)).

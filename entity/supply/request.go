@@ -1,6 +1,9 @@
 package supply
 
-import "github.com/eteeet/moysklad-sdk-go/model"
+import (
+	"github.com/eteeet/moysklad-sdk-go/files"
+	"github.com/eteeet/moysklad-sdk-go/model"
+)
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
 type CreateRequest struct {
@@ -36,6 +39,8 @@ type CreateRequest struct {
 	Payments            model.Field[[]model.Reference]             `json:"payments,omitzero"`
 	ProductionTask      model.Field[model.Reference]               `json:"productionTask,omitzero"`
 	Returns             model.Field[[]model.Reference]             `json:"returns,omitzero"`
+	// Files — файлы, прикрепляемые при создании: имя и содержимое (Base64), до files.MaxUpload в запросе.
+	Files model.Field[[]files.Upload] `json:"files,omitzero"`
 }
 
 // https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/supply
