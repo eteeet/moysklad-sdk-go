@@ -5,7 +5,7 @@
 `Position`/`PositionRequest` общих форм.
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `name`, `organization`, `agent`.
+Минимальный Create: `organization`, `agent` (`name` необязателен: без него номер присваивает МойСклад).
 
 ## Поддержанные поля
 

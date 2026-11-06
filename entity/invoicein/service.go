@@ -40,9 +40,7 @@ func (s *Service) Get(ctx context.Context, id string, opts ...transport.RequestO
 // Не повторять POST автоматически после неоднозначного сбоя: возможен дубль InvoiceIn.
 func (s *Service) Create(ctx context.Context, input CreateRequest, opts ...transport.RequestOption) (*InvoiceIn, error) {
 	transport.ResetResponseInfo(opts)
-	if input.Name == "" {
-		return nil, fmt.Errorf("moysklad: create invoicein: name must not be empty")
-	}
+	// Name необязателен: пустое имя не уходит, номер присваивает МойСклад (живая проверка: без name → 200, name=00006).
 	if input.Organization.Meta.Href == "" {
 		return nil, fmt.Errorf("moysklad: create invoicein: organization.meta.href must not be empty")
 	}

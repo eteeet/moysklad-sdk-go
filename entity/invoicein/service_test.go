@@ -1,8 +1,10 @@
 package invoicein_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"sync/atomic"
@@ -210,23 +212,6 @@ func TestServiceValidation(t *testing.T) {
 		{"empty Update", func() (*invoicein.InvoiceIn, error) {
 			return service.Update(t.Context(), testID, invoicein.UpdateRequest{})
 		}},
-		{"missing name", func() (*invoicein.InvoiceIn, error) {
-			return service.Create(t.Context(), invoicein.CreateRequest{
-				Name: "",
-				Organization: model.Reference{
-					Meta: model.Meta{
-						Href: "https://example.test/organization",
-						Type: model.MetaType("organization"),
-					},
-				},
-				Agent: model.Reference{
-					Meta: model.Meta{
-						Href: "https://example.test/agent",
-						Type: model.MetaType("agent"),
-					},
-				},
-			})
-		}},
 		{"missing organization", func() (*invoicein.InvoiceIn, error) {
 			return service.Create(t.Context(), invoicein.CreateRequest{
 				Name: "request-name",
@@ -369,4 +354,32 @@ type rejectTransport struct{ t *testing.T }
 func (r rejectTransport) RoundTrip(*http.Request) (*http.Response, error) {
 	r.t.Error("validation sent HTTP")
 	return nil, fmt.Errorf("unexpected request")
+}
+
+// Create без Name уходит в API без поля name: номер присваивает МойСклад (автонумерация).
+func TestServiceCreateWithoutName(t *testing.T) {
+	var body []byte
+	server := memnet.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ = io.ReadAll(r.Body)
+		_, _ = w.Write([]byte(`{"id":"response","name":"00006"}`))
+	}))
+	defer server.Close()
+	client, err := transport.NewClient(transport.Config{BaseURL: server.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := invoicein.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ref := func(typ string) model.Reference {
+		return model.Reference{Meta: model.Meta{Href: "https://example.test/" + typ, Type: model.MetaType(typ)}}
+	}
+	got, err := service.Create(t.Context(), invoicein.CreateRequest{Organization: ref("organization"), Agent: ref("counterparty")})
+	if err != nil || got.Name != "00006" {
+		t.Fatalf("create = %+v, %v", got, err)
+	}
+	if len(body) == 0 || bytes.Contains(body, []byte(`"name"`)) {
+		t.Fatalf("body = %s", body)
+	}
 }
