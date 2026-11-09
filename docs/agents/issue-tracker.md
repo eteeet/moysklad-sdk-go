@@ -33,3 +33,8 @@
 - Перед работой установи `Status: claimed`.
 - После решения добавь раздел `## Answer`, установи `Status: resolved`
   и добавь краткий результат со ссылкой в Decisions-so-far файла карты.
+
+## Ветки и закрытие работы
+
+Ветки, слияние в `dev` и выпуск — `meta/docs/agents/git-flow.md` (рабочая папка `ETEEET/moysklad/meta`). Работа
+закрывается строкой `Status: resolved`, не PR.
