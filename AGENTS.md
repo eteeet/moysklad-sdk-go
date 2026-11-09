@@ -29,3 +29,8 @@ vendor: `https://dev.moysklad.ru/doc/api/vendor/1.0/#bystryj-start`
 ### Domain docs
 
 Общий glossary экосистемы и локальные ADR SDK. См. `docs/agents/domain.md`.
+
+## Скилы Pocock
+- Работа идёт только по скилам Pocock; какой скил следующий — решай через `ask-matt`.
+- Скила нет в списке сессии — прочитай `~/.claude/skills/<имя>/SKILL.md` и следуй ему.
+- Бриф дочерней сессии начинается с этих двух правил и называет скил, с которого она начинает.
