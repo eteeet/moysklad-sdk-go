@@ -9,7 +9,7 @@
 - Tickets: `.scratch/<feature-slug>/issues/<NN>-<slug>.md`.
 - Нумерация начинается с `01`; один ticket — один файл.
 - Статус записывается строкой `Status:` в начале файла.
-- Значения статусов определены в `triage-labels.md`.
+- Статусы: роли triage — в `triage-labels.md`; в работе — `claimed`, готово — `resolved`.
 - Комментарии добавляются в конец файла под заголовком `## Comments`.
 
 ## Публикация
@@ -36,5 +36,4 @@
 
 ## Ветки и закрытие работы
 
-Ветки, слияние в `dev` и выпуск — `meta/docs/agents/git-flow.md` (рабочая папка `ETEEET/moysklad/meta`). Работа
-закрывается строкой `Status: resolved`, не PR.
+Ветки, слияние, выпуск и закрытие тикета — `~/ETEEET/GIT_FLOW.md`.

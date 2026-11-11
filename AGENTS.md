@@ -1,36 +1,20 @@
 # moysklad-sdk-go
 
-Документация:
-МойСклад JSON API: `https://dev.moysklad.ru/doc/api/remap/1.2/`
+Общие правила — `~/ETEEET/AGENTS.md` и `~/ETEEET/moysklad/AGENTS.md`: прочитай их первыми (Claude загрузил их сам).
 
-vendor: `https://dev.moysklad.ru/doc/api/vendor/1.0/#bystryj-start`
+SDK для JSON API МойСклад на Go.
 
-Официальный github:
-`https://github.com/orgs/moysklad/repositories`
-Что замечено:
-- `openspec` и другая документация может отставать;
-- sdk java (новый), python, ts - контролировать изменения.
-
-## Ponytail
-- Правила тестов, docs и review проекта важнее ponytail; не сокращать их.
-- Комментарии `shortcut:` не писать.
-- Уровень ponytail: full; ultra не использовать для утверждённых tickets.
+## Официальные источники МойСклад
+- GitHub: https://github.com/orgs/moysklad/repositories — следи за изменениями их SDK: java (новый), python, ts.
+- `openspec` и документация API могут отставать от реального API.
 
 ## Agent skills
 
 ### Issue tracker
-
 Локальные Markdown-файлы в `.scratch/`. См. `docs/agents/issue-tracker.md`.
 
 ### Triage labels
-
 Стандартные пять статусов. См. `docs/agents/triage-labels.md`.
 
 ### Domain docs
-
-Общий glossary экосистемы и локальные ADR SDK. См. `docs/agents/domain.md`.
-
-## Скилы Pocock
-- Работа идёт только по скилам Pocock; какой скил следующий — решай через `ask-matt`.
-- Скила нет в списке сессии — прочитай `~/.claude/skills/<имя>/SKILL.md` и следуй ему.
-- Бриф дочерней сессии начинается с этих двух правил и называет скил, с которого она начинает.
+Общий и локальный glossary, локальные ADR. См. `docs/agents/domain.md`.
