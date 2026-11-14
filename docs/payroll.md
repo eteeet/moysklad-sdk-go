@@ -1,7 +1,7 @@
 # Payroll
 
 `entity/payroll`: модель `Payroll`, `CreateRequest`, `UpdateRequest`, `NewService(client)`; методы
-`Get/List/Create/Update/Delete`, `CreateMany/UpdateMany/DeleteMany` и `Trash(ctx, id)`. Строки —
+`Get/List/Create/Update/Delete`, `CreateMany/UpdateMany/DeleteMany` и `Trash(ctx, id)`. Позиции —
 собственная форма `Position`/`PositionRequest` (meta.type `payrollposition`): сотрудник, начисление
 по окладу и сдельная оплата.
 [Общие правила методов, JSON и ошибок](documents.md), [корзина](documents-extra.md).
@@ -48,8 +48,8 @@ doc, err := s.Create(ctx, payroll.CreateRequest{
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `payments` | `[]model.Reference` | — | — |
 
-`sum` — копейки; `baseSalary`/`pieceworkSalary` строк — `float64` в тех же единицах (в примерах
-источника `sum` равна их сумме по строкам).
+`sum` — копейки; `baseSalary`/`pieceworkSalary` позиций — `float64` в тех же единицах (в примерах
+источника `sum` равна их сумме по позициям).
 
 ## Позиции
 
@@ -58,15 +58,15 @@ doc, err := s.Create(ctx, payroll.CreateRequest{
 - `GetPosition`, `CreatePositions` (один POST массивом, ответ `[]batch.Result[Position]`),
   `UpdatePosition` (пустой request — ошибка до запроса), `DeletePosition`, `DeleteManyPositions`
   (POST `…/positions/delete`, 1–1000 id; ответ без тела — только error).
-- Поля строки: `meta`, `id`, `accountId` (только чтение), `employee`, `baseSalary`, `pieceworkSalary`.
-  Для новой строки источник требует все три поля (положительные суммы, округляются до целого) —
+- Поля позиции: `meta`, `id`, `accountId` (только чтение), `employee`, `baseSalary`, `pieceworkSalary`.
+  Для новой позиции источник требует все три поля (положительные суммы, округляются до целого) —
   проверяет сервер.
-- Positions в Create/Update — не больше 1000 строк (1001 отклоняется до запроса); в Update массив
-  заменяет весь набор: строка с `ID` — существующая (id только адресует её), без — новая.
+- Positions в Create/Update — не больше 1000 позиций (1001 отклоняется до запроса); в Update массив
+  заменяет весь набор: позиция с `ID` — существующая (id только адресует её), без — новая.
 
 ## Ограничения и противоречия
 
-- Ticket описывает строки как «employee/sum/type», источник — `employee`, `baseSalary`,
+- Ticket описывает позиции как «employee/sum/type», источник — `employee`, `baseSalary`,
   `pieceworkSalary`. SDK следует таблице позиций источника.
 - `payments` — связь с исходящими платежами и расходными ордерами (`paymentout`, `cashout`);
   разрешённые типы помечены «Только для чтения», поэтому SDK `payments` только читает

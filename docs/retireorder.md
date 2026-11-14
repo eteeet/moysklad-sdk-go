@@ -1,7 +1,7 @@
 # RetireOrder
 
 `entity/retireorder`: модель `RetireOrder`, `CreateRequest`, `UpdateRequest`, `NewService(client)`;
-методы `Get/List/Create/Update`, `CreateMany/UpdateMany` и `Trash(ctx, id)`. Строки — собственная
+методы `Get/List/Create/Update`, `CreateMany/UpdateMany` и `Trash(ctx, id)`. Позиции — собственная
 форма `Position`/`PositionRequest` (meta.type `retireorderposition`).
 Handle фасада: `c.Entity().RetireOrder()`.
 [Общие правила методов, JSON и ошибок](documents.md), [корзина](documents-extra.md).
@@ -69,14 +69,14 @@ doc, err := s.Create(ctx, retireorder.CreateRequest{
 - `GetPosition`, `CreatePositions` (один POST массивом, ответ `[]batch.Result[Position]`),
   `UpdatePosition` (пустой request — ошибка до запроса), `DeletePosition`, `DeleteManyPositions`
   (POST `…/positions/delete`, 1–1000 id; ответ без тела — только error).
-- Поля строки: `meta`, `id`, `accountId` (только чтение), `assortment` (`model.Reference`),
+- Поля позиции: `meta`, `id`, `accountId` (только чтение), `assortment` (`model.Reference`),
   `quantity` (`float64`), `price` (`float64`, копейки), `vat` (`int`, процент), `vatEnabled`,
   `trackingCodes` (`[]positions.TrackingCode`: `cis`, открытый `type`, вложенные коды).
-- Для новой строки источник требует `assortment` и `trackingCodes`: `CreatePositions` отклоняет
-  строку без них до запроса. Строки без `ID` в теле Create/Update документа и `UpdatePosition`
+- Для новой позиции источник требует `assortment` и `trackingCodes`: `CreatePositions` отклоняет
+  позицию без них до запроса. Позиции без `ID` в теле Create/Update документа и `UpdatePosition`
   проверяет сервер (одна форма `PositionRequest` служит и созданию, и изменению).
-- Positions в Create/Update — не больше 1000 строк (1001 отклоняется до запроса); в Update массив
-  заменяет весь набор: строка с `ID` — существующая, без — новая.
+- Positions в Create/Update — не больше 1000 позиций (1001 отклоняется до запроса); в Update массив
+  заменяет весь набор: позиция с `ID` — существующая, без — новая.
 
 ## Ограничения и противоречия
 
@@ -88,7 +88,7 @@ doc, err := s.Create(ctx, retireorder.CreateRequest{
   и условно обязательные поля (`supportingTransaction*`, `stateContractId`, `reasonDescription`,
   `primaryDocumentName`) определяет «Честный знак» — проверяет сервер.
 - `sum` и `meta` в таблице не помечены «Только для чтения»; `sum` пишется как Field (примеры
-  запросов его не передают, сервер может пересчитать по строкам). `meta` в теле не пишется: адрес
+  запросов его не передают, сервер может пересчитать по позициям). `meta` в теле не пишется: адрес
   задаёт URL, в UpdateMany — `batch.Update.ID`.
 - В таблице позиций нет `meta`, но ответы его содержат — модель его читает.
 - Ticket упоминает `cisType`, в источнике такого поля нет — SDK его не добавляет.

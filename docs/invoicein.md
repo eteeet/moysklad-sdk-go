@@ -64,8 +64,8 @@ Readonly поля в requests отсутствуют.
 передаёт organizationAccount/agentAccount без локального сравнения или скрытого Get.
 Files при чтении исключены; при создании `Files` прикрепляет файлы тем же запросом
 (`[]files.Upload`: имя и содержимое Base64); добавить к существующему документу — пакет `files`. Supplies пишутся как связи документов; payments источник помечает «Только для чтения».
-Строки — все поля таблицы позиций источника, включая pack (общая форма); things, slot и
-кодов маркировки у строк счёта источник не даёт.
+Позиции — все поля таблицы позиций источника, включая pack (общая форма); things, slot и
+кодов маркировки у позиций счёта источник не даёт.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/invoice-in),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_invoice_in.md).

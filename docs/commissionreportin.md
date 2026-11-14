@@ -2,7 +2,7 @@
 
 `entity/commissionreportin`: модель `CommissionReportIn`, `CreateRequest`, `UpdateRequest`,
 `NewService(client)`; методы `Get/List/Create/Update/Delete`, `CreateMany/UpdateMany/DeleteMany`
-и `Trash(ctx, id)`. Два набора строк собственной формы (не `positions.Position`):
+и `Trash(ctx, id)`. Два набора позиций собственной формы (не `positions.Position`):
 «реализовано комиссионером» — `Position`/`PositionRequest`, «возврат на склад комиссионера» —
 `ReturnPosition`/`ReturnPositionRequest`.
 [Общие правила методов, JSON и ошибок](documents.md), [корзина](documents-extra.md).
@@ -73,7 +73,7 @@ doc, err := s.Create(ctx, commissionreportin.CreateRequest{
 
 Суммы (`sum`, `vatSum`, `payedSum`, `commitentSum`, `commissionOverhead.sum`, `price`, `reward`) —
 `float64` в копейках; `rewardPercent` — целый процент (таблица: Int), не деньги. `rewardType` —
-открытый enum: `PercentOfSales`, `None`. `commissionOverhead.sum` и `reward` строки могут быть
+открытый enum: `PercentOfSales`, `None`. `commissionOverhead.sum` и `reward` позиции могут быть
 отрицательными; прочие расходы задаются только при заданных позициях (проверяет сервер).
 
 ## Позиции
@@ -87,14 +87,14 @@ doc, err := s.Create(ctx, commissionreportin.CreateRequest{
   `GetReturnPositions(ctx, id, positions.PageOptions) (*model.Collection[ReturnPosition], error)` —
   одна страница, только limit/offset (`fields` отклоняется до запроса).
 - `CreatePositions`/`CreateReturnPositions` — один POST массивом, ответ `[]batch.Result[…]`.
-  Для новой строки сервер требует `assortment` и положительный `quantity`.
+  Для новой позиции сервер требует `assortment` и положительный `quantity`.
 - `UpdatePosition`/`UpdateReturnPosition` принимают тот же request; пустой отклоняется до запроса.
-- `DeleteManyPositions`/`DeleteManyReturnPositions` — POST `…/delete` с meta строк (1–1000);
+- `DeleteManyPositions`/`DeleteManyReturnPositions` — POST `…/delete` с meta позиций (1–1000);
   источник отвечает 200 с пустым телом, поэтому возвращается только error.
-- Поля строки: `meta`, `id`, `accountId` (только чтение), `assortment`, `quantity`, `price`, `vat`,
+- Поля позиции: `meta`, `id`, `accountId` (только чтение), `assortment`, `quantity`, `price`, `vat`,
   `vatEnabled`, `reward`; у «реализовано» ещё `pack` (`positions.Pack`/`positions.PackRequest`).
-- Positions и ReturnToCommissionerPositions в Create/Update — не больше 1000 строк каждый
-  (1001 отклоняется до запроса); в Update массив заменяет весь набор: строка с `ID` — существующая (id только адресует её),
+- Positions и ReturnToCommissionerPositions в Create/Update — не больше 1000 позиций каждый
+  (1001 отклоняется до запроса); в Update массив заменяет весь набор: позиция с `ID` — существующая (id только адресует её),
   без — новая.
 
 ## Ограничения и противоречия источника

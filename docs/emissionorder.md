@@ -1,7 +1,7 @@
 # EmissionOrder
 
 `entity/emissionorder`: модель `EmissionOrder`, `CreateRequest`, `UpdateRequest`, `NewService(client)`;
-методы `Get/List/Create/Update`, `CreateMany/UpdateMany` и `Trash(ctx, id)`. Строки — собственная
+методы `Get/List/Create/Update`, `CreateMany/UpdateMany` и `Trash(ctx, id)`. Позиции — собственная
 форма `Position` (meta.type `emissionorderposition`) и `PositionRequest` (= `positions.ItemRequest`).
 Handle фасада: `c.Entity().EmissionOrder()`.
 [Общие правила методов, JSON и ошибок](documents.md), [корзина](documents-extra.md).
@@ -53,17 +53,17 @@ doc, err := s.Create(ctx, emissionorder.CreateRequest{
   `…/{id}/positions`, только limit/offset (`fields` отклоняется до запроса).
 - `GetPosition`, `CreatePositions` (один POST массивом, ответ `[]batch.Result[Position]`),
   `UpdatePosition` (пустой request — ошибка до запроса).
-- Поля строки: `meta`, `id`, `accountId`, `status` (только чтение; `status` — открытый enum
+- Поля позиции: `meta`, `id`, `accountId`, `status` (только чтение; `status` — открытый enum
   `EMISSION_*`), `assortment` (`model.Reference`), `quantity` (`float64`, не деньги).
-- Positions в Create/Update — не больше 1000 строк (1001 отклоняется до запроса); в Update массив
-  заменяет весь набор: строка с `ID` — существующая, без — новая.
+- Positions в Create/Update — не больше 1000 позиций (1001 отклоняется до запроса); в Update массив
+  заменяет весь набор: позиция с `ID` — существующая, без — новая.
 
 ## Ограничения и противоречия
 
-- Delete/DeleteMany документа и удаления строк в источнике нет — методов нет; есть только `Trash`
+- Delete/DeleteMany документа и удаления позиций в источнике нет — методов нет; есть только `Trash`
   (общий раздел `documents/_common_info.md`, «Удаление в корзину»).
 - Лимиты источника «не больше 10 позиций», `quantity` до 1000 шт., положительный `quantity` и
-  совпадение `trackingType` строк и заказа проверяет сервер.
+  совпадение `trackingType` позиций и заказа проверяет сервер.
 - Ticket называет `cisType` открытой строкой, но в таблицах emissionorder такого поля нет — SDK его
   не добавляет.
 - Таблица «Создать» описывает `emissionType` как «Состояние документов маркировки» со ссылкой на

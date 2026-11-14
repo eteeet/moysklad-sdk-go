@@ -84,7 +84,7 @@ Store — Field в Create, условную обязательность про�
 содержит store; сценарий applicable=false без store проверен только как точный wire JSON,
 принятие живым API не проверено. ShipmentAddressFull:null не очищает адрес;
 shipmentAddress:"" очищает, структурированная форма имеет приоритет. Используются
-Address/AddressRequest, но FIASCodeRU у Demand не обещается. Cost строки записывается для
+Address/AddressRequest, но FIASCodeRU у Demand не обещается. Cost позиции записывается для
 услуг; SDK передаёт Field без Get для определения
 типа assortment. Unset/0/дробь/null сохраняются, очистка null сервером не обещается.
 Overhead распределяет сервер, наличие позиций не проверяется скрытым Get.
@@ -95,7 +95,7 @@ consignee, consigneeBranch, consignor, consignorBranch, goodPackQuantity, shippi
 stateContractId, transportFacility, transportFacilityNumber, shippingDocumentNumber,
 shippingDocumentDate. Маркеров readonly нет; carrier/consignee/consignor — контрагент или юрлицо,
 *Branch — подразделение юрлица, тип ссылки проверяет сервер.
-Строки — все поля таблицы позиций источника: cost, pack, slot, things, trackingCodes (общая форма,
+Позиции — все поля таблицы позиций источника: cost, pack, slot, things, trackingCodes (общая форма,
 [контракт позиций](positions.md)); declaration, trackingCodes_1162 и overhead — только чтение.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/demand),

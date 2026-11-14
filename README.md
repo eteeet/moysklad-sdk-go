@@ -24,7 +24,7 @@ rows, err := c.Report().Turnover().All(ctx, turnover.AllOptions{MomentFrom: from
 Сотрудники (`entity/employee`) и их права, роли (`entity/role`), контекст запроса (`contexts`),
 метаданные и статусы (`metadata`), аудит (`audit`): [docs/access.md](docs/access.md).
 
-Валюты, типы цен, ставки НДС, услуги, комплекты, модификации и их характеристики, ассортимент
+Валюты, типы цен, ставки НДС, услуги, комплекты, модификации и их характеристики, `assortment`
 (`entity/currency`, `pricetype`, `taxrate`, `service`, `bundle`, `variant`, `assortment`):
 [docs/catalog.md](docs/catalog.md).
 
@@ -60,11 +60,11 @@ Vendor API 1.0 серверного решения (`vendorapi`: подпись 
 Поля товара, неснижаемый остаток, изображения (`images`), карточки контента, партии, транспортные
 упаковки, скидки и коды маркировки (`trackingcode`): [docs/catalog-extra.md](docs/catalog-extra.md).
 
-Отдельные операции строк документов, шаблоны `New`, корзина `Trash`, запись связей документов,
+Отдельные операции позиций документов, шаблоны `New`, корзина `Trash`, запись связей документов,
 транспортные поля отгрузки и автозаполнение (`wizard`): [docs/documents-extra.md](docs/documents-extra.md).
 
 Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) и асинхронные задачи
-(`async`, `ListAsync` контрагентов и ассортимента, `*Async` отчётов): [docs/write-async.md](docs/write-async.md).
+(`async`, `ListAsync` контрагентов и `assortment`, `*Async` отчётов): [docs/write-async.md](docs/write-async.md).
 У всех справочников и документов ниже есть `List(ctx, query.ListOptions, opts...)`.
 
 ## Справочники
@@ -89,7 +89,7 @@ Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) �
 В присутствующем rate отсутствие Value означает курс 1; SDK не подставляет 1 в JSON.
 [Документация общих типов](docs/document-common.md).
 
-Общий пакет `positions` содержит универсальные Position/PositionRequest для строк
+Общий пакет `positions` содержит универсальные Position/PositionRequest для позиций
 товарных документов. Core/Item и их request-формы — переиспользуемые части этих типов.
 `positions.NewService[T](client, documentType)` предоставляет `GetPage(ctx, id, PageOptions)`:
 одна страница `/positions` через существующий transport, с явными limit/offset и
@@ -122,7 +122,7 @@ Get/Create/Update документов и типизированные entity.Ge
 | `entity/inventory` | `Get/List/Create/Update`, позиции, `New`, `Trash` | [Inventory](docs/inventory.md) |
 | `entity/facturein` | `Get/List/Create/Update`, `New`, `Trash` | [FactureIn](docs/facturein.md) |
 | `entity/factureout` | `Get/List/Create/Update`, `New`, `Trash` | [FactureOut](docs/factureout.md) |
-| `entity/commissionreportin` | `Get/List/Create/Update`, два вида строк, `Trash` | [CommissionReportIn](docs/commissionreportin.md) |
+| `entity/commissionreportin` | `Get/List/Create/Update`, два вида позиций, `Trash` | [CommissionReportIn](docs/commissionreportin.md) |
 | `entity/commissionreportout` | `Get/List/Create/Update`, позиции, `Trash` | [CommissionReportOut](docs/commissionreportout.md) |
 | `entity/counterpartyadjustment` | `Get/List/Create/Update`, `Trash` | [CounterpartyAdjustment](docs/counterpartyadjustment.md) |
 | `entity/pricelist` | `Get/List/Create/Update`, строки, `Trash` | [PriceList](docs/pricelist.md) |
@@ -153,8 +153,8 @@ Metadata техкарт, техопераций и заданий — общий
 
 [Общий контракт](docs/documents.md): обязательные поля Create различаются по
 документам; optional поля и Update используют Field. Get читает metadata positions,
-строки — отдельным GetPositions. Embedded positions ограничены 1000 и полностью
-заменяют набор при Update. Expand отложен; отдельные операции строк, `New`, `Trash` —
+позиции — отдельным GetPositions. Embedded positions ограничены 1000 и полностью
+заменяют набор при Update. Expand отложен; отдельные операции позиций, `New`, `Trash` —
 [docs/documents-extra.md](docs/documents-extra.md);
 Delete и массовые операции — [docs/write-async.md](docs/write-async.md).
 
@@ -184,7 +184,7 @@ SDK не повторяет запись автоматически. После 
 
 ## Примеры
 
-Сценарии на фасаде — контекст по токену сотрудника или решения, поиск по ассортименту, позиции
+Сценарии на фасаде — контекст по токену сотрудника или решения, поиск по `assortment`, позиции
 заказа, аудит, «Обороты», файлы — описаны в [docs/client.md](docs/client.md#примеры).
 Ниже — примеры Product на standalone сервисе.
 

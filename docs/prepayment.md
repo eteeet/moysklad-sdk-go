@@ -2,11 +2,11 @@
 
 `entity/prepayment`: модель `Prepayment`, `NewService(client)`; методы `Get/List`, `Delete`,
 `Trash(ctx, id)`, `GetPositions(ctx, id, positions.PageOptions) (*model.Collection[Position], error)`
-и `GetPosition(ctx, id, positionID) (*Position, error)`. Строки — alias `Position` общей формы
+и `GetPosition(ctx, id, positionID) (*Position, error)`. Позиции — alias `Position` общей формы
 `positions.Position` (meta.type `prepaymentposition`).
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Записи нет: источник не описывает Create, Update, массовые операции, шаблон и запись строк —
+Записи нет: источник не описывает Create, Update, массовые операции, шаблон и запись позиций —
 сервис их не предлагает. Предоплаты создаёт касса (розничная смена).
 
 ## Поля (только чтение)
@@ -29,7 +29,7 @@
 | `positions` | `*model.Collection[Position]` |
 | `files` | `*model.Collection[model.Reference]` |
 
-Строки: `assortment`, `quantity`, `price` (копейки), `discount`, `vat`, `vatEnabled`, `pack`;
+Позиции: `assortment`, `quantity`, `price` (копейки), `discount`, `vat`, `vatEnabled`, `pack`;
 остальные поля общей формы остаются нулевыми.
 
 ## Ограничения

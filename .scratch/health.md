@@ -22,7 +22,7 @@
 
 ## 5. docs и README
 
-- D12. glossary в прозе docs (решение владельца по A4: `~/ETEEET/moysklad/meta/GLOSSARY.md` действует на прозу docs SDK; Go-идентификаторы, повторяющие API, — `assortment`, `positions`, `batch` — не меняются): «строка» в значении Position (`GLOSSARY.md:131`) — `README.md:63`, `docs/documents-extra.md`, `docs/positions.md` → «позиция»; «ассортимент» (`GLOSSARY.md:101`) — `README.md:27` и `docs/*` → `assortment` или «SKU» по смыслу; пакет `batch` в прозе (`GLOSSARY.md:141`) → «массовые операции» — механика.
+Находок нет.
 
 ## 6. Код
 
@@ -41,10 +41,9 @@
 ## Покрытие
 
 - md: `~/ETEEET/AGENTS.md`, `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md`, `AGENTS.md`, `docs/agents/domain.md`, `docs/agents/triage-labels.md` — согласованы; `docs/agents/issue-tracker.md` — согласован.
-- ADR: `docs/adr/0002-baseline.md` — согласован; `0001` заменён им. Glossary: общий — D12; своего `GLOSSARY.md` нет.
+- ADR: `docs/adr/0002-baseline.md` — согласован; `0001` заменён им. Glossary: общий — docs согласованы с ним; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md`, `.scratch/sdk-full/map.md` — согласованы.
 - Открытые тикеты: `07-cash-accounts`, `trash-content-type/01` и новые тикеты — согласованы. Бэклог: `docs/status-backlog.md` — согласован.
-- docs с находками: `README.md`, `documents-extra`, `positions`, `transport`, `write-async` — D12.
-- Остальные `docs/*.md` и `testdata/readme.md` — согласованы.
+- `README.md`, `docs/*.md`, `testdata/readme.md` — согласованы.
 
 Не проверено: внешние ссылки на документацию МойСклад, поведение живого API (O07; автонумерация — в `document-name-autonumber/01`), ссылки на API над пакетами в коде (`~/ETEEET/AGENTS.md`, «Комментарии в коде»).

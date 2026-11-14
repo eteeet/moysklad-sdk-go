@@ -77,7 +77,7 @@
 - [x] Beta-режим: assortment List и All с assortmentWithoutStock на каждой странице, ListLegacy без него
 - [x] Вложенные коллекции справочников: зоны и ячейки склада, счета, контакты и события контрагента,
   счета юрлица, компоненты комплекта (с мутациями), кассиры, элементы пользовательского справочника
-- [x] Delete и массовое удаление (POST …/delete); у ассортимента — по meta разных типов
+- [x] Delete и массовое удаление (POST …/delete); у `assortment` — по meta разных типов
 - [x] Удаление в корзину: Trash у 37 документов ([documents-extra](documents-extra.md))
 - [x] Массовое создание/обновление (POST массивом): CreateMany/UpdateMany по разделам источника
 - [x] Отдельные операции позиций: Get, Create, Update, Delete, массовое удаление
@@ -98,7 +98,7 @@
 - [x] HTTP-тесты: httptest и настоящий transport
 - [x] go vet, `go test -race`
 - [ ] Live read-only проверка на тестовом аккаунте
-- [x] Примеры сценариев на фасаде: контекст, ассортимент, позиции заказа, аудит, обороты, файлы
+- [x] Примеры сценариев на фасаде: контекст, `assortment`, позиции заказа, аудит, обороты, файлы
 - [x] Фасад SDK: `moysklad.NewClient`, группы Entity/Report/Context/Audit/Security
 - [x] `make check`: gofmt, vet, race-тесты, SHA-256 фикстур, статус сущностей, diff --check
 - [ ] CI workflow с `make check` по `~/ETEEET/INFRA.md` — тикет `.scratch/ci/issues/01-github-actions.md`; проверки безопасности

@@ -1,10 +1,10 @@
 # SalesReturn
 
 `entity/salesreturn`: модель `SalesReturn`, `CreateRequest`, `UpdateRequest`, `NewService(client)`,
-`Get/List/Create/Update` и `GetPositions`; строки — aliases `Position`/`PositionRequest` общей формы.
+`Get/List/Create/Update` и `GetPositions`; позиции — aliases `Position`/`PositionRequest` общей формы.
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `organization`, `store`, `agent`; `demand` — только для возврата по основанию. Positions в Create/Update — не больше 1000 строк, при Update заменяют все строки.
+Минимальный Create: `organization`, `store`, `agent`; `demand` — только для возврата по основанию. Positions в Create/Update — не больше 1000 позиций, при Update заменяют все позиции.
 
 ## Поддержанные поля
 
@@ -53,13 +53,13 @@
 
 ## Ограничения
 
-- Create по основанию: контрагент, юрлицо и валюта совпадают с основанием; строки соответствуют
-  его строкам, quantity не больше, чем в основании, строк не из основания нет, price менять
+- Create по основанию: контрагент, юрлицо и валюта совпадают с основанием; позиции соответствуют
+  его позициям, quantity не больше, чем в основании, позиций не из основания нет, price менять
   нельзя. Проверяет сервер; SDK не делает Get основания.
 - Update не содержит agent, agentAccount и demand — источник запрещает их менять. Валюту,
-  отличную от основания, и строки, которых нет в основании, отклоняет сервер. Запрет price
+  отличную от основания, и позиции, которых нет в основании, отклоняет сервер. Запрет price
   источник формулирует только для Create по основанию.
-- Строки: cost (возврат без основания), country, gtd, slot, pack, things. `GetPositions` принимает
+- Позиции: cost (возврат без основания), country, gtd, slot, pack, things. `GetPositions` принимает
   `fields=stock`; у возврата без основания stock приходит без cost.
 - losses, payments, factureOut пишутся как связи документов; payedSum — только для чтения.
 

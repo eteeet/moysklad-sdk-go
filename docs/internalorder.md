@@ -2,11 +2,11 @@
 
 `entity/internalorder`: модель `InternalOrder`, `CreateRequest`, `UpdateRequest`, `NewService(client)`,
 `Get/List/Create/Update/Delete`, `CreateMany/UpdateMany/DeleteMany`, `New` (шаблон), `Trash` (корзина)
-и операции строк `GetPositions/GetPosition/CreatePositions/UpdatePosition/DeletePosition/DeleteManyPositions`.
-Строки — aliases `Position`/`PositionRequest` общей формы (meta.type `internalorderposition`).
+и операции позиций `GetPositions/GetPosition/CreatePositions/UpdatePosition/DeletePosition/DeleteManyPositions`.
+Позиции — aliases `Position`/`PositionRequest` общей формы (meta.type `internalorderposition`).
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `organization` и непустое `name`. Строки можно передать сразу в теле документа
+Минимальный Create: `organization` и непустое `name`. Позиции можно передать сразу в теле документа
 (`Positions`, не больше 1000 — 1001 отклоняется до запроса) или добавить потом `CreatePositions`.
 
 ```go
@@ -59,19 +59,19 @@ doc, err := s.Create(ctx, internalorder.CreateRequest{Organization: org, Name: "
 
 ## Позиции
 
-Таблица строк: `assortment`, `quantity`, `price` (копейки), `vat`, `vatEnabled`, `pack`; общая форма
+Таблица позиций: `assortment`, `quantity`, `price` (копейки), `vat`, `vatEnabled`, `pack`; общая форма
 `positions.Position`/`PositionRequest` покрывает её, остальные поля общей формы остаются нулевыми, а
 их приём определяет сервер. `GetPositions` читает одну страницу (Limit 1…1000, 0 — 1000); `fields`
 источник для внутреннего заказа не документирует, непустой `PageOptions.Fields` отклоняется до HTTP.
 `CreatePositions` — один POST массивом, ответ `[]batch.Result[Position]`; `DeleteManyPositions` —
-POST `…/positions/delete`, ответ без тела. В Update документа `Positions` заменяют весь набор: строка с
+POST `…/positions/delete`, ответ без тела. В Update документа `Positions` заменяют весь набор: позиция с
 `ID` — существующая (id только адресует её), без — новая, лишние удаляются.
 
 ## Решения и противоречия источника
 
 - `positions` в основной таблице помечен «Только для чтения», хотя текст раздела позиций и примеры
-  Create, Update и массового создания передают массив строк в составе документа. SDK пишет
-  `positions` в Create и Update: исключение из правила «readonly важнее примеров» утверждено пользователем, без него строки нельзя сохранить вместе с документом.
+  Create, Update и массового создания передают массив позиций в составе документа. SDK пишет
+  `positions` в Create и Update: исключение из правила «readonly важнее примеров» утверждено пользователем, без него позиции нельзя сохранить вместе с документом.
 - `shared` и `syncId` помечены «Только для чтения» — в запросах их нет, хотя примеры Create/Update
   передают `shared`.
 - `name` помечен «Необходимо при создании», а раздел «Создать» перечисляет только `organization`.
@@ -80,8 +80,8 @@ POST `…/positions/delete`, ответ без тела. В Update докуме�
   разделе «Связи с другими документами». По общему правилу привязки документов (`_common_info.md`)
   все три пишутся. Ticket O08 называет moves/purchaseOrders read-only — это противоречит источнику,
   решение принято по источнику.
-- Пример Create передаёт `discount` у строки и `sum`/`vatSum` у документа: discount нет в таблице
-  строк, sum/vatSum — readonly; SDK их не задаёт (discount общей формы остаётся доступным, приём
+- Пример Create передаёт `discount` у позиции и `sum`/`vatSum` у документа: discount нет в таблице
+  позиций, sum/vatSum — readonly; SDK их не задаёт (discount общей формы остаётся доступным, приём
   определяет сервер).
 - `New` (PUT `entity/internalorder/new`): источник показывает только пустое тело; основания для
   внутреннего заказа не описаны, непустой basis передаётся как есть.

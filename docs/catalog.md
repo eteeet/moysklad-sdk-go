@@ -37,7 +37,7 @@
   характеристик целиком. Описания характеристик — отдельные методы, скрыто не создаются.
 - Null у Field отправляется как есть: семантику null источник для этих сущностей не описывает.
 
-## Ассортимент
+## Assortment
 
 - `List` — новый endpoint, всегда с `X-Lognex-Remap-Beta-Feature: assortmentWithoutStock` (поверх
   опций вызова). Остатков в строках нет, SDK их не догружает: используйте отчёт об остатках по id.
@@ -55,5 +55,5 @@
 
 Expand. Изображения, `minimumStock` и storebalances у Product и Variant —
 [catalog-extra.md](catalog-extra.md); файлы — пакет `files`. Мутации компонентов комплекта и массовое создание
-характеристик — [dictionaries.md](dictionaries.md). Delete, массовые операции и `ListAsync` ассортимента —
+характеристик — [dictionaries.md](dictionaries.md). Delete, массовые операции и `ListAsync` у `assortment` —
 [write-async.md](write-async.md). Противоречия источника записаны в godoc и Answer tickets C01–C08.

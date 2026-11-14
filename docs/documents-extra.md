@@ -9,21 +9,21 @@
 У customerorder, demand, enter, invoicein, invoiceout, loss, move, purchaseorder, purchasereturn,
 retaildemand, retailsalesreturn, salesreturn, supply и internalorder (общая реализация —
 `positions.Service[T]`). Inventory, commissionreportin/out, payroll, pricelist и retireorder — те же методы со своей
-формой строки (у commissionreportin ещё набор `…ReturnPositions`), emissionorder — те же без удаления строк, prepayment и prepaymentreturn —
-только чтение строк:
+формой позиции (у pricelist — строки; у commissionreportin ещё набор `…ReturnPositions`), emissionorder — те же без удаления позиций, prepayment и prepaymentreturn —
+только чтение позиций:
 
 | Метод | Маршрут |
 | --- | --- |
 | `GetPosition(ctx, id, positionID)` | `GET entity/{type}/{id}/positions/{positionID}` |
-| `CreatePositions(ctx, id, []PositionRequest)` — ответ по правилам batch | `POST …/positions` массивом |
+| `CreatePositions(ctx, id, []PositionRequest)` — ответ по правилам массовых операций | `POST …/positions` массивом |
 | `UpdatePosition(ctx, id, positionID, PositionRequest)` — пустой запрос отклоняется | `PUT …/positions/{positionID}` |
 | `DeletePosition(ctx, id, positionID)` | `DELETE …/positions/{positionID}` |
 | `DeleteManyPositions(ctx, id, []positionID)` — 1–1000, ответ без тела | `POST …/positions/delete` |
 
-meta.type строк — `{тип}position`, кроме invoicein/invoiceout (`invoiceposition`), retaildemand
-(`demandposition`), retailsalesreturn (`salesreturnposition`) и pricelist (`pricelistrow`): так в
+meta.type позиций — `{тип}position`, кроме invoicein/invoiceout (`invoiceposition`), retaildemand
+(`demandposition`), retailsalesreturn (`salesreturnposition`); у строк pricelist — `pricelistrow`: так в
 примерах источника. Список
-строк — прежний `GetPositions`.
+позиций — прежний `GetPositions`.
 
 ## Шаблон документа — `New(ctx, basis)`
 
@@ -41,7 +41,7 @@ processingorder. Какие основания допустимы для тип�
 создаётся. Действия: `EvaluatePrice`, `EvaluateVAT`, `EvaluateDiscount`, `EvaluateCost`; нужно хотя
 бы одно, запятые внутри значения отклоняются до запроса. `Template` — organization, agent, store,
 vatEnabled, vatIncluded, rate, moment и positions (assortment, quantity, price, discount, vat,
-vatEnabled); `Result` — те же поля и рассчитанные discountedPrice, sum, cost строк, исходный JSON —
+vatEnabled); `Result` — те же поля и рассчитанные discountedPrice, sum, cost позиций, исходный JSON —
 `Raw`.
 
 Ticket называет demand и salesreturn, источник — 17 типов документов и начисления зарплаты, поэтому
@@ -88,12 +88,12 @@ move. supply у purchasereturn и demand у salesreturn задаются тол�
 делает с ними сервер (отвязка), источник не описывает. Совместимость типа привязываемого документа
 и права проверяет сервер.
 
-## Поля строк и транспортные поля demand
+## Поля позиций и транспортные поля demand
 
 Общая форма `positions.Position`/`PositionRequest` покрывает все поля таблиц позиций источника у
 документов SDK: у invoicein и invoiceout — pack; у move — pack, things, sourceSlot, targetSlot; у
 supply, demand, purchasereturn — pack, slot, things и коды маркировки по таблице. serial-полей у
-строк этих документов источник не даёт.
+позиций этих документов источник не даёт.
 
 Demand читает и пишет транспортные поля («Другие поля»): cargoName, carrier, consignee(Branch),
 consignor(Branch), goodPackQuantity, shippingInstructions, stateContractId, transportFacility(Number),
@@ -127,5 +127,5 @@ shippingDocumentNumber, shippingDocumentDate ([demand](demand.md)).
   сведений описывает привязку только через `operations` платежа; что сервер делает с payments в
   теле документа, источник не подтверждает.
 - Копейки: таблицы не называют единицу у facturein.sum, factureout.vatSum, retaildrawercashout.sum
-  («в установленной валюте») и reward строк отчётов комиссионера — SDK считает их копейками, как все
+  («в установленной валюте») и reward позиций отчётов комиссионера — SDK считает их копейками, как все
   суммы; это допущение, а не контракт источника.

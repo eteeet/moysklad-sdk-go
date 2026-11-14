@@ -34,7 +34,7 @@
 - RetailSalesReturn: demand — розничная продажа, только для возврата по основанию; без основания
   cashSum и noCashSum обязательны (явный 0 уходит). Update не содержит agent, agentAccount и demand.
   GetPositions — `fields=stock` (у возврата без основания без cost).
-- Строки — общая форма `positions.Position` ([positions](positions.md)): cost, pack, things,
+- Позиции — общая форма `positions.Position` ([positions](positions.md)): cost, pack, things,
   trackingCodes; trackingCodes_1162 и declaration только читаются.
 
 ## Бонусы

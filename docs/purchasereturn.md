@@ -60,8 +60,8 @@ Readonly поля в requests отсутствуют.
 Files представлены только metadata коллекции, без обещания rows или файловых операций.
 Create без основания требует organization, agent, store; для возврата по основанию
 дополнительно передай Supply. UpdateRequest исключает Agent, AgentAccount и Supply.
-API требует совпадения сторон/валюты с Supply, соответствия строк основанию и
-quantity не больше исходного; запрещает смену валюты и новые строки Update. Применимость
+API требует совпадения сторон/валюты с Supply, соответствия позиций основанию и
+quantity не больше исходного; запрещает смену валюты и новые позиции Update. Применимость
 этих формулировок к возврату без основания неоднозначна, SDK не вводит бизнес-валидатор.
 Повторённая фраза Update о совместной смене agent/agentAccount противоречит прямому
 запрету этих полей: они отсутствуют в UpdateRequest. OrganizationAccount доступен.
@@ -69,7 +69,7 @@ Discount помечен readonly в таблице, но встречается 
 PositionRequest содержит Discount, это не обещание его изменения у возврата.
 Price/VAT доступны в embedded Update; правило «только quantity» источник относит к
 отдельному PUT позиции (`UpdatePosition`); SDK его не проверяет, решает сервер. FactureIn/FactureOut/Payments пишутся как связи документов.
-Строки — все поля таблицы позиций источника: pack, slot, things (общая форма).
+Позиции — все поля таблицы позиций источника: pack, slot, things (общая форма).
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchase-return),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_purchase_return.md).

@@ -2,7 +2,7 @@
 
 `entity/commissionreportout`: модель `CommissionReportOut`, `CreateRequest`, `UpdateRequest`,
 `NewService(client)`; методы `Get/List/Create/Update/Delete`, `CreateMany/UpdateMany/DeleteMany`
-и `Trash(ctx, id)`. Строки — собственная форма `Position`/`PositionRequest`
+и `Trash(ctx, id)`. Позиции — собственная форма `Position`/`PositionRequest`
 (meta.type `commissionreportoutposition`), не `positions.Position`.
 [Общие правила методов, JSON и ошибок](documents.md), [корзина](documents-extra.md).
 
@@ -68,7 +68,7 @@ doc, err := s.Create(ctx, commissionreportout.CreateRequest{
 | `files` | `*model.Collection[model.Reference]` | — | — |
 | `payments` | `[]model.Reference` | Field | Field |
 
-Суммы и `price`/`reward` строк — `float64` в копейках; `rewardPercent` — целый процент (таблица:
+Суммы и `price`/`reward` позиций — `float64` в копейках; `rewardPercent` — целый процент (таблица:
 Int), не деньги; `rewardType` — открытый enum `PercentOfSales`, `None`.
 
 ## Позиции
@@ -78,11 +78,11 @@ Int), не деньги; `rewardType` — открытый enum `PercentOfSales`
 - `GetPosition`, `CreatePositions` (один POST массивом, ответ `[]batch.Result[Position]`),
   `UpdatePosition` (пустой request — ошибка до запроса), `DeletePosition`, `DeleteManyPositions`
   (POST `…/positions/delete`, 1–1000 id; ответ без тела — только error).
-- Поля строки: `meta`, `accountId` (только чтение), `id`, `assortment`, `quantity`, `price`, `vat`,
-  `vatEnabled`, `reward`, `pack`. Для новой строки сервер требует `assortment` и положительный
+- Поля позиции: `meta`, `accountId` (только чтение), `id`, `assortment`, `quantity`, `price`, `vat`,
+  `vatEnabled`, `reward`, `pack`. Для новой позиции сервер требует `assortment` и положительный
   `quantity`.
-- Positions в Create/Update — не больше 1000 строк (1001 отклоняется до запроса); в Update массив
-  заменяет весь набор: строка с `ID` — существующая (id только адресует её), без — новая.
+- Positions в Create/Update — не больше 1000 позиций (1001 отклоняется до запроса); в Update массив
+  заменяет весь набор: позиция с `ID` — существующая (id только адресует её), без — новая.
 
 ## Ограничения и противоречия источника
 

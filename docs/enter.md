@@ -1,10 +1,10 @@
 # Enter
 
 `entity/enter`: модель `Enter`, `CreateRequest`, `UpdateRequest`, `NewService(client)`,
-`Get/List/Create/Update` и `GetPositions`; строки — aliases `Position`/`PositionRequest` общей формы.
+`Get/List/Create/Update` и `GetPositions`; позиции — aliases `Position`/`PositionRequest` общей формы.
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `organization`, `store`. Контрагента у оприходования нет. Positions в Create/Update — не больше 1000 строк, при Update заменяют все строки.
+Минимальный Create: `organization`, `store`. Контрагента у оприходования нет. Positions в Create/Update — не больше 1000 позиций, при Update заменяют все позиции.
 
 ## Поддержанные поля
 
@@ -42,7 +42,7 @@
 
 ## Ограничения
 
-- Строки: reason, country, gtd, things, slot, pack; overhead строки только читается.
+- Позиции: reason, country, gtd, things, slot, pack; overhead позиции только читается.
   fields у позиций источник не документирует.
 - overhead документа `{sum, distribution}` распределяет сервер.
 - inventory пишется как связь документа: источник разрешает запись полей раздела «Связи с другими

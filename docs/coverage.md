@@ -55,7 +55,7 @@ long.
 
 Подробности: [общие типы документов](document-common.md), [позиции](positions.md).
 Get/Create/Update документов и типизированные entity.GetPositions реализованы.
-Отдельные операции строк — [documents-extra](documents-extra.md); walker и expand отложены.
+Отдельные операции позиций — [documents-extra](documents-extra.md); walker и expand отложены.
 
 ## Документы — реализованные срезы
 
@@ -76,7 +76,7 @@ Field/null/zero/[], SyncID, один запрос без retry, HTTP 200+ID и A
 Все JSON-контракты проверяются двумя codecs, HTTP — локальным сервером и реальным
 transport. Golden независимы, upstream и provenance сохранены. Embedded позиции
 имеют предел 1000; 1001 отклоняется до HTTP. Срезы не обещают поддержки отложенных
-полей, expand, файловых операций, List/Delete/batch или бизнес-валидации.
+полей, expand, файловых операций, List/Delete/массовых операций или бизнес-валидации.
 
 ## UOM — модель чтения и Get/Create/Update
 
@@ -466,7 +466,7 @@ Update-пример архивирует тестовый товар, не уд�
 
 ### Этап 15. Массовые и асинхронные операции
 
-- [x] CreateMany/UpdateMany/DeleteMany (пакет batch, X02) и асинхронные задачи (пакет async, X03):
+- [x] CreateMany/UpdateMany/DeleteMany (пакет `batch`, X02) и асинхронные задачи (пакет async, X03):
   [write-async.md](write-async.md).
 
 ### Этап 16. Фасад SDK

@@ -1,10 +1,10 @@
 # CustomerOrder
 
 `entity/customerorder`: модель `CustomerOrder`, `CreateRequest`, `UpdateRequest`, `NewService(client)`,
-`Get/List/Create/Update` и `GetPositions`; строки — aliases `Position`/`PositionRequest` общей формы.
+`Get/List/Create/Update` и `GetPositions`; позиции — aliases `Position`/`PositionRequest` общей формы.
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `organization`, `agent`. Positions в Create/Update — не больше 1000 строк, при Update заменяют все строки.
+Минимальный Create: `organization`, `agent`. Positions в Create/Update — не больше 1000 позиций, при Update заменяют все позиции.
 
 ## Поддержанные поля
 
@@ -63,7 +63,7 @@
 
 ## Ограничения
 
-- Строки: reserve пишется, shipped только читается; pack, taxSystem. `GetPositions` принимает
+- Позиции: reserve пишется, shipped только читается; pack, taxSystem. `GetPositions` принимает
   `fields=stock` (остатки и себестоимость на текущий момент).
 - При смене organization/agent сервер требует и соответствующий счёт; SDK не сравнивает и не делает Get.
 - syncId после заполнения не меняется. Адресу null не поддерживается: удалить — `shipmentAddress: ""`.

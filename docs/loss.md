@@ -1,10 +1,10 @@
 # Loss
 
 `entity/loss`: модель `Loss`, `CreateRequest`, `UpdateRequest`, `NewService(client)`,
-`Get/List/Create/Update` и `GetPositions`; строки — aliases `Position`/`PositionRequest` общей формы.
+`Get/List/Create/Update` и `GetPositions`; позиции — aliases `Position`/`PositionRequest` общей формы.
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `organization`, `store`. Positions в Create/Update — не больше 1000 строк, при Update заменяют все строки.
+Минимальный Create: `organization`, `store`. Positions в Create/Update — не больше 1000 позиций, при Update заменяют все позиции.
 
 ## Поддержанные поля
 
@@ -43,7 +43,7 @@
 
 ## Ограничения
 
-- Строки: reason, slot, pack, things; `GetPositions` с `fields=declaration` — прослеживаемость
+- Позиции: reason, slot, pack, things; `GetPositions` с `fields=declaration` — прослеживаемость
   импортных товаров (readonly).
 - salesReturn и inventory пишутся (связи документов); expenseItem — readonly.
 - Пример Update источника передаёт sum, таблица помечает его readonly: SDK sum не пишет.

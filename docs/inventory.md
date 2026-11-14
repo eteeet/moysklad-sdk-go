@@ -2,12 +2,12 @@
 
 `entity/inventory`: модель `Inventory`, `CreateRequest`, `UpdateRequest`, `NewService(client)`,
 `Get/List/Create/Update/Delete`, `CreateMany/UpdateMany/DeleteMany`, `New` (шаблон), `Trash` (корзина)
-и операции строк `GetPositions/GetPosition/CreatePositions/UpdatePosition/DeletePosition/DeleteManyPositions`.
-Строки — собственные `Position`/`PositionRequest` (meta.type `inventoryposition`), не общая форма.
+и операции позиций `GetPositions/GetPosition/CreatePositions/UpdatePosition/DeletePosition/DeleteManyPositions`.
+Позиции — собственные `Position`/`PositionRequest` (meta.type `inventoryposition`), не общая форма.
 [Общие правила методов, JSON, ошибок и позиций](documents.md).
 
-Минимальный Create: `organization`, `store`. Positions в Create/Update — не больше 1000 строк, при
-Update заменяют все строки.
+Минимальный Create: `organization`, `store`. Positions в Create/Update — не больше 1000 позиций, при
+Update заменяют все позиции.
 
 ```go
 s, _ := inventory.NewService(client)
@@ -56,7 +56,7 @@ doc, err := s.Create(ctx, inventory.CreateRequest{
 
 | JSON | Read Go type | Request |
 | --- | --- | --- |
-| `meta`, `id`, `accountId` | `positions.Core` (через `positions.Item`) | `id` — Field (сопоставление строки в embedded Update) |
+| `meta`, `id`, `accountId` | `positions.Core` (через `positions.Item`) | `id` — Field (сопоставление позиции в embedded Update) |
 | `assortment` | `model.Reference` | Field |
 | `quantity` | `float64` | Field |
 | `price` | `float64` (копейки) | Field |

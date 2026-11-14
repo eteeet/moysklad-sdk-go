@@ -4,7 +4,7 @@
 [x] — есть пакет с Get/Create/Update (документы с позициями — ещё GetPositions) и handle фасада
 `moysklad.Client` (у download — `Transport().Download`); иной набор методов указан в строке. `status_test.go` проверяет, что отметки и
 handles фасада совпадают; набор методов — тесты пакетов.
-List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
+List/Delete/expand/массовые операции — см. [status-technical.md](status-technical.md) и [write-async.md](write-async.md).
 
 Итого: справочники 59/59, документы 37/37, отчёты 9/9, прочее 9/9.
 
@@ -13,7 +13,7 @@ List/Delete/expand/batch — см. [status-technical.md](status-technical.md) и
 - [x] accumulationdiscount — накопительная скидка: Get/Create/Update/Delete (список — Discount().List)
 - [x] aggregatepack — транспортная упаковка и позиции
 - [x] application — серверные решения (GET entity/application/{id})
-- [x] assortment — ассортимент: List и All (assortmentWithoutStock на каждой странице) и ListLegacy
+- [x] assortment — SKU (позиции номенклатуры): List и All (assortmentWithoutStock на каждой странице) и ListLegacy
 - [x] bonusprogram — бонусная программа
 - [x] bonustransaction — бонусная операция
 - [x] bundle — комплект: Get/List/Create/Update, GetComponents/GetComponent
