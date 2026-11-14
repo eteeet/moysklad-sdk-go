@@ -79,7 +79,7 @@ if err != nil {
 ```
 
 Этот generic вход требует выбрать подходящий T. Типизированные entity.GetPositions
-с фиксированными ресурсом и Position реализованы для одиннадцати товарных документов.
+с фиксированными ресурсом и Position реализованы для шестнадцати товарных документов.
 Они используют общий reader без expand; [контракты документов](documents.md).
 
 GetPage делает один GET `entity/{documentType}/{documentID}/positions`, без тела,
@@ -101,7 +101,7 @@ context errors — errors.Is. Нет retry, auto-pagination и перехода 
 
 Для поля документа используется `model.Field[[]PositionRequest]` с omitzero,
 а не response-объект Collection. Это самостоятельный JSON-контракт, используемый
-HTTP Create/Update всех семи товарных документов.
+HTTP Create/Update всех четырнадцати товарных документов.
 
 - Unset: поле не отправляется, при Update существующие строки остаются.
 - Value пустого/nil slice: передаётся [].

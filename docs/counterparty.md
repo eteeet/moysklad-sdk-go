@@ -10,7 +10,7 @@ Counterparty (контрагента) на перечисленном ниже �
 | `Update(ctx, id, UpdateRequest)` | `PUT entity/counterparty/{id}` |
 
 `NewService` принимает существующий `*transport.Client`; `nil` отклоняется.
-Все методы возвращают `(*Counterparty, error)`. Успех требует HTTP 200 и непустой
+Get, Create и Update возвращают `(*Counterparty, error)`. Успех требует HTTP 200 и непустой
 `id` в ответе. Create/Update возвращают данные сервера, а не входной request.
 ID ответа дополнительно не сравнивается с ID маршрута.
 

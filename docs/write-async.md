@@ -70,7 +70,7 @@ for _, r := range res {
 | group, customentity, region, saleplatform, thing, accumulationdiscount, personaldiscount, specialpricediscount, prepayment, prepaymentreturn | — | — | — |
 | emissionorder, retireorder | да | да | — |
 | application | — | — | — |
-| остальные 60 сервисов `entity/*` | да | да | да |
+| остальные 61 сервис `entity/*` | да | да | да |
 
 Раздел «Массовое обновление Сотрудников» называет только обновление, хотя второй элемент его
 примера — без meta (создание); SDK следует заголовку. Массовые операции вложенных коллекций (зоны и ячейки склада, счета,

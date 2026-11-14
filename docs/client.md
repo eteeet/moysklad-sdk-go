@@ -61,6 +61,8 @@ Client создаётся только через NewClient. У нулевого
 | [turnover](../examples/turnover/main.go) | — | «Обороты» за явный период, все страницы |
 | [files](../examples/files/main.go) | `MOYSKLAD_ENTITY_TYPE`, `MOYSKLAD_ENTITY_ID`; загрузка — `MOYSKLAD_UPLOAD_PATH` и `MOYSKLAD_ALLOW_WRITE=1` | список, скачивание без перезаписи и с удалением частичного файла, загрузка |
 
+Примеры `product_get`, `product_create`, `product_update` — на `product.NewService` без фасада (`make example`, `make example-create`, `make example-update`): `MOYSKLAD_PRODUCT_ID`; запись — `MOYSKLAD_ALLOW_WRITE=1`, у update ещё `MOYSKLAD_EXAMPLE_PRODUCT_ID` и `MOYSKLAD_EXAMPLE_EXTERNAL_CODE`.
+
 Общие переменные: `MOYSKLAD_TOKEN` — персональный токен сотрудника или токен решения (оба Bearer),
 `MOYSKLAD_BASE_URL` — другой адрес API. Выпуск токена (`c.Security().CreateToken`) в примеры
 не входит. Запуск: `go run ./examples/<пример>`; Ctrl+C отменяет запрос.
