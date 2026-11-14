@@ -1,7 +1,7 @@
 # Статус технических возможностей SDK
 
 Источник: `_general.md`, `_restrictions.md`, `_async.md`, `_errors.md`
-(revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`), [coverage.md](coverage.md).
+(revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`), [coverage.md](coverage.md).
 Сущности — [status-entities.md](status-entities.md).
 
 ## Транспорт
@@ -97,13 +97,12 @@
 - [x] JSON-тесты обоими codecs, golden, upstream с SHA-256 provenance
 - [x] HTTP-тесты: httptest и настоящий transport
 - [x] go vet, `go test -race`
-- [ ] Live read-only проверка на тестовом аккаунте (только с согласия)
+- [ ] Live read-only проверка на тестовом аккаунте
 - [x] Примеры сценариев на фасаде: контекст, ассортимент, позиции заказа, аудит, обороты, файлы
 - [x] Фасад SDK: `moysklad.NewClient`, группы Entity/Report/Context/Audit/Security
 - [x] `make check`: gofmt, vet, race-тесты, SHA-256 фикстур, статус сущностей, diff --check
 - [ ] CI workflow с `make check` по `~/ETEEET/INFRA.md` — тикет `.scratch/ci/issues/01-github-actions.md`; проверки безопасности
 - [x] CHANGELOG по выпускам `v0.1.0`…`v0.2.2`
-- [ ] Тег и релиз — отдельной командой
 - [x] Vendor API: `AppAuth`, `Context`, `UserContext`, `Status`/`SetStatus`, `VerifyRequest`, типы
   жизненного цикла ([vendorapi](vendorapi.md)); loyalty, кнопки, сценарии — вне объёма
 

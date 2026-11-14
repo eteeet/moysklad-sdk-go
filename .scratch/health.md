@@ -18,12 +18,7 @@
 
 ## 4. Открытые тикеты и бэклог
 
-- T2. `docs/status-backlog.md:160-161` — live-проверки «только с согласия» — с `~/ETEEET/moysklad/AGENTS.md:16` — «на `admin@documan` без запроса» — механика.
-- T4. `docs/status-backlog.md:163`, `docs/status-technical.md:106` — «тег и релиз — отдельной командой» — с `GIT_FLOW.md:16-24` (процедура выпуска; теги уже есть) — ссылка на GIT_FLOW — механика.
-- T5. `docs/status-backlog.md:164` — «Vendor API — отдельный контур» — с кодом (`vendorapi/`) — отметить сделанным — механика.
-- T6. `docs/status-backlog.md:36` — `[x]` «fsrarId, utmUrl» — с кодом (`entity/organization` их не содержит) и `docs/organization.md:106` — отметку оставить счетам, fsrarId/utmUrl — «не добавлены: нет в таблице атрибутов» — механика.
-- T7. `docs/status-backlog.md:10` и заголовки захваток 2–5 — «Spec и tickets (DRAFT, needs-triage)», нет «сделано» — с `.scratch/sdk-full/map.md:39-43` (реализованы) — исправить — механика.
-- T8. `docs/status-backlog.md:165` — пункт «обновить revision в status-*» не выполнен: `docs/status-technical.md:4`, `docs/status-entities.md:3` — `9a811cef` против `docs/status-backlog.md:3` `0e1b3d61` — обновить — механика.
+Находок нет.
 
 ## 5. docs и README
 
@@ -57,7 +52,7 @@
 - md: `~/ETEEET/AGENTS.md`, `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md`, `AGENTS.md`, `docs/agents/domain.md`, `docs/agents/triage-labels.md` — согласованы; `docs/agents/issue-tracker.md` — согласован.
 - ADR: `docs/adr/0002-baseline.md` — согласован; `0001` заменён им. Glossary: общий — D12; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md`, `.scratch/sdk-full/map.md` — согласованы.
-- Открытые тикеты: `07-cash-accounts`, `trash-content-type/01` и новые тикеты — согласованы. Бэклог: `docs/status-backlog.md` — T2, T4–T8.
+- Открытые тикеты: `07-cash-accounts`, `trash-content-type/01` и новые тикеты — согласованы. Бэклог: `docs/status-backlog.md` — согласован.
 - docs с находками: `README.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D3–D12.
 - Остальные `docs/*.md` и `testdata/readme.md` — согласованы.
 

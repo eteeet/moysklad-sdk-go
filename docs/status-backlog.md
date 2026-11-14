@@ -7,7 +7,7 @@
 отметки `[x]` в обоих списках совпадают с кодом.
 
 Пять захваток упорядочены по пользе и зависимостям, expand — последним.
-Spec и tickets (DRAFT, needs-triage): [карта](../.scratch/sdk-full/map.md).
+Spec и tickets: [карта](../.scratch/sdk-full/map.md); открыт только O07.
 
 Уже покрыто, tickets не нужны: gtd (`positions.GTD`), файлы товара, контрагента и документов
 (пакет `files`), запросы ролей сотрудника (`role.Preset`).
@@ -33,7 +33,7 @@ Spec и tickets (DRAFT, needs-triage): [карта](../.scratch/sdk-full/map.md)
 - [x] counterparty: accounts, contactpersons, notes (события), discounts,
       `mod__requisites__uz/kz`
 - [x] counterparty/settings — настройки справочника контрагентов (GET/PUT)
-- [x] organization: accounts (CRUD, массовое изменение POST, массовое удаление); fsrarId, utmUrl
+- [x] organization: accounts (CRUD, массовое изменение POST, массовое удаление); fsrarId и utmUrl не добавлены: их нет в таблице атрибутов ([organization](organization.md))
 - [x] organization: companyVat__ru, advancePaymentVat, chiefAccountSign, directorSign, stamp,
       `mod__requisites__uz/kz`
 - [x] assortment/settings — настройки справочника товаров (GET/PUT)
@@ -51,7 +51,7 @@ Spec и tickets (DRAFT, needs-triage): [карта](../.scratch/sdk-full/map.md)
 - [x] customentity — пользовательский справочник и его элементы
 - [x] Массовое создание/обновление states и массовое создание characteristics
 
-## Захватка 2. Товары, скидки, маркировка — [spec](../.scratch/sdk-full-catalog/spec.md)
+## Захватка 2. Товары, скидки, маркировка — сделано — [spec](../.scratch/sdk-full-catalog/spec.md)
 
 Product до полной модели:
 
@@ -75,7 +75,7 @@ Product до полной модели:
 - [x] emissionorder — заказ кодов маркировки
 - [x] retireorder — вывод из оборота
 
-## Захватка 3. Документы и операции документов — [spec](../.scratch/sdk-full-documents/spec.md)
+## Захватка 3. Документы и операции документов — сделано, кроме O07 — [spec](../.scratch/sdk-full-documents/spec.md)
 
 Общие механизмы (делать первыми — новые документы их используют):
 
@@ -105,7 +105,7 @@ Product до полной модели:
 - [x] retaildrawercashout — выплата денег
 - [x] payroll — начисление зарплаты
 
-## Захватка 4. Производство — [spec](../.scratch/sdk-full-production/spec.md)
+## Захватка 4. Производство — сделано — [spec](../.scratch/sdk-full-production/spec.md)
 
 - [x] processingplan — техкарта
 - [x] processingplanfolder — группа техкарт
@@ -116,7 +116,7 @@ Product до полной модели:
 - [x] productiontask — производственное задание
 - [x] productionstagecompletion — выполнение этапа производства
 
-## Захватка 5. Отчёты, печать, интеграции — [spec](../.scratch/sdk-full-reports/spec.md)
+## Захватка 5. Отчёты, печать, интеграции — сделано — [spec](../.scratch/sdk-full-reports/spec.md)
 
 Отчёты:
 
@@ -157,9 +157,8 @@ Product до полной модели:
 
 ## Вне SDK-кода (выпуск и инфраструктура)
 
-- [ ] Live read-only проверка на тестовом аккаунте (только с согласия)
-- [ ] Проверка Product.Create/Update на тестовом товаре (только с согласия)
+- [ ] Live read-only проверка на тестовом аккаунте
+- [ ] Проверка Product.Create/Update на тестовом товаре
 - [ ] CI workflow по `~/ETEEET/INFRA.md` — тикет `.scratch/ci/issues/01-github-actions.md`; проверки безопасности
-- [ ] Тег и релиз — отдельной командой
-- [ ] Vendor API — отдельный контур
-- [ ] Обновить revision источника в status-* до `0e1b3d61` (контракт не менялся)
+- [x] Vendor API — [vendorapi](vendorapi.md)
+- [x] Revision источника в status-* — `0e1b3d61` (контракт не менялся)

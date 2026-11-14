@@ -1,6 +1,6 @@
 # Статус сущностей JSON API 1.2
 
-Источник: api-remap-1.2-doc, revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.
+Источник: api-remap-1.2-doc, revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`.
 [x] — есть пакет с Get/Create/Update (документы с позициями — ещё GetPositions) и handle фасада
 `moysklad.Client` (у download — `Transport().Download`); иной набор методов указан в строке. `status_test.go` проверяет, что отметки и
 handles фасада совпадают; набор методов — тесты пакетов.
