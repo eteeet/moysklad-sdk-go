@@ -3,7 +3,7 @@
 Пакет `entity/task`: задачи (`entity/task`), комментарии задачи
 (`entity/task/{id}/notes`, meta.type `tasknote`) и типы задач
 (`entity/task/metadata/states`, meta.type `state`). `task.NewService(client)` принимает
-`*transport.Client` и отклоняет nil. Предлагаемый handle фасада — `c.Entity().Task()`.
+`*transport.Client` и отклоняет nil. Handle фасада — `c.Entity().Task()`.
 Создание, изменение и удаление требуют тарифной опции CRM; опцию и права проверяет сервер.
 
 ## Методы

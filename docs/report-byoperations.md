@@ -1,7 +1,6 @@
 # Отчёт «По документам номенклатуры» (report/byoperations)
 
-Пакет `report/byoperations`; handle фасада планируется как `c.Report().ByOperations()` (пока
-`byoperations.NewService(transportClient)`). Источник:
+Пакет `report/byoperations`, handle фасада — `c.Report().ByOperations()`. Источник:
 [_report_by_operations.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/reports/_report_by_operations.md)
 (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
 

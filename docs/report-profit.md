@@ -1,6 +1,6 @@
 # Отчёт «Прибыльность» (report/profit)
 
-Пакет `report/profit`, handle фасада — `c.Report().Profit()` (после подключения в `client.go`).
+Пакет `report/profit`, handle фасада — `c.Report().Profit()`.
 Источник: [md/reports/_report_pnl.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/reports/_report_pnl.md)
 (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`), раздел API
 [Отчёт Прибыльность](https://dev.moysklad.ru/doc/api/remap/1.2/#/reports/report-pnl#2-otchet-pribylnost).

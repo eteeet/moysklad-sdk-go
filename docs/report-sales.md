@@ -1,6 +1,6 @@
 # Показатели продаж и заказов (report/sales, report/orders)
 
-Пакет `report/sales`, handle фасада — `c.Report().Sales()` (после подключения в `client.go`).
+Пакет `report/sales`, handle фасада — `c.Report().Sales()`.
 Источник: [md/reports/_report_sales_orders.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/reports/_report_sales_orders.md)
 (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`), раздел API
 [Показатели продаж и заказов](https://dev.moysklad.ru/doc/api/remap/1.2/#/reports/report-sales-orders#2-pokazateli-prodazh-i-zakazov).

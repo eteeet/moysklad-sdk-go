@@ -2,7 +2,7 @@
 
 Пакет `eventfeed` — лента событий документа: `entity/{type}/{id}/notes`, meta.type
 `eventnote`. `eventfeed.NewService(client)` принимает `*transport.Client` и отклоняет nil.
-Предлагаемый handle фасада — `c.Entity().EventFeed()` (как `Entity().Files()`: вложенный
+Handle фасада — `c.Entity().EventFeed()` (как `Entity().Files()`: вложенный
 ресурс нескольких типов сущностей).
 
 События контрагента (`entity/counterparty/{id}/notes`, meta.type `note`) — другой ресурс:

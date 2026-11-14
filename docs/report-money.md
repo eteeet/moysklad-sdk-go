@@ -1,7 +1,6 @@
 # Деньги (report/money)
 
-Пакет `report/money`; handle фасада планируется как `c.Report().Money()` (пока
-`money.NewService(transportClient)`). Источник:
+Пакет `report/money`, handle фасада — `c.Report().Money()`. Источник:
 [_report_money.md](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/reports/_report_money.md)
 (revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`).
 
