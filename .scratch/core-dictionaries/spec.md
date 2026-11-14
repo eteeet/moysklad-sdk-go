@@ -1,4 +1,5 @@
-Status: ready-for-agent
+Status: resolved
+Причина: все тикеты спеки resolved (5/5). Закрыто 2026-11-14 при сверке здоровья документов.
 
 # Country, ExpenseItem, Counterparty, Organization: Get, Create, Update
 

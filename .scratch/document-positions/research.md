@@ -1,4 +1,5 @@
-Status: needs-triage
+Status: resolved
+Причина: работа закрыта: `document-positions/spec.md` resolved. Закрыто 2026-11-14 при сверке здоровья документов.
 Stage: DRAFT
 
 # Positions: первичные факты для DRAFT

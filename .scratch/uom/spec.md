@@ -1,4 +1,5 @@
-Status: ready-for-agent
+Status: resolved
+Причина: все тикеты спеки resolved (3/3). Закрыто 2026-11-14 при сверке здоровья документов.
 
 # UOM: Get, Create, Update
 

@@ -1,4 +1,5 @@
-Status: needs-info
+Status: resolved
+Причина: все тикеты спеки resolved (1/1). Закрыто 2026-11-14 при сверке здоровья документов.
 Stage: APPROVED
 
 # Правки после review P03 и первой волны

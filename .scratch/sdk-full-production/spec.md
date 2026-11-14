@@ -1,4 +1,5 @@
-Status: needs-triage
+Status: resolved
+Причина: все тикеты спеки resolved (8/8). Закрыто 2026-11-14 при сверке здоровья документов.
 Stage: DRAFT
 
 # 4. Производство

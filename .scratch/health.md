@@ -51,7 +51,6 @@
 - `.scratch/sdk-full-documents/issues/07-cash-accounts.md` (needs-info) — оставить: работа не сделана; блокер «live-проверка с согласия» снят `~/ETEEET/moysklad/AGENTS.md:16`, после T1 — `ready-for-agent`.
 - `.scratch/sdk-full-documents/spec.md` (needs-triage) — оставить: открыт O07.
 - `.scratch/sdk-full/map.md` (needs-triage) — оставить: в карте открыт O07.
-- `Status:` открыт, но все тикеты resolved — спеки уже закрыты, исправить строку на `resolved` (механика): `.scratch/core-dictionaries/spec.md` (5/5), `.scratch/uom/spec.md` (3/3), `.scratch/review-followups/spec.md` (1/1), `.scratch/sdk-full-dictionaries/spec.md` (27/27), `.scratch/sdk-full-catalog/spec.md` (13/13), `.scratch/sdk-full-production/spec.md` (8/8), `.scratch/sdk-full-reports/spec.md` (23/23).
 
 ## Покрытие
 

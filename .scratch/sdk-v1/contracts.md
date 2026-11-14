@@ -1,4 +1,5 @@
-Status: needs-triage
+Status: resolved
+Причина: работа закрыта: `sdk-v1/spec.md` и `map.md` resolved. Закрыто 2026-11-14 при сверке здоровья документов.
 Stage: DRAFT
 
 # Каталог контрактов v1
