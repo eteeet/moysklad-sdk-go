@@ -9,11 +9,6 @@
 - M2. `.scratch/sdk-full-documents/spec.md:2`, `.scratch/sdk-full-documents/issues/07-cash-accounts.md:2`, `.scratch/sdk-full/map.md:2` — строка `Stage:` не описана в `docs/agents/issue-tracker.md:11-12` (только `Status:`) — убрать `Stage:` из открытых файлов — механика.
 - M3. `.scratch/trash-content-type/issues/01-trash-content-type.md:2` — `Type: bug` нет в `docs/agents/issue-tracker.md:29` (`research`, `prototype`, `grilling`, `task`) — `Type: task` — механика.
 
-## 2. ADR и glossary
-
-- A4. `~/ETEEET/moysklad/meta/GLOSSARY.md:131,101,141` (Position: _Avoid_ «строка»; SKU: _Avoid_ «ассортимент»; Batch — файлы одного Ingest) — docs SDK называют позиции «строками» (`README.md:63`, `docs/documents-extra.md`, `docs/positions.md`), пишут «ассортимент» (`README.md:27`), пакет массовых операций назван `batch` — решить: glossary действует на SDK, называющий ресурсы API, или SDK — исключение; при «действует» — правка docs (механика) и вопрос о пакете `batch` (ломающее переименование) — владелец.
-- A5. `docs/adr/0002-baseline.md:16-17` — приоритет «опции вызова выше всего»; `entity/assortment/service.go:54-56` ставит `X-Lognex-Remap-Beta-Feature: assortmentWithoutStock` поверх опций вызова и называет это «исключение из порядка ADR 0001» — исключение в ADR 0002, ссылка в комментарии кода → ADR 0002 (тикет), либо тикет на код без исключения — владелец.
-
 ## 3. Открытые спеки
 
 - S1. `.scratch/sdk-full-documents/spec.md:138` — «needs-info: ответ МойСклад или live-проверка с согласия» — с `~/ETEEET/moysklad/AGENTS.md:16` (тестовый аккаунт — без запроса) — «live-проверка на `admin@documan`» — механика.
@@ -44,15 +39,16 @@
 - D9. неполные перечни: `docs/documents-extra.md:9-13` (нет retireorder; emissionorder — без удаления строк), `docs/documents-extra.md:54-60` (Trash без emissionorder, retireorder), `docs/documents.md:16-18` (проверка Name без ProcessingOrder, `entity/processingorder/service.go:42`), `docs/documents.md:56` (своя форма строки без EmissionOrder, RetireOrder), `docs/write-async.md:15-16` (без Delete нет discount, `entity/discount/discount.go:108-141`), `docs/transport.md:27` (нет `X-Idempotency-Key`, `transport/options.go:111`) — дописать — механика.
 - D10. неверные числа: `docs/transport.md:65` (List «у 6 справочников и 11 документов» — около 80 сервисов), `docs/positions.md:82` (11 → 16), `docs/positions.md:104` (7 → 14), `docs/write-async.md:73` (60 → 61) — исправить — механика.
 - D11. неверные утверждения: `docs/transport.md:67` («`fields` в List не принимается» — `query/options.go:50`, `entity/product/service.go:90`, allowlist `internal/list/page.go:44`), `docs/counterparty.md:13` («все методы возвращают `(*Counterparty, error)`» — List, Delete, ListAccounts и др.), `docs/client.md:51-62` (таблица примеров на фасаде без `examples/product_{get,create,update}` на `product.NewService`) — привести к коду — механика.
+- D12. glossary в прозе docs (решение владельца по A4: `~/ETEEET/moysklad/meta/GLOSSARY.md` действует на прозу docs SDK; Go-идентификаторы, повторяющие API, — `assortment`, `positions`, `batch` — не меняются): «строка» в значении Position (`GLOSSARY.md:131`) — `README.md:63`, `docs/documents-extra.md`, `docs/positions.md` → «позиция»; «ассортимент» (`GLOSSARY.md:101`) — `README.md:27` и `docs/*` → `assortment` или «SKU» по смыслу; пакет `batch` в прозе (`GLOSSARY.md:141`) → «массовые операции» — механика.
 
 ## 6. Код
 
 - K1. Create отказывает при пустом `Name`: `entity/invoiceout/service.go:43`, `entity/retailsalesreturn/service.go:45`, `entity/processingorder/service.go:42` — с `~/ETEEET/moysklad/AGENTS.md:18` (документам не задавать `name`, МойСклад нумерует сам) — подтвердить, что правило распространяется на валидацию SDK; тогда тикет: проверить автонумерацию на `admin@documan` и снять проверку, как для invoicein в v0.2.2 — владелец.
-- K2. `notification/settings.go:40` (описан в `docs/notification.md:16`) — `Settings(ctx)` возвращает `(notification.Settings, error)` без указателя — с `docs/adr/0002-baseline.md:11-12` (`(*T, error)`) — исключение для map-типа в ADR или тикет на указатель (ломающее изменение) — владелец.
 - K3. `origin/main` = `5f3fb93 Initial commit`, последний выпуск `v0.2.2` — с `GIT_FLOW.md:20` (владелец перематывает `main` на тег) — `git push origin 'v0.2.2^{}:main'` — владелец.
 
 ## Открытые тикеты и спеки
 
+- `.scratch/adr-0002-code-refs/issues/01-assortment-comment.md` (ready-for-agent) — оставить: заведён по A5, сверен, согласован.
 - `.scratch/trash-content-type/issues/01-trash-content-type.md` (ready-for-agent) — оставить: работа не сделана; M3, T9; выпуск исправления ждёт T3.
 - `.scratch/sdk-full-documents/issues/07-cash-accounts.md` (needs-info) — оставить: работа не сделана; блокер «live-проверка с согласия» снят `~/ETEEET/moysklad/AGENTS.md:16`, после T1 — `ready-for-agent`.
 - `.scratch/sdk-full-documents/spec.md` (needs-triage) — оставить: открыт O07.
@@ -62,10 +58,10 @@
 ## Покрытие
 
 - md: `~/ETEEET/AGENTS.md`, `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md`, `AGENTS.md`, `docs/agents/domain.md`, `docs/agents/triage-labels.md` — согласованы; `docs/agents/issue-tracker.md` — M2, M3.
-- ADR: `docs/adr/0002-baseline.md` — A5, K2; `0001` заменён им. Glossary: общий — A4; своего `GLOSSARY.md` нет.
+- ADR: `docs/adr/0002-baseline.md` — согласован; `0001` заменён им. Glossary: общий — D12; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md` — M2, S1, S2; `.scratch/sdk-full/map.md` — M2.
 - Открытые тикеты: `.scratch/sdk-full-documents/issues/07-cash-accounts.md` — M2, T1; `.scratch/trash-content-type/issues/01-trash-content-type.md` — M3, T9. Бэклог: `docs/status-backlog.md` — T2–T8.
-- docs с находками: `README.md`, `CHANGELOG.md`, `docs/temp_plan.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D1–D11, K2.
+- docs с находками: `README.md`, `CHANGELOG.md`, `docs/temp_plan.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D1–D12.
 - Остальные `docs/*.md` и `testdata/readme.md` — согласованы.
 
 Не проверено: внешние ссылки на документацию МойСклад, поведение живого API (K1, O07), ссылки на API над пакетами в коде (`~/ETEEET/AGENTS.md`, «Комментарии в коде»).

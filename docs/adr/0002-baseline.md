@@ -9,12 +9,15 @@
 ## Опции вызова и ResponseInfo
 
 - Последний параметр каждого публичного метода — `opts ...transport.RequestOption`. Результаты существующих методов
-  `(*T, error)` не меняются.
+  `(*T, error)` не меняются. Метод, результат которого — map-тип (`notification.Settings`), возвращает `(T, error)`:
+  указатель на map не нужен, `nil` уже означает отсутствие результата.
 - Query-параметры передаются отдельным аргументом конкретного метода, а не через RequestOption: допустимые filter,
   order и fields различаются по endpoint.
 - `transport.WithHeader(key, value)` добавляет значение; повтор ключа даёт несколько значений заголовка, а не CSV.
 - Приоритет заголовков: значения transport < `transport.Config.Header` < опции вызова; ключ из опций заменяет ключ
-  клиента целиком.
+  клиента целиком. Исключение: `assortment.Service.List` и `All` ставят
+  `X-Lognex-Remap-Beta-Feature: assortmentWithoutStock` поверх опций вызова — чужой beta-тег из опций без ошибки увёл
+  бы запрос в legacy endpoint или в чужой режим.
 - Служебные заголовки `Authorization`, `Accept`, `Accept-Encoding`, `Content-Type`, `Content-Length`, `Host`,
   `Idempotency-Key`, `X-Idempotency-Key` задаёт только transport; попытка задать их в Config или опциях — ошибка до
   отправки.
