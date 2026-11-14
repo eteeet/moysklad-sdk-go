@@ -27,7 +27,6 @@
 
 ## 5. docs и README
 
-- D1. `docs/temp_plan.md` — правила (`:117-137`, `:254-270`: worktree на ticket, коммиты только локально, push и коммит planning по команде; `:198-216`: свой pipeline grill-with-docs → to-spec → to-tickets → implement) — с `GIT_FLOW.md:11-14` и `~/ETEEET/AGENTS.md` «Скилы Pocock»; `:276` сам требует удалить файл — решить, переносить ли правила тестов `:237-252` (upstream-фикстуры без изменений, независимые golden, expand последним) в `AGENTS.md` или ADR, затем удалить файл — владелец.
 - D2. `CHANGELOG.md:88-132` — «v1.0.0 — предложение»: «не входит в v1: корзина, операции позиций, async-отчёты, Vendor API» — с кодом (всё есть, выпущено в 0.x) и `GIT_FLOW.md:18` (версию предлагает агент при выпуске) — снять раздел или переписать предложение — владелец.
 - D3. `docs/coverage.md:9-10,367,401` — реальная запись «только после отдельного согласия», «коммитить после ревью пользователя» — с `~/ETEEET/moysklad/AGENTS.md:16`, `GIT_FLOW.md:12-13` — переписать — механика.
 - D4. `docs/coverage.md:404-484` — этапы «Сессия 2 и далее» не отмечены, хотя сделаны (List, заголовки, retry, limiter, metadata, вложенные ресурсы, фасад); `:435` — пути `transport/query.go`, `filter.go`, `order.go` вместо пакета `query/`; `README.md:4` — coverage как «план работ» — привести к коду — механика.
@@ -61,7 +60,7 @@
 - ADR: `docs/adr/0002-baseline.md` — согласован; `0001` заменён им. Glossary: общий — D12; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md` — M2, S1, S2; `.scratch/sdk-full/map.md` — M2.
 - Открытые тикеты: `.scratch/sdk-full-documents/issues/07-cash-accounts.md` — M2, T1; `.scratch/trash-content-type/issues/01-trash-content-type.md` — M3, T9. Бэклог: `docs/status-backlog.md` — T2, T4–T8.
-- docs с находками: `README.md`, `CHANGELOG.md`, `docs/temp_plan.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D1–D12.
+- docs с находками: `README.md`, `CHANGELOG.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D2–D12.
 - Остальные `docs/*.md` и `testdata/readme.md` — согласованы.
 
 Не проверено: внешние ссылки на документацию МойСклад, поведение живого API (K1, O07), ссылки на API над пакетами в коде (`~/ETEEET/AGENTS.md`, «Комментарии в коде»).
