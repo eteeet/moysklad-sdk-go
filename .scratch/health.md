@@ -18,7 +18,6 @@
 
 - T1. `.scratch/sdk-full-documents/issues/07-cash-accounts.md:18,39` — «live-проверка с согласия», «Planning без команды не коммитится» — с `~/ETEEET/moysklad/AGENTS.md:16`, `GIT_FLOW.md:12` — переписать, Status → `ready-for-agent` — механика.
 - T2. `docs/status-backlog.md:160-161` — live-проверки «только с согласия» — с `~/ETEEET/moysklad/AGENTS.md:16` — «на `admin@documan` без запроса» — механика.
-- T3. `docs/status-backlog.md:162`, `docs/status-technical.md:104`, `docs/coverage.md:484` и сам репозиторий: нет `.github/workflows/`, записано «CI для v1 не делается, только `make check`» — с `INFRA.md:17-24` (CI на GitHub Actions у каждого репозитория с кодом: проверки на push ветки и PR, на push в `dev`; тег у библиотеки ничего не собирает), `GIT_FLOW.md:13` (ветка сливается в `dev` при зелёном CI ветки) и `GIT_FLOW.md:19` (тег — на коммит с зелёным CI; `v0.1.0`…`v0.2.2` без CI; выпуск исправления `trash-content-type/01` упирается в это же) — workflow по INFRA отдельным тикетом либо исключение в ADR; способ CI меняется только после «да» владельца (`INFRA.md:31`) — владелец.
 - T4. `docs/status-backlog.md:163`, `docs/status-technical.md:106` — «тег и релиз — отдельной командой» — с `GIT_FLOW.md:16-24` (процедура выпуска; теги уже есть) — ссылка на GIT_FLOW — механика.
 - T5. `docs/status-backlog.md:164` — «Vendor API — отдельный контур» — с кодом (`vendorapi/`) — отметить сделанным — механика.
 - T6. `docs/status-backlog.md:36` — `[x]` «fsrarId, utmUrl» — с кодом (`entity/organization` их не содержит) и `docs/organization.md:106` — отметку оставить счетам, fsrarId/utmUrl — «не добавлены: нет в таблице атрибутов» — механика.
@@ -48,8 +47,9 @@
 
 ## Открытые тикеты и спеки
 
+- `.scratch/ci/issues/01-github-actions.md` (ready-for-agent) — оставить: заведён по T3 после «да» владельца на смену способа CI, сверен с `INFRA.md:17-24,31` и `GIT_FLOW.md:13,19`.
 - `.scratch/adr-0002-code-refs/issues/01-assortment-comment.md` (ready-for-agent) — оставить: заведён по A5, сверен, согласован.
-- `.scratch/trash-content-type/issues/01-trash-content-type.md` (ready-for-agent) — оставить: работа не сделана; M3, T9; выпуск исправления ждёт T3.
+- `.scratch/trash-content-type/issues/01-trash-content-type.md` (ready-for-agent) — оставить: работа не сделана; M3, T9; выпуск исправления ждёт `ci/01`.
 - `.scratch/sdk-full-documents/issues/07-cash-accounts.md` (needs-info) — оставить: работа не сделана; блокер «live-проверка с согласия» снят `~/ETEEET/moysklad/AGENTS.md:16`, после T1 — `ready-for-agent`.
 - `.scratch/sdk-full-documents/spec.md` (needs-triage) — оставить: открыт O07.
 - `.scratch/sdk-full/map.md` (needs-triage) — оставить: в карте открыт O07.
@@ -60,7 +60,7 @@
 - md: `~/ETEEET/AGENTS.md`, `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md`, `AGENTS.md`, `docs/agents/domain.md`, `docs/agents/triage-labels.md` — согласованы; `docs/agents/issue-tracker.md` — M2, M3.
 - ADR: `docs/adr/0002-baseline.md` — согласован; `0001` заменён им. Glossary: общий — D12; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md` — M2, S1, S2; `.scratch/sdk-full/map.md` — M2.
-- Открытые тикеты: `.scratch/sdk-full-documents/issues/07-cash-accounts.md` — M2, T1; `.scratch/trash-content-type/issues/01-trash-content-type.md` — M3, T9. Бэклог: `docs/status-backlog.md` — T2–T8.
+- Открытые тикеты: `.scratch/sdk-full-documents/issues/07-cash-accounts.md` — M2, T1; `.scratch/trash-content-type/issues/01-trash-content-type.md` — M3, T9. Бэклог: `docs/status-backlog.md` — T2, T4–T8.
 - docs с находками: `README.md`, `CHANGELOG.md`, `docs/temp_plan.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D1–D12.
 - Остальные `docs/*.md` и `testdata/readme.md` — согласованы.
 

@@ -101,7 +101,7 @@
 - [x] Примеры сценариев на фасаде: контекст, ассортимент, позиции заказа, аудит, обороты, файлы
 - [x] Фасад SDK: `moysklad.NewClient`, группы Entity/Report/Context/Audit/Security
 - [x] `make check`: gofmt, vet, race-тесты, SHA-256 фикстур, статус сущностей, diff --check
-- [ ] CI workflow (для v1 не делается: только `make check`), проверки безопасности
+- [ ] CI workflow с `make check` по `~/ETEEET/INFRA.md` — тикет `.scratch/ci/issues/01-github-actions.md`; проверки безопасности
 - [x] CHANGELOG: предложение v1.0.0 и совместимость с 7442803
 - [ ] Тег и релиз — отдельной командой
 - [x] Vendor API: `AppAuth`, `Context`, `UserContext`, `Status`/`SetStatus`, `VerifyRequest`, типы
