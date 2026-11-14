@@ -1,5 +1,4 @@
-Status: needs-info
-Stage: DRAFT
+Status: ready-for-agent
 Type: task
 Blocked by: нет
 
@@ -15,7 +14,7 @@ Blocked by: нет
 
 ## Специальные проверки
 
-needs-info: нужен ответ МойСклад или live-проверка с согласия.
+Живая проверка на `admin@documan` (`~/ETEEET/moysklad/AGENTS.md:16`): принимает ли Update счета; результат с датой — в Answer.
 
 ## Образец
 
@@ -36,8 +35,7 @@ needs-info: нужен ответ МойСклад или live-проверка 
 - [ ] go test -race, go vet ./... ./testdata, gofmt и diff-check PASS; независимые
   Standards/Spec review, исправления и финальный BASE/результат записаны в Answer.
 - [ ] Фасад, status-entities/status-technical, status-backlog и guide отражают реальный
-  scope, ограничения и неизвестные факты. Planning без команды не коммитится; один code
-  commit по ticket.
+  scope, ограничения и неизвестные факты. Один code commit по ticket.
 
 ## Источники
 

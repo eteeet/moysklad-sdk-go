@@ -1,5 +1,5 @@
 Status: ready-for-agent
-Type: bug
+Type: task
 Blocked by: —
 
 # 01: `Trash` уходит без `Content-Type`
@@ -14,4 +14,4 @@ Blocked by: —
 
 - [ ] Тест на `httptest`: запрос `Trash` несёт `Content-Type: application/json`, тело — по выбранному варианту.
 - [ ] Живая проверка на тестовом аккаунте: документ уходит в корзину, ответ 200 или 204; результат с датой записан в тикет.
-- [ ] Выпуск SDK с исправлением; ms_documan убирает обход в `.scratch/replica/livecheck/main.go`, когда поднимет версию.
+- [ ] Выпуск SDK с исправлением.

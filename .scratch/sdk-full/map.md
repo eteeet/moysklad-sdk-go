@@ -1,5 +1,4 @@
 Status: needs-triage
-Stage: DRAFT
 Type: wayfinder:map
 
 # SDK — полное покрытие JSON API 1.2: карта захваток и тикетов

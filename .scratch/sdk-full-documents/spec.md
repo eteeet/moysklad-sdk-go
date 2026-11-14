@@ -1,5 +1,4 @@
 Status: needs-triage
-Stage: DRAFT
 
 # 3. Документы и операции документов
 
@@ -135,7 +134,7 @@ pack, things, slot, serial/tracking у invoicein, invoiceout, move; transport-п
 
 Решить расхождение: текст Update требует счета, таблица их не содержит.
 
-Проверки и особенности: needs-info: нужен ответ МойСклад или live-проверка с согласия.
+Проверки и особенности: живая проверка на `admin@documan` (`~/ETEEET/moysklad/AGENTS.md:16`) — принимает ли Update счета.
 
 Источники: [cashin](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/documents/_cashin.md), [cashout](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/documents/_cashout.md).
 
@@ -267,8 +266,7 @@ pack, things, slot, serial/tracking у invoicein, invoiceout, move; transport-п
 - Проверки: `make check` (go test -race, go vet ./... ./testdata, gofmt, SHA-256 фикстур,
   статус сущностей, diff --check); независимые Standards/Spec review на фиксированном BASE.
 - Коммит по ticket; shared dependency раньше зависимого, публичные docs отдельным
-  завершающим commit волны. Planning не коммитить без отдельной команды.
-- Live API, credentials, push/tag/release и worktree cleanup не входят.
+  завершающим commit волны.
 
 ## Open Decisions
 
