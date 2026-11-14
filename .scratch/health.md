@@ -6,7 +6,7 @@
 
 ## 1. md
 
-Находок нет.
+- M4. `GIT_FLOW.md:8` («Защиты веток на GitHub нет») и `GIT_FLOW.md:20` (владелец перематывает `main` push-ем тега) — с GitHub: у `eteeet/moysklad-sdk-go` ruleset `main` (id 25484674, с 2026-10-20) — правила `deletion`, `non_fast_forward`, `pull_request`, без bypass; `git push origin 'v0.2.2^{}:main'` отклонён (GH013). У приватных `ms-documan`, `doc2data`, `meta` rulesets недоступны на текущем тарифе — `GIT_FLOW.md:8` верен для них. Слияние PR на GitHub даёт merge-коммит или новые SHA, поэтому «`main` = коммит тега» через PR не выполнить — убрать из ruleset правило `pull_request` (оставить `deletion` и `non_fast_forward`: они совпадают с «только вперёд») и уточнить `GIT_FLOW.md:8`, либо иной порядок выпуска для SDK — владелец.
 
 ## 2. ADR и glossary
 
@@ -26,7 +26,7 @@
 
 ## 6. Код
 
-- K3. `origin/main` = `5f3fb93 Initial commit`, последний выпуск `v0.2.2` — с `GIT_FLOW.md:20` (владелец перематывает `main` на тег) — `git push origin 'v0.2.2^{}:main'` — владелец.
+- K3. `origin/main` = `5f3fb93 Initial commit`, последний выпуск `v0.2.2` — с `GIT_FLOW.md:20` (владелец перематывает `main` на тег) — `git push origin 'v0.2.2^{}:main'` — владелец. Заблокирован M4: push 2026-11-14 отклонён ruleset `main`.
 
 ## Открытые тикеты и спеки
 
