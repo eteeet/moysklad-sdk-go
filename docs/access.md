@@ -1,7 +1,7 @@
 # Сотрудники, права, метаданные и аудит
 
 Источник контрактов — `api-remap-1.2-doc` revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.
-Все методы принимают `opts ...transport.RequestOption` ([ADR 0001](adr/0001-request-options.md)).
+Все методы принимают `opts ...transport.RequestOption` ([ADR 0002](adr/0002-baseline.md)).
 
 ## Сотрудники и права
 

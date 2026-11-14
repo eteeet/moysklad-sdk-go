@@ -1,7 +1,7 @@
 # Товары: поля, остатки, изображения, скидки и маркировка
 
 Источник контрактов — `api-remap-1.2-doc` revision `0e1b3d61fb8d8fa314469361d96560d6c3f7f57b`.
-Все методы принимают `opts ...transport.RequestOption` ([ADR 0001](adr/0001-request-options.md)).
+Все методы принимают `opts ...transport.RequestOption` ([ADR 0002](adr/0002-baseline.md)).
 Деньги — float64 в копейках, проценты — нет; ссылки — `model.Reference` без expand. Записи не
 повторяются.
 

@@ -11,12 +11,8 @@
 
 ## 2. ADR и glossary
 
-Все находки — ADR 0001 устарел относительно кода, который его исполняет; правка верхнего звена.
-
-- A1. `docs/adr/0001-request-options.md:24-25` — список заголовков transport без `Idempotency-Key`, `X-Idempotency-Key`; код их блокирует (`transport/options.go:110-111`) — дописать в ADR — владелец.
-- A2. `docs/adr/0001-request-options.md:41-42` — «T09 добавит число попыток»; `ResponseInfo.Attempts` есть (`transport/options.go:35`) — настоящее время — владелец.
-- A3. `docs/adr/0001-request-options.md:46-47` — «компилируются только методы UOM, остальных ещё нет»; все прототипы реализованы (`entity/customerorder/service.go:76,88`, `report/turnover/service.go:100`) — убрать оговорку — владелец.
 - A4. `~/ETEEET/moysklad/meta/GLOSSARY.md:131,101,141` (Position: _Avoid_ «строка»; SKU: _Avoid_ «ассортимент»; Batch — файлы одного Ingest) — docs SDK называют позиции «строками» (`README.md:63`, `docs/documents-extra.md`, `docs/positions.md`), пишут «ассортимент» (`README.md:27`), пакет массовых операций назван `batch` — решить: glossary действует на SDK, называющий ресурсы API, или SDK — исключение; при «действует» — правка docs (механика) и вопрос о пакете `batch` (ломающее переименование) — владелец.
+- A5. `docs/adr/0002-baseline.md:16-17` — приоритет «опции вызова выше всего»; `entity/assortment/service.go:54-56` ставит `X-Lognex-Remap-Beta-Feature: assortmentWithoutStock` поверх опций вызова и называет это «исключение из порядка ADR 0001» — исключение в ADR 0002, ссылка в комментарии кода → ADR 0002 (тикет), либо тикет на код без исключения — владелец.
 
 ## 3. Открытые спеки
 
@@ -52,7 +48,7 @@
 ## 6. Код
 
 - K1. Create отказывает при пустом `Name`: `entity/invoiceout/service.go:43`, `entity/retailsalesreturn/service.go:45`, `entity/processingorder/service.go:42` — с `~/ETEEET/moysklad/AGENTS.md:18` (документам не задавать `name`, МойСклад нумерует сам) — подтвердить, что правило распространяется на валидацию SDK; тогда тикет: проверить автонумерацию на `admin@documan` и снять проверку, как для invoicein в v0.2.2 — владелец.
-- K2. `notification/settings.go:40` (описан в `docs/notification.md:16`) — `Settings(ctx)` возвращает `(notification.Settings, error)` без указателя — с ADR 0001:12-13 (`(*T, error)`) — исключение для map-типа в ADR или тикет на указатель (ломающее изменение) — владелец.
+- K2. `notification/settings.go:40` (описан в `docs/notification.md:16`) — `Settings(ctx)` возвращает `(notification.Settings, error)` без указателя — с `docs/adr/0002-baseline.md:11-12` (`(*T, error)`) — исключение для map-типа в ADR или тикет на указатель (ломающее изменение) — владелец.
 - K3. `origin/main` = `5f3fb93 Initial commit`, последний выпуск `v0.2.2` — с `GIT_FLOW.md:20` (владелец перематывает `main` на тег) — `git push origin 'v0.2.2^{}:main'` — владелец.
 
 ## Открытые тикеты и спеки
@@ -63,29 +59,10 @@
 - `.scratch/sdk-full/map.md` (needs-triage) — оставить: в карте открыт O07.
 - `Status:` открыт, но все тикеты resolved — спеки уже закрыты, исправить строку на `resolved` (механика): `.scratch/core-dictionaries/spec.md` (5/5), `.scratch/uom/spec.md` (3/3), `.scratch/review-followups/spec.md` (1/1), `.scratch/sdk-full-dictionaries/spec.md` (27/27), `.scratch/sdk-full-catalog/spec.md` (13/13), `.scratch/sdk-full-production/spec.md` (8/8), `.scratch/sdk-full-reports/spec.md` (23/23).
 
-## Черновик baseline
-
-Действующие решения ADR; других ADR нет ни в `docs/adr/`, ни в `~/ETEEET/moysklad/meta/docs/adr/`. Сверены с md: противоречий нет. Устаревшие формулировки самого ADR — A1–A3.
-
-- ADR 0001: последний параметр каждого публичного метода — `opts ...transport.RequestOption`; результаты существующих методов `(*T, error)` не меняются.
-- ADR 0001: `transport.WithHeader` добавляет значение; повтор ключа даёт несколько значений, не CSV.
-- ADR 0001: `transport.WithResponseInfo` заполняет StatusCode и копию заголовков последнего ответа, в т.ч. при `APIError` и ошибке decode; без ответа — обнуляется.
-- ADR 0001: публичная операция обнуляет ResponseInfo на входе (`ResetResponseInfo`) до локальной валидации; общего `LastResponse` нет.
-- ADR 0001: приоритет заголовков — transport < `Config.Header` < опции вызова; ключ из опций заменяет ключ клиента целиком.
-- ADR 0001: служебные заголовки (`Authorization`, `Accept`, `Accept-Encoding`, `Content-Type`, `Content-Length`, `Host`; в коде ещё `Idempotency-Key`, `X-Idempotency-Key` — A1) задаёт только transport; попытка задать — ошибка до отправки.
-- ADR 0001: `transport.WithAuth` заменяет `Config.Auth` на один вызов; `Authorization` по-прежнему ставит transport.
-- ADR 0001: `transport.Client.Send` (и `SendNoRedirect`) — единственный seam JSON-вызова; limiter и retry живут в transport, не в services.
-- ADR 0001: `Download` пишет тело в `io.Writer` и закрывает его сам; слоты limiter держатся до конца копирования; retry — только пока в writer ничего не записано.
-- ADR 0001: policy (настройки, limiter, retry) принадлежит `*transport.Client`; services и фасад на одном Client делят её.
-- ADR 0001: `NewRequest`/`Do` — низкоуровневый API без опций и без ResponseInfo.
-- ADR 0001: ResponseInfo содержит число попыток; StatusCode и Header — последней попытки.
-- ADR 0001: query-параметры — отдельный аргумент конкретного метода, не RequestOption.
-- ADR 0001: `Result[T]{Value, Info}` отвергнут.
-
 ## Покрытие
 
 - md: `~/ETEEET/AGENTS.md`, `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md`, `AGENTS.md`, `docs/agents/domain.md`, `docs/agents/triage-labels.md` — согласованы; `docs/agents/issue-tracker.md` — M2, M3.
-- ADR: `docs/adr/0001-request-options.md` — A1–A3, K2. Glossary: общий — A4; своего `GLOSSARY.md` нет.
+- ADR: `docs/adr/0002-baseline.md` — A5, K2; `0001` заменён им. Glossary: общий — A4; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md` — M2, S1, S2; `.scratch/sdk-full/map.md` — M2.
 - Открытые тикеты: `.scratch/sdk-full-documents/issues/07-cash-accounts.md` — M2, T1; `.scratch/trash-content-type/issues/01-trash-content-type.md` — M3, T9. Бэклог: `docs/status-backlog.md` — T2–T8.
 - docs с находками: `README.md`, `CHANGELOG.md`, `docs/temp_plan.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D1–D11, K2.

@@ -1,7 +1,7 @@
 # Файлы и отчёт «Обороты»
 
 Источник контрактов — `api-remap-1.2-doc` revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.
-Все методы принимают `opts ...transport.RequestOption` ([ADR 0001](adr/0001-request-options.md)).
+Все методы принимают `opts ...transport.RequestOption` ([ADR 0002](adr/0002-baseline.md)).
 
 ## Скачивание
 
@@ -19,7 +19,7 @@
 - ResponseInfo описывает последний ответ цепочки redirect, в том числе отклонённого своим
   CheckRedirect. При неразбираемом Location net/http ответ не возвращает: StatusCode 0.
   Время жизни ссылки — `transport.WithDownloadExpiration` (по умолчанию сервера 60 с, максимум 86400).
-- Решение «writer, а не ReadCloser» записано в ADR 0001: тело всегда закрывается внутри метода.
+- Решение «writer, а не ReadCloser» записано в [ADR 0002](adr/0002-baseline.md): тело ответа всегда закрывается внутри метода.
 
 ## Файлы
 
