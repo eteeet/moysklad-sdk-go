@@ -1,13 +1,13 @@
 # Здоровье документов
 
-Пересборка 2026-11-11, `dev` @ `3fc370b`. Только действующая цепочка; история (закрытые спеки и тикеты, research, ревью, handoff, снимки) не сверяется.
+Пересборка 2026-11-11, `dev` @ `3fc370b`; сверка 2026-11-14, `dev` @ `159992b`: изменились `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md` и добавлен тикет `trash-content-type/01`, код не менялся. Только действующая цепочка; история (закрытые спеки и тикеты, research, ревью, handoff, снимки) не сверяется.
 Цепочка: 1 md → 2 ADR и glossary → 3 открытые спеки → 4 открытые тикеты и бэклог → 5 docs и README → 6 код.
 Строка: `файл:строка — с каким звеном расходится — предложение — кто решает`. «Механика» — однозначная правка вниз; «владелец» — выбор или правка верхнего звена.
 
 ## 1. md
 
-- M1. `~/ETEEET/AGENTS.md`, раздел «Здоровье документов» — порядок «AGENTS/GIT_FLOW/INFRA → ADR → спеки и тикеты → docs» уже, чем действующая цепочка: нет glossary, бэклога, кода, правила «история не сверяется» — переписать раздел по цепочке выше — владелец. См. «Другие репозитории».
 - M2. `.scratch/sdk-full-documents/spec.md:2`, `.scratch/sdk-full-documents/issues/07-cash-accounts.md:2`, `.scratch/sdk-full/map.md:2` — строка `Stage:` не описана в `docs/agents/issue-tracker.md:11-12` (только `Status:`) — убрать `Stage:` из открытых файлов — механика.
+- M3. `.scratch/trash-content-type/issues/01-trash-content-type.md:2` — `Type: bug` нет в `docs/agents/issue-tracker.md:29` (`research`, `prototype`, `grilling`, `task`) — `Type: task` — механика.
 
 ## 2. ADR и glossary
 
@@ -16,7 +16,7 @@
 - A1. `docs/adr/0001-request-options.md:24-25` — список заголовков transport без `Idempotency-Key`, `X-Idempotency-Key`; код их блокирует (`transport/options.go:110-111`) — дописать в ADR — владелец.
 - A2. `docs/adr/0001-request-options.md:41-42` — «T09 добавит число попыток»; `ResponseInfo.Attempts` есть (`transport/options.go:35`) — настоящее время — владелец.
 - A3. `docs/adr/0001-request-options.md:46-47` — «компилируются только методы UOM, остальных ещё нет»; все прототипы реализованы (`entity/customerorder/service.go:76,88`, `report/turnover/service.go:100`) — убрать оговорку — владелец.
-- A4. `~/ETEEET/moysklad/meta/GLOSSARY.md` (Position: _Avoid_ «строка»; SKU: _Avoid_ «ассортимент»; Batch — файлы одного Ingest) — docs SDK называют позиции «строками» (`README.md:63`, `docs/documents-extra.md`, `docs/positions.md`), пишут «ассортимент» (`README.md:27`), пакет массовых операций назван `batch` — решить: glossary действует на SDK, называющий ресурсы API, или SDK — исключение; при «действует» — правка docs (механика) и вопрос о пакете `batch` (ломающее переименование) — владелец.
+- A4. `~/ETEEET/moysklad/meta/GLOSSARY.md:131,101,141` (Position: _Avoid_ «строка»; SKU: _Avoid_ «ассортимент»; Batch — файлы одного Ingest) — docs SDK называют позиции «строками» (`README.md:63`, `docs/documents-extra.md`, `docs/positions.md`), пишут «ассортимент» (`README.md:27`), пакет массовых операций назван `batch` — решить: glossary действует на SDK, называющий ресурсы API, или SDK — исключение; при «действует» — правка docs (механика) и вопрос о пакете `batch` (ломающее переименование) — владелец.
 
 ## 3. Открытые спеки
 
@@ -27,12 +27,13 @@
 
 - T1. `.scratch/sdk-full-documents/issues/07-cash-accounts.md:18,39` — «live-проверка с согласия», «Planning без команды не коммитится» — с `~/ETEEET/moysklad/AGENTS.md:16`, `GIT_FLOW.md:12` — переписать, Status → `ready-for-agent` — механика.
 - T2. `docs/status-backlog.md:160-161` — live-проверки «только с согласия» — с `~/ETEEET/moysklad/AGENTS.md:16` — «на `admin@documan` без запроса» — механика.
-- T3. `docs/status-backlog.md:162`, `docs/status-technical.md:104`, `docs/coverage.md:484` и сам репозиторий: нет `.github/workflows/`, записано «CI для v1 не делается, только `make check`» — с `INFRA.md:15-17` (CI на GitHub Actions у каждого репозитория с кодом) и `GIT_FLOW.md:19` (тег — на коммит с зелёным CI; `v0.1.0`…`v0.2.2` без CI) — workflow по INFRA отдельным тикетом либо исключение в ADR; способ CI меняется только после «да» владельца (`INFRA.md:29`) — владелец.
-- T4. `docs/status-backlog.md:163`, `docs/status-technical.md:106` — «тег и релиз — отдельной командой» — с `GIT_FLOW.md:16-20` (процедура выпуска; теги уже есть) — ссылка на GIT_FLOW — механика.
+- T3. `docs/status-backlog.md:162`, `docs/status-technical.md:104`, `docs/coverage.md:484` и сам репозиторий: нет `.github/workflows/`, записано «CI для v1 не делается, только `make check`» — с `INFRA.md:17-24` (CI на GitHub Actions у каждого репозитория с кодом: проверки на push ветки и PR, на push в `dev`; тег у библиотеки ничего не собирает), `GIT_FLOW.md:13` (ветка сливается в `dev` при зелёном CI ветки) и `GIT_FLOW.md:19` (тег — на коммит с зелёным CI; `v0.1.0`…`v0.2.2` без CI; выпуск исправления `trash-content-type/01` упирается в это же) — workflow по INFRA отдельным тикетом либо исключение в ADR; способ CI меняется только после «да» владельца (`INFRA.md:31`) — владелец.
+- T4. `docs/status-backlog.md:163`, `docs/status-technical.md:106` — «тег и релиз — отдельной командой» — с `GIT_FLOW.md:16-24` (процедура выпуска; теги уже есть) — ссылка на GIT_FLOW — механика.
 - T5. `docs/status-backlog.md:164` — «Vendor API — отдельный контур» — с кодом (`vendorapi/`) — отметить сделанным — механика.
 - T6. `docs/status-backlog.md:36` — `[x]` «fsrarId, utmUrl» — с кодом (`entity/organization` их не содержит) и `docs/organization.md:106` — отметку оставить счетам, fsrarId/utmUrl — «не добавлены: нет в таблице атрибутов» — механика.
 - T7. `docs/status-backlog.md:10` и заголовки захваток 2–5 — «Spec и tickets (DRAFT, needs-triage)», нет «сделано» — с `.scratch/sdk-full/map.md:39-43` (реализованы) — исправить — механика.
 - T8. `docs/status-backlog.md:165` — пункт «обновить revision в status-*» не выполнен: `docs/status-technical.md:4`, `docs/status-entities.md:3` — `9a811cef` против `docs/status-backlog.md:3` `0e1b3d61` — обновить — механика.
+- T9. `.scratch/trash-content-type/issues/01-trash-content-type.md:17` — в критерии «ms_documan убирает обход в `.scratch/replica/livecheck/main.go`, когда поднимет версию» — работа другого репозитория в тикете SDK, с `~/ETEEET/moysklad/AGENTS.md:26`; код продукта ms_documan `Trash` не вызывает (нет вызовов в `internal/`, `cmd/`), обход — только в одноразовом скрипте на SDK v0.1.1, тикет в ms_documan не нужен — убрать эту часть, «Выпуск SDK с исправлением» оставить — механика.
 
 ## 5. docs и README
 
@@ -54,12 +55,9 @@
 - K2. `notification/settings.go:40` (описан в `docs/notification.md:16`) — `Settings(ctx)` возвращает `(notification.Settings, error)` без указателя — с ADR 0001:12-13 (`(*T, error)`) — исключение для map-типа в ADR или тикет на указатель (ломающее изменение) — владелец.
 - K3. `origin/main` = `5f3fb93 Initial commit`, последний выпуск `v0.2.2` — с `GIT_FLOW.md:20` (владелец перематывает `main` на тег) — `git push origin 'v0.2.2^{}:main'` — владелец.
 
-## Другие репозитории
-
-- O1. → `~/ETEEET` (вне git): `~/ETEEET/AGENTS.md`, раздел «Здоровье документов» — см. M1 — владелец.
-
 ## Открытые тикеты и спеки
 
+- `.scratch/trash-content-type/issues/01-trash-content-type.md` (ready-for-agent) — оставить: работа не сделана; M3, T9; выпуск исправления ждёт T3.
 - `.scratch/sdk-full-documents/issues/07-cash-accounts.md` (needs-info) — оставить: работа не сделана; блокер «live-проверка с согласия» снят `~/ETEEET/moysklad/AGENTS.md:16`, после T1 — `ready-for-agent`.
 - `.scratch/sdk-full-documents/spec.md` (needs-triage) — оставить: открыт O07.
 - `.scratch/sdk-full/map.md` (needs-triage) — оставить: в карте открыт O07.
@@ -86,10 +84,10 @@
 
 ## Покрытие
 
-- md: `~/ETEEET/AGENTS.md` — M1; `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md`, `AGENTS.md`, `docs/agents/domain.md`, `docs/agents/triage-labels.md` — согласованы; `docs/agents/issue-tracker.md` — M2.
+- md: `~/ETEEET/AGENTS.md`, `GIT_FLOW.md`, `INFRA.md`, `~/ETEEET/moysklad/AGENTS.md`, `AGENTS.md`, `docs/agents/domain.md`, `docs/agents/triage-labels.md` — согласованы; `docs/agents/issue-tracker.md` — M2, M3.
 - ADR: `docs/adr/0001-request-options.md` — A1–A3, K2. Glossary: общий — A4; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md` — M2, S1, S2; `.scratch/sdk-full/map.md` — M2.
-- Открытый тикет: `.scratch/sdk-full-documents/issues/07-cash-accounts.md` — M2, T1. Бэклог: `docs/status-backlog.md` — T2–T8.
+- Открытые тикеты: `.scratch/sdk-full-documents/issues/07-cash-accounts.md` — M2, T1; `.scratch/trash-content-type/issues/01-trash-content-type.md` — M3, T9. Бэклог: `docs/status-backlog.md` — T2–T8.
 - docs с находками: `README.md`, `CHANGELOG.md`, `docs/temp_plan.md`, `docs/coverage.md`, `docs/status-technical.md`, `docs/status-entities.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `eventfeed`, `files-reports`, `internalorder`, `loss`, `notification`, `positions`, `purchaseorder`, `report-byoperations`, `report-counterparty`, `report-dashboard`, `report-money`, `report-profit`, `report-sales`, `retail`, `salesreturn`, `task`, `transport`, `write-async` — D1–D11, K2.
 - Остальные `docs/*.md` и `testdata/readme.md` — согласованы.
 
