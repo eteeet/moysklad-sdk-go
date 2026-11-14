@@ -70,7 +70,6 @@ Store необязателен в Create. InTransit записывается о�
 Shipped позиции и WaitSum документа выбраны read-only в scope SDK, хотя в таблице API
 нет соответствующего readonly marker. CustomerOrders, InvoicesIn, ProductionTasks,
 Payments, Supplies пишутся как связи документов.
-Pack остаётся TODO.
 
 Источник полей: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/purchaseOrder),
 [зафиксированный revision 9a811cef](https://github.com/moysklad/api-remap-1.2-doc/blob/9a811cef3dc4a3f3a46f070e60452361a06bf7cd/md/documents/_purchaseOrder.md).

@@ -53,7 +53,7 @@ GetPositions делает отдельный GET `entity/<type>/{id}/positions?l
 пустая страница. Дополнительные правила: [positions](positions.md).
 
 Embedded Create/Update принимает до 1000 строк; 1001 отклоняется до HTTP. В CreateMany/UpdateMany
-лимит строк каждого элемента проверяет сервер. У Inventory, PriceList, CommissionReportIn/Out и Payroll
+лимит строк каждого элемента проверяет сервер. У Inventory, PriceList, CommissionReportIn/Out, Payroll, EmissionOrder и RetireOrder
 своя форма строки; у Inventory и PriceList positions в теле — объект `{"rows":[…]}`.
 Незаданные positions не меняют набор; [] запрашивает замену пустым набором.
 Непустой positions в Update полностью заменяет набор: matching ID обновляет строку,

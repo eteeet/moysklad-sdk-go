@@ -13,7 +13,7 @@ err = c.Entity().Files().Delete(ctx, "product", productID, fileID)
 ```
 
 - `Delete(ctx, id, opts...)` есть у всех сервисов `entity/*`, кроме assortment, pricetype, region,
-  saleplatform, thing, application, emissionorder и retireorder: у них раздела «Удалить» в
+  saleplatform, thing, application, discount, emissionorder и retireorder: у них раздела «Удалить» в
   источнике нет (TestDeleteOnlyWhereDocumented). Роль — пользовательская (`entity/role`).
 - Один `DELETE`, тела нет; успех — 200 или 204 (примеры источника — 200 с пустым телом). Неверный
   UUID отклоняется до запроса; права и связанные объекты проверяет сервер (APIError).

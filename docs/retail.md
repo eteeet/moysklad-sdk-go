@@ -18,7 +18,7 @@
 
 - RetailStore: environment и state — readonly JSON как пришёл (`jsontext.Value`); masterRetailStores и
   productFolders читаются коллекцией или массивом (`Links`), пишутся массивом ссылок. Cashiers — только
-  метаданные; ресурс кассиров не входит. Конфликт allowCreateProducts/controlShippingStock, тариф и
+  метаданные; ресурс кассиров — [dictionaries.md](dictionaries.md). Конфликт allowCreateProducts/controlShippingStock, тариф и
   валюту счёта организации проверяет сервер. discountMaxPercent — float64 (таблица: Int, ответы: 100.0).
 - RetailShift: позиций нет. Открытие — Create, закрытие и фискальные данные — явные `CloseDate` и
   `Cheque` (`ChequeRequest` на Field) в Update; SDK смену сам не создаёт. Платежи — `PaymentOperations`
@@ -50,5 +50,4 @@
 
 ## Не входит
 
-Шаблоны /new, expand, отдельные операции с позициями, внесения и
-выплаты денег (retaildrawercashin/out), фискализация и расчёт бонусов. Кассиры точки продаж — [dictionaries.md](dictionaries.md). Delete и массовые операции — [write-async.md](write-async.md).
+Expand, фискализация и расчёт бонусов. Шаблоны `New` и операции позиций — [documents-extra.md](documents-extra.md); внесения и выплаты денег — [retaildrawercashin](retaildrawercashin.md), [retaildrawercashout](retaildrawercashout.md). Кассиры точки продаж — [dictionaries.md](dictionaries.md). Delete и массовые операции — [write-async.md](write-async.md).

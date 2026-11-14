@@ -34,8 +34,7 @@
   считает их заранее. Размер тела — закодированный JSON (`Config.MaxBodySize`); Base64 больше файла
   примерно на треть.
 - Имя файла: непустое, без разделителей пути, NUL, «.» и «..»; длину и тип содержимого проверяет сервер.
-- `Delete(ctx, type, id, fileID)` — [write-async.md](write-async.md). Изображения товаров и скачивание
-  миниатюр не входят.
+- `Delete(ctx, type, id, fileID)` — [write-async.md](write-async.md). Изображения товаров и их скачивание — пакет `images` ([catalog-extra.md](catalog-extra.md)).
 
 ## Отчёт «Обороты»
 

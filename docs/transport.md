@@ -24,7 +24,7 @@
 `X-Lognex-WebHook-Disable` отключён API 2026-10-01 и не поддерживается. Pretty-print,
 `X-Lognex-Format-Millisecond` и `Cache-Control` задаются через `WithHeader`.
 `Authorization`, `Accept`, `Accept-Encoding`, `Content-Type`, `Content-Length`, `Host`,
-`Idempotency-Key` задаёт transport: попытка их задать — ошибка до отправки.
+`Idempotency-Key`, `X-Idempotency-Key` задаёт transport: попытка их задать — ошибка до отправки.
 Заголовки для всех запросов клиента — `transport.Config.Header`; опция вызова заменяет key целиком.
 
 `ResponseInfo` разбирает `X-RateLimit-*`, `X-Lognex-Retry-TimeInterval`, `X-Lognex-Reset`,

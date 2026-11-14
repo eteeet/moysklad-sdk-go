@@ -47,7 +47,7 @@
   импортных товаров (readonly).
 - salesReturn и inventory пишутся (связи документов); expenseItem — readonly.
 - Пример Update источника передаёт sum, таблица помечает его readonly: SDK sum не пишет.
-- Шаблон `PUT /new` и wizard не входят.
+- Шаблон `New` и wizard — [documents-extra.md](documents-extra.md).
 
 Источник: [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/loss),
 revision `9a811cef3dc4a3f3a46f070e60452361a06bf7cd`.

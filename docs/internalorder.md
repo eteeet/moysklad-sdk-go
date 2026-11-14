@@ -86,7 +86,7 @@ POST `…/positions/delete`, ответ без тела. В Update докуме�
 - `New` (PUT `entity/internalorder/new`): источник показывает только пустое тело; основания для
   внутреннего заказа не описаны, непустой basis передаётся как есть.
 - `Trash` — POST `…/{id}/trash` (общий раздел «Удаление в корзину»), в отличие от `Delete`.
-- Expand, метаданные и доп. поля (`/metadata`), wizard не входят.
+- Expand не входит. Метаданные и доп. поля — пакет `metadata` ([access.md](access.md)), wizard — [documents-extra.md](documents-extra.md).
 
 Источник: [`_internalOrder.md`](https://github.com/moysklad/api-remap-1.2-doc/blob/0e1b3d61fb8d8fa314469361d96560d6c3f7f57b/md/documents/_internalOrder.md),
 [официальная документация](https://dev.moysklad.ru/doc/api/remap/1.2/#/documents/internalOrder),

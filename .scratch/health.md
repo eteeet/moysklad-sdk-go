@@ -22,8 +22,6 @@
 
 ## 5. docs и README
 
-- D8. «не входит»/TODO про реализованное: `docs/access.md:42` (`metadata/attributes.go:42,56`), `docs/access.md:45` (`metadata/states.go:104`), `docs/catalog-extra.md:80` (`entity/emissionorder`, `entity/retireorder`), `docs/loss.md:50` (`entity/loss/template.go:14`, `wizard/wizard.go:110`), `docs/internalorder.md:89` (`wizard/wizard.go:110`), `docs/files-reports.md:37-38` (пакет `images`), `docs/purchaseorder.md:73` (`positions/model.go:40`), `docs/salesreturn.md:64` (`entity/salesreturn/template.go:14`), `docs/retail.md:21` (`entity/retailstore/cashiers.go:28,33`), `docs/retail.md:53-54` (`New` и операции строк retaildemand/retailsalesreturn, пакеты `retaildrawercashin/out`), `docs/counterparty.md:116` (accounts, contactpersons, notes, settings) — убрать или заменить ссылкой — механика.
-- D9. неполные перечни: `docs/documents-extra.md:9-13` (нет retireorder; emissionorder — без удаления строк), `docs/documents-extra.md:54-60` (Trash без emissionorder, retireorder), `docs/documents.md:56` (своя форма строки без EmissionOrder, RetireOrder), `docs/write-async.md:15-16` (без Delete нет discount, `entity/discount/discount.go:108-141`), `docs/transport.md:27` (нет `X-Idempotency-Key`, `transport/options.go:111`) — дописать — механика.
 - D10. неверные числа: `docs/transport.md:65` (List «у 6 справочников и 11 документов» — около 80 сервисов), `docs/positions.md:82` (11 → 16), `docs/positions.md:104` (7 → 14), `docs/write-async.md:73` (60 → 61) — исправить — механика.
 - D11. неверные утверждения: `docs/transport.md:67` («`fields` в List не принимается» — `query/options.go:50`, `entity/product/service.go:90`, allowlist `internal/list/page.go:44`), `docs/counterparty.md:13` («все методы возвращают `(*Counterparty, error)`» — List, Delete, ListAccounts и др.), `docs/client.md:51-62` (таблица примеров на фасаде без `examples/product_{get,create,update}` на `product.NewService`) — привести к коду — механика.
 - D12. glossary в прозе docs (решение владельца по A4: `~/ETEEET/moysklad/meta/GLOSSARY.md` действует на прозу docs SDK; Go-идентификаторы, повторяющие API, — `assortment`, `positions`, `batch` — не меняются): «строка» в значении Position (`GLOSSARY.md:131`) — `README.md:63`, `docs/documents-extra.md`, `docs/positions.md` → «позиция»; «ассортимент» (`GLOSSARY.md:101`) — `README.md:27` и `docs/*` → `assortment` или «SKU» по смыслу; пакет `batch` в прозе (`GLOSSARY.md:141`) → «массовые операции» — механика.
@@ -48,7 +46,7 @@
 - ADR: `docs/adr/0002-baseline.md` — согласован; `0001` заменён им. Glossary: общий — D12; своего `GLOSSARY.md` нет.
 - Открытые спеки: `.scratch/sdk-full-documents/spec.md`, `.scratch/sdk-full/map.md` — согласованы.
 - Открытые тикеты: `07-cash-accounts`, `trash-content-type/01` и новые тикеты — согласованы. Бэклог: `docs/status-backlog.md` — согласован.
-- docs с находками: `README.md`, `access`, `catalog-extra`, `client`, `counterparty`, `documents`, `documents-extra`, `files-reports`, `internalorder`, `loss`, `positions`, `purchaseorder`, `retail`, `salesreturn`, `transport`, `write-async` — D8–D12.
+- docs с находками: `README.md`, `client`, `counterparty`, `documents-extra`, `positions`, `transport`, `write-async` — D10–D12.
 - Остальные `docs/*.md` и `testdata/readme.md` — согласованы.
 
 Не проверено: внешние ссылки на документацию МойСклад, поведение живого API (O07; автонумерация — в `document-name-autonumber/01`), ссылки на API над пакетами в коде (`~/ETEEET/AGENTS.md`, «Комментарии в коде»).

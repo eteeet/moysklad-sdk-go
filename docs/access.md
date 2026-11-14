@@ -39,10 +39,10 @@
 | `CreateState(type, …)`, `UpdateState(type, id, …)` | `entity/{type}/metadata/states[/{id}]` |
 
 - `attributes` в метаданных приходит массивом или коллекцией `{meta[, rows]}` — читаются обе формы;
-  весь ответ хранится в `Raw`. Создание и изменение описаний доп. полей не входит.
+  весь ответ хранится в `Raw`. Создание, изменение и удаление описаний доп. полей — [dictionaries.md](dictionaries.md).
 - Статусы читаются в `Get(type).States`; отдельного GET статуса API нет. Create требует name, color
   (ARGB целым, `*int64` — 0 допустим) и stateType. DeleteState удаляет статус
-  ([docs/write-async.md](write-async.md)); массовое создание статусов не входит.
+  ([docs/write-async.md](write-async.md)); массовые операции статусов — [dictionaries.md](dictionaries.md).
 
 ## Аудит
 

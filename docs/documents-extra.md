@@ -8,8 +8,8 @@
 
 У customerorder, demand, enter, invoicein, invoiceout, loss, move, purchaseorder, purchasereturn,
 retaildemand, retailsalesreturn, salesreturn, supply и internalorder (общая реализация —
-`positions.Service[T]`). Inventory, commissionreportin/out, payroll и pricelist — те же методы со своей
-формой строки (у commissionreportin ещё набор `…ReturnPositions`), prepayment и prepaymentreturn —
+`positions.Service[T]`). Inventory, commissionreportin/out, payroll, pricelist и retireorder — те же методы со своей
+формой строки (у commissionreportin ещё набор `…ReturnPositions`), emissionorder — те же без удаления строк, prepayment и prepaymentreturn —
 только чтение строк:
 
 | Метод | Маршрут |
@@ -56,7 +56,7 @@ demand, enter, invoicein, invoiceout, loss, move, paymentin, paymentout, purchas
 purchasereturn, retaildemand, retailsalesreturn, retailshift, salesreturn, supply и у всех новых
 документов (internalorder, inventory, facturein, factureout, commissionreportin, commissionreportout,
 counterpartyadjustment, pricelist, prepayment, prepaymentreturn, retaildrawercashin,
-retaildrawercashout, payroll), а также у документов производства (processing, processingorder,
+retaildrawercashout, payroll, emissionorder, retireorder), а также у документов производства (processing, processingorder,
 productiontask, productionstagecompletion). Восстановление из
 корзины API не предоставляет; `Delete` удаляет безвозвратно.
 

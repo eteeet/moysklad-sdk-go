@@ -77,4 +77,4 @@
 
 ## Не входит
 
-Expand; заказ кодов маркировки и вывод из оборота (G12, G13) — после общих операций документов (O01, O04).
+Expand. Заказ кодов маркировки и вывод из оборота — [emissionorder](emissionorder.md), [retireorder](retireorder.md).
