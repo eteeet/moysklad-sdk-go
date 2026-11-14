@@ -1,7 +1,7 @@
 # moysklad-sdk-go
 
 SDK для МойСклад JSON API 1.2. Требуется Go 1.27.
-Поддерживаемые возможности и план работ: [docs/coverage.md](docs/coverage.md), статус по методам —
+Поддерживаемые возможности и оставшиеся задачи: [docs/coverage.md](docs/coverage.md), статус по методам —
 [сущности](docs/status-entities.md) и [технические возможности](docs/status-technical.md),
 изменения версии — [CHANGELOG](CHANGELOG.md).
 
@@ -73,14 +73,13 @@ Delete, массовые CreateMany/UpdateMany/DeleteMany (пакет `batch`) �
 
 | Пакет | Методы | Документация и границы |
 | --- | --- | --- |
-| `entity/country` | `Get`, `Create`, `Update` | [Country](docs/country.md) |
-| `entity/expenseitem` | `Get`, `Create`, `Update` | [ExpenseItem](docs/expenseitem.md) |
-| `entity/counterparty` | `Get`, `Create`, `Update` | [Counterparty](docs/counterparty.md) |
-| `entity/organization` | `Get`, `Create`, `Update` | [Organization](docs/organization.md) |
+| `entity/country` | `Get/List/Create/Update`, массовые | [Country](docs/country.md) |
+| `entity/expenseitem` | `Get/List/Create/Update`, массовые | [ExpenseItem](docs/expenseitem.md) |
+| `entity/counterparty` | `Get/List/Create/Update`, массовые, `ListAsync`, счета, контактные лица, события, настройки | [Counterparty](docs/counterparty.md) |
+| `entity/organization` | `Get/List/Create/Update`, массовые, счета | [Organization](docs/organization.md) |
 
 Общие `model.Address`, `AddressRequest` и открытый `CompanyType` описаны в
-[документации реквизитов](docs/requisites.md). Счета и другие отложенные подресурсы
-и expand в эти срезы не входят; Delete и массовые операции — [docs/write-async.md](docs/write-async.md).
+[документации реквизитов](docs/requisites.md). Счета и настройки — [docs/dictionaries.md](docs/dictionaries.md); expand в эти срезы не входит; Delete и массовые операции — [docs/write-async.md](docs/write-async.md).
 
 ## Общие контракты документов и positions
 
@@ -104,21 +103,21 @@ Get/Create/Update документов и типизированные entity.Ge
 
 | Пакет | Методы | Контракт полей и ограничения |
 | --- | --- | --- |
-| `entity/paymentin` | `Get/Create/Update` | [PaymentIn](docs/paymentin.md) |
-| `entity/paymentout` | `Get/Create/Update` | [PaymentOut](docs/paymentout.md) |
-| `entity/cashin` | `Get/Create/Update` | [CashIn](docs/cashin.md) |
-| `entity/cashout` | `Get/Create/Update` | [CashOut](docs/cashout.md) |
-| `entity/invoicein` | `Get/Create/Update` и `GetPositions` | [InvoiceIn](docs/invoicein.md) |
-| `entity/invoiceout` | `Get/Create/Update` и `GetPositions` | [InvoiceOut](docs/invoiceout.md) |
-| `entity/supply` | `Get/Create/Update` и `GetPositions` | [Supply](docs/supply.md) |
-| `entity/demand` | `Get/Create/Update` и `GetPositions` | [Demand](docs/demand.md) |
-| `entity/purchaseorder` | `Get/Create/Update` и `GetPositions` | [PurchaseOrder](docs/purchaseorder.md) |
-| `entity/move` | `Get/Create/Update` и `GetPositions` | [Move](docs/move.md) |
-| `entity/purchasereturn` | `Get/Create/Update` и `GetPositions` | [PurchaseReturn](docs/purchasereturn.md) |
-| `entity/customerorder` | `Get/List/Create/Update` и `GetPositions` | [CustomerOrder](docs/customerorder.md) |
-| `entity/enter` | `Get/List/Create/Update` и `GetPositions` | [Enter](docs/enter.md) |
-| `entity/loss` | `Get/List/Create/Update` и `GetPositions` | [Loss](docs/loss.md) |
-| `entity/salesreturn` | `Get/List/Create/Update` и `GetPositions` | [SalesReturn](docs/salesreturn.md) |
+| `entity/paymentin` | `Get/List/Create/Update`, массовые, `New`, `Trash` | [PaymentIn](docs/paymentin.md) |
+| `entity/paymentout` | `Get/List/Create/Update`, массовые, `New`, `Trash` | [PaymentOut](docs/paymentout.md) |
+| `entity/cashin` | `Get/List/Create/Update`, массовые, `New`, `Trash` | [CashIn](docs/cashin.md) |
+| `entity/cashout` | `Get/List/Create/Update`, массовые, `New`, `Trash` | [CashOut](docs/cashout.md) |
+| `entity/invoicein` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [InvoiceIn](docs/invoicein.md) |
+| `entity/invoiceout` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [InvoiceOut](docs/invoiceout.md) |
+| `entity/supply` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [Supply](docs/supply.md) |
+| `entity/demand` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [Demand](docs/demand.md) |
+| `entity/purchaseorder` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [PurchaseOrder](docs/purchaseorder.md) |
+| `entity/move` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [Move](docs/move.md) |
+| `entity/purchasereturn` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [PurchaseReturn](docs/purchasereturn.md) |
+| `entity/customerorder` | `Get/List/Create/Update`, массовые, позиции, `Trash` | [CustomerOrder](docs/customerorder.md) |
+| `entity/enter` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [Enter](docs/enter.md) |
+| `entity/loss` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [Loss](docs/loss.md) |
+| `entity/salesreturn` | `Get/List/Create/Update`, массовые, позиции, `New`, `Trash` | [SalesReturn](docs/salesreturn.md) |
 | `entity/internalorder` | `Get/List/Create/Update`, позиции, `New`, `Trash` | [InternalOrder](docs/internalorder.md) |
 | `entity/inventory` | `Get/List/Create/Update`, позиции, `New`, `Trash` | [Inventory](docs/inventory.md) |
 | `entity/facturein` | `Get/List/Create/Update`, `New`, `Trash` | [FactureIn](docs/facturein.md) |
@@ -161,8 +160,8 @@ Delete и массовые операции — [docs/write-async.md](docs/write
 
 ## Product
 
-`product.NewService(client)` предоставляет `Get(ctx, id)`, `Create(ctx, CreateRequest)` и `Update(ctx, id, UpdateRequest)`.
-Все три метода возвращают `(*Product, error)`; ошибки API доступны через `errors.As` как `*errors.APIError`
+`product.NewService(client)` предоставляет `Get(ctx, id)`, `Create(ctx, CreateRequest)` и `Update(ctx, id, UpdateRequest)`; List, массовые операции и неснижаемый остаток (`ListStoreBalances` и др.) — [docs/catalog-extra.md](docs/catalog-extra.md).
+Get, Create и Update возвращают `(*Product, error)`; ошибки API доступны через `errors.As` как `*errors.APIError`
 из пакета `github.com/eteeet/moysklad-sdk-go/errors` (импортируй с алиасом `sdkerrors`).
 
 Create требует непустой Name. Update требует UUID и хотя бы одно заданное поле.
